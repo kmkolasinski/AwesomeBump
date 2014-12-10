@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/">
+        <file>content/logo_D.png</file>
+        <file>content/logo_N.png</file>
+        <file>content/logo_H.png</file>
+		<file>content/logo_O.png</file>
+		<file>content/logo.png</file>
+		<file>content/replot.png</file>
+		<file>content/showDiffuse.png</file>
+		<file>content/showNormal.png</file>
+		<file>content/showSpecular.png</file>
+		<file>content/showHeight.png</file>
+		<file>content/showSettings.png</file>
+		<file>content/showOcclusion.png</file>
+		<file>content/save.png</file>
+		<file>content/saveAll.png</file>
+		<file>content/saveSelected.png</file>
+		<file>content/open.png</file>
+		<file>content/filters.frag</file>
+		<file>content/filters.vert</file>
+		<file>content/plane.frag</file>
+		<file>content/plane.vert</file>
+    </qresource>
+</RCC>
