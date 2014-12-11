@@ -45,13 +45,8 @@
 #include "glwidget.h"
 
 
-#ifndef GL_MULTISAMPLE
-#define GL_MULTISAMPLE  0x809D
-#endif
-
-//! [0]
 GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget )
-    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, shareWidget)
+    : QGLWidget(QGLFormat::defaultFormat(), parent, shareWidget)
 {
 
     xRot = 0;

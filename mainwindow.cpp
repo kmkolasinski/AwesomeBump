@@ -7,14 +7,42 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
 
-    recentDir = NULL;
-    bSaveCheckedImages = false;
-    bSaveCompressedFormImages = false;
-    FormImageProp::recentDir = &recentDir;
-    glImage          = new GLImage(this);
+    recentDir                   = NULL;
+    bSaveCheckedImages          = false;
+    bSaveCompressedFormImages   = false;
+    FormImageProp::recentDir    = &recentDir;
+    QGLFormat glFormat(QGL::SampleBuffers);
 
-    //glWidget         = new GLWidget;
+#ifdef Q_OS_MAC
+    glFormat.setProfile( QGLFormat::CoreProfile );
+    glFormat.setVersion( 4, 1 );
+#endif
+    QGLFormat::setDefaultFormat(glFormat);
+
+    glImage          = new GLImage(this);
     glWidget         = new GLWidget(this,glImage);
+
+#ifdef Q_OS_MAC
+    QGLContext* glContext = (QGLContext *) glWidget->context();
+    glContext->makeCurrent();
+
+    std::cout << "Widget OpenGl: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() << std::endl;
+    std::cout << "Context valid: " << glContext->isValid() << std::endl;
+    std::cout << "Really used OpenGl: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() << std::endl;
+    std::cout << "OpenGl information: " << std::endl;
+    std::cout << "VENDOR: " << (const char*)glGetString(GL_VENDOR) << std::endl;
+    std::cout << "RENDERDER: " << (const char*)glGetString(GL_RENDERER) << std::endl;
+    std::cout << "VERSION: " << (const char*)glGetString(GL_VERSION) << std::endl;
+    std::cout << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+    qDebug() << "OpenGLVersionFlags(): " << QGLFormat::OpenGLVersionFlags();
+
+    if((QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_3_2) == 0)
+    {
+       std::cout << "GL 3.2 Not supported"  << std::endl;
+    }
+#endif
+
     diffuseImageProp = new FormImageProp(this,glImage);
     normalImageProp  = new FormImageProp(this,glImage);
     specularImageProp= new FormImageProp(this,glImage);
