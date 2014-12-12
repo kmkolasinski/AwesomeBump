@@ -14,3 +14,7 @@ INSTALLATION:
 
 
 Project Webpage: http://awesomebump.besaba.com/
+
+FIXES:
+============
+-Added support of OSX platforms (thanks to https://github.com/ppiecuch)
