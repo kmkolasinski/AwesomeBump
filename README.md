@@ -5,6 +5,8 @@ AwesomeBump is a free and open source program written using Qt library designed 
 
 Feel free to contact me if you find any bugs and problems: support@awesomebump.besaba.com
 
+If you want to fix or improve something please fork my repo and send me the pull-request with changes. 
+
 INSTALLATION:
 ============
 1. In order to build AwesomeBump you will need to have qt-sdk installed: http://www.qt.io/download/ 
