@@ -45,23 +45,28 @@
 #include "glwidget.h"
 
 
-GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget )
+#ifndef GL_MULTISAMPLE
+#define GL_MULTISAMPLE  0x809D
+#endif
+
+//! [0]
+GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     : QGLWidget(QGLFormat::defaultFormat(), parent, shareWidget)
 {
 
-    xRot                 = 0;
-    yRot                 = 0;
-    zRot                 = 0;
-    zoom                 = 60;
-    lightPosition        = QVector4D(0,0,5.0,1);
-    depthScale           = 1;
-    uvScale              = 1.0;
-    uvOffset             = QVector2D(0,0);
-    bToggleDiffuseView   = true;
-    bToggleSpecularView  = true;
+    xRot = 0;
+    yRot = 0;
+    zRot = 0;
+    zoom = 60;
+    lightPosition = QVector4D(0,0,5.0,1);
+    depthScale         = 1;
+    uvScale            = 1.0;
+    uvOffset           = QVector2D(0,0);
+    bToggleDiffuseView = true;
+    bToggleSpecularView = true;
     bToggleOcclusionView = true;
-    specularIntensity    = 1.0;
-    diffuseIntensity     = 1.0;
+    specularIntensity = 1.0;
+    diffuseIntensity  = 1.0;
 
 
 }

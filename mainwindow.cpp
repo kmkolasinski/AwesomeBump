@@ -1,18 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
-
-    recentDir                   = NULL;
-    bSaveCheckedImages          = false;
-    bSaveCompressedFormImages   = false;
-    FormImageProp::recentDir    = &recentDir;
+    recentDir = NULL;
+    bSaveCheckedImages = false;
+    bSaveCompressedFormImages = false;
+    FormImageProp::recentDir = &recentDir;
+    
     QGLFormat glFormat(QGL::SampleBuffers);
-
 #ifdef Q_OS_MAC
     glFormat.setProfile( QGLFormat::CoreProfile );
     glFormat.setVersion( 4, 1 );
@@ -26,17 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QGLContext* glContext = (QGLContext *) glWidget->context();
     glContext->makeCurrent();
 
-    std::cout << "Widget OpenGl: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() << std::endl;
+    std::cout << "Widget OpenGL: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() << std::endl;
     std::cout << "Context valid: " << glContext->isValid() << std::endl;
-    std::cout << "Really used OpenGl: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() << std::endl;
-    std::cout << "OpenGl information: " << std::endl;
+    std::cout << "OpenGL information: " << std::endl;
     std::cout << "VENDOR: " << (const char*)glGetString(GL_VENDOR) << std::endl;
     std::cout << "RENDERDER: " << (const char*)glGetString(GL_RENDERER) << std::endl;
     std::cout << "VERSION: " << (const char*)glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-
-    qDebug() << "OpenGLVersionFlags(): " << QGLFormat::OpenGLVersionFlags();
-
     if((QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_3_2) == 0)
     {
        std::cout << "GL 3.2 Not supported"  << std::endl;
@@ -174,12 +169,13 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp->setImage(QImage(QString(":/content/logo_O.png")));
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
-
+#ifdef Q_OS_MAC
+    if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
+#endif
 }
 
 MainWindow::~MainWindow()
 {
-
     delete ui;
 }
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -198,8 +194,6 @@ void MainWindow::showEvent(QShowEvent* event){
     QWidget::showEvent( event );
     qDebug() << "<MainWindow> Show window.";
     replotAllImages();
-
-
 }
 
 void MainWindow::replotAllImages(){

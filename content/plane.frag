@@ -1,3 +1,5 @@
+#version 330 core
+
 uniform sampler2D texDiffuse;
 uniform sampler2D texNormal;
 uniform sampler2D texSpecular;
@@ -11,8 +13,9 @@ uniform float gui_DiffuseIntensity;
 varying vec4 texc;
 varying vec3 vertexNormal;  
 varying vec4 vertexPosition; 
-varying vec4 lightPosition; 
-varying vec4 staticLightPosition; 
+varying vec4 lightPosition;
+varying vec4 staticLightPosition;
+
 void main(void)
 {
     vec4 diffuseColor       =  texture2D(texDiffuse , texc.st);

@@ -1,4 +1,5 @@
 #version 330 core
+
 // Program do "quada ekranowego"
 layout(location = 0) in vec3 positionIn;
 

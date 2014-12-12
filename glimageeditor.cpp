@@ -41,11 +41,16 @@
 
 
 
+#ifndef GL_MULTISAMPLE
+# define GL_MULTISAMPLE  0x809D
+#endif
+
+//! [0]
 GLImage::GLImage(QWidget *parent)
     : QGLWidget(QGLFormat::defaultFormat(), parent)
 
 {
-    bShadowRender         = false;
+    bShadowRender = false;
     bRecalculateOcclusion = false;
 }
 //! [0]

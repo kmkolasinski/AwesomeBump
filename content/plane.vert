@@ -1,3 +1,5 @@
+#version 330 core
+
 attribute  vec4 vertex;
 attribute  vec4 texCoord;
 
