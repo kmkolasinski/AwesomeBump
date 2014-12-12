@@ -62,12 +62,8 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget )
     bToggleOcclusionView = true;
     specularIntensity    = 1.0;
     diffuseIntensity     = 1.0;
-
-
 }
-//! [0]
 
-//! [1]
 GLWidget::~GLWidget()
 {   
 
@@ -221,24 +217,27 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
-    //qDebug() << "GLWidget:: paint()" ;
+
     QMatrix4x4 m;
     program->bind();
 
-    m.perspective(zoom,ratio,0.1,10.0);
+    m.perspective(zoom,ratio,0.1,100.0);
     program->setUniformValue("ProjectionMatrix", m);
-    m.setToIdentity();
+
+    QMatrix4x4 modelMatrix;
+    modelMatrix.setToIdentity();
     if( fboIdPtrs[0] != NULL){
         float fboRatio = float((*(fboIdPtrs[0]))->width())/(*(fboIdPtrs[0]))->height();
-        m.scale(fboRatio,1,1);
+        modelMatrix.scale(fboRatio,1,1);
     }
-
-    m.translate(0.0f, 0.0f, -1.5f);
-
-
-    m.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
-    m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-    m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+    QMatrix4x4 rotMatrix;
+    rotMatrix.setToIdentity();
+    rotMatrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
+    rotMatrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
+    rotMatrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
+    QMatrix4x4 viewMatrix;
+    viewMatrix.translate(0.0f, 0.0f, -1.5f);
+    m =  viewMatrix*rotMatrix*modelMatrix;
 
     program->setUniformValue("ModelViewMatrix", m);
     QMatrix3x3 NormalMatrix = m.normalMatrix();
@@ -262,14 +261,24 @@ void GLWidget::paintGL()
         glActiveTexture(GL_TEXTURE0);
         if(bToggleDiffuseView) glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[0]))->texture());
         else glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[2]))->texture());
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
         glActiveTexture(GL_TEXTURE3);        
         glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[3]))->texture());
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
         glActiveTexture(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[4]))->texture());
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
         glDrawElements(GL_TRIANGLES, 3*no_triangles, GL_UNSIGNED_INT, 0);
     }
 
@@ -279,7 +288,7 @@ void GLWidget::paintGL()
 //! [8]
 void GLWidget::resizeGL(int width, int height)
 {
-    qDebug() << "GLWidget:: resize";
+    //qDebug() << "GLWidget:: resize";
     ratio = float(width)/height;
     glViewport(0, 0, width, height);
 }

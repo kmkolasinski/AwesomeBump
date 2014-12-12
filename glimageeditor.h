@@ -80,9 +80,9 @@ public:
     FBOImageProporties* targetImageOcclusion;
 public slots:
 
-//! [1]
+signals:
+    void rendered();
 
-//! [2]
 protected:
     void initializeGL();
     void paintGL();
