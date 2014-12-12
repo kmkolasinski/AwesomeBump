@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     std::cout << "Context valid: " << glContext->isValid() << std::endl;
     std::cout << "OpenGL information: " << std::endl;
     std::cout << "VENDOR: " << (const char*)glGetString(GL_VENDOR) << std::endl;
-    std::cout << "RENDERDER: " << (const char*)glGetString(GL_RENDERER) << std::endl;
+    std::cout << "RENDERER: " << (const char*)glGetString(GL_RENDERER) << std::endl;
     std::cout << "VERSION: " << (const char*)glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
     if((QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_3_2) == 0)
