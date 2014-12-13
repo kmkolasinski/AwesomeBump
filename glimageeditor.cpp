@@ -150,6 +150,7 @@ void GLImage::paintGL()
 {
 
     render();
+    emit rendered();
 }
 
 

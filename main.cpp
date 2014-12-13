@@ -59,7 +59,5 @@ int main(int argc, char *argv[])
     else
         window.showMaximized();
 
-    window.initializeImages();
-
     return app.exec();
 }

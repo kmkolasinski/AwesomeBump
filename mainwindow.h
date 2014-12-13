@@ -22,7 +22,6 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void initializeImages();
     QSize sizeHint() const;
     ~MainWindow();
 protected:
@@ -30,6 +29,8 @@ protected:
      void showEvent(QShowEvent* event);
 
 public slots:
+    void initializeImages();
+  
     void saveImages();
     void saveCheckedImages();
     void saveCompressedForm();
@@ -79,10 +80,6 @@ private:
     FormImageProp* specularImageProp;
     FormImageProp* heightImageProp;
     FormImageProp* occlusionImageProp;
-
-
-
-
 };
 
 #endif // MAINWINDOW_H

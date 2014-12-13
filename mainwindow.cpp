@@ -103,6 +103,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutHeightImage->addWidget(heightImageProp);
     ui->verticalLayoutOcclusionImage->addWidget(occlusionImageProp);
 
+    connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
+
+    
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
 
     connect(diffuseImageProp,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
@@ -116,7 +119,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(normalImageProp,SIGNAL(conversionNormalToHeightApplied()) ,this,SLOT(convertFromNtoH()));
     connect(diffuseImageProp,SIGNAL(conversionBaseConversionApplied()),this,SLOT(convertFromBase()));
     connect(occlusionImageProp,SIGNAL(recalculateOcclusion()),this,SLOT(recalculateOcclusion()));
-
 
 
 
@@ -429,11 +431,16 @@ void MainWindow::updateOcclusionImage(){
     ui->lineEditOutputName->setText(occlusionImageProp->getImageName());
     glImage->repaint();
     glWidget->repaint();
-
 }
 
 void MainWindow::initializeImages(){
-
+    static bool bInitializedFirstDraw = false;
+ 
+    if(bInitializedFirstDraw) return;
+    bInitializedFirstDraw = true;
+    qDebug() << "MainWindow::Initialization";
+    QCoreApplication::processEvents();
+    replotAllImages();
 }
 
 void MainWindow::updateImage(int tType){

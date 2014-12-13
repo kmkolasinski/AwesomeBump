@@ -70,7 +70,10 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
+	float aniso = 0.0;
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+	glBindTexture(GL_TEXTURE_2D, 0);
         qDebug() << "FBOImages::creatig new FBO(" << width << "," << height << ") with id=" << fbo->texture() ;
     }
 
@@ -231,4 +234,3 @@ public:
 
 
 #endif // COMMONOBJECTS_H
-
