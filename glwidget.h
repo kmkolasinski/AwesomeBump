@@ -55,7 +55,7 @@ class GLWidget : public QGLWidget , protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-    GLWidget(QWidget *parent = 0 , QGLWidget * shareWidget  = 0 );
+    GLWidget(QWidget *parent = 0 , QGLWidget * shareWidget  = 0);
     ~GLWidget();
 
     QSize minimumSizeHint() const;

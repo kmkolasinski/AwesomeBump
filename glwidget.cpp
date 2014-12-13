@@ -45,23 +45,30 @@
 #include "glwidget.h"
 
 
-GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget )
+#ifndef GL_MULTISAMPLE
+#define GL_MULTISAMPLE  0x809D
+#endif
+
+//! [0]
+GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     : QGLWidget(QGLFormat::defaultFormat(), parent, shareWidget)
 {
 
-    xRot                 = 0;
-    yRot                 = 0;
-    zRot                 = 0;
-    zoom                 = 60;
-    lightPosition        = QVector4D(0,0,5.0,1);
-    depthScale           = 1;
-    uvScale              = 1.0;
-    uvOffset             = QVector2D(0,0);
-    bToggleDiffuseView   = true;
-    bToggleSpecularView  = true;
+    xRot = 0;
+    yRot = 0;
+    zRot = 0;
+    zoom = 60;
+    lightPosition = QVector4D(0,0,5.0,1);
+    depthScale         = 1;
+    uvScale            = 1.0;
+    uvOffset           = QVector2D(0,0);
+    bToggleDiffuseView = true;
+    bToggleSpecularView = true;
     bToggleOcclusionView = true;
-    specularIntensity    = 1.0;
-    diffuseIntensity     = 1.0;
+
+    specularIntensity = 1.0;
+    diffuseIntensity  = 1.0;
+
 }
 
 GLWidget::~GLWidget()
@@ -187,11 +194,13 @@ void GLWidget::initializeGL()
     qDebug() << "Loading quad (fragment shader)";
     QGLShader *vshader = new QGLShader(QGLShader::Vertex, this);
     vshader->compileSourceFile(":/content/plane.vert");
-    qDebug() << vshader->log();
+
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     qDebug() << "Loading quad (vertex shader)";
     QGLShader *fshader = new QGLShader(QGLShader::Fragment, this);
     fshader->compileSourceFile(":/content/plane.frag");
-    qDebug() << fshader->log();
+    if (!fshader->log().isEmpty()) qDebug() << fshader->log();
+
 
     program = new QGLShaderProgram(this);
     program->addShader(vshader);
@@ -207,9 +216,6 @@ void GLWidget::initializeGL()
     program->setUniformValue("texHeight"  , 3);
     program->setUniformValue("texSSAO"    , 4);
     makeObject();
-
-
-
 }
 //! [6]
 
@@ -290,7 +296,6 @@ void GLWidget::paintGL()
 //! [8]
 void GLWidget::resizeGL(int width, int height)
 {
-    //qDebug() << "GLWidget:: resize";
     ratio = float(width)/height;
     glViewport(0, 0, width, height);
 }

@@ -31,3 +31,4 @@ void main(void)
     vertexNormal  = NormalMatrix * normalize(texture(texNormal , texc.st).rgb - 0.5);
     gl_Position = ProjectionMatrix * (vertexPosition);
 }
+
