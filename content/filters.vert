@@ -1,4 +1,5 @@
 #version 400 core
+
 layout(location = 0) in vec3 positionIn;
 
 uniform vec2 quad_scale; // skala od (0,0) do (1,1)
@@ -8,6 +9,7 @@ uniform mat4 ProjectionMatrix;
 uniform mat4 ModelViewMatrix;
 
 out vec2 v2QuadCoords;
+
 void main() {
 
 	vec2 pos 		 = sign(positionIn.xy);

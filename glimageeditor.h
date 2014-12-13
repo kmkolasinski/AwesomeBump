@@ -83,6 +83,7 @@ public slots:
 signals:
     void rendered();
 
+//! [2]
 protected:
     void initializeGL();
     void paintGL();

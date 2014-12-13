@@ -30,4 +30,5 @@ void main(void)
     staticLightPosition = ModelViewMatrix *  vec4(0,0,5.0,1);
     vertexNormal  = NormalMatrix * normalize(texture(texNormal , texc.st).rgb - 0.5);
     gl_Position = ProjectionMatrix * (vertexPosition);
-};
+}
+

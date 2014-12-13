@@ -1,4 +1,4 @@
-
+build/Makefile
 *.pydevproject
 .project
 .metadata
@@ -29,7 +29,7 @@ local.properties
 AwesomeBump.pro.user
 
 *.sln.docstates
-
+build/Makefile
 build/Makefile
 pageContent/
 [Dd]ebug/

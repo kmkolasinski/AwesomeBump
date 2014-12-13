@@ -464,9 +464,6 @@
     <layout class="QGridLayout" name="gridLayout_8">
      <item row="0" column="0">
       <widget class="QPushButton" name="pushButtonOpenImage">
-       <property name="whatsThis">
-        <string>Open image</string>
-       </property>
        <property name="text">
         <string/>
        </property>

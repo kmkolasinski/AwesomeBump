@@ -33,12 +33,6 @@
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
      <widget class="QTabWidget" name="tabWidget">
-      <property name="minimumSize">
-       <size>
-        <width>380</width>
-        <height>20</height>
-       </size>
-      </property>
       <property name="maximumSize">
        <size>
         <width>380</width>
@@ -461,7 +455,7 @@
        </palette>
       </property>
       <property name="autoFillBackground">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="tabPosition">
        <enum>QTabWidget::East</enum>
@@ -470,13 +464,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>5</number>
-      </property>
-      <property name="iconSize">
-       <size>
-        <width>32</width>
-        <height>36</height>
-       </size>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideMiddle</enum>
@@ -485,12 +473,8 @@
        <bool>false</bool>
       </property>
       <widget class="QWidget" name="tabDiffuseImage">
-       <attribute name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/content/showDiffuse.png</normaloff>:/content/showDiffuse.png</iconset>
-       </attribute>
        <attribute name="title">
-        <string/>
+        <string>Diffuse</string>
        </attribute>
        <attribute name="toolTip">
         <string>Diffuse Image</string>
@@ -933,8 +917,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>312</width>
-             <height>661</height>
+             <width>311</width>
+             <height>641</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -948,12 +932,8 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabNormalImage">
-       <attribute name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/content/showNormal.png</normaloff>:/content/showNormal.png</iconset>
-       </attribute>
        <attribute name="title">
-        <string/>
+        <string>Normal</string>
        </attribute>
        <attribute name="toolTip">
         <string>Normal image</string>
@@ -1396,8 +1376,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>312</width>
-             <height>661</height>
+             <width>311</width>
+             <height>641</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -1411,12 +1391,8 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabSpecularImage">
-       <attribute name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/content/showSpecular.png</normaloff>:/content/showSpecular.png</iconset>
-       </attribute>
        <attribute name="title">
-        <string/>
+        <string>Specular</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
@@ -1856,8 +1832,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>312</width>
-             <height>661</height>
+             <width>311</width>
+             <height>641</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1871,12 +1847,8 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabHeightImage">
-       <attribute name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/content/showHeight.png</normaloff>:/content/showHeight.png</iconset>
-       </attribute>
        <attribute name="title">
-        <string/>
+        <string>Height</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_10">
         <item>
@@ -2316,8 +2288,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>312</width>
-             <height>661</height>
+             <width>311</width>
+             <height>641</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -2331,12 +2303,8 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabOcclusionImage">
-       <attribute name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/content/showOcclusion.png</normaloff>:/content/showOcclusion.png</iconset>
-       </attribute>
        <attribute name="title">
-        <string/>
+        <string>Occlusion</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_13">
         <item>
@@ -2776,8 +2744,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>312</width>
-             <height>661</height>
+             <width>311</width>
+             <height>641</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -2791,12 +2759,8 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tab">
-       <attribute name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/content/showSettings.png</normaloff>:/content/showSettings.png</iconset>
-       </attribute>
        <attribute name="title">
-        <string/>
+        <string>Settings</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
@@ -2819,7 +2783,7 @@
              <x>0</x>
              <y>0</y>
              <width>280</width>
-             <height>620</height>
+             <height>728</height>
             </rect>
            </property>
            <property name="maximumSize">
@@ -2833,9 +2797,6 @@
              <layout class="QGridLayout" name="gridLayout_3">
               <item row="1" column="3">
                <widget class="QPushButton" name="pushButtonToggleSpecular">
-                <property name="toolTip">
-                 <string>Toggle specular</string>
-                </property>
                 <property name="statusTip">
                  <string>Toggle specular</string>
                 </property>
@@ -2858,13 +2819,13 @@
                 <property name="checked">
                  <bool>true</bool>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="1" column="5">
                <widget class="QPushButton" name="pushButtonToggleDiffuse">
-                <property name="toolTip">
-                 <string>Toggle diffuse</string>
-                </property>
                 <property name="statusTip">
                  <string>Toggle diffuse</string>
                 </property>
@@ -2887,6 +2848,9 @@
                 <property name="checked">
                  <bool>true</bool>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="1" column="1">
@@ -2907,13 +2871,13 @@
                   <height>32</height>
                  </size>
                 </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="1" column="6">
                <widget class="QPushButton" name="pushButtonToggleOcclusion">
-                <property name="toolTip">
-                 <string>Toggle ambient occlusion</string>
-                </property>
                 <property name="statusTip">
                  <string>Toggle occlusion</string>
                 </property>
@@ -2934,6 +2898,9 @@
                  <bool>true</bool>
                 </property>
                 <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <property name="flat">
                  <bool>true</bool>
                 </property>
                </widget>
@@ -2970,9 +2937,6 @@
                  </item>
                  <item row="0" column="1">
                   <widget class="QLineEdit" name="lineEditOutputName">
-                   <property name="toolTip">
-                    <string>Set the primary name for the output images</string>
-                   </property>
                    <property name="text">
                     <string>image</string>
                    </property>
@@ -2984,9 +2948,6 @@
                 <layout class="QGridLayout" name="gridLayout_4">
                  <item row="1" column="0">
                   <widget class="QPushButton" name="pushButtonSaveAll">
-                   <property name="toolTip">
-                    <string>Save all images </string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -3004,9 +2965,6 @@
                  </item>
                  <item row="0" column="0">
                   <widget class="QPushButton" name="pushButtonSaveChecked">
-                   <property name="toolTip">
-                    <string>Save only checked images</string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -3024,9 +2982,6 @@
                  </item>
                  <item row="0" column="1">
                   <widget class="QCheckBox" name="checkBoxSaveDiffuse">
-                   <property name="toolTip">
-                    <string>Toggle save diffuse</string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -3044,9 +2999,6 @@
                  </item>
                  <item row="1" column="1">
                   <widget class="QCheckBox" name="checkBoxSaveSpecular">
-                   <property name="toolTip">
-                    <string>Toggle save specular</string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -3061,9 +3013,6 @@
                  </item>
                  <item row="0" column="2">
                   <widget class="QCheckBox" name="checkBoxSaveNormal">
-                   <property name="toolTip">
-                    <string>Toggle save normal</string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -3091,9 +3040,6 @@
                  </item>
                  <item row="0" column="3">
                   <widget class="QCheckBox" name="checkBoxSaveHeight">
-                   <property name="toolTip">
-                    <string>Toggle save ambient occlusion</string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -3108,9 +3054,6 @@
                  </item>
                  <item row="1" column="2">
                   <widget class="QCheckBox" name="checkBoxSaveOcclusion">
-                   <property name="toolTip">
-                    <string>Toggle save height </string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -3129,9 +3072,6 @@
                 <layout class="QGridLayout" name="gridLayout_2">
                  <item row="0" column="0">
                   <widget class="QPushButton" name="pushButtonSaveAs">
-                   <property name="toolTip">
-                    <string>Click to save in a compressed form. See the options in the ComboBox button</string>
-                   </property>
                    <property name="text">
                     <string>Save:</string>
                    </property>
@@ -3298,9 +3238,6 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="pushButtonSaveCurrentSettings">
-                    <property name="toolTip">
-                     <string>Seve current settings to config file. This settings will load during next launch</string>
-                    </property>
                     <property name="text">
                      <string>Save settings</string>
                     </property>
@@ -3349,9 +3286,6 @@
               </item>
               <item row="0" column="0">
                <widget class="QCheckBox" name="checkBoxMakeSeamless">
-                <property name="toolTip">
-                 <string>Make image seamless</string>
-                </property>
                 <property name="text">
                  <string>Tile</string>
                 </property>
@@ -3414,9 +3348,6 @@
               </item>
               <item row="1" column="1">
                <widget class="QSlider" name="horizontalSliderDepthScale">
-                <property name="toolTip">
-                 <string/>
-                </property>
                 <property name="maximum">
                  <number>100</number>
                 </property>
@@ -3643,7 +3574,7 @@
      <x>0</x>
      <y>0</y>
      <width>910</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -26,12 +27,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QGLContext* glContext = (QGLContext *) glWidget->context();
     glContext->makeCurrent();
 
-    std::cout << "Widget OpenGl: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() << std::endl;
+    std::cout << "Widget OpenGL: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() << std::endl;
     std::cout << "Context valid: " << glContext->isValid() << std::endl;
-    std::cout << "Really used OpenGl: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() << std::endl;
-    std::cout << "OpenGl information: " << std::endl;
+    std::cout << "OpenGL information: " << std::endl;
     std::cout << "VENDOR: " << (const char*)glGetString(GL_VENDOR) << std::endl;
-    std::cout << "RENDERDER: " << (const char*)glGetString(GL_RENDERER) << std::endl;
+    std::cout << "RENDERER: " << (const char*)glGetString(GL_RENDERER) << std::endl;
     std::cout << "VERSION: " << (const char*)glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
@@ -110,7 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
 
-
+    
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
 
     connect(diffuseImageProp,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
@@ -177,7 +177,9 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp->setImage(QImage(QString(":/content/logo_O.png")));
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
-
+#ifdef Q_OS_MAC
+    if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
+#endif
 }
 
 MainWindow::~MainWindow()
@@ -201,6 +203,8 @@ void MainWindow::showEvent(QShowEvent* event){
     QWidget::showEvent( event );
     qDebug() << "<MainWindow> Show window.";
     replotAllImages();
+
+
 }
 
 void MainWindow::replotAllImages(){
@@ -447,8 +451,6 @@ void MainWindow::initializeImages(){
     qDebug() << "MainWindow::Initialization";
     QCoreApplication::processEvents();
     replotAllImages();
-    glImage->repaint();
-    glWidget->repaint();
 }
 
 void MainWindow::updateImage(int tType){
