@@ -45,4 +45,4 @@ void main(void)
 
     vec3 specular = gui_SpecularIntensity * (Rs+Rs2) * Ts/40 * float(gui_bSpecular) ;
     FragColor     = vec4(diffuse*ambientOclusion + specular*ambientOclusion, 1);
-};
+}
