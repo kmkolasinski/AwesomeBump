@@ -447,6 +447,8 @@ void MainWindow::initializeImages(){
     qDebug() << "MainWindow::Initialization";
     QCoreApplication::processEvents();
     replotAllImages();
+    glImage->repaint();
+    glWidget->repaint();
 }
 
 void MainWindow::updateImage(int tType){

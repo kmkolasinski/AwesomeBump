@@ -87,12 +87,14 @@ void GLImage::initializeGL()
 
 #define PROGRAM_VERTEX_ATTRIBUTE 0
 #define PROGRAM_TEXCOORD_ATTRIBUTE 1
-
+    qDebug() << "Loading filters (fragment shader)";
     QGLShader *vshader = new QGLShader(QGLShader::Vertex, this);
     vshader->compileSourceFile(":/content/filters.vert");
-
+    qDebug() << vshader->log();
+    qDebug() << "Loading filters (vertex shader)";
     QGLShader *fshader = new QGLShader(QGLShader::Fragment, this);
     fshader->compileSourceFile(":/content/filters.frag");
+    qDebug() << fshader->log();
 
     program = new QGLShaderProgram(this);
     program->addShader(vshader);

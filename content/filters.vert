@@ -1,5 +1,4 @@
-#version 330 core
-// Program do "quada ekranowego"
+#version 400 core
 layout(location = 0) in vec3 positionIn;
 
 uniform vec2 quad_scale; // skala od (0,0) do (1,1)

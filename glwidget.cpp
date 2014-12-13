@@ -184,12 +184,14 @@ void GLWidget::initializeGL()
 
 #define PROGRAM_VERTEX_ATTRIBUTE 0
 #define PROGRAM_TEXCOORD_ATTRIBUTE 1
-
+    qDebug() << "Loading quad (fragment shader)";
     QGLShader *vshader = new QGLShader(QGLShader::Vertex, this);
     vshader->compileSourceFile(":/content/plane.vert");
-
+    qDebug() << vshader->log();
+    qDebug() << "Loading quad (vertex shader)";
     QGLShader *fshader = new QGLShader(QGLShader::Fragment, this);
     fshader->compileSourceFile(":/content/plane.frag");
+    qDebug() << fshader->log();
 
     program = new QGLShaderProgram(this);
     program->addShader(vshader);
