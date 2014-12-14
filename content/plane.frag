@@ -25,11 +25,11 @@ void main(void)
 	
     // Phong model
     vec3 N = normalize(vertexNormal.xyz);
-    vec3 L = normalize(lightPosition.xyz-vertexPosition.xyz);
+    vec3 L = normalize(lightPosition.xyz-0*vertexPosition.xyz);
     vec3 V = normalize(vertexPosition.xyz);
 
 
-    vec3 L2 = normalize(staticLightPosition.xyz-vertexPosition.xyz);
+    vec3 L2 = normalize(staticLightPosition.xyz-0*vertexPosition.xyz);
 
     // diffuse lightning
     float Rd     = 1.8*max(0.0, dot(L, N));

@@ -43,26 +43,27 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 #endif
 
-    diffuseImageProp = new FormImageProp(this,glImage);
-    normalImageProp  = new FormImageProp(this,glImage);
-    specularImageProp= new FormImageProp(this,glImage);
-    heightImageProp  = new FormImageProp(this,glImage);
+    diffuseImageProp  = new FormImageProp(this,glImage);
+    normalImageProp   = new FormImageProp(this,glImage);
+    specularImageProp = new FormImageProp(this,glImage);
+    heightImageProp   = new FormImageProp(this,glImage);
     occlusionImageProp= new FormImageProp(this,glImage);
 
-
+    // Setting pointers to 3D view (this pointer are used to bindTextures).
     glWidget->setPointerToTexture(&diffuseImageProp->getImageProporties() ->fbo,DIFFUSE_TEXTURE);
     glWidget->setPointerToTexture(&normalImageProp->getImageProporties()  ->fbo,NORMAL_TEXTURE);
     glWidget->setPointerToTexture(&specularImageProp->getImageProporties()->fbo,SPECULAR_TEXTURE);
     glWidget->setPointerToTexture(&heightImageProp->getImageProporties()  ->fbo,HEIGHT_TEXTURE);
     glWidget->setPointerToTexture(&occlusionImageProp->getImageProporties()->fbo,OCCLUSION_TEXTURE);
 
-
+    // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
     normalImageProp   ->getImageProporties()->imageType = NORMAL_TEXTURE;
     specularImageProp ->getImageProporties()->imageType = SPECULAR_TEXTURE;
     heightImageProp   ->getImageProporties()->imageType = HEIGHT_TEXTURE;
     occlusionImageProp ->getImageProporties()->imageType = OCCLUSION_TEXTURE;
 
+    // disabling some options for each texture
     specularImageProp->setSpecularControlChecked();
     specularImageProp->getImageProporties()->bSpeclarControl = true;
     specularImageProp->hideBMGroupBox();
@@ -96,7 +97,9 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage ->targetImageNormal = normalImageProp->getImageProporties();
     glImage ->targetImageHeight = heightImageProp->getImageProporties();
 
-
+    // ------------------------------------------------------
+    //                      GUI setup
+    // ------------------------------------------------------
     ui->setupUi(this);
     ui->horizontalLayout->addWidget(glWidget);
     ui->horizontalLayout->addWidget(glImage);
@@ -108,55 +111,44 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutHeightImage->addWidget(heightImageProp);
     ui->verticalLayoutOcclusionImage->addWidget(occlusionImageProp);
 
-    connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
-
-    
+    connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));    
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
-
+    // imageChange signals
     connect(diffuseImageProp,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
     connect(normalImageProp,SIGNAL(imageChanged()),this,SLOT(updateNormalImage()));
     connect(specularImageProp,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
     connect(heightImageProp,SIGNAL(imageChanged()),this,SLOT(updateHeightImage()));
     connect(occlusionImageProp,SIGNAL(imageChanged()),this,SLOT(updateOcclusionImage()));
-
-
+    // conversion signals
     connect(heightImageProp,SIGNAL(conversionHeightToNormalApplied()) ,this,SLOT(convertFromHtoN()));
     connect(normalImageProp,SIGNAL(conversionNormalToHeightApplied()) ,this,SLOT(convertFromNtoH()));
     connect(diffuseImageProp,SIGNAL(conversionBaseConversionApplied()),this,SLOT(convertFromBase()));
     connect(occlusionImageProp,SIGNAL(recalculateOcclusion()),this,SLOT(recalculateOcclusion()));
-
-
-
-
-
+    // Global setting signals
     connect(ui->checkBoxMakeSeamless,SIGNAL(toggled(bool)),this,SLOT(enableMakeSeamless(bool)));
     connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(valueChanged(int)),this,SLOT(setMakeSeamlessRadius(int)));
     connect(ui->horizontalSliderDepthScale,SIGNAL(valueChanged(int)),glWidget,SLOT(setDepthScale(int)));
     connect(ui->horizontalSliderUVScale,SIGNAL(valueChanged(int)),glWidget,SLOT(setUVScale(int)));
-
     connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
     connect(ui->horizontalSliderDepthScale,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
     connect(ui->horizontalSliderUVScale,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
     connect(ui->horizontalSliderUVXOffset,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
     connect(ui->horizontalSliderUVYOffset,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
 
-
+    // Save signals
     connect(ui->pushButtonSaveAll,SIGNAL(released()),this,SLOT(saveImages()));
     connect(ui->pushButtonSaveChecked,SIGNAL(released()),this,SLOT(saveCheckedImages()));
     connect(ui->pushButtonSaveAs,SIGNAL(released()),this,SLOT(saveCompressedForm()));
-
+    // Other signals
     connect(ui->pushButtonReplotAll,SIGNAL(released()),this,SLOT(replotAllImages()));
     connect(ui->pushButtonToggleDiffuse,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
     connect(ui->pushButtonToggleSpecular,SIGNAL(toggled(bool)),glWidget,SLOT(toggleSpecularView(bool)));
     connect(ui->pushButtonToggleOcclusion,SIGNAL(toggled(bool)),glWidget,SLOT(toggleOcclusionView(bool)));
-
     connect(ui->pushButtonSaveCurrentSettings,SIGNAL(released()),this,SLOT(saveSettings()));
     connect(ui->horizontalSliderSpecularI,SIGNAL(valueChanged(int)),this,SLOT(setSpecularIntensity(int)));
     connect(ui->horizontalSliderDiffuseI,SIGNAL(valueChanged(int)),this,SLOT(setDiffuseIntensity(int)));
 
     ui->progressBar->setValue(0);
-
-
 
     connect(ui->actionReplot,SIGNAL(triggered()),this,SLOT(replotAllImages()));
     connect(ui->actionShowDiffuseImage,SIGNAL(triggered()),this,SLOT(selectDiffuseTab()));
@@ -169,12 +161,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     loadSettings();
-
+    // Loading default (initial) textures
     diffuseImageProp ->setImage(QImage(QString(":/content/logo_D.png")));
     normalImageProp  ->setImage(QImage(QString(":/content/logo_N.png")));
     specularImageProp->setImage(QImage(QString(":/content/logo_D.png")));
     heightImageProp  ->setImage(QImage(QString(":/content/logo_H.png")));
     occlusionImageProp->setImage(QImage(QString(":/content/logo_O.png")));
+    // Setting the active image
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
 #ifdef Q_OS_MAC
@@ -347,6 +340,7 @@ bool MainWindow::saveAllImages(const QString &dir){
         int w = diffuseImage.width();
         int h = diffuseImage.height();
 
+        // putting height or specular color to alpha channel according to compression type
         switch(ui->comboBoxSaveAsOptions->currentIndex()){
             case( H_TO_D_AND_S_TO_N ):
 
@@ -530,9 +524,9 @@ void MainWindow::convertFromBase(){
     specularImageProp ->setImageName(diffuseImageProp->getImageName());
     occlusionImageProp->setImageName(diffuseImageProp->getImageName());
 
-    glImage ->targetImage          = normalImageProp->getImageProporties();
-    glImage ->targetImage2         = heightImageProp->getImageProporties();
-    glImage ->targetImageSpecular  = specularImageProp->getImageProporties();
+    glImage ->targetImage          = normalImageProp   ->getImageProporties();
+    glImage ->targetImage2         = heightImageProp   ->getImageProporties();
+    glImage ->targetImageSpecular  = specularImageProp ->getImageProporties();
     glImage ->targetImageOcclusion = occlusionImageProp->getImageProporties();
 
 
@@ -552,6 +546,102 @@ QSize MainWindow::sizeHint() const
     return QSize(settings.value("d_win_w","800").toInt(),settings.value("d_win_h","600").toInt());
 }
 
+void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
+
+
+    QSettings settings("config.ini", QSettings::IniFormat);
+
+    settings.setValue("t_"+abbr+"_bGrayScale"                       ,image->getImageProporties()->bGrayScale);
+    settings.setValue("t_"+abbr+"_bInvertR"                         ,image->getImageProporties()->bInvertR);
+    settings.setValue("t_"+abbr+"_bInvertG"                         ,image->getImageProporties()->bInvertG);
+    settings.setValue("t_"+abbr+"_bInvertB"                         ,image->getImageProporties()->bInvertB);
+    settings.setValue("t_"+abbr+"_bRemoveShading"                   ,image->getImageProporties()->bRemoveShading);
+    settings.setValue("t_"+abbr+"_noRemoveShadingGaussIter"         ,image->getImageProporties()->noRemoveShadingGaussIter);
+    settings.setValue("t_"+abbr+"_noBlurPasses"                     ,image->getImageProporties()->noBlurPasses);
+    settings.setValue("t_"+abbr+"_bSpeclarControl"                  ,image->getImageProporties()->bSpeclarControl);
+    settings.setValue("t_"+abbr+"_specularRadius"                   ,image->getImageProporties()->specularRadius);
+    settings.setValue("t_"+abbr+"_specularW1"                       ,image->getImageProporties()->specularW1);
+    settings.setValue("t_"+abbr+"_specularW2"                       ,image->getImageProporties()->specularW2);
+    settings.setValue("t_"+abbr+"_specularContrast"                 ,image->getImageProporties()->specularContrast);
+    settings.setValue("t_"+abbr+"_specularAmplifier"                ,image->getImageProporties()->specularAmplifier);
+    settings.setValue("t_"+abbr+"_smallDetails"                     ,image->getImageProporties()->smallDetails);
+    settings.setValue("t_"+abbr+"_mediumDetails"                    ,image->getImageProporties()->mediumDetails);
+    settings.setValue("t_"+abbr+"_detailDepth"                      ,image->getImageProporties()->detailDepth);
+    settings.setValue("t_"+abbr+"_sharpenBlurAmount"                ,image->getImageProporties()->sharpenBlurAmount);
+    settings.setValue("t_"+abbr+"_normalsStep"                      ,image->getImageProporties()->normalsStep);
+    settings.setValue("t_"+abbr+"_conversionHNDepth"                ,image->getImageProporties()->conversionHNDepth);
+    settings.setValue("t_"+abbr+"_bConversionHN"                    ,image->getImageProporties()->bConversionHN);
+    settings.setValue("t_"+abbr+"_bConversionNH"                    ,image->getImageProporties()->bConversionNH);
+    settings.setValue("t_"+abbr+"_conversionNHItersHuge"            ,image->getImageProporties()->conversionNHItersHuge);
+    settings.setValue("t_"+abbr+"_conversionNHItersVeryLarge"       ,image->getImageProporties()->conversionNHItersVeryLarge);
+    settings.setValue("t_"+abbr+"_conversionNHItersLarge"           ,image->getImageProporties()->conversionNHItersLarge);
+    settings.setValue("t_"+abbr+"_conversionNHItersMedium"          ,image->getImageProporties()->conversionNHItersMedium);
+    settings.setValue("t_"+abbr+"_conversionNHItersVerySmall"       ,image->getImageProporties()->conversionNHItersVerySmall);
+    settings.setValue("t_"+abbr+"_conversionNHItersSmall"           ,image->getImageProporties()->conversionNHItersSmall);
+    settings.setValue("t_"+abbr+"_bConversionBaseMap"               ,image->getImageProporties()->bConversionBaseMap);
+    settings.setValue("t_"+abbr+"_conversionBaseMapAmplitude"       ,image->getImageProporties()->conversionBaseMapAmplitude);
+    settings.setValue("t_"+abbr+"_conversionBaseMapFlatness"        ,image->getImageProporties()->conversionBaseMapFlatness);
+    settings.setValue("t_"+abbr+"_conversionBaseMapNoIters"         ,image->getImageProporties()->conversionBaseMapNoIters);
+    settings.setValue("t_"+abbr+"_conversionBaseMapNoIters"         ,image->getImageProporties()->conversionBaseMapNoIters);
+    settings.setValue("t_"+abbr+"_conversionBaseMapFilterRadius"    ,image->getImageProporties()->conversionBaseMapFilterRadius);
+    settings.setValue("t_"+abbr+"_conversionBaseMapMixNormals"      ,image->getImageProporties()->conversionBaseMapMixNormals);
+    settings.setValue("t_"+abbr+"_conversionBaseMapPreSmoothRadius" ,image->getImageProporties()->conversionBaseMapPreSmoothRadius);
+    settings.setValue("t_"+abbr+"_conversionBaseMapBlending"        ,image->getImageProporties()->conversionBaseMapBlending);
+    settings.setValue("t_"+abbr+"_ssaoNoIters"                      ,image->getImageProporties()->ssaoNoIters);
+    settings.setValue("t_"+abbr+"_ssaoBias"                         ,image->getImageProporties()->ssaoBias);
+    settings.setValue("t_"+abbr+"_ssaoDepth"                        ,image->getImageProporties()->ssaoDepth);
+    settings.setValue("t_"+abbr+"_ssaoIntensity"                    ,image->getImageProporties()->ssaoIntensity);
+
+}
+
+void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
+
+    QSettings settings("config.ini", QSettings::IniFormat);
+    image->getImageProporties()->bGrayScale                         = settings.value("t_"+abbr+"_bGrayScale","false").toBool();
+    image->getImageProporties()->bInvertR                           = settings.value("t_"+abbr+"_bInvertR","false").toBool();
+    image->getImageProporties()->bInvertG                           = settings.value("t_"+abbr+"_bInvertG","false").toBool();
+    image->getImageProporties()->bInvertB                           = settings.value("t_"+abbr+"_bInvertB","false").toBool();
+    image->getImageProporties()->bRemoveShading                     = settings.value("t_"+abbr+"_bRemoveShading","false").toBool();
+    image->getImageProporties()->noRemoveShadingGaussIter           = settings.value("t_"+abbr+"_noRemoveShadingGaussIter","0").toInt();
+    image->getImageProporties()->noBlurPasses                       = settings.value("t_"+abbr+"_noBlurPasses","0").toInt();
+    image->getImageProporties()->bSpeclarControl                    = settings.value("t_"+abbr+"_bSpeclarControl","false").toBool();
+    image->getImageProporties()->specularRadius                     = settings.value("t_"+abbr+"_specularRadius","1").toInt();
+    image->getImageProporties()->specularW1                         = settings.value("t_"+abbr+"_specularW1","0.0").toFloat();
+    image->getImageProporties()->specularW2                         = settings.value("t_"+abbr+"_specularW2","0.0").toFloat();
+    image->getImageProporties()->specularContrast                   = settings.value("t_"+abbr+"_specularContrast","0.0").toFloat();
+    image->getImageProporties()->specularAmplifier                  = settings.value("t_"+abbr+"_specularAmplifier","0.0").toFloat();
+    image->getImageProporties()->smallDetails                       = settings.value("t_"+abbr+"_smallDetails","0.0").toFloat();
+    image->getImageProporties()->mediumDetails                      = settings.value("t_"+abbr+"_mediumDetails","0.0").toFloat();
+    image->getImageProporties()->detailDepth                        = settings.value("t_"+abbr+"_detailDepth","0.0").toFloat();
+    image->getImageProporties()->sharpenBlurAmount                  = settings.value("t_"+abbr+"_sharpenBlurAmount","0").toInt();
+    image->getImageProporties()->normalsStep                        = settings.value("t_"+abbr+"_normalsStep","0.0").toFloat();
+    image->getImageProporties()->conversionHNDepth                  = settings.value("t_"+abbr+"_conversionHNDepth","0.0").toFloat();
+    image->getImageProporties()->bConversionHN                      = settings.value("t_"+abbr+"_bConversionHN","false").toBool();
+    image->getImageProporties()->bConversionNH                      = settings.value("t_"+abbr+"_bConversionNH","false").toBool();
+
+    image->getImageProporties()->conversionNHItersHuge              = settings.value("t_"+abbr+"_conversionNHItersHuge","10").toInt();
+    image->getImageProporties()->conversionNHItersVeryLarge         = settings.value("t_"+abbr+"_conversionNHItersVeryLarge","10").toInt();
+    image->getImageProporties()->conversionNHItersLarge             = settings.value("t_"+abbr+"_conversionNHItersLarge","10").toInt();
+    image->getImageProporties()->conversionNHItersMedium            = settings.value("t_"+abbr+"_conversionNHItersMedium","10").toInt();
+    image->getImageProporties()->conversionNHItersSmall             = settings.value("t_"+abbr+"_conversionNHItersSmall","10").toInt();
+    image->getImageProporties()->conversionNHItersVerySmall         = settings.value("t_"+abbr+"_conversionNHItersVerySmall","10").toInt();
+
+    image->getImageProporties()->bConversionBaseMap                 = settings.value("t_"+abbr+"_bConversionBaseMap","false").toBool();
+    image->getImageProporties()->conversionBaseMapAmplitude         = settings.value("t_"+abbr+"_conversionBaseMapAmplitude","-100.0").toFloat();
+    image->getImageProporties()->conversionBaseMapFlatness          = settings.value("t_"+abbr+"_conversionBaseMapFlatness","0.0").toFloat();
+    image->getImageProporties()->conversionBaseMapNoIters           = settings.value("t_"+abbr+"_conversionBaseMapNoIters","0").toInt();
+    image->getImageProporties()->conversionBaseMapFilterRadius      = settings.value("t_"+abbr+"_conversionBaseMapFilterRadius","0").toInt();
+    image->getImageProporties()->conversionBaseMapMixNormals        = settings.value("t_"+abbr+"_conversionBaseMapMixNormals","0").toFloat();
+    image->getImageProporties()->conversionBaseMapPreSmoothRadius   = settings.value("t_"+abbr+"_conversionBaseMapPreSmoothRadius","0").toFloat();
+    image->getImageProporties()->conversionBaseMapBlending          = settings.value("t_"+abbr+"_conversionBaseMapBlending","0").toFloat();
+    image->getImageProporties()->ssaoNoIters                        = settings.value("t_"+abbr+"_ssaoNoIters","2").toFloat();
+    image->getImageProporties()->ssaoBias                           = settings.value("t_"+abbr+"_ssaoBias","0.5").toFloat();
+    image->getImageProporties()->ssaoDepth                          = settings.value("t_"+abbr+"_ssaoDepth","0.5").toFloat();
+    image->getImageProporties()->ssaoIntensity                      = settings.value("t_"+abbr+"_ssaoIntensity","-0.3").toFloat();
+    image->reloadSettings();
+
+}
+
 void MainWindow::saveSettings(){
     qDebug() << "<MainWindow>:: saving settings";
     QSettings settings("config.ini", QSettings::IniFormat);
@@ -569,185 +659,11 @@ void MainWindow::saveSettings(){
     settings.setValue("o_postfix",ui->lineEditPostfixOcclusion->text());
     settings.setValue("recent_dir",recentDir.absolutePath());
 
-
-
-
-    // diffuse settings
-    settings.setValue("t_d_bGrayScale",diffuseImageProp->getImageProporties()->bGrayScale);
-    settings.setValue("t_d_bInvertR",diffuseImageProp->getImageProporties()->bInvertR);
-    settings.setValue("t_d_bInvertG",diffuseImageProp->getImageProporties()->bInvertG);
-    settings.setValue("t_d_bInvertB",diffuseImageProp->getImageProporties()->bInvertB);
-    settings.setValue("t_d_bRemoveShading",diffuseImageProp->getImageProporties()->bRemoveShading);
-    settings.setValue("t_d_noRemoveShadingGaussIter",diffuseImageProp->getImageProporties()->noRemoveShadingGaussIter);
-    settings.setValue("t_d_noBlurPasses",diffuseImageProp->getImageProporties()->noBlurPasses);
-    settings.setValue("t_d_bSpeclarControl",diffuseImageProp->getImageProporties()->bSpeclarControl);
-    settings.setValue("t_d_specularRadius",diffuseImageProp->getImageProporties()->specularRadius);
-    settings.setValue("t_d_specularW1",diffuseImageProp->getImageProporties()->specularW1);
-    settings.setValue("t_d_specularW2",diffuseImageProp->getImageProporties()->specularW2);
-    settings.setValue("t_d_specularContrast",diffuseImageProp->getImageProporties()->specularContrast);
-    settings.setValue("t_d_specularAmplifier",diffuseImageProp->getImageProporties()->specularAmplifier);
-    settings.setValue("t_d_smallDetails",diffuseImageProp->getImageProporties()->smallDetails);
-    settings.setValue("t_d_mediumDetails",diffuseImageProp->getImageProporties()->mediumDetails);
-    settings.setValue("t_d_detailDepth",diffuseImageProp->getImageProporties()->detailDepth);
-    settings.setValue("t_d_sharpenBlurAmount",diffuseImageProp->getImageProporties()->sharpenBlurAmount);
-    settings.setValue("t_d_normalsStep",diffuseImageProp->getImageProporties()->normalsStep);
-    settings.setValue("t_d_conversionHNDepth",diffuseImageProp->getImageProporties()->conversionHNDepth);
-    settings.setValue("t_d_bConversionHN",diffuseImageProp->getImageProporties()->bConversionHN);
-    settings.setValue("t_d_bConversionNH",diffuseImageProp->getImageProporties()->bConversionNH);
-
-    settings.setValue("t_d_conversionNHItersHuge",diffuseImageProp->getImageProporties()->conversionNHItersHuge);
-    settings.setValue("t_d_conversionNHItersVeryLarge",diffuseImageProp->getImageProporties()->conversionNHItersVeryLarge);
-    settings.setValue("t_d_conversionNHItersLarge",diffuseImageProp->getImageProporties()->conversionNHItersLarge);
-    settings.setValue("t_d_conversionNHItersMedium",diffuseImageProp->getImageProporties()->conversionNHItersMedium);
-    settings.setValue("t_d_conversionNHItersVerySmall",diffuseImageProp->getImageProporties()->conversionNHItersVerySmall);
-    settings.setValue("t_d_conversionNHItersSmall",diffuseImageProp->getImageProporties()->conversionNHItersSmall);
-
-    settings.setValue("t_d_bConversionBaseMap",diffuseImageProp->getImageProporties()->bConversionBaseMap);
-    settings.setValue("t_d_conversionBaseMapAmplitude",diffuseImageProp->getImageProporties()->conversionBaseMapAmplitude);
-    settings.setValue("t_d_conversionBaseMapFlatness",diffuseImageProp->getImageProporties()->conversionBaseMapFlatness);
-    settings.setValue("t_d_conversionBaseMapNoIters",diffuseImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_d_conversionBaseMapNoIters",diffuseImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_d_conversionBaseMapFilterRadius",diffuseImageProp->getImageProporties()->conversionBaseMapFilterRadius);
-    settings.setValue("t_d_conversionBaseMapMixNormals",diffuseImageProp->getImageProporties()->conversionBaseMapMixNormals);
-    settings.setValue("t_d_conversionBaseMapPreSmoothRadius",diffuseImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius);
-    settings.setValue("t_d_conversionBaseMapBlending",diffuseImageProp->getImageProporties()->conversionBaseMapBlending);
-
-
-    settings.setValue("t_n_bGrayScale",normalImageProp->getImageProporties()->bGrayScale);
-    settings.setValue("t_n_bInvertR",normalImageProp->getImageProporties()->bInvertR);
-    settings.setValue("t_n_bInvertG",normalImageProp->getImageProporties()->bInvertG);
-    settings.setValue("t_n_bInvertB",normalImageProp->getImageProporties()->bInvertB);
-    settings.setValue("t_n_bRemoveShading",normalImageProp->getImageProporties()->bRemoveShading);
-    settings.setValue("t_n_noRemoveShadingGaussIter",normalImageProp->getImageProporties()->noRemoveShadingGaussIter);
-    settings.setValue("t_n_noBlurPasses",normalImageProp->getImageProporties()->noBlurPasses);
-    settings.setValue("t_n_bSpeclarControl",normalImageProp->getImageProporties()->bSpeclarControl);
-    settings.setValue("t_n_specularRadius",normalImageProp->getImageProporties()->specularRadius);
-    settings.setValue("t_n_specularW1",normalImageProp->getImageProporties()->specularW1);
-    settings.setValue("t_n_specularW2",normalImageProp->getImageProporties()->specularW2);
-    settings.setValue("t_n_specularContrast",normalImageProp->getImageProporties()->specularContrast);
-    settings.setValue("t_n_specularAmplifier",normalImageProp->getImageProporties()->specularAmplifier);
-    settings.setValue("t_n_smallDetails",normalImageProp->getImageProporties()->smallDetails);
-    settings.setValue("t_n_mediumDetails",normalImageProp->getImageProporties()->mediumDetails);
-    settings.setValue("t_n_detailDepth",normalImageProp->getImageProporties()->detailDepth);
-    settings.setValue("t_n_sharpenBlurAmount",normalImageProp->getImageProporties()->sharpenBlurAmount);
-    settings.setValue("t_n_normalsStep",normalImageProp->getImageProporties()->normalsStep);
-    settings.setValue("t_n_conversionHNDepth",normalImageProp->getImageProporties()->conversionHNDepth);
-    settings.setValue("t_n_bConversionHN",normalImageProp->getImageProporties()->bConversionHN);
-    settings.setValue("t_n_bConversionNH",normalImageProp->getImageProporties()->bConversionNH);
-    settings.setValue("t_n_conversionNHItersHuge",normalImageProp->getImageProporties()->conversionNHItersHuge);
-    settings.setValue("t_n_conversionNHItersVeryLarge",normalImageProp->getImageProporties()->conversionNHItersVeryLarge);
-    settings.setValue("t_n_conversionNHItersLarge",normalImageProp->getImageProporties()->conversionNHItersLarge);
-    settings.setValue("t_n_conversionNHItersMedium",normalImageProp->getImageProporties()->conversionNHItersMedium);
-    settings.setValue("t_n_conversionNHItersVerySmall",normalImageProp->getImageProporties()->conversionNHItersVerySmall);
-    settings.setValue("t_n_conversionNHItersSmall",normalImageProp->getImageProporties()->conversionNHItersSmall);
-    settings.setValue("t_n_bConversionBaseMap",normalImageProp->getImageProporties()->bConversionBaseMap);
-    settings.setValue("t_n_conversionBaseMapAmplitude",normalImageProp->getImageProporties()->conversionBaseMapAmplitude);
-    settings.setValue("t_n_conversionBaseMapFlatness",normalImageProp->getImageProporties()->conversionBaseMapFlatness);
-    settings.setValue("t_n_conversionBaseMapNoIters",normalImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_n_conversionBaseMapNoIters",normalImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_n_conversionBaseMapFilterRadius",normalImageProp->getImageProporties()->conversionBaseMapFilterRadius);
-    settings.setValue("t_n_conversionBaseMapMixNormals",normalImageProp->getImageProporties()->conversionBaseMapMixNormals);
-    settings.setValue("t_n_conversionBaseMapPreSmoothRadius",normalImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius);
-
-    settings.setValue("t_s_bGrayScale",specularImageProp->getImageProporties()->bGrayScale);
-    settings.setValue("t_s_bInvertR",specularImageProp->getImageProporties()->bInvertR);
-    settings.setValue("t_s_bInvertG",specularImageProp->getImageProporties()->bInvertG);
-    settings.setValue("t_s_bInvertB",specularImageProp->getImageProporties()->bInvertB);
-    settings.setValue("t_s_bRemoveShading",specularImageProp->getImageProporties()->bRemoveShading);
-    settings.setValue("t_s_noRemoveShadingGaussIter",specularImageProp->getImageProporties()->noRemoveShadingGaussIter);
-    settings.setValue("t_s_noBlurPasses",specularImageProp->getImageProporties()->noBlurPasses);
-    settings.setValue("t_s_bSpeclarControl",specularImageProp->getImageProporties()->bSpeclarControl);
-    settings.setValue("t_s_specularRadius",specularImageProp->getImageProporties()->specularRadius);
-    settings.setValue("t_s_specularW1",specularImageProp->getImageProporties()->specularW1);
-    settings.setValue("t_s_specularW2",specularImageProp->getImageProporties()->specularW2);
-    settings.setValue("t_s_specularContrast",specularImageProp->getImageProporties()->specularContrast);
-    settings.setValue("t_s_specularAmplifier",specularImageProp->getImageProporties()->specularAmplifier);
-    settings.setValue("t_s_smallDetails",specularImageProp->getImageProporties()->smallDetails);
-    settings.setValue("t_s_mediumDetails",specularImageProp->getImageProporties()->mediumDetails);
-    settings.setValue("t_s_detailDepth",specularImageProp->getImageProporties()->detailDepth);
-    settings.setValue("t_s_sharpenBlurAmount",specularImageProp->getImageProporties()->sharpenBlurAmount);
-    settings.setValue("t_s_normalsStep",specularImageProp->getImageProporties()->normalsStep);
-    settings.setValue("t_s_conversionHNDepth",specularImageProp->getImageProporties()->conversionHNDepth);
-    settings.setValue("t_s_bConversionHN",specularImageProp->getImageProporties()->bConversionHN);
-    settings.setValue("t_s_bConversionNH",specularImageProp->getImageProporties()->bConversionNH);
-
-    settings.setValue("t_s_bConversionBaseMap",specularImageProp->getImageProporties()->bConversionBaseMap);
-    settings.setValue("t_s_conversionBaseMapAmplitude",specularImageProp->getImageProporties()->conversionBaseMapAmplitude);
-    settings.setValue("t_s_conversionBaseMapFlatness",specularImageProp->getImageProporties()->conversionBaseMapFlatness);
-    settings.setValue("t_s_conversionBaseMapNoIters",specularImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_s_conversionBaseMapNoIters",specularImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_s_conversionBaseMapFilterRadius",specularImageProp->getImageProporties()->conversionBaseMapFilterRadius);
-    settings.setValue("t_s_conversionBaseMapMixNormals",specularImageProp->getImageProporties()->conversionBaseMapMixNormals);
-    settings.setValue("t_s_conversionBaseMapPreSmoothRadius",specularImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius);
-
-    settings.setValue("t_h_bGrayScale",heightImageProp->getImageProporties()->bGrayScale);
-    settings.setValue("t_h_bInvertR",heightImageProp->getImageProporties()->bInvertR);
-    settings.setValue("t_h_bInvertG",heightImageProp->getImageProporties()->bInvertG);
-    settings.setValue("t_h_bInvertB",heightImageProp->getImageProporties()->bInvertB);
-    settings.setValue("t_h_bRemoveShading",heightImageProp->getImageProporties()->bRemoveShading);
-    settings.setValue("t_h_noRemoveShadingGaussIter",heightImageProp->getImageProporties()->noRemoveShadingGaussIter);
-    settings.setValue("t_h_noBlurPasses",heightImageProp->getImageProporties()->noBlurPasses);
-    settings.setValue("t_h_bSpeclarControl",heightImageProp->getImageProporties()->bSpeclarControl);
-    settings.setValue("t_h_specularRadius",heightImageProp->getImageProporties()->specularRadius);
-    settings.setValue("t_h_specularW1",heightImageProp->getImageProporties()->specularW1);
-    settings.setValue("t_h_specularW2",heightImageProp->getImageProporties()->specularW2);
-    settings.setValue("t_h_specularContrast",heightImageProp->getImageProporties()->specularContrast);
-    settings.setValue("t_h_specularAmplifier",heightImageProp->getImageProporties()->specularAmplifier);
-    settings.setValue("t_h_smallDetails",heightImageProp->getImageProporties()->smallDetails);
-    settings.setValue("t_h_mediumDetails",heightImageProp->getImageProporties()->mediumDetails);
-    settings.setValue("t_h_detailDepth",heightImageProp->getImageProporties()->detailDepth);
-    settings.setValue("t_h_sharpenBlurAmount",heightImageProp->getImageProporties()->sharpenBlurAmount);
-    settings.setValue("t_h_normalsStep",heightImageProp->getImageProporties()->normalsStep);
-    settings.setValue("t_h_conversionHNDepth",heightImageProp->getImageProporties()->conversionHNDepth);
-    settings.setValue("t_h_bConversionHN",heightImageProp->getImageProporties()->bConversionHN);
-    settings.setValue("t_h_bConversionNH",heightImageProp->getImageProporties()->bConversionNH);
-
-    settings.setValue("t_h_bConversionBaseMap",heightImageProp->getImageProporties()->bConversionBaseMap);
-    settings.setValue("t_h_conversionBaseMapAmplitude",heightImageProp->getImageProporties()->conversionBaseMapAmplitude);
-    settings.setValue("t_h_conversionBaseMapFlatness",heightImageProp->getImageProporties()->conversionBaseMapFlatness);
-    settings.setValue("t_h_conversionBaseMapNoIters",heightImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_h_conversionBaseMapNoIters",heightImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_h_conversionBaseMapFilterRadius",heightImageProp->getImageProporties()->conversionBaseMapFilterRadius);
-    settings.setValue("t_h_conversionBaseMapMixNormals",heightImageProp->getImageProporties()->conversionBaseMapMixNormals);
-    settings.setValue("t_h_conversionBaseMapPreSmoothRadius",heightImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius);
-
-    settings.setValue("t_o_bGrayScale",occlusionImageProp->getImageProporties()->bGrayScale);
-    settings.setValue("t_o_bInvertR",occlusionImageProp->getImageProporties()->bInvertR);
-    settings.setValue("t_o_bInvertG",occlusionImageProp->getImageProporties()->bInvertG);
-    settings.setValue("t_o_bInvertB",occlusionImageProp->getImageProporties()->bInvertB);
-    settings.setValue("t_o_bRemoveShading",occlusionImageProp->getImageProporties()->bRemoveShading);
-    settings.setValue("t_o_noRemoveShadingGaussIter",occlusionImageProp->getImageProporties()->noRemoveShadingGaussIter);
-    settings.setValue("t_o_noBlurPasses",occlusionImageProp->getImageProporties()->noBlurPasses);
-    settings.setValue("t_o_bSpeclarControl",occlusionImageProp->getImageProporties()->bSpeclarControl);
-    settings.setValue("t_o_specularRadius",occlusionImageProp->getImageProporties()->specularRadius);
-    settings.setValue("t_o_specularW1",occlusionImageProp->getImageProporties()->specularW1);
-    settings.setValue("t_o_specularW2",occlusionImageProp->getImageProporties()->specularW2);
-    settings.setValue("t_o_specularContrast",occlusionImageProp->getImageProporties()->specularContrast);
-    settings.setValue("t_o_specularAmplifier",occlusionImageProp->getImageProporties()->specularAmplifier);
-    settings.setValue("t_o_smallDetails",occlusionImageProp->getImageProporties()->smallDetails);
-    settings.setValue("t_o_mediumDetails",occlusionImageProp->getImageProporties()->mediumDetails);
-    settings.setValue("t_o_detailDepth",occlusionImageProp->getImageProporties()->detailDepth);
-    settings.setValue("t_o_sharpenBlurAmount",occlusionImageProp->getImageProporties()->sharpenBlurAmount);
-    settings.setValue("t_o_normalsStep",occlusionImageProp->getImageProporties()->normalsStep);
-    settings.setValue("t_o_conversionHNDepth",occlusionImageProp->getImageProporties()->conversionHNDepth);
-    settings.setValue("t_o_bConversionHN",occlusionImageProp->getImageProporties()->bConversionHN);
-    settings.setValue("t_o_bConversionNH",occlusionImageProp->getImageProporties()->bConversionNH);
-
-    settings.setValue("t_o_bConversionBaseMap",occlusionImageProp->getImageProporties()->bConversionBaseMap);
-    settings.setValue("t_o_conversionBaseMapAmplitude",occlusionImageProp->getImageProporties()->conversionBaseMapAmplitude);
-    settings.setValue("t_o_conversionBaseMapFlatness",occlusionImageProp->getImageProporties()->conversionBaseMapFlatness);
-    settings.setValue("t_o_conversionBaseMapNoIters",occlusionImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_o_conversionBaseMapNoIters",occlusionImageProp->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_o_conversionBaseMapFilterRadius",occlusionImageProp->getImageProporties()->conversionBaseMapFilterRadius);
-    settings.setValue("t_o_conversionBaseMapMixNormals",occlusionImageProp->getImageProporties()->conversionBaseMapMixNormals);
-    settings.setValue("t_o_conversionBaseMapPreSmoothRadius",occlusionImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius);
-
-
-    settings.setValue("t_o_ssaoNoIters",occlusionImageProp->getImageProporties()->ssaoNoIters);
-    settings.setValue("t_o_ssaoBias",occlusionImageProp->getImageProporties()->ssaoBias);
-    settings.setValue("t_o_ssaoDepth",occlusionImageProp->getImageProporties()->ssaoDepth);
-    settings.setValue("t_o_ssaoIntensity",occlusionImageProp->getImageProporties()->ssaoIntensity);
-
+    saveImageSettings("d",diffuseImageProp);
+    saveImageSettings("n",normalImageProp);
+    saveImageSettings("s",specularImageProp);
+    saveImageSettings("h",heightImageProp);
+    saveImageSettings("o",occlusionImageProp);
 
 }
 
@@ -776,174 +692,10 @@ void MainWindow::loadSettings(){
 
     recentDir = settings.value("recent_dir","").toString();
 
-    // diffuse settings
-    diffuseImageProp->getImageProporties()->bGrayScale = settings.value("t_d_bGrayScale","false").toBool();
-    diffuseImageProp->getImageProporties()->bInvertR = settings.value("t_d_bInvertR","false").toBool();
-    diffuseImageProp->getImageProporties()->bInvertG = settings.value("t_d_bInvertG","false").toBool();
-    diffuseImageProp->getImageProporties()->bInvertB = settings.value("t_d_bInvertB","false").toBool();
-    diffuseImageProp->getImageProporties()->bRemoveShading = settings.value("t_d_bRemoveShading","false").toBool();
-    diffuseImageProp->getImageProporties()->noRemoveShadingGaussIter = settings.value("t_d_noRemoveShadingGaussIter","0").toInt();
-    diffuseImageProp->getImageProporties()->noBlurPasses    = settings.value("t_d_noBlurPasses","0").toInt();
-    diffuseImageProp->getImageProporties()->bSpeclarControl = settings.value("t_d_bSpeclarControl","false").toBool();
-    diffuseImageProp->getImageProporties()->specularRadius    = settings.value("t_d_specularRadius","1").toInt();
-    diffuseImageProp->getImageProporties()->specularW1    = settings.value("t_d_specularW1","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->specularW2    = settings.value("t_d_specularW2","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->specularContrast     = settings.value("t_d_specularContrast","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->specularAmplifier    = settings.value("t_d_specularAmplifier","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->smallDetails     = settings.value("t_d_smallDetails","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->mediumDetails    = settings.value("t_d_mediumDetails","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->detailDepth      = settings.value("t_d_detailDepth","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->sharpenBlurAmount   = settings.value("t_d_sharpenBlurAmount","0").toInt();
-    diffuseImageProp->getImageProporties()->normalsStep         = settings.value("t_d_normalsStep","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->conversionHNDepth         = settings.value("t_d_conversionHNDepth","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->bConversionHN         = settings.value("t_d_bConversionHN","false").toBool();
-    diffuseImageProp->getImageProporties()->bConversionNH         = settings.value("t_d_bConversionNH","false").toBool();
+    loadImageSettings("d",diffuseImageProp);
+    loadImageSettings("n",normalImageProp);
+    loadImageSettings("s",specularImageProp);
+    loadImageSettings("h",heightImageProp);
+    loadImageSettings("o",occlusionImageProp);
 
-    diffuseImageProp->getImageProporties()->bConversionBaseMap  = settings.value("t_d_bConversionBaseMap","false").toBool();
-    diffuseImageProp->getImageProporties()->conversionBaseMapAmplitude      = settings.value("t_d_conversionBaseMapAmplitude","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->conversionBaseMapFlatness       = settings.value("t_d_conversionBaseMapFlatness","0.0").toFloat();
-    diffuseImageProp->getImageProporties()->conversionBaseMapNoIters        = settings.value("t_d_conversionBaseMapNoIters","0").toInt();
-    diffuseImageProp->getImageProporties()->conversionBaseMapFilterRadius   = settings.value("t_d_conversionBaseMapFilterRadius","0").toInt();
-    diffuseImageProp->getImageProporties()->conversionBaseMapMixNormals          = settings.value("t_d_conversionBaseMapMixNormals","0").toFloat();
-    diffuseImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius     = settings.value("t_d_conversionBaseMapPreSmoothRadius","0").toFloat();
-    diffuseImageProp->getImageProporties()->conversionBaseMapBlending = settings.value("t_d_conversionBaseMapBlending","0").toFloat();
-
-    diffuseImageProp->reloadSettings();
-
-    normalImageProp->getImageProporties()->bGrayScale = settings.value("t_n_bGrayScale","false").toBool();
-    normalImageProp->getImageProporties()->bInvertR = settings.value("t_n_bInvertR","false").toBool();
-    normalImageProp->getImageProporties()->bInvertG = settings.value("t_n_bInvertG","false").toBool();
-    normalImageProp->getImageProporties()->bInvertB = settings.value("t_n_bInvertB","false").toBool();
-    normalImageProp->getImageProporties()->bRemoveShading = settings.value("t_n_bRemoveShading","false").toBool();
-    normalImageProp->getImageProporties()->noRemoveShadingGaussIter = settings.value("t_n_noRemoveShadingGaussIter","0").toInt();
-    normalImageProp->getImageProporties()->noBlurPasses    = settings.value("t_n_noBlurPasses","0").toInt();
-    normalImageProp->getImageProporties()->bSpeclarControl = settings.value("t_n_bSpeclarControl","false").toBool();
-    normalImageProp->getImageProporties()->specularRadius    = settings.value("t_n_specularRadius","1").toInt();
-    normalImageProp->getImageProporties()->specularW1    = settings.value("t_n_specularW1","0.0").toFloat();
-    normalImageProp->getImageProporties()->specularW2    = settings.value("t_n_specularW2","0.0").toFloat();
-    normalImageProp->getImageProporties()->specularContrast     = settings.value("t_n_specularContrast","0.0").toFloat();
-    normalImageProp->getImageProporties()->specularAmplifier    = settings.value("t_n_specularAmplifier","0.0").toFloat();
-    normalImageProp->getImageProporties()->smallDetails     = settings.value("t_n_smallDetails","0.0").toFloat();
-    normalImageProp->getImageProporties()->mediumDetails    = settings.value("t_n_mediumDetails","0.0").toFloat();
-    normalImageProp->getImageProporties()->detailDepth      = settings.value("t_n_detailDepth","0.0").toFloat();
-    normalImageProp->getImageProporties()->sharpenBlurAmount   = settings.value("t_n_sharpenBlurAmount","0").toInt();
-    normalImageProp->getImageProporties()->normalsStep         = settings.value("t_n_normalsStep","0.0").toFloat();
-    normalImageProp->getImageProporties()->conversionHNDepth         = settings.value("t_n_conversionHNDepth","0.0").toFloat();
-    normalImageProp->getImageProporties()->bConversionHN         = settings.value("t_n_bConversionHN","false").toBool();
-    normalImageProp->getImageProporties()->bConversionNH         = settings.value("t_n_bConversionNH","false").toBool();
-
-    normalImageProp->getImageProporties()->conversionNHItersHuge   = settings.value("t_n_conversionNHItersHuge","0").toInt();
-    normalImageProp->getImageProporties()->conversionNHItersVeryLarge   = settings.value("t_n_conversionNHItersVeryLarge","0").toInt();
-    normalImageProp->getImageProporties()->conversionNHItersLarge   = settings.value("t_n_conversionNHItersLarge","0").toInt();
-    normalImageProp->getImageProporties()->conversionNHItersMedium   = settings.value("t_n_conversionNHItersMedium","0").toInt();
-    normalImageProp->getImageProporties()->conversionNHItersSmall   = settings.value("t_n_conversionNHItersSmall","0").toInt();
-    normalImageProp->getImageProporties()->conversionNHItersVerySmall   = settings.value("t_n_conversionNHItersVerySmall","0").toInt();
-
-    normalImageProp->getImageProporties()->bConversionBaseMap  = settings.value("t_n_bConversionBaseMap","false").toBool();
-    normalImageProp->getImageProporties()->conversionBaseMapAmplitude      = settings.value("t_n_conversionBaseMapAmplitude","0.0").toFloat();
-    normalImageProp->getImageProporties()->conversionBaseMapFlatness       = settings.value("t_n_conversionBaseMapFlatness","0.0").toFloat();
-    normalImageProp->getImageProporties()->conversionBaseMapNoIters        = settings.value("t_n_conversionBaseMapNoIters","0").toInt();
-    normalImageProp->getImageProporties()->conversionBaseMapFilterRadius   = settings.value("t_n_conversionBaseMapFilterRadius","0").toInt();
-    normalImageProp->getImageProporties()->conversionBaseMapMixNormals          = settings.value("t_n_conversionBaseMapMixNormals","0").toFloat();
-    normalImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius     = settings.value("t_n_conversionBaseMapPreSmoothRadius","0").toFloat();
-    normalImageProp->reloadSettings();
-
-    specularImageProp->getImageProporties()->bGrayScale = settings.value("t_s_bGrayScale","false").toBool();
-    specularImageProp->getImageProporties()->bInvertR = settings.value("t_s_bInvertR","false").toBool();
-    specularImageProp->getImageProporties()->bInvertG = settings.value("t_s_bInvertG","false").toBool();
-    specularImageProp->getImageProporties()->bInvertB = settings.value("t_s_bInvertB","false").toBool();
-    specularImageProp->getImageProporties()->bRemoveShading = settings.value("t_s_bRemoveShading","false").toBool();
-    specularImageProp->getImageProporties()->noRemoveShadingGaussIter = settings.value("t_s_noRemoveShadingGaussIter","0").toInt();
-    specularImageProp->getImageProporties()->noBlurPasses    = settings.value("t_s_noBlurPasses","0").toInt();
-    specularImageProp->getImageProporties()->bSpeclarControl = settings.value("t_s_bSpeclarControl","false").toBool();
-    specularImageProp->getImageProporties()->specularRadius    = settings.value("t_s_specularRadius","1").toInt();
-    specularImageProp->getImageProporties()->specularW1    = settings.value("t_s_specularW1","0.0").toFloat();
-    specularImageProp->getImageProporties()->specularW2    = settings.value("t_s_specularW2","0.0").toFloat();
-    specularImageProp->getImageProporties()->specularContrast     = settings.value("t_s_specularContrast","0.0").toFloat();
-    specularImageProp->getImageProporties()->specularAmplifier    = settings.value("t_s_specularAmplifier","0.0").toFloat();
-    specularImageProp->getImageProporties()->smallDetails     = settings.value("t_s_smallDetails","0.0").toFloat();
-    specularImageProp->getImageProporties()->mediumDetails    = settings.value("t_s_mediumDetails","0.0").toFloat();
-    specularImageProp->getImageProporties()->detailDepth      = settings.value("t_s_detailDepth","0.0").toFloat();
-    specularImageProp->getImageProporties()->sharpenBlurAmount   = settings.value("t_s_sharpenBlurAmount","0").toInt();
-    specularImageProp->getImageProporties()->normalsStep         = settings.value("t_s_normalsStep","0.0").toFloat();
-    specularImageProp->getImageProporties()->conversionHNDepth         = settings.value("t_s_conversionHNDepth","0.0").toFloat();
-    specularImageProp->getImageProporties()->bConversionHN         = settings.value("t_s_bConversionHN","false").toBool();
-    specularImageProp->getImageProporties()->bConversionNH         = settings.value("t_s_bConversionNH","false").toBool();
-
-    specularImageProp->getImageProporties()->bConversionBaseMap  = settings.value("t_s_bConversionBaseMap","false").toBool();
-    specularImageProp->getImageProporties()->conversionBaseMapAmplitude      = settings.value("t_s_conversionBaseMapAmplitude","0.0").toFloat();
-    specularImageProp->getImageProporties()->conversionBaseMapFlatness       = settings.value("t_s_conversionBaseMapFlatness","0.0").toFloat();
-    specularImageProp->getImageProporties()->conversionBaseMapNoIters        = settings.value("t_s_conversionBaseMapNoIters","0").toInt();
-    specularImageProp->getImageProporties()->conversionBaseMapFilterRadius   = settings.value("t_s_conversionBaseMapFilterRadius","0").toInt();
-    specularImageProp->getImageProporties()->conversionBaseMapMixNormals          = settings.value("t_s_conversionBaseMapMixNormals","0").toFloat();
-    specularImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius     = settings.value("t_s_conversionBaseMapPreSmoothRadius","0").toFloat();
-    specularImageProp->reloadSettings();
-
-    heightImageProp->getImageProporties()->bGrayScale = settings.value("t_h_bGrayScale","false").toBool();
-    heightImageProp->getImageProporties()->bInvertR = settings.value("t_h_bInvertR","false").toBool();
-    heightImageProp->getImageProporties()->bInvertG = settings.value("t_h_bInvertG","false").toBool();
-    heightImageProp->getImageProporties()->bInvertB = settings.value("t_h_bInvertB","false").toBool();
-    heightImageProp->getImageProporties()->bRemoveShading = settings.value("t_h_bRemoveShading","false").toBool();
-    heightImageProp->getImageProporties()->noRemoveShadingGaussIter = settings.value("t_h_noRemoveShadingGaussIter","0").toInt();
-    heightImageProp->getImageProporties()->noBlurPasses    = settings.value("t_h_noBlurPasses","0").toInt();
-    heightImageProp->getImageProporties()->bSpeclarControl = settings.value("t_h_bSpeclarControl","false").toBool();
-    heightImageProp->getImageProporties()->specularRadius    = settings.value("t_h_specularRadius","1").toInt();
-    heightImageProp->getImageProporties()->specularW1    = settings.value("t_h_specularW1","0.0").toFloat();
-    heightImageProp->getImageProporties()->specularW2    = settings.value("t_h_specularW2","0.0").toFloat();
-    heightImageProp->getImageProporties()->specularContrast     = settings.value("t_h_specularContrast","0.0").toFloat();
-    heightImageProp->getImageProporties()->specularAmplifier    = settings.value("t_h_specularAmplifier","0.0").toFloat();
-    heightImageProp->getImageProporties()->smallDetails     = settings.value("t_h_smallDetails","0.0").toFloat();
-    heightImageProp->getImageProporties()->mediumDetails    = settings.value("t_h_mediumDetails","0.0").toFloat();
-    heightImageProp->getImageProporties()->detailDepth      = settings.value("t_h_detailDepth","0.0").toFloat();
-    heightImageProp->getImageProporties()->sharpenBlurAmount   = settings.value("t_h_sharpenBlurAmount","0").toInt();
-    heightImageProp->getImageProporties()->normalsStep         = settings.value("t_h_normalsStep","0.0").toFloat();
-    heightImageProp->getImageProporties()->conversionHNDepth         = settings.value("t_h_conversionHNDepth","0.0").toFloat();
-    heightImageProp->getImageProporties()->bConversionHN         = settings.value("t_h_bConversionHN","false").toBool();
-    heightImageProp->getImageProporties()->bConversionNH         = settings.value("t_h_bConversionNH","false").toBool();
-
-    heightImageProp->getImageProporties()->bConversionBaseMap  = settings.value("t_h_bConversionBaseMap","false").toBool();
-    heightImageProp->getImageProporties()->conversionBaseMapAmplitude      = settings.value("t_h_conversionBaseMapAmplitude","0.0").toFloat();
-    heightImageProp->getImageProporties()->conversionBaseMapFlatness       = settings.value("t_h_conversionBaseMapFlatness","0.0").toFloat();
-    heightImageProp->getImageProporties()->conversionBaseMapNoIters        = settings.value("t_h_conversionBaseMapNoIters","0").toInt();
-    heightImageProp->getImageProporties()->conversionBaseMapFilterRadius   = settings.value("t_h_conversionBaseMapFilterRadius","0").toInt();
-    heightImageProp->getImageProporties()->conversionBaseMapMixNormals          = settings.value("t_h_conversionBaseMapMixNormals","0").toFloat();
-    heightImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius     = settings.value("t_h_conversionBaseMapPreSmoothRadius","0").toFloat();
-    heightImageProp->reloadSettings();
-
-    occlusionImageProp->getImageProporties()->bGrayScale = settings.value("t_o_bGrayScale","false").toBool();
-      occlusionImageProp->getImageProporties()->bInvertR = settings.value("t_o_bInvertR","false").toBool();
-      occlusionImageProp->getImageProporties()->bInvertG = settings.value("t_o_bInvertG","false").toBool();
-      occlusionImageProp->getImageProporties()->bInvertB = settings.value("t_o_bInvertB","false").toBool();
-      occlusionImageProp->getImageProporties()->bRemoveShading = settings.value("t_o_bRemoveShading","false").toBool();
-      occlusionImageProp->getImageProporties()->noRemoveShadingGaussIter = settings.value("t_o_noRemoveShadingGaussIter","0").toInt();
-      occlusionImageProp->getImageProporties()->noBlurPasses    = settings.value("t_o_noBlurPasses","0").toInt();
-      occlusionImageProp->getImageProporties()->bSpeclarControl = settings.value("t_o_bSpeclarControl","false").toBool();
-      occlusionImageProp->getImageProporties()->specularRadius    = settings.value("t_o_specularRadius","1").toInt();
-      occlusionImageProp->getImageProporties()->specularW1    = settings.value("t_o_specularW1","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->specularW2    = settings.value("t_o_specularW2","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->specularContrast     = settings.value("t_o_specularContrast","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->specularAmplifier    = settings.value("t_o_specularAmplifier","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->smallDetails     = settings.value("t_o_smallDetails","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->mediumDetails    = settings.value("t_o_mediumDetails","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->detailDepth      = settings.value("t_o_detailDepth","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->sharpenBlurAmount   = settings.value("t_o_sharpenBlurAmount","0").toInt();
-      occlusionImageProp->getImageProporties()->normalsStep         = settings.value("t_o_normalsStep","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->conversionHNDepth         = settings.value("t_o_conversionHNDepth","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->bConversionHN         = settings.value("t_o_bConversionHN","false").toBool();
-      occlusionImageProp->getImageProporties()->bConversionNH         = settings.value("t_o_bConversionNH","false").toBool();
-
-      occlusionImageProp->getImageProporties()->bConversionBaseMap  = settings.value("t_o_bConversionBaseMap","false").toBool();
-      occlusionImageProp->getImageProporties()->conversionBaseMapAmplitude      = settings.value("t_o_conversionBaseMapAmplitude","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->conversionBaseMapFlatness       = settings.value("t_o_conversionBaseMapFlatness","0.0").toFloat();
-      occlusionImageProp->getImageProporties()->conversionBaseMapNoIters        = settings.value("t_o_conversionBaseMapNoIters","0").toInt();
-      occlusionImageProp->getImageProporties()->conversionBaseMapFilterRadius   = settings.value("t_o_conversionBaseMapFilterRadius","0").toInt();
-      occlusionImageProp->getImageProporties()->conversionBaseMapMixNormals          = settings.value("t_o_conversionBaseMapMixNormals","0").toFloat();
-      occlusionImageProp->getImageProporties()->conversionBaseMapPreSmoothRadius     = settings.value("t_o_conversionBaseMapPreSmoothRadius","0").toFloat();
-
-      occlusionImageProp->getImageProporties()->ssaoNoIters = settings.value("t_o_ssaoNoIters","1").toFloat();
-      occlusionImageProp->getImageProporties()->ssaoBias = settings.value("t_o_ssaoBias","1").toFloat();
-      occlusionImageProp->getImageProporties()->ssaoDepth = settings.value("t_o_ssaoDepth","1").toFloat();
-      occlusionImageProp->getImageProporties()->ssaoIntensity = settings.value("t_o_ssaoIntensity","1").toFloat();
-
-      occlusionImageProp->reloadSettings();
 }

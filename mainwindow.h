@@ -30,14 +30,17 @@ protected:
      void showEvent(QShowEvent* event);
 
 public slots:
+
     void initializeImages();
 
     void saveImages();
     void saveCheckedImages();
     void saveCompressedForm();
     void saveSettings();
+
     void replotAllImages();
 
+    // repaint views after selecting tab
     void selectDiffuseTab();
     void selectNormalTab();
     void selectSpecularTab();
@@ -45,19 +48,23 @@ public slots:
     void selectOcclusionTab();
     void selectGeneralSettingsTab();
 
+    // repaint views after changes
     void updateDiffuseImage();
     void updateNormalImage();
     void updateSpecularImage();
     void updateHeightImage();
     void updateOcclusionImage();
-
+    // repaint selected tab
     void updateImage(int tab);
+
+    // Setting the global parameters
     void enableMakeSeamless(bool);
     void setMakeSeamlessRadius(int);
     void setSpecularIntensity(int);
     void setDiffuseIntensity(int);
     void updateSpinBoxes(int);
 
+    // Conversion functions
     void convertFromHtoN();
     void convertFromNtoH();
     void convertFromBase();
@@ -65,26 +72,30 @@ public slots:
 
 
 private:
+    // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
+    void saveImageSettings(QString abbr,FormImageProp* image);
+    // the same but loading configs
+    void loadImageSettings(QString abbr,FormImageProp* image);
+    // loading the application setting from config.ini file
     void loadSettings();
+    // saves all textures to given directory
     bool saveAllImages(const QString &dir);
 
+    // Pointers
     Ui::MainWindow *ui;
-    GLWidget *glWidget;
-    GLImage * glImage;
-    bool bSaveCheckedImages;
-    bool bSaveCompressedFormImages;
-
-    QDir recentDir;
-
+    GLWidget *glWidget; // 3D widget
+    GLImage * glImage;  // 2D widget (all processing is done here)
+    // Pointers to textures:
     FormImageProp* diffuseImageProp;
     FormImageProp* normalImageProp;
     FormImageProp* specularImageProp;
     FormImageProp* heightImageProp;
     FormImageProp* occlusionImageProp;
 
-
-
-
+    // global settings
+    bool bSaveCheckedImages;
+    bool bSaveCompressedFormImages;
+    QDir recentDir;
 };
 
 #endif // MAINWINDOW_H
