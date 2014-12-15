@@ -62,6 +62,8 @@ public slots:
     void convertFromBase();
     void recalculateOcclusion();
 
+    void about();
+    void aboutQt();
 
 private:
     void loadSettings();
@@ -80,6 +82,10 @@ private:
     FormImageProp* specularImageProp;
     FormImageProp* heightImageProp;
     FormImageProp* occlusionImageProp;
+
+    QAction *aboutQtAction;
+    QAction *aboutAction;
+
 };
 
 #endif // MAINWINDOW_H

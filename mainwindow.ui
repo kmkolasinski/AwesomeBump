@@ -79,7 +79,7 @@
              <x>0</x>
              <y>0</y>
              <width>331</width>
-             <height>641</height>
+             <height>643</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -132,7 +132,7 @@
              <x>0</x>
              <y>0</y>
              <width>331</width>
-             <height>641</height>
+             <height>643</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -185,7 +185,7 @@
              <x>0</x>
              <y>0</y>
              <width>331</width>
-             <height>641</height>
+             <height>643</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -238,7 +238,7 @@
              <x>0</x>
              <y>0</y>
              <width>331</width>
-             <height>641</height>
+             <height>643</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -291,7 +291,7 @@
              <x>0</x>
              <y>0</y>
              <width>331</width>
-             <height>641</height>
+             <height>643</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -339,6 +339,14 @@
            <set>Qt::AlignCenter</set>
           </property>
           <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>7</x>
+             <y>0</y>
+             <width>300</width>
+             <height>690</height>
+            </rect>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -368,6 +376,9 @@
              <layout class="QGridLayout" name="gridLayout_3">
               <property name="topMargin">
                <number>8</number>
+              </property>
+              <property name="horizontalSpacing">
+               <number>0</number>
               </property>
               <item row="1" column="3">
                <widget class="QPushButton" name="pushButtonToggleSpecular">
@@ -431,9 +442,6 @@
                <widget class="QPushButton" name="pushButtonReplotAll">
                 <property name="toolTip">
                  <string>Replot all</string>
-                </property>
-                <property name="text">
-                 <string/>
                 </property>
                 <property name="icon">
                  <iconset resource="content.qrc">
@@ -1174,7 +1182,22 @@
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Main toolbar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
