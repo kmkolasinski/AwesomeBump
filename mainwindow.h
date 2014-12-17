@@ -70,6 +70,8 @@ public slots:
     void convertFromBase();
     void recalculateOcclusion();
 
+    void about();
+    void aboutQt();
 
 private:
     // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
@@ -83,19 +85,22 @@ private:
 
     // Pointers
     Ui::MainWindow *ui;
-    GLWidget *glWidget; // 3D widget
-    GLImage * glImage;  // 2D widget (all processing is done here)
-    // Pointers to textures:
+    GLWidget *glWidget;
+    GLImage * glImage;
+    bool bSaveCheckedImages;
+    bool bSaveCompressedFormImages;
+
+    QDir recentDir;
+
     FormImageProp* diffuseImageProp;
     FormImageProp* normalImageProp;
     FormImageProp* specularImageProp;
     FormImageProp* heightImageProp;
     FormImageProp* occlusionImageProp;
 
-    // global settings
-    bool bSaveCheckedImages;
-    bool bSaveCompressedFormImages;
-    QDir recentDir;
+    QAction *aboutQtAction;
+    QAction *aboutAction;
+
 };
 
 #endif // MAINWINDOW_H

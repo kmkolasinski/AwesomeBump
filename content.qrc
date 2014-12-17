@@ -7,11 +7,16 @@
 		<file>content/logo.png</file>
 		<file>content/replot.png</file>
 		<file>content/showDiffuse.png</file>
+		<file>content/diffuse.png</file>
 		<file>content/showNormal.png</file>
+		<file>content/normal.png</file>
 		<file>content/showSpecular.png</file>
+		<file>content/specular.png</file>
 		<file>content/showHeight.png</file>
+		<file>content/height.png</file>
 		<file>content/showSettings.png</file>
 		<file>content/showOcclusion.png</file>
+		<file>content/occlusion.png</file>
 		<file>content/save.png</file>
 		<file>content/saveAll.png</file>
 		<file>content/saveSelected.png</file>
