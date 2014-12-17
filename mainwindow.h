@@ -70,8 +70,7 @@ public slots:
     void convertFromBase();
     void recalculateOcclusion();
 
-    void about();
-    void aboutQt();
+
 
 private:
     // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
@@ -98,8 +97,6 @@ private:
     FormImageProp* heightImageProp;
     FormImageProp* occlusionImageProp;
 
-    QAction *aboutQtAction;
-    QAction *aboutAction;
 
 };
 

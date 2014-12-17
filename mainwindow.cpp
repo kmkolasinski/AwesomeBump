@@ -174,20 +174,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
 #endif
 
-    aboutAction = new QAction(QIcon(":/content/icon"), tr("&About %1").arg(qApp->applicationName()), this);
-    aboutAction->setToolTip(tr("Show information about Bitcoin"));
-    aboutAction->setMenuRole(QAction::AboutQtRole);
-    aboutAction->setMenuRole(QAction::AboutRole);
-    aboutQtAction = new QAction(tr("About &Qt"), this);
-    aboutQtAction->setToolTip(tr("Show information about Qt"));
-    aboutQtAction->setMenuRole(QAction::AboutQtRole);
 
-    connect(aboutAction, SIGNAL(triggered()), qApp, SLOT(about()));
-    connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-
-    QMenu *help = appMenuBar->addMenu(tr("&Help"));
-    help->addAction(aboutAction);
-    help->addAction(aboutQtAction);
 }
 
 MainWindow::~MainWindow()
