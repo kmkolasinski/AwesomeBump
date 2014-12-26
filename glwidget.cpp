@@ -41,99 +41,45 @@
 #include <QtWidgets>
 #include <QtOpenGL>
 #include <math.h>
-
 #include "glwidget.h"
 
 
-#ifndef GL_MULTISAMPLE
-#define GL_MULTISAMPLE  0x809D
-#endif
-
-//! [0]
 GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     : QGLWidget(QGLFormat::defaultFormat(), parent, shareWidget)
 {
+    zoom                    = 60;
+    lightPosition           = QVector4D(0,0,5.0,1);
+    depthScale              = 1;
+    uvScale                 = 1.0;
+    uvOffset                = QVector2D(0,0);
+    bToggleDiffuseView      = true;
+    bToggleSpecularView     = true;
+    bToggleOcclusionView    = true;
+    specularIntensity       = 1.0;
+    diffuseIntensity        = 1.0;
 
-    xRot = 0;
-    yRot = 0;
-    zRot = 0;
-    zoom = 60;
-    lightPosition = QVector4D(0,0,5.0,1);
-    depthScale         = 1;
-    uvScale            = 1.0;
-    uvOffset           = QVector2D(0,0);
-    bToggleDiffuseView = true;
-    bToggleSpecularView = true;
-    bToggleOcclusionView = true;
-
-    specularIntensity = 1.0;
-    diffuseIntensity  = 1.0;
-
+    RotatePlaneMatrix.rotate(180.0f,QVector3D(0.0,1.0,0.0));
+    setMouseTracking(true);
+    setCursor(Qt::PointingHandCursor);
+    lightCursor = QCursor(QPixmap(":/content/lightCursor.png"));
 }
 
 GLWidget::~GLWidget()
 {   
 
     glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]);
-
     delete program;
 }
-//! [1]
 
-//! [2]
 QSize GLWidget::minimumSizeHint() const
 {
     return QSize(360, 360);
 }
-//! [2]
-
-//! [3]
 QSize GLWidget::sizeHint() const
-//! [3] //! [4]
 {
     return QSize(500, 400);
 }
-//! [4]
 
-static void qNormalizeAngle(int &angle)
-{
-    while (angle < 0)
-        angle += 360 * 16;
-    while (angle > 360 * 16)
-        angle -= 360 * 16;
-}
-
-//! [5]
-void GLWidget::setXRotation(int angle)
-{
-    qNormalizeAngle(angle);
-    if (angle != xRot) {
-        xRot = angle;
-        emit xRotationChanged(angle);
-        updateGL();
-    }
-}
-//! [5]
-
-void GLWidget::setYRotation(int angle)
-{
-    qNormalizeAngle(angle);
-    if (angle != yRot) {
-        yRot = angle;
-        emit yRotationChanged(angle);
-        updateGL();
-    }
-}
-
-void GLWidget::setZRotation(int angle)
-{
-    qNormalizeAngle(angle);
-    if (angle != zRot) {
-        zRot = angle;
-        emit zRotationChanged(angle);
-        updateGL();
-    }
-}
 
 void GLWidget::setDepthScale(int scale){
 
@@ -189,20 +135,20 @@ void GLWidget::initializeGL()
     glEnable(GL_TEXTURE_2D);
 
 
-#define PROGRAM_VERTEX_ATTRIBUTE 0
-#define PROGRAM_TEXCOORD_ATTRIBUTE 1
     qDebug() << "Loading quad (fragment shader)";
-    QGLShader *vshader = new QGLShader(QGLShader::Vertex, this);
+    QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/content/plane.vert");
-
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    else qDebug() << "done";
+
     qDebug() << "Loading quad (vertex shader)";
-    QGLShader *fshader = new QGLShader(QGLShader::Fragment, this);
+    QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     fshader->compileSourceFile(":/content/plane.frag");
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
+    else qDebug() << "done";
 
 
-    program = new QGLShaderProgram(this);
+    program = new QOpenGLShaderProgram(this);
     program->addShader(vshader);
     program->addShader(fshader);
     program->bindAttributeLocation("vertex"  , PROGRAM_VERTEX_ATTRIBUTE);
@@ -216,6 +162,9 @@ void GLWidget::initializeGL()
     program->setUniformValue("texHeight"  , 3);
     program->setUniformValue("texSSAO"    , 4);
     makeObject();
+
+    camera.position.setZ( -0 );
+    camera.toggleFreeCamera(false);
 }
 //! [6]
 
@@ -226,31 +175,26 @@ void GLWidget::paintGL()
     glDisable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
-    QMatrix4x4 m;
+
     program->bind();
+    projectionMatrix.setToIdentity();
+    projectionMatrix.perspective(zoom,ratio,0.1,100.0);
+    program->setUniformValue("ProjectionMatrix", projectionMatrix);
 
-    m.perspective(zoom,ratio,0.1,100.0);
-    program->setUniformValue("ProjectionMatrix", m);
 
-    QMatrix4x4 modelMatrix;
-    modelMatrix.setToIdentity();
+    objectMatrix.setToIdentity();
     if( fboIdPtrs[0] != NULL){
         float fboRatio = float((*(fboIdPtrs[0]))->width())/(*(fboIdPtrs[0]))->height();
-        modelMatrix.scale(fboRatio,1,1);
+        objectMatrix.scale(fboRatio,1,1);
     }
-    QMatrix4x4 rotMatrix;
-    rotMatrix.setToIdentity();
-    rotMatrix.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
-    rotMatrix.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-    rotMatrix.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
-    QMatrix4x4 viewMatrix;
-    viewMatrix.translate(0.0f, 0.0f, -1.5f);
-    m =  viewMatrix*rotMatrix*modelMatrix;
 
-    program->setUniformValue("ModelViewMatrix", m);
-    QMatrix3x3 NormalMatrix = m.normalMatrix();
+    modelViewMatrix = camera.updateCamera()*RotatePlaneMatrix*objectMatrix;
+    QMatrix3x3 NormalMatrix = modelViewMatrix.normalMatrix();
+
+    program->setUniformValue("ModelViewMatrix", modelViewMatrix);    
     program->setUniformValue("NormalMatrix", NormalMatrix);
     program->setUniformValue("lightPos", lightPosition);
+    program->setUniformValue("cameraPos", cursorPositionOnPlane);
     program->setUniformValue("gui_depthScale"     , depthScale);
     program->setUniformValue("gui_uvScale"        , uvScale);
     program->setUniformValue("gui_uvScaleOffset"  ,uvOffset);
@@ -288,7 +232,11 @@ void GLWidget::paintGL()
         //glGenerateMipmap(GL_TEXTURE_2D);
 
         glDrawElements(GL_TRIANGLES, 3*no_triangles, GL_UNSIGNED_INT, 0);
+
+
     }
+
+    emit rendered();
 
 }
 //! [7]
@@ -305,51 +253,104 @@ void GLWidget::resizeGL(int width, int height)
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
+    setCursor(Qt::ClosedHandCursor);
+    if (event->buttons() & Qt::RightButton) {
+        setCursor(Qt::SizeAllCursor);
+    }else if(event->buttons() & Qt::MiddleButton){
+        setCursor(lightCursor);
+    }
 
     updateGL();
 }
-//! [9]
 void GLWidget::mouseReleaseEvent(QMouseEvent *event){
-
-
-   // updateGL();
+    setCursor(Qt::PointingHandCursor);
 }
-//! [10]
+
+
+int GLWidget::glhUnProjectf(float& winx, float& winy, float& winz,
+                            QMatrix4x4& modelview, QMatrix4x4& projection,
+                            QVector4D& objectCoordinate)
+  {
+      //Transformation matrices
+      QVector4D in,out;
+      //Calculation for inverting a matrix, compute projection x modelview
+      //and store in A[16]
+      QMatrix4x4  A = projection * modelview;
+      //Now compute the inverse of matrix A
+      QMatrix4x4  m = A.inverted();
+
+      //Transformation of normalized coordinates between -1 and 1
+      in[0]=(winx)/(float)width()*2.0-1.0;
+      in[1]=(1-(winy)/(float)height())*2.0-1.0;
+      in[2]=2.0*winz-1.0;
+      in[3]=1.0;
+      //Objects coordinates
+      out = m * in;
+
+      if(out[3]==0.0)
+         return 0;
+      out[3]=1.0/out[3];
+      objectCoordinate[0]=out[0]*out[3];
+      objectCoordinate[1]=out[1]*out[3];
+      objectCoordinate[2]=out[2]*out[3];
+      return 1;
+  }
+
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
 
     int dx = event->x() - lastPos.x();
     int dy = event->y() - lastPos.y();
+    /*
+    float zPos, xPos , yPos;
+    xPos = event->x();
+    yPos = event->y();
+    glReadPixels(event->x(),height()-event->y(),1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&zPos);
+    QVector4D oPos;
+    if(glhUnProjectf(xPos,yPos,zPos,modelViewMatrix,projectionMatrix,oPos)){
+        cursorPositionOnPlane = oPos;
+    }
+    */
+    if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton)) {
+        /*
+        QMatrix4x4 mvp = modelViewMatrix;
+        QVector4D corner1(-0.5,-0.5,0,1);
+        QVector4D corner2(+0.5,-0.5,0,1);
+        QVector4D corner3(-0.5,+0.5,0,1);
+        corner1 = mvp * corner1;
+        corner2 = mvp * corner2;
+        corner3 = mvp * corner3;
+        QVector3D r21 =QVector3D(corner2-corner1);
+        QVector3D r31 =QVector3D(corner3-corner1);
+        QVector3D n =  QVector3D::crossProduct(r21,r31);
 
-    if (event->buttons() & Qt::LeftButton) {
-        setXRotation(xRot + 8 * dy);
-        setYRotation(yRot + 8 * dx);
+        QPoint p = mapFromGlobal(QCursor::pos());//getting the global position of cursor
+        QVector3D l0(double(p.x())/width()-0.5,(1.0-double(p.y()))/height()+0.5,1);
+        QVector3D l(0.0,0,-1);
+        QVector3D ll = -l0*QVector3D::dotProduct(l0,n)/QVector3D::dotProduct(l,n);
+        */
+    }else if (event->buttons() & Qt::LeftButton) {
+        camera.rotateView(dx/1.0,dy/1.0);
     } else if (event->buttons() & Qt::RightButton) {
-        setXRotation(xRot + 8 * dy);
-        setZRotation(zRot + 8 * dx);
+        camera.position += QVector3D(dx/500.0,dy/500.0,0)*camera.radius;
     } else if (event->buttons() & Qt::MiddleButton) {
         lightPosition += QVector4D(0.05*dx,-0.05*dy,-0,0);
-        updateGL();
     }
     lastPos = event->pos();
-
+    updateGL();
 }
 //! [10]
 
 void GLWidget::wheelEvent(QWheelEvent *event){
     int numDegrees = event->delta();
-
-    if(numDegrees > 0) zoom+=2.0;
-    else zoom-=2.0;
-    if(zoom < 10)  zoom = 10;
-    if(zoom > 120) zoom = 120;
+    camera.mouseWheelMove((numDegrees));
     updateGL();
 }
 
 void GLWidget::makeObject()
 {
 
-    int size = 512;
+    int size = 1024;
     QVector<QVector3D> vertices;
     QVector<QVector2D> texCoords;
     texCoords = QVector<QVector2D>(size*size);

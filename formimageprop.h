@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QImageReader>
 #include <QStandardPaths>
+
 #include "CommonObjects.h"
 
 namespace Ui {

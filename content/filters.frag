@@ -7,8 +7,11 @@ uniform sampler2D layerA; // first layer
 uniform sampler2D layerB; // second layer
 uniform sampler2D layerC; // third layer
 
+uniform int quad_draw_mode;
+
 uniform int gauss_mode;
 uniform float make_seamless_radius;
+uniform int gui_seamless_mode;
 uniform int gui_specular_radius;
 uniform float gui_specular_w1;
 uniform float gui_specular_w2;
@@ -44,20 +47,84 @@ uniform float gui_ssao_bias;
 uniform float gui_ssao_intensity;
 
 uniform int gui_clear_alpha;
-
+uniform int gui_perspective_mode;
 in vec2 v2QuadCoords;
 vec2 dxy = vec2(1.0/max(textureSize(layerA,0).r,textureSize(layerA,0).g));
+
+// position of corners used in perspective projection correction
+uniform vec2 corner1;
+uniform vec2 corner2;
+uniform vec2 corner3;
+uniform vec2 corner4;
 
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_normal_filter(){
-		
-                vec4 c =  texture( layerA, v2QuadCoords.xy);
-                if(gui_clear_alpha == 1) c = vec4(c.xyz,1);
+subroutine(filterModeType) vec4 mode_normal_filter(){		
+		vec4 c =  texture( layerA, v2QuadCoords.xy);
+		if(gui_clear_alpha == 1) c = vec4(c.xyz,1);
 		return c;
 }
+// ----------------------------------------------------------------
+//
+// ----------------------------------------------------------------
+float phi1(vec2 pos){return (1-pos.x)*(1-pos.y);}
+float phi2(vec2 pos){return (pos.x)*(1-pos.y);}
+float phi3(vec2 pos){return (pos.x)*(pos.y);}
+float phi4(vec2 pos){return (1-pos.x)*(pos.y);}
 
+subroutine(filterModeType) vec4 mode_perspective_transform_filter(){
+        vec2 transf_pos = v2QuadCoords.xy;
+        vec4 color      = vec4(1);
+        // 1.
+        if(gui_perspective_mode == 0){
+        transf_pos  = phi1(v2QuadCoords.xy)*corner1
+                    + phi2(v2QuadCoords.xy)*corner2
+                    + phi3(v2QuadCoords.xy)*corner3
+                    + phi4(v2QuadCoords.xy)*corner4;
+
+        color       = texture( layerA, transf_pos.xy);
+        // 2.
+        }else if(gui_perspective_mode == 1){
+        vec2 dc1 = corner1 + 0.0001 - vec2(0,0);
+        vec2 dc2 = corner2 - vec2(1,0);
+        vec2 dc3 = corner3 - vec2(1,1);
+        vec2 dc4 = corner4 - vec2(0,1);
+
+        vec2 r0  = vec2(0,0) - vec2(dc1.x,dc1.y);
+        vec2 r1  = vec2(1,0) - vec2(dc2.x,dc2.y);
+        vec2 r2  = vec2(1,1) - vec2(dc3.x,dc3.y);
+        vec2 r3  = vec2(0,1) - vec2(dc4.x,dc4.y);
+        vec2 r10 = r1-r0;
+        vec2 r30 = r3-r0;
+        vec2 r23 = r2-r3;
+        vec2 p0  = v2QuadCoords;
+        vec2 alpha = p0-r0;
+        vec2 delta = r23-r10;
+        float cc = alpha.x*r30.y-alpha.y*r30.x;
+        float bb = alpha.x*delta.y-alpha.y*delta.x+r10.y*r30.x-r10.x*r30.y;
+        float aa = r10.y*delta.x-r10.x*delta.y;
+        float D = bb*bb-4*aa*cc;
+
+        if(D>=0){
+            float x1 = (-bb - sqrt(D))/2/aa;
+            float x2 = (-bb + sqrt(D))/2/aa;
+            float u = 0;
+            if(x1>=0 && x1 <=1) u = x1;
+            else u = x2;
+            vec2 l1 = r0 + u * (r1-r0);
+            vec2 l2 = r3 + u * (r2-r3);
+            vec2 rp = p0 - l1;
+            float v = length(rp)/length(l2-l1)*(dot(normalize(rp),normalize(l2-l1)));
+
+            transf_pos = vec2(u,v);
+            color = texture( layerA, transf_pos.xy);
+            if( u < 0 || u > 1 ) color = vec4(0);
+            if( v < 0 || v > 1 ) color = vec4(0);
+        }else return vec4(0);
+        } // end of mode 1
+        return  color;
+}
 
 subroutine(filterModeType) vec4 mode_invert_components_filter(){
                 vec4 color = texture( layerA, v2QuadCoords.xy);
@@ -159,30 +226,45 @@ subroutine(filterModeType) vec4 mode_gauss_filter(){
 // ----------------------------------------------------------------
 subroutine(filterModeType) vec4 mode_seamless_filter(){
 		
-		vec2 tc = v2QuadCoords.st; 
-		float x = tc.x;
-		float y = tc.y;
-		vec2 r = tc  - 0.501;
-		vec2 rdir    = 0.5*vec2(sign(r.x),sign(r.y));
-		float rl       = 2*length(r);
-		float scale  = 1.0;
-		float alpha = min(scale,pow(rl,(1+20*make_seamless_radius)))/scale;
-			
-                vec4 colorA = texture( layerA, tc);
-                vec4 colorB = texture( layerA, tc + rdir);
-		return mix(colorA,colorB,alpha); 
+    vec2 tc = v2QuadCoords.st;
+    float x = tc.x;
+    float y = tc.y;
+    if(gui_seamless_mode == 0){
+
+        vec2 r = tc  - 0.502;
+        vec2 rdir    = 0.5*vec2(sign(r.x),sign(r.y));
+        float rl       = 2*length(r);
+        float scale  = 1.0;
+        float alpha = min(scale,pow(rl,(1+20*make_seamless_radius)))/scale;
+
+        vec4 colorA = texture( layerA, tc);
+        vec4 colorB = texture( layerA, tc + rdir);
+        float sq = abs(pow(2*abs(x-0.5),1+50*make_seamless_radius)) + abs(pow(2*abs(y-0.5),1+50*make_seamless_radius));
+
+        return mix(colorA,colorB,alpha*clamp(sq,0,1));
+
+    }else{
+        vec4 color = texture( layerA, 2*abs(tc - 0.5));
+        if(gui_image_type == 1){
+            vec4 nvec = 2*(color)-1;
+            float sx = sign(x-0.5);
+            float sy = sign(y-0.5);
+            color = 0.5*vec4(sx*nvec.x,sy*nvec.y,nvec.z,nvec.w)+0.5;
+        }
+        return color;
+    }
  }
  
  // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
 vec4 dgaussian_filter(sampler2D layer, float r1, float r2, int radius, float depth ){
-	vec4 colorA = vec4(0);  
-	vec4 colorB = vec4(0);
+    vec4 colorA = vec4(0);
+    vec4 colorB = vec4(0);
 
-	colorA = gauss_filter(layer,r1,radius,depth);
-	colorB = gauss_filter(layer,r2,radius,depth);
-	return colorA - colorB;
+    colorA = gauss_filter(layer,r1,radius,depth);
+    colorB = gauss_filter(layer,r2,radius,depth);
+    return colorA - colorB;
 
 }
 
@@ -241,10 +323,10 @@ subroutine(filterModeType) vec4 mode_normalize_filter(){
 // ----------------------------------------------------------------
 subroutine(filterModeType) vec4 mode_small_details_filter(){
 
-        vec4 colorA   = texture( layerA, v2QuadCoords.xy);
-        vec4 colorB   =-texture( layerB, v2QuadCoords.xy);
+	vec4 colorA   = texture( layerA, v2QuadCoords.xy);
+	vec4 colorB   =-texture( layerB, v2QuadCoords.xy);
 	vec4 colorC   = 1-20*gui_small_details*colorB;	
-	return overlay_filter(colorA,colorC*0.5);
+	return clamp(overlay_filter(colorA,colorC*0.5),vec4(0),vec4(1));
 
 }
 // ----------------------------------------------------------------
@@ -254,11 +336,11 @@ subroutine(filterModeType) vec4 mode_medium_details_filter(){
 
 	float r1 	  = 10.0;
 	float r2 	  = 0.0001;
-	int radius = 10;	
-        vec4 colorB   = texture( layerB, v2QuadCoords.xy);
+	int radius 	   = 10;	
+	vec4 colorB   = texture( layerB, v2QuadCoords.xy);
 	vec4 fcolor =(1-10*gui_medium_details*dgaussian_filter(layerB,r1,r2,radius,gui_depth))*0.5;
 	
-	return overlay_filter(colorB,fcolor);	
+	return clamp(overlay_filter(colorB,fcolor),vec4(0),vec4(1));	
 }
 // ----------------------------------------------------------------
 //

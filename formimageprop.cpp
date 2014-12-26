@@ -86,10 +86,18 @@ void FormImageProp::open()
     QStringList picturesLocations;// = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
     if(recentDir == NULL ) picturesLocations = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
     else  picturesLocations << recentDir->absolutePath();
+
+
     QFileDialog dialog(this,
                        tr("Open File"),
                        picturesLocations.isEmpty() ? QDir::currentPath() : picturesLocations.first(),
-                       tr("Images (*.png *.jpg *.JPG *.PNG);;All files (*.*)"));
+                       tr("All Images (*.png *.jpg  *.tga *.jpeg *.bmp);;"
+                          "Images (*.png);;"
+                          "Images (*.jpg);;"
+                          "Images (*.tga);;"
+                          "Images (*.jpeg);;"
+                          "Images (*.bmp);;"
+                          "All files (*.*)"));
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
     while (dialog.exec() == QDialog::Accepted && !loadFile(dialog.selectedFiles().first())) {}
@@ -97,23 +105,32 @@ void FormImageProp::open()
 
 bool FormImageProp::loadFile(const QString &fileName)
 {
-    QImage _image(fileName);
+    QFileInfo fileInfo(fileName);
+    QImage _image;
+
+    // Targa support added
+    if(fileInfo.completeSuffix().compare("tga") == 0){
+        TargaImage tgaImage;
+        _image = tgaImage.read(fileName);
+    }else{
+        QImageReader loadedImage(fileName);
+        _image = loadedImage.read();
+    }
+
     if (_image.isNull()) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
                                  tr("Cannot load %1.").arg(QDir::toNativeSeparators(fileName)));
-
         return false;
     }
 
     qDebug() << "<FormImageProp> Open image:" << fileName;
-    QFileInfo fileInfo(fileName);
-    imageName = fileInfo.baseName();
-    (*recentDir).setPath(fileInfo.absolutePath());
 
+    imageName = fileInfo.baseName();
+    (*recentDir).setPath(fileName);
     image    = _image;
     imageProp.init(image);
 
-    imageChanged();
+    emit imageChanged();
     return true;
 }
 
@@ -122,20 +139,19 @@ void FormImageProp::save(){
     QStringList picturesLocations;
     if(recentDir == NULL ) picturesLocations = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
     else{
-
          QFileInfo fileInfo(recentDir->absolutePath());
          QString fullFileName = fileInfo.absolutePath()+ "/" +
                                 imageName + PostfixNames::getPostfix(imageProp.imageType)
-                                + ".png";
+                                + PostfixNames::outputFormat;
          picturesLocations << fullFileName;
          qDebug() << "<FormImageProp>:: Saving to file:" << fullFileName;
     }
 
 
     QFileDialog dialog(this,
-                       tr("Save to file"),
+                       tr("Save current image to file"),
                        picturesLocations.isEmpty() ? QDir::currentPath() : picturesLocations.first(),
-                       tr("Images (*.png *.jpg *.JPG *.PNG);;All files (*.*)"));
+                       tr("All images (*.png *.jpg  *.tga *.jpeg *.bmp);;All files (*.*)"));
     dialog.setDirectory(recentDir->absolutePath());
     dialog.setAcceptMode(QFileDialog::AcceptSave);
 
@@ -149,8 +165,13 @@ bool FormImageProp::saveFile(const QString &fileName)
     QFileInfo fileInfo(fileName);
     (*recentDir).setPath(fileInfo.absolutePath());
     image = imageProp.getImage();
-    image.save(fileName);
 
+    if( PostfixNames::outputFormat.compare(".tga") == 0 || fileInfo.completeSuffix().compare("tga") == 0 ){
+        TargaImage tgaImage;
+        tgaImage.write(image,fileName);
+    }else{
+        image.save(fileName);
+    }
     return true;
 }
 
@@ -158,8 +179,7 @@ void FormImageProp::saveFileToDir(const QString &dir){
 
     QString fullFileName = dir + "/" +
                            imageName + PostfixNames::getPostfix(imageProp.imageType)
-                           + ".png";
-
+                           + PostfixNames::outputFormat;
     saveFile(fullFileName);
 }
 
@@ -167,13 +187,17 @@ void FormImageProp::saveImageToDir(const QString &dir,QImage& image){
 
     QString fullFileName = dir + "/" +
                            imageName + PostfixNames::getPostfix(imageProp.imageType)
-                           + ".png";
+                           + PostfixNames::outputFormat;
 
     qDebug() << "<FormImageProp> save image:" << fullFileName;
     QFileInfo fileInfo(fullFileName);
     (*recentDir).setPath(fileInfo.absolutePath());
 
-    image.save(fullFileName);
+    if( PostfixNames::outputFormat.compare(".tga") == 0){
+        TargaImage tgaImage;
+        tgaImage.write(image,fullFileName);
+    }else
+        image.save(fullFileName);
 }
 
 void FormImageProp::setImage(QImage _image){

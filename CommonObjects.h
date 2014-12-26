@@ -2,8 +2,9 @@
 #define COMMONOBJECTS_H
 #include <QtOpenGL>
 #include <QImage>
-
-
+#include <cstdio>
+#define PROGRAM_VERTEX_ATTRIBUTE 0
+#define PROGRAM_TEXCOORD_ATTRIBUTE 1
 
 enum TextureTypes{
     DIFFUSE_TEXTURE = 0,
@@ -13,22 +14,60 @@ enum TextureTypes{
     OCCLUSION_TEXTURE
 };
 
+enum ConversionType{
+    CONVERT_NONE = 0,
+    CONVERT_FROM_H_TO_N,
+    CONVERT_FROM_N_TO_H,
+    CONVERT_FROM_D_TO_O // diffuse to others
+};
+
 // Compressed texture type
 enum CompressedFromTypes{
     H_TO_D_AND_S_TO_N = 0,
     S_TO_D_AND_H_TO_N = 1
 };
+enum TargaColorFormat{
+    TARGA_BGR=0,
+    TARGA_BGRA,
+    TARGA_LUMINANCE
+};
+#define TARGA_HEADER_SIZE 0x12
+#define TARGA_UNCOMP_RGB_IMG 0x02
+#define TARGA_UNCOMP_BW_IMG 0x03
+// Reading and writing to file TGA image
+class TargaImage{
+    public:
+    // write QImage to tga file
+    void write(QImage image, QString fileName);
+    // return QImage from readed tga file
+    QImage read(QString fileName);
+    private:
+    /**
+     Read tga image to data.
+     * @param filename - path to the image
+     * @param width (output) width of the image
+     * @param height (output) height of the image
+     * @param format (output) format of the image (RGB,RGBA,LUMINANCE)
+     * @param pixels (output) data of pixels
+     * @return returns true if image was loaded.
+     */
+    bool load_targa (const char *filename, int &width, int &height,
+                          TargaColorFormat &format, unsigned char *&pixels);
+    // The same as above but write image to file
+    bool save_targa (const char *filename, int width, int height,
+                          TargaColorFormat format, unsigned char *pixels);
 
 
+};
 
 class PostfixNames{
 public:
-    static    QString  diffuseName;
+    static    QString   diffuseName;
     static    QString   normalName;
-    static    QString specularName;
+    static    QString   specularName;
     static    QString   heightName;
-    static    QString occlusionName;
-
+    static    QString   occlusionName;
+    static    QString   outputFormat;
 
     static QString getPostfix(TextureTypes tType){
         switch(tType){
@@ -75,6 +114,12 @@ public:
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
         glBindTexture(GL_TEXTURE_2D, 0);
         qDebug() << "FBOImages::creatig new FBO(" << width << "," << height << ") with id=" << fbo->texture() ;
+    }
+    static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref){
+        if( ref->width()  == src->width() &&
+            ref->height() == src->height() ){}else{
+            FBOImages::create(src ,ref->width(),ref->height());
+        }
     }
 
 };

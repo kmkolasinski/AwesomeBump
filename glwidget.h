@@ -43,10 +43,13 @@
 
 #include <QGLWidget>
 #include <QtOpenGL>
+
 #include <QOpenGLFunctions>
 #include "CommonObjects.h"
+#include "camera.h"
+#include <qmath.h>
 
-QT_FORWARD_DECLARE_CLASS(QGLShaderProgram);
+QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 
 
 //! [0]
@@ -61,13 +64,8 @@ public:
     QSize minimumSizeHint() const;
     QSize sizeHint() const;    
     void setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes type);
-//! [0]
 
-//! [1]
 public slots:
-    void setXRotation(int angle);
-    void setYRotation(int angle);
-    void setZRotation(int angle);
     void setDepthScale(int scale);
     void setUVScale(int scale);
 
@@ -80,13 +78,8 @@ public slots:
     void setUVScaleOffset(double x,double y);
 
 signals:
-    void xRotationChanged(int angle);
-    void yRotationChanged(int angle);
-    void zRotationChanged(int angle);
+    void rendered();
 
-//! [1]
-
-//! [2]
 protected:
     void initializeGL();
     void paintGL();
@@ -95,18 +88,18 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
-//! [2]
 
-//! [3]
 private:
     QPointF pixelPosToViewPos(const QPointF& p);
-
+    int glhUnProjectf(float &winx, float &winy, float &winz,
+                      QMatrix4x4 &modelview, QMatrix4x4 &projection,
+                      QVector4D& objectCoordinate);
     void makeObject();
-    QGLShaderProgram *program;    
+    QOpenGLShaderProgram *program;    
     QGLFramebufferObject**  fboIdPtrs[5];
 
 
-
+    // parameters plane
     float depthScale;
     float uvScale;
     QVector2D uvOffset;
@@ -116,17 +109,20 @@ private:
     bool bToggleSpecularView;
     bool bToggleOcclusionView;
 
+    // 3D view parameters
     GLuint vbos[3];
     GLuint no_triangles;
-
+    QMatrix4x4 projectionMatrix;
+    QMatrix4x4 modelViewMatrix;
+    QMatrix4x4 objectMatrix;
     QVector4D lightPosition;
+    QVector4D cursorPositionOnPlane;
     float ratio;
     float zoom;
     QPoint lastPos;
-    int xRot;
-    int yRot;
-    int zRot;
-
+    QMatrix4x4 RotatePlaneMatrix ;
+    AwesomeCamera camera;
+    QCursor lightCursor;
 public:
 };
 //! [3]

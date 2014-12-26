@@ -3,27 +3,33 @@
         <file>content/logo_D.png</file>
         <file>content/logo_N.png</file>
         <file>content/logo_H.png</file>
-		<file>content/logo_O.png</file>
-		<file>content/logo.png</file>
-		<file>content/replot.png</file>
-		<file>content/showDiffuse.png</file>
-		<file>content/diffuse.png</file>
-		<file>content/showNormal.png</file>
-		<file>content/normal.png</file>
-		<file>content/showSpecular.png</file>
-		<file>content/specular.png</file>
-		<file>content/showHeight.png</file>
-		<file>content/height.png</file>
-		<file>content/showSettings.png</file>
-		<file>content/showOcclusion.png</file>
-		<file>content/occlusion.png</file>
-		<file>content/save.png</file>
-		<file>content/saveAll.png</file>
-		<file>content/saveSelected.png</file>
-		<file>content/open.png</file>
-		<file>content/filters.frag</file>
-		<file>content/filters.vert</file>
-		<file>content/plane.frag</file>
-		<file>content/plane.vert</file>
+        <file>content/logo_O.png</file>
+        <file>content/logo.png</file>
+        <file>content/replot.png</file>
+        <file>content/showDiffuse.png</file>
+        <file>content/diffuse.png</file>
+        <file>content/showNormal.png</file>
+        <file>content/normal.png</file>
+        <file>content/showSpecular.png</file>
+        <file>content/specular.png</file>
+        <file>content/showHeight.png</file>
+        <file>content/height.png</file>
+        <file>content/showSettings.png</file>
+        <file>content/showOcclusion.png</file>
+        <file>content/occlusion.png</file>
+        <file>content/save.png</file>
+        <file>content/saveAll.png</file>
+        <file>content/saveSelected.png</file>
+        <file>content/open.png</file>
+        <file>content/filters.frag</file>
+        <file>content/filters.vert</file>
+        <file>content/plane.frag</file>
+        <file>content/plane.vert</file>
+        <file>content/lightCursor.png</file>
+        <file>content/resize.svg</file>
+        <file>content/corner2.png</file>
+        <file>content/corner3.png</file>
+        <file>content/corner4.png</file>
+        <file>content/corner1.png</file>
     </qresource>
 </RCC>

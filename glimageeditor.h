@@ -44,13 +44,13 @@
 #include <QWidget>
 #include <QGLWidget>
 #include <QtOpenGL>
+#include <QOpenGLFunctions_4_0_Core>
+
 #include <math.h>
 #include <map>
-//#include <QOpenGLFunctions>
-#include <QOpenGLFunctions_4_0_Core>
 #include "CommonObjects.h"
 
-QT_FORWARD_DECLARE_CLASS(QGLShaderProgram);
+QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 
 
 //! [0]
@@ -68,26 +68,35 @@ public:
     FBOImageProporties* getActiveImage(){return activeImage;}
     void enableShadowRender(bool enable);
     void enableRecalculateOcclusion(bool enable);
+    void setConversionType(ConversionType conversionType);
+    void updateCornersPosition(QVector2D dc1,QVector2D dc2,QVector2D dc3,QVector2D dc4);
     void render();
 
-
-
-    FBOImageProporties* targetImage;
-    FBOImageProporties* targetImage2;
     FBOImageProporties* targetImageNormal;
     FBOImageProporties* targetImageHeight;
     FBOImageProporties* targetImageSpecular;
     FBOImageProporties* targetImageOcclusion;
 public slots:
-
+    void resetView();
+    void selectPerspectiveTransformMethod(int method);
+    void selectSeamlessModeBlending(bool enable);
+    void selectSeamlessModeMirror(bool enable);
 signals:
     void rendered();
 
 //! [2]
 protected:
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
+    void updateMousePosition();
+    void showEvent(QShowEvent* event);
+
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
+
     void applyGaussFilter(QGLFramebufferObject* sourceFBO, QGLFramebufferObject *auxFBO,
                           QGLFramebufferObject* outputFBO, int no_iter);
 
@@ -96,6 +105,9 @@ protected:
 
     void applyNormalFilter(  QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject* outputFBO);
+    void applyPerspectiveTransformFilter(  QGLFramebufferObject* inputFBO,
+                                           QGLFramebufferObject* outputFBO);
+
 
 
     void applyCompressedFormatFilter(QGLFramebufferObject* baseFBO,
@@ -167,16 +179,36 @@ protected:
 private:
     void makeScreenQuad();
 
-    QGLShaderProgram *program;
+    QOpenGLShaderProgram *program;
     FBOImageProporties* activeImage;
 
     std::map<std::string,GLuint> subroutines;
 
     GLuint vbos[3];
+    ConversionType conversionType;
     bool bShadowRender;
     bool bRecalculateOcclusion;
-    float ratio;
+    bool bSkipProcessing;   // draw quad but skip all the processing step (using during mouse interaction)
+    float windowRatio;      // window width-height ratio
+    float fboRatio;         // active fbo width-height ratio
+    QPoint lastCursorPos;
 
+    // Image translation and physical cursor position
+    double xTranslation; // x position of the image in the window
+    double yTranslation; // y position
+    double cursorPhysicalXPosition; // physical cursor X position in window
+    double cursorPhysicalYPosition;
+
+    double zoom; // magnification of the image
+    double orthographicProjHeight;
+    double orthographicProjWidth;
+
+    // perspective transformation
+    QVector2D cornerPositions[4]; // position of four corner used to perform perspective transformation of quad
+    int draggingCorner; // contains Id of current corner dragged or -1
+    QCursor cornerCursors[4];
+    int gui_perspective_mode; // choose proper interpolation method
+    int gui_seamless_mode; // if 0 standard blending, if 1 mirror mode
 };
 //! [3]
 

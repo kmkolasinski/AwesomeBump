@@ -23,25 +23,25 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage          = new GLImage(this);
     glWidget         = new GLWidget(this,glImage);
 
-#ifdef Q_OS_MAC
+
     QGLContext* glContext = (QGLContext *) glWidget->context();
     glContext->makeCurrent();
 
-    std::cout << "Widget OpenGL: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() << std::endl;
-    std::cout << "Context valid: " << glContext->isValid() << std::endl;
-    std::cout << "OpenGL information: " << std::endl;
-    std::cout << "VENDOR: " << (const char*)glGetString(GL_VENDOR) << std::endl;
-    std::cout << "RENDERER: " << (const char*)glGetString(GL_RENDERER) << std::endl;
-    std::cout << "VERSION: " << (const char*)glGetString(GL_VERSION) << std::endl;
-    std::cout << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+    qDebug() << "Widget OpenGL: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() ;
+    qDebug() << "Context valid: " << glContext->isValid() ;
+    qDebug() << "OpenGL information: " ;
+    qDebug() << "VENDOR: " << (const char*)glGetString(GL_VENDOR) ;
+    qDebug() << "RENDERER: " << (const char*)glGetString(GL_RENDERER) ;
+    qDebug() << "VERSION: " << (const char*)glGetString(GL_VERSION) ;
+    qDebug() << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
 
     qDebug() << "OpenGLVersionFlags(): " << QGLFormat::OpenGLVersionFlags();
 
     if((QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_3_2) == 0)
     {
-       std::cout << "GL 3.2 Not supported"  << std::endl;
+       qDebug() << "GL 3.2 Not supported" ;
+       exit(-1);
     }
-#endif
 
     diffuseImageProp  = new FormImageProp(this,glImage);
     normalImageProp   = new FormImageProp(this,glImage);
@@ -94,8 +94,10 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp->hideHNGroupBox();
     occlusionImageProp->hideNHGroupBox();
     occlusionImageProp->hideNormalStepBar();
-    glImage ->targetImageNormal = normalImageProp->getImageProporties();
-    glImage ->targetImageHeight = heightImageProp->getImageProporties();
+    glImage ->targetImageNormal    = normalImageProp->getImageProporties();
+    glImage ->targetImageHeight    = heightImageProp->getImageProporties();
+    glImage ->targetImageSpecular  = specularImageProp ->getImageProporties();
+    glImage ->targetImageOcclusion = occlusionImageProp->getImageProporties();
 
     // ------------------------------------------------------
     //                      GUI setup
@@ -111,7 +113,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutHeightImage->addWidget(heightImageProp);
     ui->verticalLayoutOcclusionImage->addWidget(occlusionImageProp);
 
-    connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));    
+    connect(glWidget,SIGNAL(rendered()),this,SLOT(initializeImages()));
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
     // imageChange signals
     connect(diffuseImageProp,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
@@ -125,8 +127,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(diffuseImageProp,SIGNAL(conversionBaseConversionApplied()),this,SLOT(convertFromBase()));
     connect(occlusionImageProp,SIGNAL(recalculateOcclusion()),this,SLOT(recalculateOcclusion()));
     // Global setting signals
+    // seamless
     connect(ui->checkBoxMakeSeamless,SIGNAL(toggled(bool)),this,SLOT(enableMakeSeamless(bool)));
+    connect(ui->checkBoxMakeSeamless,SIGNAL(toggled(bool)),glImage,SLOT(selectSeamlessModeBlending(bool)));
+    connect(ui->checkBoxMirrorMode,SIGNAL(toggled(bool)),glImage,SLOT(selectSeamlessModeMirror(bool)));
     connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(valueChanged(int)),this,SLOT(setMakeSeamlessRadius(int)));
+    // sliders
     connect(ui->horizontalSliderDepthScale,SIGNAL(valueChanged(int)),glWidget,SLOT(setDepthScale(int)));
     connect(ui->horizontalSliderUVScale,SIGNAL(valueChanged(int)),glWidget,SLOT(setUVScale(int)));
     connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
@@ -139,6 +145,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonSaveAll,SIGNAL(released()),this,SLOT(saveImages()));
     connect(ui->pushButtonSaveChecked,SIGNAL(released()),this,SLOT(saveCheckedImages()));
     connect(ui->pushButtonSaveAs,SIGNAL(released()),this,SLOT(saveCompressedForm()));
+
     // Other signals
     connect(ui->pushButtonReplotAll,SIGNAL(released()),this,SLOT(replotAllImages()));
     connect(ui->pushButtonToggleDiffuse,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
@@ -147,6 +154,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonSaveCurrentSettings,SIGNAL(released()),this,SLOT(saveSettings()));
     connect(ui->horizontalSliderSpecularI,SIGNAL(valueChanged(int)),this,SLOT(setSpecularIntensity(int)));
     connect(ui->horizontalSliderDiffuseI,SIGNAL(valueChanged(int)),this,SLOT(setDiffuseIntensity(int)));
+    connect(ui->comboBoxImageOutputFormat,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
+
 
     ui->progressBar->setValue(0);
 
@@ -156,8 +165,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowSpecularImage,SIGNAL(triggered()),this,SLOT(selectSpecularTab()));
     connect(ui->actionShowHeightImage,SIGNAL(triggered()),this,SLOT(selectHeightTab()));
     connect(ui->actionShowOcclusiontImage,SIGNAL(triggered()),this,SLOT(selectOcclusionTab()));
-
     connect(ui->actionShowSettingsImage,SIGNAL(triggered()),this,SLOT(selectGeneralSettingsTab()));
+    connect(ui->actionFitToScreen,SIGNAL(triggered()),this,SLOT(fitImage()));
+
+    // perspective tool
+    connect(ui->pushButtonResetTransform,SIGNAL(released()),this,SLOT(resetTransform()));
+    connect(ui->comboBoxPerspectiveTransformMethod,SIGNAL(activated(int)),glImage,SLOT(selectPerspectiveTransformMethod(int)));
 
 
     loadSettings();
@@ -167,14 +180,19 @@ MainWindow::MainWindow(QWidget *parent) :
     specularImageProp->setImage(QImage(QString(":/content/logo_D.png")));
     heightImageProp  ->setImage(QImage(QString(":/content/logo_H.png")));
     occlusionImageProp->setImage(QImage(QString(":/content/logo_O.png")));
+
+    diffuseImageProp   ->setImageName(ui->lineEditOutputName->text());
+    normalImageProp    ->setImageName(ui->lineEditOutputName->text());
+    heightImageProp    ->setImageName(ui->lineEditOutputName->text());
+    specularImageProp  ->setImageName(ui->lineEditOutputName->text());
+    occlusionImageProp ->setImageName(ui->lineEditOutputName->text());
+
     // Setting the active image
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
 #ifdef Q_OS_MAC
     if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
 #endif
-
-
 }
 
 MainWindow::~MainWindow()
@@ -189,7 +207,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     QSettings settings("config.ini", QSettings::IniFormat);
     settings.setValue("d_win_w",this->width());
     settings.setValue("d_win_h",this->height());
-
+    settings.setValue("recent_dir",recentDir.absolutePath());
     glWidget->close();
     glImage->close();
 
@@ -198,8 +216,6 @@ void MainWindow::showEvent(QShowEvent* event){
     QWidget::showEvent( event );
     qDebug() << "<MainWindow> Show window.";
     replotAllImages();
-
-
 }
 
 void MainWindow::replotAllImages(){
@@ -238,6 +254,12 @@ void MainWindow::selectOcclusionTab(){
 void MainWindow::selectGeneralSettingsTab(){
     ui->tabWidget->setCurrentIndex(5);
 }
+
+void MainWindow::fitImage(){
+    glImage->resetView();
+    glImage->repaint();
+}
+
 
 void MainWindow::saveImages(){
 
@@ -446,7 +468,15 @@ void MainWindow::initializeImages(){
     bInitializedFirstDraw = true;
     qDebug() << "MainWindow::Initialization";
     QCoreApplication::processEvents();
+
     replotAllImages();
+    // SSAO recalculation
+    FBOImageProporties* lastActive = glImage->getActiveImage();
+    glImage->enableRecalculateOcclusion(true);
+    updateImage(4);
+    glImage->repaint();
+    glImage->setActiveImage(lastActive);
+
 }
 
 void MainWindow::updateImage(int tType){
@@ -503,37 +533,29 @@ void MainWindow::updateSpinBoxes(int){
 }
 
 
-void MainWindow::convertFromHtoN(){
-    qDebug() << "Conversion from height to normal applied";
-    glImage->targetImage = normalImageProp->getImageProporties();
+void MainWindow::convertFromHtoN(){   
+    glImage->setConversionType(CONVERT_FROM_H_TO_N);
     glImage->repaint();
     glWidget->repaint();
+    qDebug() << "Conversion from height to normal applied";
 }
 
 void MainWindow::convertFromNtoH(){
-    qDebug() << "Conversion from normal to height applied";
-    glImage->targetImage = heightImageProp->getImageProporties();
+    glImage->setConversionType(CONVERT_FROM_N_TO_H);
     glImage->repaint();
     glWidget->repaint();
+    qDebug() << "Conversion from normal to height applied";
 }
 
 
 void MainWindow::convertFromBase(){
-    qDebug() << "Conversion from Base";
-
     normalImageProp   ->setImageName(diffuseImageProp->getImageName());
     heightImageProp   ->setImageName(diffuseImageProp->getImageName());
     specularImageProp ->setImageName(diffuseImageProp->getImageName());
     occlusionImageProp->setImageName(diffuseImageProp->getImageName());
-
-    glImage ->targetImage          = normalImageProp   ->getImageProporties();
-    glImage ->targetImage2         = heightImageProp   ->getImageProporties();
-    glImage ->targetImageSpecular  = specularImageProp ->getImageProporties();
-    glImage ->targetImageOcclusion = occlusionImageProp->getImageProporties();
-
-
-    glImage ->repaint();
-    glWidget->repaint();
+    glImage->setConversionType(CONVERT_FROM_D_TO_O);
+    replotAllImages();
+    qDebug() << "Conversion from Base to others applied";
 }
 
 void MainWindow::recalculateOcclusion(){
@@ -541,6 +563,14 @@ void MainWindow::recalculateOcclusion(){
     glImage ->repaint();
     glWidget->repaint();
 }
+
+
+void MainWindow::resetTransform(){
+    QVector2D corner(0,0);
+    glImage->updateCornersPosition(corner,corner,corner,corner);
+    replotAllImages();
+}
+
 
 QSize MainWindow::sizeHint() const
 {
@@ -669,6 +699,9 @@ void MainWindow::saveSettings(){
 
 }
 
+void MainWindow::setOutputFormat(int index){
+    PostfixNames::outputFormat = ui->comboBoxImageOutputFormat->currentText();
+}
 
 void MainWindow::loadSettings(){
 

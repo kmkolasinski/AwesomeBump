@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>910</width>
-    <height>790</height>
+    <width>920</width>
+    <height>808</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,6 +22,9 @@
   <property name="windowIcon">
    <iconset resource="content.qrc">
     <normaloff>:/content/logo.png</normaloff>:/content/logo.png</iconset>
+  </property>
+  <property name="statusTip">
+   <string/>
   </property>
   <property name="iconSize">
    <size>
@@ -78,8 +81,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>331</width>
-             <height>643</height>
+             <width>358</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -131,8 +134,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>331</width>
-             <height>643</height>
+             <width>358</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -184,8 +187,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>331</width>
-             <height>643</height>
+             <width>358</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -237,8 +240,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>331</width>
-             <height>643</height>
+             <width>358</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -290,8 +293,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>331</width>
-             <height>643</height>
+             <width>358</width>
+             <height>685</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -341,10 +344,10 @@
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>7</x>
+             <x>28</x>
              <y>0</y>
              <width>300</width>
-             <height>690</height>
+             <height>637</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -443,6 +446,9 @@
                 <property name="toolTip">
                  <string>Replot all</string>
                 </property>
+                <property name="statusTip">
+                 <string>Replot all images</string>
+                </property>
                 <property name="icon">
                  <iconset resource="content.qrc">
                   <normaloff>:/content/replot.png</normaloff>:/content/replot.png</iconset>
@@ -515,27 +521,63 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
                <item>
-                <layout class="QFormLayout" name="formLayout_3">
+                <layout class="QGridLayout" name="gridLayout_6">
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_5">
                    <property name="text">
-                    <string>Output image name:</string>
+                    <string>Output</string>
                    </property>
                   </widget>
                  </item>
                  <item row="0" column="1">
                   <widget class="QLineEdit" name="lineEditOutputName">
+                   <property name="statusTip">
+                    <string>Set the output image name</string>
+                   </property>
                    <property name="text">
                     <string>image</string>
                    </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QComboBox" name="comboBoxImageOutputFormat">
+                   <property name="maximumSize">
+                    <size>
+                     <width>50</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>.png</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>.jpg</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>.bmp</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>.tga</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                 </layout>
                </item>
                <item>
                 <layout class="QGridLayout" name="gridLayout_4">
-                 <item row="1" column="0">
+                 <item row="1" column="1">
                   <widget class="QPushButton" name="pushButtonSaveAll">
+                   <property name="statusTip">
+                    <string>Save all images</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -551,8 +593,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
+                 <item row="0" column="1">
                   <widget class="QPushButton" name="pushButtonSaveChecked">
+                   <property name="toolTip">
+                    <string/>
+                   </property>
+                   <property name="statusTip">
+                    <string>Save selected images</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -568,8 +616,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="1">
+                 <item row="0" column="3">
                   <widget class="QCheckBox" name="checkBoxSaveDiffuse">
+                   <property name="toolTip">
+                    <string/>
+                   </property>
+                   <property name="statusTip">
+                    <string>Select diffuse image to save</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -585,8 +639,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
+                 <item row="1" column="3">
                   <widget class="QCheckBox" name="checkBoxSaveSpecular">
+                   <property name="toolTip">
+                    <string/>
+                   </property>
+                   <property name="statusTip">
+                    <string>Select specular image to save</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -599,8 +659,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="2">
+                 <item row="0" column="4">
                   <widget class="QCheckBox" name="checkBoxSaveNormal">
+                   <property name="toolTip">
+                    <string/>
+                   </property>
+                   <property name="statusTip">
+                    <string>Select normal image to save</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -613,21 +679,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="4">
-                  <spacer name="horizontalSpacer">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item row="0" column="3">
+                 <item row="0" column="5">
                   <widget class="QCheckBox" name="checkBoxSaveHeight">
+                   <property name="toolTip">
+                    <string/>
+                   </property>
+                   <property name="statusTip">
+                    <string>Select ambient occlusion image to save</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -640,8 +699,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="2">
+                 <item row="1" column="4">
                   <widget class="QCheckBox" name="checkBoxSaveOcclusion">
+                   <property name="toolTip">
+                    <string/>
+                   </property>
+                   <property name="statusTip">
+                    <string>Select height image to save</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -654,12 +719,31 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="1" column="2">
+                  <spacer name="horizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
                 </layout>
                </item>
                <item>
                 <layout class="QGridLayout" name="gridLayout_2">
                  <item row="0" column="0">
                   <widget class="QPushButton" name="pushButtonSaveAs">
+                   <property name="toolTip">
+                    <string/>
+                   </property>
+                   <property name="statusTip">
+                    <string>Save with compression</string>
+                   </property>
                    <property name="text">
                     <string>Save:</string>
                    </property>
@@ -667,6 +751,12 @@
                  </item>
                  <item row="0" column="1">
                   <widget class="QComboBox" name="comboBoxSaveAsOptions">
+                   <property name="toolTip">
+                    <string/>
+                   </property>
+                   <property name="statusTip">
+                    <string>Choose compression type</string>
+                   </property>
                    <property name="frame">
                     <bool>true</bool>
                    </property>
@@ -732,6 +822,12 @@
                     </item>
                     <item row="0" column="1">
                      <widget class="QLineEdit" name="lineEditPostfixDiffuse">
+                      <property name="toolTip">
+                       <string/>
+                      </property>
+                      <property name="statusTip">
+                       <string>Diffuse image postfix</string>
+                      </property>
                       <property name="text">
                        <string>_d</string>
                       </property>
@@ -758,6 +854,12 @@
                     </item>
                     <item row="0" column="3">
                      <widget class="QLineEdit" name="lineEditPostfixNormal">
+                      <property name="toolTip">
+                       <string/>
+                      </property>
+                      <property name="statusTip">
+                       <string>Normal image postfix</string>
+                      </property>
                       <property name="text">
                        <string>_n</string>
                       </property>
@@ -765,6 +867,12 @@
                     </item>
                     <item row="1" column="1">
                      <widget class="QLineEdit" name="lineEditPostfixSpecular">
+                      <property name="toolTip">
+                       <string/>
+                      </property>
+                      <property name="statusTip">
+                       <string>Specular image postfix</string>
+                      </property>
                       <property name="text">
                        <string>_s</string>
                       </property>
@@ -810,6 +918,12 @@
                     </item>
                     <item row="1" column="3">
                      <widget class="QLineEdit" name="lineEditPostfixHeight">
+                      <property name="toolTip">
+                       <string/>
+                      </property>
+                      <property name="statusTip">
+                       <string>Height image postfix</string>
+                      </property>
                       <property name="text">
                        <string>_h</string>
                       </property>
@@ -817,6 +931,12 @@
                     </item>
                     <item row="0" column="5">
                      <widget class="QLineEdit" name="lineEditPostfixOcclusion">
+                      <property name="toolTip">
+                       <string/>
+                      </property>
+                      <property name="statusTip">
+                       <string>Ambient occlusion postfix</string>
+                      </property>
                       <property name="text">
                        <string>_o</string>
                       </property>
@@ -826,6 +946,12 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="pushButtonSaveCurrentSettings">
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Save current settings</string>
+                    </property>
                     <property name="text">
                      <string>Save settings</string>
                     </property>
@@ -840,6 +966,65 @@
                </item>
               </layout>
              </widget>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="1" column="4">
+               <widget class="QDoubleSpinBox" name="doubleSpinBoxMakeSeamless">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::NoButtons</enum>
+                </property>
+                <property name="maximum">
+                 <double>100.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QSlider" name="horizontalSliderMakeSeamlessRadius">
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="statusTip">
+                 <string>Seamless radius</string>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="value">
+                 <number>50</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="checkBoxMakeSeamless">
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="statusTip">
+                 <string>Make image seamless</string>
+                </property>
+                <property name="text">
+                 <string>Tile</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="checkBoxMirrorMode">
+                <property name="text">
+                 <string>Mirror</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout">
@@ -872,15 +1057,14 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QCheckBox" name="checkBoxMakeSeamless">
-                <property name="text">
-                 <string>Tile</string>
-                </property>
-               </widget>
-              </item>
               <item row="3" column="1">
                <widget class="QSlider" name="horizontalSliderUVXOffset">
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="statusTip">
+                 <string>Visual UV X offset</string>
+                </property>
                 <property name="minimum">
                  <number>-100</number>
                 </property>
@@ -898,35 +1082,6 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QSlider" name="horizontalSliderMakeSeamlessRadius">
-                <property name="maximum">
-                 <number>100</number>
-                </property>
-                <property name="value">
-                 <number>50</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QDoubleSpinBox" name="doubleSpinBoxMakeSeamless">
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-                <property name="buttonSymbols">
-                 <enum>QAbstractSpinBox::NoButtons</enum>
-                </property>
-                <property name="maximum">
-                 <double>100.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>0.500000000000000</double>
-                </property>
-               </widget>
-              </item>
               <item row="1" column="0">
                <widget class="QLabel" name="label">
                 <property name="text">
@@ -936,6 +1091,12 @@
               </item>
               <item row="1" column="1">
                <widget class="QSlider" name="horizontalSliderDepthScale">
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="statusTip">
+                 <string>Visual depth scale</string>
+                </property>
                 <property name="maximum">
                  <number>100</number>
                 </property>
@@ -965,6 +1126,12 @@
               </item>
               <item row="2" column="1">
                <widget class="QSlider" name="horizontalSliderUVScale">
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="statusTip">
+                 <string>Visual UV scale</string>
+                </property>
                 <property name="minimum">
                  <number>1</number>
                 </property>
@@ -1011,6 +1178,12 @@
               </item>
               <item row="5" column="1">
                <widget class="QSlider" name="horizontalSliderDiffuseI">
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="statusTip">
+                 <string>Diffuse light intensity</string>
+                </property>
                 <property name="maximum">
                  <number>100</number>
                 </property>
@@ -1044,6 +1217,12 @@
               </item>
               <item row="6" column="1">
                <widget class="QSlider" name="horizontalSliderSpecularI">
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="statusTip">
+                 <string>Specular light intensity</string>
+                </property>
                 <property name="maximum">
                  <number>100</number>
                 </property>
@@ -1074,6 +1253,12 @@
               </item>
               <item row="4" column="1">
                <widget class="QSlider" name="horizontalSliderUVYOffset">
+                <property name="toolTip">
+                 <string/>
+                </property>
+                <property name="statusTip">
+                 <string>Visual UV Y offset</string>
+                </property>
                 <property name="minimum">
                  <number>-100</number>
                 </property>
@@ -1111,6 +1296,39 @@
                </widget>
               </item>
              </layout>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="PerspectiveTool">
+              <property name="title">
+               <string>Perspective correction tool</string>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <widget class="QPushButton" name="pushButtonResetTransform">
+                 <property name="text">
+                  <string>Reset transform</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="comboBoxPerspectiveTransformMethod">
+                 <property name="currentIndex">
+                  <number>1</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>bilinear interpolation</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>linear interpolation</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item>
              <spacer name="verticalSpacer">
@@ -1167,8 +1385,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>910</width>
-     <height>22</height>
+     <width>920</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1213,6 +1431,7 @@
    <addaction name="actionShowHeightImage"/>
    <addaction name="actionShowOcclusiontImage"/>
    <addaction name="actionShowSettingsImage"/>
+   <addaction name="actionFitToScreen"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -1228,7 +1447,7 @@
     <string>Replot</string>
    </property>
    <property name="toolTip">
-    <string>Replot images</string>
+    <string>Replot images (Ctrl+R)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -1243,7 +1462,7 @@
     <string>Show diffuse</string>
    </property>
    <property name="toolTip">
-    <string>Show diffuse image</string>
+    <string>Show diffuse image (Alt+1)</string>
    </property>
    <property name="shortcut">
     <string>Alt+1</string>
@@ -1258,7 +1477,7 @@
     <string>Show normal</string>
    </property>
    <property name="toolTip">
-    <string>Show normal  image</string>
+    <string>Show normal  image (Alt+2)</string>
    </property>
    <property name="shortcut">
     <string>Alt+2</string>
@@ -1273,7 +1492,7 @@
     <string>Show specular</string>
    </property>
    <property name="toolTip">
-    <string>Show specular  image</string>
+    <string>Show specular  image (Alt+3)</string>
    </property>
    <property name="shortcut">
     <string>Alt+3</string>
@@ -1288,7 +1507,7 @@
     <string>Show height</string>
    </property>
    <property name="toolTip">
-    <string>Show height  image</string>
+    <string>Show height  image (Alt+4)</string>
    </property>
    <property name="shortcut">
     <string>Alt+4</string>
@@ -1303,10 +1522,10 @@
     <string>Show settings</string>
    </property>
    <property name="toolTip">
-    <string>Show settings tab</string>
+    <string>Show settings tab (Alt+Q)</string>
    </property>
    <property name="shortcut">
-    <string>Alt+S</string>
+    <string>Alt+Q</string>
    </property>
   </action>
   <action name="actionShowOcclusiontImage">
@@ -1318,10 +1537,25 @@
     <string>Show occlusion</string>
    </property>
    <property name="toolTip">
-    <string>Show occlusion  image</string>
+    <string>Show occlusion  image (Alt+5)</string>
    </property>
    <property name="shortcut">
     <string>Alt+5</string>
+   </property>
+  </action>
+  <action name="actionFitToScreen">
+   <property name="icon">
+    <iconset resource="content.qrc">
+     <normaloff>:/content/resize.svg</normaloff>:/content/resize.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Fit to window</string>
+   </property>
+   <property name="toolTip">
+    <string>Resize image (Ctrl+Return)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Return</string>
    </property>
   </action>
  </widget>
@@ -1342,6 +1576,54 @@
     <hint type="destinationlabel">
      <x>380</x>
      <y>394</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxMirrorMode</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>checkBoxMakeSeamless</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>63</x>
+     <y>463</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>123</x>
+     <y>469</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxMakeSeamless</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>checkBoxMirrorMode</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>136</x>
+     <y>469</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>92</x>
+     <y>464</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxMirrorMode</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>horizontalSliderMakeSeamlessRadius</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>86</x>
+     <y>473</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>241</x>
+     <y>471</y>
     </hint>
    </hints>
   </connection>

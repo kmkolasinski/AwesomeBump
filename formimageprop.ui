@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>330</width>
-    <height>1695</height>
+    <height>1731</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -49,6 +49,12 @@
     <layout class="QGridLayout" name="gridLayout_8">
      <item row="0" column="0">
       <widget class="QPushButton" name="pushButtonOpenImage">
+       <property name="toolTip">
+        <string>Open new image (Ctrl+O)</string>
+       </property>
+       <property name="statusTip">
+        <string>Open new image (Ctrl+O)</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -62,10 +68,19 @@
          <height>32</height>
         </size>
        </property>
+       <property name="shortcut">
+        <string>Ctrl+O</string>
+       </property>
       </widget>
      </item>
      <item row="0" column="3">
       <widget class="QPushButton" name="pushButtonSaveImage">
+       <property name="toolTip">
+        <string>Save current image (Ctrl+S)</string>
+       </property>
+       <property name="statusTip">
+        <string>Save current image (Ctrl+S)</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -78,6 +93,9 @@
          <width>32</width>
          <height>32</height>
         </size>
+       </property>
+       <property name="shortcut">
+        <string>Ctrl+S</string>
        </property>
       </widget>
      </item>
@@ -125,6 +143,9 @@
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBoxRemoveShading">
+          <property name="toolTip">
+           <string>&quot;Remove shading&quot; from image. </string>
+          </property>
           <property name="text">
            <string>Remove shading</string>
           </property>
@@ -148,6 +169,9 @@
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
            <widget class="QCheckBox" name="checkBoxInvertR">
+            <property name="toolTip">
+             <string>Inverts red component. In case of height image it inverts height.</string>
+            </property>
             <property name="text">
              <string>r</string>
             </property>
@@ -155,6 +179,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QCheckBox" name="checkBoxInvertG">
+            <property name="toolTip">
+             <string>Inverts green component</string>
+            </property>
             <property name="text">
              <string>g</string>
             </property>
@@ -162,6 +189,9 @@
           </item>
           <item row="0" column="2">
            <widget class="QCheckBox" name="checkBoxInvertB">
+            <property name="toolTip">
+             <string>Inverts blue component</string>
+            </property>
             <property name="text">
              <string>b</string>
             </property>
@@ -196,6 +226,9 @@
         </item>
         <item row="5" column="1">
          <widget class="QSlider" name="horizontalSliderSharpenBlur">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Smooth or sharpen the image (it uses the gaussian distribution  in both cases).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="minimum">
            <number>-20</number>
           </property>
@@ -223,6 +256,9 @@
         </item>
         <item row="3" column="1">
          <widget class="QSlider" name="horizontalSliderMediumDetails">
+          <property name="toolTip">
+           <string>The same as above.</string>
+          </property>
           <property name="maximum">
            <number>100</number>
           </property>
@@ -247,6 +283,9 @@
         </item>
         <item row="2" column="1">
          <widget class="QSlider" name="horizontalSliderSmallDetails">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhance small details. This option is connected with &lt;span style=&quot; font-weight:600;&quot;&gt;Depth&lt;/span&gt; scroll bar. &lt;/p&gt;&lt;p&gt;Note that if &lt;span style=&quot; font-weight:600;&quot;&gt;Depth&lt;/span&gt; scroll bar is set to zero, this parameter does not affect the image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>100</number>
           </property>
@@ -271,6 +310,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QSlider" name="horizontalSliderBlurNoPasses">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Basically it works like gamma correction. &lt;/p&gt;&lt;p&gt;Especially useful in case of height texture.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="minimum">
            <number>0</number>
           </property>
@@ -297,6 +339,9 @@
         </item>
         <item row="0" column="1">
          <widget class="QSlider" name="horizontalSliderRemoveShadingGaussIter">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In case if option &lt;span style=&quot; font-weight:600;&quot;&gt;Remove shading&lt;/span&gt; is enabled it changes the number of iterations to be performed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
@@ -329,6 +374,9 @@
         </item>
         <item row="4" column="1">
          <widget class="QSlider" name="horizontalSliderDetailDepth">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It changes the depth of the &lt;span style=&quot; font-weight:600;&quot;&gt;Small details&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;Medium details&lt;/span&gt; effect.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>100</number>
           </property>
@@ -356,11 +404,14 @@
         </item>
         <item row="6" column="1">
          <widget class="QSlider" name="horizontalSliderNormalsStep">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It changes the steepness of the normal image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="minimum">
-           <number>-100</number>
+           <number>-300</number>
           </property>
           <property name="maximum">
-           <number>100</number>
+           <number>200</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -393,6 +444,9 @@
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QCheckBox" name="checkBoxSpecularControl">
+        <property name="toolTip">
+         <string>Applies difference of gaussian filter (gimp DOG filter)</string>
+        </property>
         <property name="text">
          <string>Enable specular</string>
         </property>
@@ -498,11 +552,14 @@
         </item>
         <item row="0" column="2">
          <widget class="QSlider" name="horizontalSliderSpeculatW1">
+          <property name="toolTip">
+           <string>Radius of the first gaussian</string>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
           <property name="maximum">
-           <number>2000</number>
+           <number>4000</number>
           </property>
           <property name="pageStep">
            <number>50</number>
@@ -517,11 +574,14 @@
         </item>
         <item row="1" column="2">
          <widget class="QSlider" name="horizontalSliderSpecularW2">
+          <property name="toolTip">
+           <string>Radius of the second gaussian</string>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
           <property name="maximum">
-           <number>2000</number>
+           <number>4000</number>
           </property>
           <property name="pageStep">
            <number>50</number>
@@ -536,11 +596,14 @@
         </item>
         <item row="2" column="2">
          <widget class="QSlider" name="horizontalSliderSpecularRadius">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mask radius. Usually it is greater than &lt;span style=&quot; font-weight:600;&quot;&gt;Weight #1&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;Weight #2&lt;/span&gt;. But here you can choose any value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
           <property name="maximum">
-           <number>20</number>
+           <number>40</number>
           </property>
           <property name="pageStep">
            <number>1</number>
@@ -587,6 +650,9 @@
         </item>
         <item row="3" column="2">
          <widget class="QSlider" name="horizontalSliderSpecularContrast">
+          <property name="toolTip">
+           <string>It changes the contrast of the image.</string>
+          </property>
           <property name="maximum">
            <number>200</number>
           </property>
@@ -629,6 +695,9 @@
         </item>
         <item row="4" column="2">
          <widget class="QSlider" name="horizontalSliderSpecularAmplifier">
+          <property name="toolTip">
+           <string>It multiplies the output image by a given number.</string>
+          </property>
           <property name="minimum">
            <number>-100</number>
           </property>
@@ -653,6 +722,9 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBoxSSAO">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This parameters are to control the Screen space ambient occlusion (SSAO) calculations.&lt;/p&gt;&lt;p&gt;For more information see: &lt;a href=&quot;http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;SSAO&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="title">
       <string>Ambient occlusion processing</string>
      </property>
@@ -662,12 +734,15 @@
         <item row="0" column="0">
          <widget class="QLabel" name="label_20">
           <property name="text">
-           <string>No. iters</string>
+           <string>Radius</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
          <widget class="QSlider" name="horizontalSliderSSAONoIters">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Radius of the mask. Large number will lead to poor performance. For small images (about 1024x1024) this should not be a problem, but for larger you should use this parameter carefully.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
@@ -700,6 +775,9 @@
         </item>
         <item row="2" column="1">
          <widget class="QSlider" name="horizontalSliderSSAODepth">
+          <property name="toolTip">
+           <string>It changes the scale of the effect. </string>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
@@ -716,6 +794,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QSlider" name="horizontalSliderSSAOIntensity">
+          <property name="toolTip">
+           <string>It changes the contrast of the image. </string>
+          </property>
           <property name="maximum">
            <number>500</number>
           </property>
@@ -732,6 +813,9 @@
         </item>
         <item row="3" column="1">
          <widget class="QSlider" name="horizontalSliderSSAOBias">
+          <property name="toolTip">
+           <string>This again allows you to control the contrast of the image.</string>
+          </property>
           <property name="minimum">
            <number>-200</number>
           </property>
@@ -813,6 +897,12 @@
       </item>
       <item>
        <widget class="QPushButton" name="pushButtonOcclusionRecalculate">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It uses the current &lt;span style=&quot; font-weight:600;&quot;&gt;normal &lt;/span&gt;and &lt;span style=&quot; font-weight:600;&quot;&gt;height image &lt;/span&gt;in order to calculate the input&lt;/p&gt;&lt;p&gt;image for AO calculations. For example if you change the normal or height image you have to use this button in order to get proper AO image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Recalculate from Normal and Height</string>
         </property>
@@ -829,6 +919,9 @@
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <widget class="QCheckBox" name="checkBoxEnableHeightToNormal">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable preview mode. Click &lt;span style=&quot; font-weight:600;&quot;&gt;Convert to Normal&lt;/span&gt; in order to copy visible 2D image to normal texture.  Disable this check box if you finish here. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Enable preview</string>
         </property>
@@ -845,6 +938,9 @@
         </item>
         <item row="0" column="1">
          <widget class="QSlider" name="horizontalSliderConversionHNDepth">
+          <property name="toolTip">
+           <string>It changes the amplitude of the calculated normals.</string>
+          </property>
           <property name="value">
            <number>20</number>
           </property>
@@ -873,6 +969,9 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="toolTip">
+         <string>Copy current image to normal texture.</string>
+        </property>
         <property name="text">
          <string>Convert to normal</string>
         </property>
@@ -889,6 +988,15 @@
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
        <widget class="QCheckBox" name="checkBoxEnableNormalToHeight">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable preview mode. Click &lt;span style=&quot; font-weight:600;&quot;&gt;Convert to heightmap&lt;/span&gt; in order to copy current image to height texture. If you finished here disable the preview mode.&lt;/p&gt;&lt;p&gt;Play with the parameters in order to get desired result. &lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
         <property name="text">
          <string>Enable preview</string>
         </property>
@@ -905,6 +1013,9 @@
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="2" column="1">
          <widget class="QSlider" name="horizontalSliderNormalToHeightItersLarge">
+          <property name="toolTip">
+           <string>Number of iterations done on large grid.</string>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -912,6 +1023,9 @@
         </item>
         <item row="5" column="1">
          <widget class="QSlider" name="horizontalSliderNormalToHeightItersVerySmall">
+          <property name="toolTip">
+           <string>Number of iterations done on very small grid (nearest neighbours).</string>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -933,6 +1047,9 @@
         </item>
         <item row="4" column="1">
          <widget class="QSlider" name="horizontalSliderNormalToHeightItersSmall">
+          <property name="toolTip">
+           <string>Number of iterations done on  small grid (second nearest neighbours).</string>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -961,6 +1078,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QSlider" name="horizontalSliderNormalToHeightItersVeryLarge">
+          <property name="toolTip">
+           <string>Number of iterations done on very large grid.</string>
+          </property>
           <property name="maximum">
            <number>100</number>
           </property>
@@ -987,6 +1107,9 @@
         </item>
         <item row="3" column="1">
          <widget class="QSlider" name="horizontalSliderNormalToHeightItersMedium">
+          <property name="toolTip">
+           <string>Number of iterations done on medium grid.</string>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -1029,6 +1152,9 @@
         </item>
         <item row="0" column="1">
          <widget class="QSlider" name="horizontalSliderNormalToHeightItersHuge">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of iterations done on huge grid.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -1048,6 +1174,9 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click this to copy the visible 2D image to the height texture. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="text">
          <string>Convert to heightmap</string>
         </property>
@@ -1064,6 +1193,9 @@
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
        <widget class="QCheckBox" name="checkBoxEnableBaseMapToOthers">
+        <property name="toolTip">
+         <string>Enable preview mode. If you finish editing here make sure you disable this button.</string>
+        </property>
         <property name="text">
          <string>Enable preview</string>
         </property>
@@ -1073,6 +1205,9 @@
        <layout class="QGridLayout" name="gridLayout_7">
         <item row="2" column="1">
          <widget class="QSlider" name="horizontalSliderBMNoIters">
+          <property name="toolTip">
+           <string>Set the number of iterations of the procedure.</string>
+          </property>
           <property name="maximum">
            <number>30</number>
           </property>
@@ -1121,6 +1256,9 @@
         </item>
         <item row="5" column="1">
          <widget class="QSlider" name="horizontalSliderConversionBaseMapMixing">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the blending with the non processed normal image (ie. base image after sobel operator applied). This parameter changes the weight of the blending on edges. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>200</number>
           </property>
@@ -1151,6 +1289,9 @@
         </item>
         <item row="3" column="1">
          <widget class="QSlider" name="horizontalSliderBaseMapAmplidute">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the amplitude of the normals. &lt;/p&gt;&lt;p&gt;Sometimes very small value of the amplitude parameter helps to obtain better image. Don't worry if the image you see is totally blue. You can change the &lt;span style=&quot; font-weight:600;&quot;&gt;normal step&lt;/span&gt; parameter after conversion in the &lt;span style=&quot; font-weight:600;&quot;&gt;normal&lt;/span&gt; tab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="minimum">
            <number>-300</number>
           </property>
@@ -1181,6 +1322,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QSlider" name="horizontalSliderConversionBMFilterRadius">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the normal extraction radius. Large radius = larger extraction but also larger blur of image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
@@ -1217,6 +1361,9 @@
         </item>
         <item row="4" column="1">
          <widget class="QSlider" name="horizontalSliderConversionBaseMapFlatness">
+          <property name="toolTip">
+           <string>It makes &quot;hills&quot; more flat.</string>
+          </property>
           <property name="maximum">
            <number>100</number>
           </property>
@@ -1233,6 +1380,9 @@
         </item>
         <item row="0" column="1">
          <widget class="QSlider" name="horizontalSliderConversionBMPreSmoothRadius">
+          <property name="toolTip">
+           <string>Smooth the image before processing.</string>
+          </property>
           <property name="maximum">
            <number>150</number>
           </property>
@@ -1266,6 +1416,9 @@
         </item>
         <item row="6" column="1">
          <widget class="QSlider" name="horizontalSliderConversionBaseMapBlending">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the blending with the non processed normal image (ie. base image after sobel operator applied) but here standart mixing is applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="maximum">
            <number>100</number>
           </property>
@@ -1290,6 +1443,9 @@
        <widget class="QPushButton" name="pushButtonConvertToNormalAndHeight">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click this to generate normal, specular, ambient occlusion and height image. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>Convert to N H</string>

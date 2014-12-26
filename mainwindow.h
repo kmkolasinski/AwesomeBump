@@ -37,7 +37,7 @@ public slots:
     void saveCheckedImages();
     void saveCompressedForm();
     void saveSettings();
-
+    void setOutputFormat(int index);
     void replotAllImages();
 
     // repaint views after selecting tab
@@ -47,6 +47,7 @@ public slots:
     void selectHeightTab();
     void selectOcclusionTab();
     void selectGeneralSettingsTab();
+    void fitImage();// resize 2D image
 
     // repaint views after changes
     void updateDiffuseImage();
@@ -70,6 +71,8 @@ public slots:
     void convertFromBase();
     void recalculateOcclusion();
 
+    // Perspective tool    
+    void resetTransform();
 
 
 private:

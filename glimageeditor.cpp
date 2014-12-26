@@ -47,6 +47,25 @@ GLImage::GLImage(QWidget *parent)
 {
     bShadowRender         = false;
     bRecalculateOcclusion = false;
+    bSkipProcessing       = false;
+    conversionType        = CONVERT_NONE;
+
+    fboRatio = 1;
+
+    // initialize position of the corners
+    cornerPositions[0] = QVector2D(-0.0,-0);
+    cornerPositions[1] = QVector2D( 1,-0);
+    cornerPositions[2] = QVector2D( 1, 1);
+    cornerPositions[3] = QVector2D(-0, 1);
+    draggingCorner = -1;
+    gui_perspective_mode = 1;
+    gui_seamless_mode    = 0;
+    setCursor(Qt::OpenHandCursor);
+    cornerCursors[0] = QCursor(QPixmap(":/content/corner1.png"));
+    cornerCursors[1] = QCursor(QPixmap(":/content/corner2.png"));
+    cornerCursors[2] = QCursor(QPixmap(":/content/corner3.png"));
+    cornerCursors[3] = QCursor(QPixmap(":/content/corner4.png"));
+    setMouseTracking(true);
 }
 //! [0]
 
@@ -62,6 +81,7 @@ GLImage::~GLImage()
 QSize GLImage::minimumSizeHint() const
 {
     return QSize(360, 360);
+
 }
 //! [2]
 
@@ -85,18 +105,19 @@ void GLImage::initializeGL()
     glEnable(GL_TEXTURE_2D);
 
 
-#define PROGRAM_VERTEX_ATTRIBUTE 0
-#define PROGRAM_TEXCOORD_ATTRIBUTE 1
     qDebug() << "Loading filters (fragment shader)";
-    QGLShader *vshader = new QGLShader(QGLShader::Vertex, this);
+    QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/content/filters.vert");
-    qDebug() << vshader->log();
-    qDebug() << "Loading filters (vertex shader)";
-    QGLShader *fshader = new QGLShader(QGLShader::Fragment, this);
-    fshader->compileSourceFile(":/content/filters.frag");
-    qDebug() << fshader->log();
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    else qDebug() << "done";
 
-    program = new QGLShaderProgram(this);
+    qDebug() << "Loading filters (vertex shader)";
+    QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
+    fshader->compileSourceFile(":/content/filters.frag");
+    if (!fshader->log().isEmpty()) qDebug() << fshader->log();
+    else qDebug() << "done";
+
+    program = new QOpenGLShaderProgram(this);
     program->addShader(vshader);
     program->addShader(fshader);
     program->bindAttributeLocation("positionIn", PROGRAM_VERTEX_ATTRIBUTE);
@@ -129,14 +150,7 @@ void GLImage::initializeGL()
     subroutines["mode_smooth_filter"]           = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_smooth_filter" );
     subroutines["mode_occlusion_filter"]        = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_occlusion_filter" );
     subroutines["mode_combine_normal_height_filter"]= glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_combine_normal_height_filter" );
-
-
-
-
-    targetImage          = NULL;
-    targetImage2         = NULL; // height
-    targetImageSpecular  = NULL;
-    targetImageOcclusion = NULL;
+    subroutines["mode_perspective_transform_filter"]= glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_perspective_transform_filter" );
 
 
 }
@@ -145,9 +159,9 @@ void GLImage::initializeGL()
 //! [7]
 void GLImage::paintGL()
 {
-
+    resizeGL(width(),height());
     render();
-    emit rendered();
+    //emit rendered();
 }
 
 
@@ -162,83 +176,67 @@ void GLImage::render(){
     glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
     glVertexAttribPointer(PROGRAM_VERTEX_ATTRIBUTE,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
 
-    QGLFramebufferObject* activeFBO     = NULL;
-    QGLFramebufferObject* activeAuxFBO  = NULL;
-    QGLFramebufferObject* activeAux2FBO = NULL;
+    QGLFramebufferObject* activeFBO     = activeImage->fbo;
+    QGLFramebufferObject* activeAuxFBO  = activeImage->aux_fbo;
+    QGLFramebufferObject* activeAux2FBO = activeImage->aux2_fbo;
+
+    if(!bSkipProcessing == true){
 
 
-
-    if(targetImage != NULL){
-        if( activeImage->ref_fbo->width()  == targetImage->ref_fbo->width() &&
-            activeImage->ref_fbo->height() == targetImage->ref_fbo->height() ){}else{
-            FBOImages::create(targetImage->ref_fbo ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-            FBOImages::create(targetImage->fbo     ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-            FBOImages::create(targetImage->aux_fbo ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-            FBOImages::create(targetImage->aux2_fbo,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-        }
-        activeFBO     = targetImage->ref_fbo;
-        activeAuxFBO  = targetImage->fbo;
-        activeAux2FBO = targetImage->aux_fbo;
-
-    }else{
-        activeFBO    = activeImage->fbo;
-        activeAuxFBO = activeImage->aux_fbo;
-        activeAux2FBO= activeImage->aux2_fbo;
-    }
-
-    if(targetImage2 != NULL){
-    if( activeImage->ref_fbo->width()  == targetImage2->ref_fbo->width() &&
-        activeImage->ref_fbo->height() == targetImage2->ref_fbo->height() ){}else{
-           FBOImages::create(targetImage2->ref_fbo ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-           FBOImages::create(targetImage2->fbo     ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-           FBOImages::create(targetImage2->aux_fbo ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-           FBOImages::create(targetImage2->aux2_fbo,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-    }}
-
-    if(targetImageSpecular != NULL){
-    if( activeImage->ref_fbo->width()  == targetImageSpecular->ref_fbo->width() &&
-        activeImage->ref_fbo->height() == targetImageSpecular->ref_fbo->height() ){}else{
-           FBOImages::create(targetImageSpecular->ref_fbo ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-           FBOImages::create(targetImageSpecular->fbo     ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-           FBOImages::create(targetImageSpecular->aux_fbo ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-           FBOImages::create(targetImageSpecular->aux2_fbo,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-    }
+    // resizing the FBOs in case of convertion procedure
+    switch(conversionType){
+        case(CONVERT_FROM_H_TO_N):
+        FBOImages::resize(targetImageNormal->ref_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageNormal->fbo      ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageNormal->aux_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageNormal->aux2_fbo ,activeImage->ref_fbo);
+        activeFBO     = targetImageNormal->fbo;
+        activeAuxFBO  = targetImageNormal->aux_fbo;
+        activeAux2FBO = targetImageNormal->aux2_fbo;
+        break;
+        case(CONVERT_FROM_N_TO_H):
+        FBOImages::resize(targetImageHeight->ref_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageHeight->fbo      ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageHeight->aux_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageHeight->aux2_fbo ,activeImage->ref_fbo);
+        activeFBO     = targetImageHeight->fbo;
+        activeAuxFBO  = targetImageHeight->aux_fbo;
+        activeAux2FBO = targetImageHeight->aux2_fbo;
+        break;
+        case(CONVERT_FROM_D_TO_O):
+        FBOImages::resize(targetImageHeight->ref_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageHeight->fbo      ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageHeight->aux_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageHeight->aux2_fbo ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageNormal->ref_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageNormal->fbo      ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageNormal->aux_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageNormal->aux2_fbo ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageSpecular->ref_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageSpecular->fbo      ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageSpecular->aux_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageSpecular->aux2_fbo ,activeImage->ref_fbo);
+        // copy diffuse to specular image
         applyNormalFilter(activeImage->ref_fbo,targetImageSpecular->ref_fbo);
         applyNormalFilter(activeImage->ref_fbo,targetImageSpecular->fbo);
-        targetImageSpecular = NULL;
+
+        FBOImages::resize(targetImageOcclusion->ref_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageOcclusion->fbo      ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageOcclusion->aux_fbo  ,activeImage->ref_fbo);
+        FBOImages::resize(targetImageOcclusion->aux2_fbo ,activeImage->ref_fbo);
+        break;
+        default:
+        break;
     }
-
-    if(targetImageOcclusion != NULL){
-    if( activeImage->ref_fbo->width()  == targetImageOcclusion->ref_fbo->width() &&
-        activeImage->ref_fbo->height() == targetImageOcclusion->ref_fbo->height() ){}else{
-           FBOImages::create(targetImageOcclusion->ref_fbo ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-           FBOImages::create(targetImageOcclusion->fbo     ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-           FBOImages::create(targetImageOcclusion->aux_fbo ,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-           FBOImages::create(targetImageOcclusion->aux2_fbo,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
-
-
-    }}
 
     program->bind();
     program->setUniformValue("gui_image_type", activeImage->imageType);
     program->setUniformValue("gui_depth", float(1.0));
     program->setUniformValue("gui_mode_dgaussian", 1);
 
-//    if(bRecalculateOcclusion == true){
-//            qDebug() << "Calculating SSAO";
-//            if( activeImage->ref_fbo->width()  == targetImageNormal->ref_fbo->width() &&
-//                activeImage->ref_fbo->height() == targetImageNormal->ref_fbo->height() ){}else{
-//                   FBOImages::create(activeImage->ref_fbo ,targetImageNormal->ref_fbo->width(),targetImageNormal->ref_fbo->height());
-//                   FBOImages::create(activeImage->fbo     ,targetImageNormal->ref_fbo->width(),targetImageNormal->ref_fbo->height());
-//                   FBOImages::create(activeImage->aux_fbo ,targetImageNormal->ref_fbo->width(),targetImageNormal->ref_fbo->height());
-//                   FBOImages::create(activeImage->aux2_fbo,targetImageNormal->ref_fbo->width(),targetImageNormal->ref_fbo->height());
-//            }
-//    }
-
-
 
     if(activeImage->bFirstDraw){
-
+        resetView();
         qDebug() << "Doing first draw";
 
         activeImage->bFirstDraw = false;
@@ -256,17 +254,16 @@ void GLImage::render(){
 
     }
 
-
     if(bRecalculateOcclusion == true){           
-            applyCombineNormalHeightFilter(targetImageNormal->fbo,targetImageHeight->fbo,activeImage->ref_fbo);
+           // applyCombineNormalHeightFilter(targetImageNormal->fbo,targetImageHeight->fbo,activeImage->ref_fbo);
             bRecalculateOcclusion = false;
     }
 
 
     if(activeImage->imageType == OCCLUSION_TEXTURE){
+        applyCombineNormalHeightFilter(targetImageNormal->fbo,targetImageHeight->fbo,activeImage->ref_fbo);
         applyOcclusionFilter(activeImage->ref_fbo,activeFBO);
     }else{
-
         // Updating FBO...
         activeFBO->bind();
             glViewport(0,0,activeFBO->width(),activeFBO->height());
@@ -277,8 +274,17 @@ void GLImage::render(){
             glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0);
         activeFBO->bindDefault();
 
-    }
+        if(conversionType == CONVERT_NONE ){
+            applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);
+            copyFBO(activeAuxFBO,activeFBO);
+        }
 
+        // Making seamless...
+        if(FBOImageProporties::bMakeSeamless && conversionType == CONVERT_NONE){
+            applySeamlessFilter(activeFBO,activeAuxFBO,FBOImageProporties::MakeSeamlessRadius);
+            copyFBO(activeAuxFBO,activeFBO);
+        }
+    }
 
     applyInvertComponentsFilter(activeFBO,activeAuxFBO);
 
@@ -287,16 +293,13 @@ void GLImage::render(){
     }else{
         copyFBO(activeAuxFBO,activeFBO);
     }
-
-
-
-
-
-    // Making seamless...
-    if(FBOImageProporties::bMakeSeamless){
-        applySeamlessFilter(activeFBO,activeAuxFBO,FBOImageProporties::MakeSeamlessRadius);
-        copyFBO(activeAuxFBO,activeFBO);
+    // specular manipulation
+    if(activeImage->bSpeclarControl){
+        applyDGaussiansFilter(activeFBO,activeAux2FBO,activeAuxFBO);
+        applyContrastFilter(activeAuxFBO,activeFBO);
     }
+
+
     // Removing shading...
     if(activeImage->bRemoveShading){
         applyGaussFilter(activeFBO,activeAux2FBO,activeAuxFBO,activeImage->noRemoveShadingGaussIter);
@@ -338,10 +341,7 @@ void GLImage::render(){
 
 
 
-    if(activeImage->bSpeclarControl){
-        applyDGaussiansFilter(activeFBO,activeAux2FBO,activeAuxFBO);
-        applyContrastFilter(activeAuxFBO,activeFBO);
-    }
+
 
     if(activeImage->imageType == HEIGHT_TEXTURE && activeImage->bConversionHN){
         applyHeightToNormal(activeFBO,activeAuxFBO);
@@ -356,40 +356,49 @@ void GLImage::render(){
     if(activeImage->imageType == DIFFUSE_TEXTURE && activeImage->bConversionBaseMap){
         applyBaseMapConversion(activeFBO,activeAux2FBO,activeAuxFBO);
 
-        if(targetImage2 != NULL){
-            applyNormalToHeight(targetImage,activeAuxFBO,activeFBO,activeAux2FBO);
+        if(conversionType == CONVERT_FROM_D_TO_O){
+            applyNormalToHeight(targetImageNormal,activeAuxFBO,activeFBO,activeAux2FBO);
             applyCPUNormalizationFilter(activeAux2FBO,activeFBO);
         }
 
         copyFBO(activeFBO,activeAux2FBO);
         copyFBO(activeAuxFBO,activeFBO);
-    }
-
-    if(targetImageOcclusion != NULL){
-        applyCombineNormalHeightFilter(activeFBO,activeAux2FBO,targetImageOcclusion->ref_fbo);
-        targetImageOcclusion = NULL;
+        if(conversionType == CONVERT_FROM_D_TO_O) applyCombineNormalHeightFilter(activeFBO,activeAux2FBO,targetImageOcclusion->ref_fbo);
     }
 
 
-    if(targetImage != NULL && targetImage2 == NULL){
-        copyFBO(activeFBO,targetImage->fbo);
-        targetImage = NULL;
-        activeFBO   = activeImage->fbo;
-    }else if( targetImage != NULL && targetImage2 != NULL ){
-        copyFBO(activeFBO,targetImage->fbo);
-        copyFBO(activeAux2FBO,targetImage2->ref_fbo);
-        copyFBO(activeAux2FBO,targetImage2->fbo);
-        targetImage  = NULL;
-        targetImage2 = NULL;
-        activeFBO = activeImage->fbo;
+    switch(conversionType){
+        case(CONVERT_FROM_H_TO_N):
+        copyFBO(activeFBO,targetImageNormal->ref_fbo);
+        break;
+        case(CONVERT_FROM_N_TO_H):
+        copyFBO(activeFBO,targetImageHeight->ref_fbo);
+        break;
+        case(CONVERT_FROM_D_TO_O):
+        //copyFBO(activeFBO,targetImageHeight->ref_fbo);
+        copyFBO(activeFBO,targetImageNormal->fbo);
+        copyFBO(activeFBO,targetImageNormal->ref_fbo);
+        copyFBO(activeAux2FBO,targetImageHeight->ref_fbo);
+        copyFBO(activeAux2FBO,targetImageHeight->fbo);
+        break;
+        default:
+        break;
     }
 
 
+    activeFBO   = activeImage->fbo;
 
     program->setUniformValue("gui_clear_alpha",1);
     applyNormalFilter(activeFBO,activeAuxFBO);
     program->setUniformValue("gui_clear_alpha",0);
     copyFBO(activeAuxFBO,activeFBO);
+
+
+    }// end of skip processing
+
+
+
+
 
     if(!bShadowRender){
         // Displaying new image
@@ -400,38 +409,57 @@ void GLImage::render(){
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, activeFBO->texture());
 
-        float fboRatio = float(activeFBO->width())/activeFBO->height();
-
-        QMatrix4x4 m;
-        m.ortho(-ratio/fboRatio,ratio/fboRatio,-1,1,-1,1);
-        QVector4D cornerPos = m * QVector4D(0.5,0.5,0,1) ;
-
+        QMatrix4x4 m;        
+        m.ortho(0,orthographicProjWidth,0,orthographicProjHeight,-1,1);
         program->setUniformValue("ProjectionMatrix", m);
         m.setToIdentity();
-
-        QVector3D scaleQuad(1,1,1);
-        if(cornerPos.x() > cornerPos.y()){
-            scaleQuad.setX(1/cornerPos.x());
-            scaleQuad.setY(1/cornerPos.x());
-        }else{
-            scaleQuad.setX(1/cornerPos.y());
-            scaleQuad.setY(1/cornerPos.y());
-        }
-        m.scale(scaleQuad);
+        m.translate(xTranslation,yTranslation,0);
         program->setUniformValue("ModelViewMatrix", m);
-
         glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]);
         glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0);
         program->setUniformValue("quad_draw_mode", 0);
     }
+    bSkipProcessing = false;
+    conversionType  = CONVERT_NONE;
+}
 
+void GLImage::showEvent(QShowEvent* event){
+    QWidget::showEvent( event );
+    resetView();
+}
+void GLImage::resetView(){
+
+    zoom = 0;
+    windowRatio = float(width())/height();
+    fboRatio    = float(activeImage->fbo->width())/activeImage->fbo->height();
+    // openGL window dimensions
+    orthographicProjHeight = (1+zoom)/windowRatio;
+    orthographicProjWidth = (1+zoom)/fboRatio;
+
+    if(orthographicProjWidth < 1.0) { // fitting x direction
+        zoom = fboRatio - 1;
+        orthographicProjHeight = (1+zoom)/windowRatio;
+        orthographicProjWidth = (1+zoom)/fboRatio;
+    }
+    if(orthographicProjHeight < 1.0) { // fitting y direction
+        zoom = windowRatio - 1;
+        orthographicProjHeight = (1+zoom)/windowRatio;
+        orthographicProjWidth = (1+zoom)/fboRatio;
+    }
+    // setting the image in the center
+    xTranslation = orthographicProjWidth /2;
+    yTranslation = orthographicProjHeight/2;
 }
 
 //! [8]
 void GLImage::resizeGL(int width, int height)
 {
-    ratio = float(width)/height;
+    windowRatio     = float(width)/height;
     glViewport(0, 0, width, height);
+
+    fboRatio = float(activeImage->fbo->width())/activeImage->fbo->height();
+    orthographicProjHeight = (1+zoom)/windowRatio;
+    orthographicProjWidth = (1+zoom)/fboRatio;
 }
 
 
@@ -445,6 +473,33 @@ void GLImage::enableShadowRender(bool enable){
 void GLImage::enableRecalculateOcclusion(bool enable){
         bRecalculateOcclusion = enable;
 }
+void GLImage::setConversionType(ConversionType type){
+    conversionType = type ;
+}
+void GLImage::updateCornersPosition(QVector2D dc1,QVector2D dc2,QVector2D dc3,QVector2D dc4){
+
+    cornerPositions[0] = QVector2D(0,0) + dc1;
+    cornerPositions[1] = QVector2D(1,0) + dc2;
+    cornerPositions[2] = QVector2D(1,1) + dc3;
+    cornerPositions[3] = QVector2D(0,1) + dc4;
+    updateGL();
+}
+void GLImage::selectPerspectiveTransformMethod(int method){
+    gui_perspective_mode = method;
+    updateGL();
+}
+
+void GLImage::selectSeamlessModeBlending(bool enable){
+    FBOImageProporties::bMakeSeamless = enable;
+    gui_seamless_mode = 0;
+    updateGL();
+}
+void GLImage::selectSeamlessModeMirror(bool enable){
+    FBOImageProporties::bMakeSeamless = enable;
+    gui_seamless_mode = int(enable);
+    updateGL();
+}
+
 
 void GLImage::applyNormalFilter(QGLFramebufferObject* inputFBO,
                          QGLFramebufferObject* outputFBO){
@@ -457,6 +512,30 @@ void GLImage::applyNormalFilter(QGLFramebufferObject* inputFBO,
     glBindTexture(GL_TEXTURE_2D, inputFBO->texture());
     glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0);
     outputFBO->bindDefault();
+}
+
+void GLImage::applyPerspectiveTransformFilter(  QGLFramebufferObject* inputFBO,
+                                                QGLFramebufferObject* outputFBO){
+
+    outputFBO->bind();
+
+    glViewport(0,0,outputFBO->width(),outputFBO->height());
+    glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_perspective_transform_filter"]);
+    program->setUniformValue("quad_scale", QVector2D(1.0,1.0));
+    program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0));
+    program->setUniformValue("corner1"  , cornerPositions[0]);
+    program->setUniformValue("corner2"  , cornerPositions[1]);
+    program->setUniformValue("corner3"  , cornerPositions[2]);
+    program->setUniformValue("corner4"  , cornerPositions[3]);
+
+    program->setUniformValue("gui_perspective_mode"  , gui_perspective_mode);
+
+
+    glBindTexture(GL_TEXTURE_2D, inputFBO->texture());
+    glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0);
+    outputFBO->bindDefault();
+
+
 }
 
 void GLImage::applyCompressedFormatFilter(QGLFramebufferObject* baseFBO,
@@ -550,6 +629,7 @@ void GLImage::applySeamlessFilter(QGLFramebufferObject* inputFBO,
     program->setUniformValue("quad_scale", QVector2D(1.0,1.0));
     program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0));
     program->setUniformValue("make_seamless_radius"  , radius);
+    program->setUniformValue("gui_seamless_mode"  , gui_seamless_mode);    
     glViewport(0,0,inputFBO->width(),inputFBO->height());
     outputFBO->bind();
     glBindTexture(GL_TEXTURE_2D, inputFBO->texture());
@@ -691,8 +771,8 @@ void GLImage::applyMediumDetailsFilter(QGLFramebufferObject* inputFBO,
 
     glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_gauss_filter"]);
     program->setUniformValue("gui_depth", activeImage->detailDepth);
-    program->setUniformValue("gui_gauss_radius", float(10.0));
-    program->setUniformValue("gui_gauss_w", float(10.0));
+    program->setUniformValue("gui_gauss_radius", float(20.0));
+    program->setUniformValue("gui_gauss_w", float(20.0));
 
     program->setUniformValue("quad_scale", QVector2D(1.0,1.0));
     program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0));
@@ -1199,4 +1279,104 @@ void GLImage::makeScreenQuad()
     }
     }
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * no_triangles * 3 , indices.constData(), GL_STATIC_DRAW);
+}
+
+
+void GLImage::updateMousePosition(){
+    QPoint p = mapFromGlobal(QCursor::pos());
+    cursorPhysicalXPosition =       double(p.x())/width() * orthographicProjWidth  - xTranslation;
+    cursorPhysicalYPosition = (1.0-double(p.y())/height())* orthographicProjHeight - yTranslation;
+    bSkipProcessing = true;    
+}
+
+void GLImage::wheelEvent(QWheelEvent *event){
+
+    if( event->delta() > 0) zoom+=0.1;
+        else zoom-=0.1;
+    if(zoom < -0.90) zoom = -0.90;
+
+    updateMousePosition();
+    resizeGL(width(),height());
+
+    QPoint p = mapFromGlobal(QCursor::pos());//getting the global position of cursor
+    // restoring the translation after zooming
+    xTranslation =        double(p.x())/width() *orthographicProjWidth  - cursorPhysicalXPosition;
+    yTranslation = ((1.0-double(p.y())/height())*orthographicProjHeight - cursorPhysicalYPosition );
+
+    updateGL();
+}
+
+void GLImage::mouseMoveEvent(QMouseEvent *event)
+{
+    int dx = event->x() - lastCursorPos.x();
+    int dy = event->y() - lastCursorPos.y();
+    lastCursorPos = event->pos();
+
+    QVector2D defCorners[4];//default position of corners
+    defCorners[0] = QVector2D(0,0) ;
+    defCorners[1] = QVector2D(1,0) ;
+    defCorners[2] = QVector2D(1,1) ;
+    defCorners[3] = QVector2D(0,1) ;
+    QVector2D mpos((cursorPhysicalXPosition+0.5),(cursorPhysicalYPosition+0.5));
+
+    if(draggingCorner == -1){
+    setCursor(Qt::OpenHandCursor);
+    for(int i = 0; i < 4 ; i++){
+        float dist = (mpos - defCorners[i]).length();
+        if(dist < 0.2){
+            //setCursor(Qt::SizeAllCursor);
+            setCursor(cornerCursors[i]);
+        }
+    }
+    }// end if dragging
+
+
+    if (event->buttons() & Qt::RightButton){
+        xTranslation += dx*(float(orthographicProjWidth)/width());
+        yTranslation -= dy*(float(orthographicProjHeight)/height());
+        setCursor(Qt::ClosedHandCursor);
+    }else if(event->buttons() & Qt::LeftButton){
+
+        // calculate distance from corners
+        if(draggingCorner == -1){
+        for(int i = 0; i < 4 ; i++){
+            float dist = (mpos - defCorners[i]).length();
+            if(dist < 0.2){
+                draggingCorner = i;
+            }
+        }// end of for corners
+        }// end of if
+        if(draggingCorner >=0 && draggingCorner < 4) cornerPositions[draggingCorner] += QVector2D(-dx*(float(orthographicProjWidth)/width()),dy*(float(orthographicProjHeight)/height()));
+        repaint();
+
+    }else if(event->buttons() & Qt::MiddleButton){ // drag image
+        setCursor(Qt::SizeAllCursor);
+        // move all corners
+        QVector2D averagePos(0.0,0.0);
+        QVector2D dmouse = QVector2D(-dx*(float(orthographicProjWidth)/width()),dy*(float(orthographicProjHeight)/height()));
+        for(int i = 0; i < 4 ; i++){
+            averagePos += cornerPositions[i]*0.25;
+            cornerPositions[i] += dmouse;
+        }
+        repaint();
+    }
+    updateMousePosition();
+    updateGL();
+}
+void GLImage::mousePressEvent(QMouseEvent *event)
+{
+
+    lastCursorPos = event->pos();
+    bSkipProcessing = true;
+    draggingCorner = -1;
+    // change cursor
+    if (event->buttons() & Qt::RightButton) {
+        setCursor(Qt::ClosedHandCursor);
+    }
+    updateGL();
+
+}
+void GLImage::mouseReleaseEvent(QMouseEvent *event){
+    setCursor(Qt::OpenHandCursor);
+    draggingCorner = -1;
 }
