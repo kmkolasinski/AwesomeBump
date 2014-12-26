@@ -20,17 +20,23 @@ INSTALLATION:
 Project Webpage: http://awesomebump.besaba.com/
 
 New in version 1.0:
+============
 1) log.txt file is created during each run. This file contains
    information about possible errors and program outputs. In case some
    problems (eq. GL version incompatibility) see this file.
+   
 2) New camera.cpp class introduced in order to improve 3D image
    manipulation. Right button can be used to pan 3D plane. Left to rotate
    camera around paned point.
+   
 3) Now 2D image can be dragged with mouse right button  and zoomed with
    mouse wheel.
+   
 4) New perspective tool funcionality added. You can stretch each corner
    of 2D image in order to correct and align image. Reset transform button
    restore settings.
+   
 5)  Added support for TGA files (import and export).
+
 
 
