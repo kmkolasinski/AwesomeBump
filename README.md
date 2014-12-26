@@ -1,4 +1,4 @@
-AwesomeBump Beta 0.0
+AwesomeBump  1.0
 ===========
 
 AwesomeBump is a free and open source program written using Qt library designed to generate normal, height, specular or ambient occlusion textures from a single image. Since the image processing is done in 99% on GPU the program runs very fast and all the parameters can be changed in real time. AB was made to be a new alternative to known gimp plugin called Insane Bump or commercial tool: Crazy Bump.  
@@ -6,6 +6,7 @@ AwesomeBump is a free and open source program written using Qt library designed 
 Feel free to contact me if you find any bugs and problems: support@awesomebump.besaba.com
 
 If you want to fix or improve something please fork my repo and send me the pull-request with changes. 
+
 
 INSTALLATION:
 ============
@@ -17,5 +18,19 @@ INSTALLATION:
 
 
 Project Webpage: http://awesomebump.besaba.com/
+
+New in version 1.0:
+1) log.txt file is created during each run. This file contains
+   information about possible errors and program outputs. In case some
+   problems (eq. GL version incompatibility) see this file.
+2) New camera.cpp class introduced in order to improve 3D image
+   manipulation. Right button can be used to pan 3D plane. Left to rotate
+   camera around paned point.
+3) Now 2D image can be dragged with mouse right button  and zoomed with
+   mouse wheel.
+4) New perspective tool funcionality added. You can stretch each corner
+   of 2D image in order to correct and align image. Reset transform button
+   restore settings.
+5)  Added support for TGA files (import and export).
 
 
