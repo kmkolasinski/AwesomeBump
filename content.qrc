@@ -26,10 +26,10 @@
         <file>content/plane.frag</file>
         <file>content/plane.vert</file>
         <file>content/lightCursor.png</file>
-        <file>content/resize.svg</file>
         <file>content/corner2.png</file>
         <file>content/corner3.png</file>
         <file>content/corner4.png</file>
         <file>content/corner1.png</file>
+        <file>content/resize.png</file>
     </qresource>
 </RCC>
