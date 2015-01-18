@@ -141,6 +141,40 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QGridLayout" name="gridLayout_4">
+        <item row="2" column="1">
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="1" column="2">
+           <widget class="QCheckBox" name="checkBoxInvertB">
+            <property name="toolTip">
+             <string>Inverts blue component</string>
+            </property>
+            <property name="text">
+             <string>b</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="checkBoxInvertR">
+            <property name="toolTip">
+             <string>Inverts red component. In case of height image it inverts height.</string>
+            </property>
+            <property name="text">
+             <string>r</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="checkBoxInvertG">
+            <property name="toolTip">
+             <string>Inverts green component</string>
+            </property>
+            <property name="text">
+             <string>g</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
         <item row="0" column="0">
          <widget class="QCheckBox" name="checkBoxRemoveShading">
           <property name="toolTip">
@@ -158,7 +192,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="label_17">
           <property name="text">
            <string>Invert component</string>
@@ -166,38 +200,129 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="checkBoxInvertR">
-            <property name="toolTip">
-             <string>Inverts red component. In case of height image it inverts height.</string>
-            </property>
-            <property name="text">
-             <string>r</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QCheckBox" name="checkBoxInvertG">
-            <property name="toolTip">
-             <string>Inverts green component</string>
-            </property>
-            <property name="text">
-             <string>g</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QCheckBox" name="checkBoxInvertB">
-            <property name="toolTip">
-             <string>Inverts blue component</string>
-            </property>
-            <property name="text">
-             <string>b</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="QGroupBox" name="groupBoxGrayScale">
+          <property name="title">
+           <string>Channel mixer</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <layout class="QGridLayout" name="gridLayout_11">
+             <item row="0" column="1">
+              <widget class="QComboBox" name="comboBoxGrayScalePresets">
+               <item>
+                <property name="text">
+                 <string>Human</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Equal</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_53">
+               <property name="text">
+                <string>Presets</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QGridLayout" name="gridLayout_12">
+             <item row="0" column="1">
+              <widget class="QSlider" name="horizontalSliderGrayScaleR">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>255</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_55">
+               <property name="minimumSize">
+                <size>
+                 <width>20</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_56">
+               <property name="text">
+                <string>G</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_54">
+               <property name="text">
+                <string>R</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_57">
+               <property name="text">
+                <string>B</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSlider" name="horizontalSliderGrayScaleG">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>255</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSlider" name="horizontalSliderGrayScaleB">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>255</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_58">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="label_59">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </item>
@@ -405,13 +530,13 @@
         <item row="6" column="1">
          <widget class="QSlider" name="horizontalSliderNormalsStep">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It changes the steepness of the normal image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It changes the steepness of the normal image in %.&lt;/p&gt;&lt;p&gt;For example 100% means that the image is not changed. 0% means that the  image is completely flat.  &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="minimum">
            <number>-300</number>
           </property>
           <property name="maximum">
-           <number>200</number>
+           <number>300</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -422,6 +547,106 @@
          <widget class="QLabel" name="labelNormalStepValue">
           <property name="text">
            <string>0</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxHeightProcessing">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clamp the RGB components of the pixel color to range (Min. value, Max. value).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="title">
+      <string>Levels</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_8">
+      <item>
+       <layout class="QGridLayout" name="gridLayout_10">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_49">
+          <property name="text">
+           <string>Min value</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QSlider" name="horizontalSliderHeightProcMinValue">
+          <property name="maximum">
+           <number>200</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="labelHeightProcMinValue">
+          <property name="minimumSize">
+           <size>
+            <width>30</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_51">
+          <property name="text">
+           <string>Max value</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSlider" name="horizontalSliderHeightProcMaxValue">
+          <property name="maximum">
+           <number>200</number>
+          </property>
+          <property name="value">
+           <number>200</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="labelHeightProcMaxValue">
+          <property name="text">
+           <string>1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_50">
+          <property name="text">
+           <string>Details</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSlider" name="horizontalSliderHeightAveRadius">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_52">
+          <property name="text">
+           <string>1</string>
           </property>
          </widget>
         </item>
@@ -715,6 +940,42 @@
           </property>
          </widget>
         </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_60">
+          <property name="text">
+           <string>Brightness</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxSpecularBrightness">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="minimum">
+           <double>-1.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>1.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QSlider" name="horizontalSliderSpecularBrightness">
+          <property name="minimum">
+           <number>-100</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -817,10 +1078,10 @@
            <string>This again allows you to control the contrast of the image.</string>
           </property>
           <property name="minimum">
-           <number>-200</number>
+           <number>-400</number>
           </property>
           <property name="maximum">
-           <number>200</number>
+           <number>400</number>
           </property>
           <property name="pageStep">
            <number>0</number>
@@ -895,19 +1156,6 @@
         </item>
        </layout>
       </item>
-      <item>
-       <widget class="QPushButton" name="pushButtonOcclusionRecalculate">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It uses the current &lt;span style=&quot; font-weight:600;&quot;&gt;normal &lt;/span&gt;and &lt;span style=&quot; font-weight:600;&quot;&gt;height image &lt;/span&gt;in order to calculate the input&lt;/p&gt;&lt;p&gt;image for AO calculations. For example if you change the normal or height image you have to use this button in order to get proper AO image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="whatsThis">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Recalculate from Normal and Height</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
@@ -917,6 +1165,16 @@
       <string>Height to normal</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QCheckBox" name="checkBoxConversionHNAttachToNormal">
+        <property name="whatsThis">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;With this option enabled the normal image will be directly &lt;/p&gt;&lt;p&gt;calculated from the Height texture, so any change of the height image will affect the Normals automatically. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Attach to Normal Texture</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QCheckBox" name="checkBoxEnableHeightToNormal">
         <property name="toolTip">
@@ -929,17 +1187,36 @@
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="3">
+         <widget class="QPushButton" name="pushButtonShowDepthCalculator">
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QLabel" name="label_15">
           <property name="text">
-           <string>Depth</string>
+           <string>Depth in pixels</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
          <widget class="QSlider" name="horizontalSliderConversionHNDepth">
           <property name="toolTip">
-           <string>It changes the amplitude of the calculated normals.</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It changes the depth of the calculated normal map in pixels unit.&lt;/p&gt;&lt;p&gt;For example: lets assume that you have picture of wall of size 1x1 m&lt;span style=&quot; vertical-align:super;&quot;&gt;2 &lt;/span&gt; in real world with bricks pattern and your image has size 1024x1024 pixels. Then you want to generate normals for texture which depth is 3cm = 0.03 m. So the depth in pixels is 0.03*1024 = 30.72 ~ 31 pixels. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="maximum">
+           <number>500</number>
+          </property>
+          <property name="pageStep">
+           <number>1</number>
           </property>
           <property name="value">
            <number>20</number>
@@ -950,15 +1227,30 @@
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QLabel" name="label_16">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxConversionHNDepth">
           <property name="minimumSize">
            <size>
-            <width>25</width>
+            <width>0</width>
             <height>0</height>
            </size>
           </property>
-          <property name="text">
-           <string>0</string>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
+          <property name="decimals">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <double>1000.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -1476,17 +1768,17 @@
  <connections>
   <connection>
    <sender>horizontalSliderRemoveShadingGaussIter</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>label</receiver>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>171</y>
+     <x>273</x>
+     <y>305</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>171</y>
+     <x>309</x>
+     <y>305</y>
     </hint>
    </hints>
   </connection>
@@ -1497,12 +1789,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>186</y>
+     <x>273</x>
+     <y>330</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>186</y>
+     <x>309</x>
+     <y>330</y>
     </hint>
    </hints>
   </connection>
@@ -1513,12 +1805,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>201</y>
+     <x>273</x>
+     <y>355</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>201</y>
+     <x>309</x>
+     <y>355</y>
     </hint>
    </hints>
   </connection>
@@ -1529,12 +1821,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>217</y>
+     <x>273</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>217</y>
+     <x>309</x>
+     <y>380</y>
     </hint>
    </hints>
   </connection>
@@ -1545,12 +1837,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>232</y>
+     <x>273</x>
+     <y>405</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>232</y>
+     <x>309</x>
+     <y>405</y>
     </hint>
    </hints>
   </connection>
@@ -1561,28 +1853,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>247</y>
+     <x>273</x>
+     <y>430</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>247</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSliderConversionHNDepth</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>label_16</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>226</x>
-     <y>757</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>257</x>
-     <y>757</y>
+     <x>309</x>
+     <y>430</y>
     </hint>
    </hints>
   </connection>
@@ -1593,12 +1869,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>908</y>
+     <x>278</x>
+     <y>1184</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>908</y>
+     <x>309</x>
+     <y>1184</y>
     </hint>
    </hints>
   </connection>
@@ -1609,12 +1885,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>262</y>
+     <x>273</x>
+     <y>455</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>262</y>
+     <x>309</x>
+     <y>455</y>
     </hint>
    </hints>
   </connection>
@@ -1625,12 +1901,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>1129</y>
+     <x>278</x>
+     <y>1471</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>1129</y>
+     <x>309</x>
+     <y>1471</y>
     </hint>
    </hints>
   </connection>
@@ -1641,12 +1917,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>1145</y>
+     <x>278</x>
+     <y>1496</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>1145</y>
+     <x>309</x>
+     <y>1496</y>
     </hint>
    </hints>
   </connection>
@@ -1657,12 +1933,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>1098</y>
+     <x>278</x>
+     <y>1421</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>1098</y>
+     <x>309</x>
+     <y>1421</y>
     </hint>
    </hints>
   </connection>
@@ -1673,12 +1949,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>1161</y>
+     <x>278</x>
+     <y>1521</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>1161</y>
+     <x>309</x>
+     <y>1521</y>
     </hint>
    </hints>
   </connection>
@@ -1689,12 +1965,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>1082</y>
+     <x>278</x>
+     <y>1396</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>1082</y>
+     <x>309</x>
+     <y>1396</y>
     </hint>
    </hints>
   </connection>
@@ -1705,12 +1981,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>1114</y>
+     <x>278</x>
+     <y>1446</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>1114</y>
+     <x>309</x>
+     <y>1446</y>
     </hint>
    </hints>
   </connection>
@@ -1721,12 +1997,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>1065</y>
+     <x>305</x>
+     <y>1370</y>
     </hint>
     <hint type="destinationlabel">
-     <x>248</x>
-     <y>1206</y>
+     <x>305</x>
+     <y>1576</y>
     </hint>
    </hints>
   </connection>
@@ -1737,12 +2013,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>856</y>
+     <x>305</x>
+     <y>1114</y>
     </hint>
     <hint type="destinationlabel">
-     <x>248</x>
-     <y>996</y>
+     <x>305</x>
+     <y>1314</y>
     </hint>
    </hints>
   </connection>
@@ -1753,12 +2029,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>735</y>
+     <x>305</x>
+     <y>998</y>
     </hint>
     <hint type="destinationlabel">
-     <x>248</x>
-     <y>787</y>
+     <x>305</x>
+     <y>1058</y>
     </hint>
    </hints>
   </connection>
@@ -1769,12 +2045,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>1176</y>
+     <x>278</x>
+     <y>1546</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>1176</y>
+     <x>309</x>
+     <y>1546</y>
     </hint>
    </hints>
   </connection>
@@ -1785,12 +2061,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>213</x>
-     <y>889</y>
+     <x>278</x>
+     <y>1159</y>
     </hint>
     <hint type="destinationlabel">
-     <x>238</x>
-     <y>890</y>
+     <x>309</x>
+     <y>1159</y>
     </hint>
    </hints>
   </connection>
@@ -1801,12 +2077,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
-     <y>921</y>
+     <x>278</x>
+     <y>1209</y>
     </hint>
     <hint type="destinationlabel">
-     <x>237</x>
-     <y>920</y>
+     <x>309</x>
+     <y>1209</y>
     </hint>
    </hints>
   </connection>
@@ -1817,12 +2093,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>187</x>
-     <y>934</y>
+     <x>278</x>
+     <y>1234</y>
     </hint>
     <hint type="destinationlabel">
-     <x>236</x>
-     <y>937</y>
+     <x>309</x>
+     <y>1234</y>
     </hint>
    </hints>
   </connection>
@@ -1833,12 +2109,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>151</x>
-     <y>950</y>
+     <x>278</x>
+     <y>1259</y>
     </hint>
     <hint type="destinationlabel">
-     <x>236</x>
-     <y>949</y>
+     <x>309</x>
+     <y>1259</y>
     </hint>
    </hints>
   </connection>
@@ -1849,12 +2125,108 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>208</x>
-     <y>966</y>
+     <x>278</x>
+     <y>1284</y>
     </hint>
     <hint type="destinationlabel">
-     <x>234</x>
-     <y>965</y>
+     <x>309</x>
+     <y>1284</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderHeightAveRadius</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_52</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>273</x>
+     <y>565</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>565</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxGrayScale</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBoxGrayScale</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>203</x>
+     <y>105</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>197</x>
+     <y>131</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderGrayScaleR</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_55</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>265</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>293</x>
+     <y>183</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderGrayScaleG</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_58</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>246</x>
+     <y>200</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>285</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderGrayScaleB</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_59</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>284</x>
+     <y>234</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxEnableHeightToNormal</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>checkBoxConversionHNAttachToNormal</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>96</x>
+     <y>989</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>103</x>
+     <y>966</y>
     </hint>
    </hints>
   </connection>

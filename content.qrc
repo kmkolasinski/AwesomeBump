@@ -21,8 +21,6 @@
         <file>content/saveAll.png</file>
         <file>content/saveSelected.png</file>
         <file>content/open.png</file>
-        <file>content/filters.frag</file>
-        <file>content/filters.vert</file>
         <file>content/plane.frag</file>
         <file>content/plane.vert</file>
         <file>content/lightCursor.png</file>
@@ -31,5 +29,8 @@
         <file>content/corner4.png</file>
         <file>content/corner1.png</file>
         <file>content/resize.png</file>
+        <file>content/translateUV.png</file>
+        <file>content/grabCorners.png</file>
+        <file>content/scaleXYUV.png</file>
     </qresource>
 </RCC>

@@ -66,8 +66,7 @@ public:
     QSize sizeHint() const;
     void setActiveImage(FBOImageProporties* ptr);
     FBOImageProporties* getActiveImage(){return activeImage;}
-    void enableShadowRender(bool enable);
-    void enableRecalculateOcclusion(bool enable);
+    void enableShadowRender(bool enable);    
     void setConversionType(ConversionType conversionType);
     void updateCornersPosition(QVector2D dc1,QVector2D dc2,QVector2D dc3,QVector2D dc4);
     void render();
@@ -77,10 +76,13 @@ public:
     FBOImageProporties* targetImageSpecular;
     FBOImageProporties* targetImageOcclusion;
 public slots:
+    void resizeFBO(int width, int height);
+
     void resetView();
     void selectPerspectiveTransformMethod(int method);
-    void selectSeamlessModeBlending(bool enable);
-    void selectSeamlessModeMirror(bool enable);
+    void selectUVManipulationMethod(UVManipulationMethods method);
+    void updateCornersWeights(float w1, float w2, float w3, float w4);
+    void selectSeamlessMode(SeamlessMode mode);
 signals:
     void rendered();
 
@@ -118,7 +120,7 @@ protected:
                              QGLFramebufferObject* layerBFBO,
                              QGLFramebufferObject* outputFBO);
     void applySeamlessFilter(QGLFramebufferObject* inputFBO,
-                             QGLFramebufferObject* outputFBO, float radius);
+                             QGLFramebufferObject* outputFBO);
     void applyDGaussiansFilter(QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject *auxFBO,
                              QGLFramebufferObject* outputFBO);
@@ -169,6 +171,9 @@ protected:
     void applyOcclusionFilter(QGLFramebufferObject* inputFBO,
                               QGLFramebufferObject* outputFBO);
 
+    void applyHeightProcessingfFilter(QGLFramebufferObject* inputFBO,
+                                      QGLFramebufferObject* outputFBO);
+
     void applyCombineNormalHeightFilter(QGLFramebufferObject* normalFBO,
                                         QGLFramebufferObject *heightFBO,
                                         QGLFramebufferObject* outputFBO);
@@ -186,12 +191,15 @@ private:
 
     GLuint vbos[3];
     ConversionType conversionType;
-    bool bShadowRender;
-    bool bRecalculateOcclusion;
+    bool bShadowRender;    
     bool bSkipProcessing;   // draw quad but skip all the processing step (using during mouse interaction)
     float windowRatio;      // window width-height ratio
     float fboRatio;         // active fbo width-height ratio
     QPoint lastCursorPos;
+
+    // Image resize
+    int resize_width;
+    int resize_height;
 
     // Image translation and physical cursor position
     double xTranslation; // x position of the image in the window
@@ -205,10 +213,14 @@ private:
 
     // perspective transformation
     QVector2D cornerPositions[4]; // position of four corner used to perform perspective transformation of quad
+    QVector4D cornerWeights;
     int draggingCorner; // contains Id of current corner dragged or -1
     QCursor cornerCursors[4];
     int gui_perspective_mode; // choose proper interpolation method
     int gui_seamless_mode; // if 0 standard blending, if 1 mirror mode
+
+    // uv manipulations method
+    UVManipulationMethods uvManilupationMethod;
 };
 //! [3]
 

@@ -1,7 +1,11 @@
 #include "CommonObjects.h"
 
-bool  FBOImageProporties::bMakeSeamless      = false;
-float FBOImageProporties::MakeSeamlessRadius = 0.5;
+bool FBOImageProporties::bAttachNormalToHeightMap = false;
+
+SeamlessMode FBOImageProporties::seamlessMode = SEAMLESS_NONE;
+float FBOImageProporties::seamlessSimpleModeRadius   = 0.5;
+int FBOImageProporties::seamlessMirroModeType = 0;
+RandomTilingMode FBOImageProporties::seamlessRandomTiling = RandomTilingMode();
 
 
 QString  PostfixNames::diffuseName    = "_d";

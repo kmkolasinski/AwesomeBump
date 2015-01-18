@@ -25,14 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     QGLContext* glContext = (QGLContext *) glWidget->context();
-    glContext->makeCurrent();
-
+    glContext->makeCurrent();    
     qDebug() << "Widget OpenGL: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() ;
     qDebug() << "Context valid: " << glContext->isValid() ;
     qDebug() << "OpenGL information: " ;
-    qDebug() << "VENDOR: " << (const char*)glGetString(GL_VENDOR) ;
-    qDebug() << "RENDERER: " << (const char*)glGetString(GL_RENDERER) ;
-    qDebug() << "VERSION: " << (const char*)glGetString(GL_VERSION) ;
+    qDebug() << "VENDOR: "       << (const char*)glGetString(GL_VENDOR) ;
+    qDebug() << "RENDERER: "     << (const char*)glGetString(GL_RENDERER) ;
+    qDebug() << "VERSION: "      << (const char*)glGetString(GL_VERSION) ;
     qDebug() << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
 
     qDebug() << "OpenGLVersionFlags(): " << QGLFormat::OpenGLVersionFlags();
@@ -50,18 +49,18 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp= new FormImageProp(this,glImage);
 
     // Setting pointers to 3D view (this pointer are used to bindTextures).
-    glWidget->setPointerToTexture(&diffuseImageProp->getImageProporties() ->fbo,DIFFUSE_TEXTURE);
-    glWidget->setPointerToTexture(&normalImageProp->getImageProporties()  ->fbo,NORMAL_TEXTURE);
-    glWidget->setPointerToTexture(&specularImageProp->getImageProporties()->fbo,SPECULAR_TEXTURE);
-    glWidget->setPointerToTexture(&heightImageProp->getImageProporties()  ->fbo,HEIGHT_TEXTURE);
-    glWidget->setPointerToTexture(&occlusionImageProp->getImageProporties()->fbo,OCCLUSION_TEXTURE);
+    glWidget->setPointerToTexture(&diffuseImageProp  ->getImageProporties() ->fbo,DIFFUSE_TEXTURE);
+    glWidget->setPointerToTexture(&normalImageProp   ->getImageProporties() ->fbo,NORMAL_TEXTURE);
+    glWidget->setPointerToTexture(&specularImageProp ->getImageProporties() ->fbo,SPECULAR_TEXTURE);
+    glWidget->setPointerToTexture(&heightImageProp   ->getImageProporties() ->fbo,HEIGHT_TEXTURE);
+    glWidget->setPointerToTexture(&occlusionImageProp->getImageProporties() ->fbo,OCCLUSION_TEXTURE);
 
     // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
     normalImageProp   ->getImageProporties()->imageType = NORMAL_TEXTURE;
     specularImageProp ->getImageProporties()->imageType = SPECULAR_TEXTURE;
     heightImageProp   ->getImageProporties()->imageType = HEIGHT_TEXTURE;
-    occlusionImageProp ->getImageProporties()->imageType = OCCLUSION_TEXTURE;
+    occlusionImageProp->getImageProporties()->imageType = OCCLUSION_TEXTURE;
 
     // disabling some options for each texture
     specularImageProp->setSpecularControlChecked();
@@ -71,6 +70,8 @@ MainWindow::MainWindow(QWidget *parent) :
     specularImageProp->hideNHGroupBox();
     specularImageProp->hideSSAOBar();
     specularImageProp->hideNormalStepBar();
+
+
 
     diffuseImageProp->hideHNGroupBox();
     diffuseImageProp->hideNHGroupBox();
@@ -82,20 +83,25 @@ MainWindow::MainWindow(QWidget *parent) :
     normalImageProp->hideBMGroupBox();
     normalImageProp->hideSpecularGroupBox();
     normalImageProp->hideSSAOBar();
+    normalImageProp->hideHeightProcessingBox();
+    normalImageProp->hideGrayScaleControl();
 
     heightImageProp->hideBMGroupBox();
     heightImageProp->hideNHGroupBox();
     heightImageProp->hideSpecularGroupBox();
     heightImageProp->hideNormalStepBar();
     heightImageProp->hideSSAOBar();
+    heightImageProp->hideGrayScaleControl();
 
     occlusionImageProp->hideSpecularGroupBox();
     occlusionImageProp->hideBMGroupBox();
     occlusionImageProp->hideHNGroupBox();
     occlusionImageProp->hideNHGroupBox();
     occlusionImageProp->hideNormalStepBar();
-    glImage ->targetImageNormal    = normalImageProp->getImageProporties();
-    glImage ->targetImageHeight    = heightImageProp->getImageProporties();
+    occlusionImageProp->hideGrayScaleControl();
+
+    glImage ->targetImageNormal    = normalImageProp   ->getImageProporties();
+    glImage ->targetImageHeight    = heightImageProp   ->getImageProporties();
     glImage ->targetImageSpecular  = specularImageProp ->getImageProporties();
     glImage ->targetImageOcclusion = occlusionImageProp->getImageProporties();
 
@@ -103,83 +109,131 @@ MainWindow::MainWindow(QWidget *parent) :
     //                      GUI setup
     // ------------------------------------------------------
     ui->setupUi(this);
-    ui->horizontalLayout->addWidget(glWidget);
-    ui->horizontalLayout->addWidget(glImage);
+    ui->widget_2->hide();
+    ui->verticalLayout3DImage->addWidget(glWidget);
+    ui->verticalLayout2DImage->addWidget(glImage);
 
 
-    ui->verticalLayoutDiffuseImage->addWidget(diffuseImageProp);
-    ui->verticalLayoutNormalImage->addWidget(normalImageProp);
-    ui->verticalLayoutSpecularImage->addWidget(specularImageProp);
-    ui->verticalLayoutHeightImage->addWidget(heightImageProp);
+    ui->verticalLayoutDiffuseImage  ->addWidget(diffuseImageProp);
+    ui->verticalLayoutNormalImage   ->addWidget(normalImageProp);
+    ui->verticalLayoutSpecularImage ->addWidget(specularImageProp);
+    ui->verticalLayoutHeightImage   ->addWidget(heightImageProp);
     ui->verticalLayoutOcclusionImage->addWidget(occlusionImageProp);
 
     connect(glWidget,SIGNAL(rendered()),this,SLOT(initializeImages()));
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
     // imageChange signals
-    connect(diffuseImageProp,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
-    connect(normalImageProp,SIGNAL(imageChanged()),this,SLOT(updateNormalImage()));
-    connect(specularImageProp,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
-    connect(heightImageProp,SIGNAL(imageChanged()),this,SLOT(updateHeightImage()));
+    connect(diffuseImageProp  ,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
+    connect(normalImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateNormalImage()));
+    connect(specularImageProp ,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
+    connect(heightImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateHeightImage()));
     connect(occlusionImageProp,SIGNAL(imageChanged()),this,SLOT(updateOcclusionImage()));
     // conversion signals
     connect(heightImageProp,SIGNAL(conversionHeightToNormalApplied()) ,this,SLOT(convertFromHtoN()));
-    connect(normalImageProp,SIGNAL(conversionNormalToHeightApplied()) ,this,SLOT(convertFromNtoH()));
+    connect(heightImageProp,SIGNAL(repaintNormalTexture()) ,this,SLOT(repaintNormalImage()));
+
+    connect(normalImageProp ,SIGNAL(conversionNormalToHeightApplied()),this,SLOT(convertFromNtoH()));
     connect(diffuseImageProp,SIGNAL(conversionBaseConversionApplied()),this,SLOT(convertFromBase()));
-    connect(occlusionImageProp,SIGNAL(recalculateOcclusion()),this,SLOT(recalculateOcclusion()));
+
     // Global setting signals
-    // seamless
-    connect(ui->checkBoxMakeSeamless,SIGNAL(toggled(bool)),this,SLOT(enableMakeSeamless(bool)));
-    connect(ui->checkBoxMakeSeamless,SIGNAL(toggled(bool)),glImage,SLOT(selectSeamlessModeBlending(bool)));
-    connect(ui->checkBoxMirrorMode,SIGNAL(toggled(bool)),glImage,SLOT(selectSeamlessModeMirror(bool)));
-    connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(valueChanged(int)),this,SLOT(setMakeSeamlessRadius(int)));
     // sliders
-    connect(ui->horizontalSliderDepthScale,SIGNAL(valueChanged(int)),glWidget,SLOT(setDepthScale(int)));
-    connect(ui->horizontalSliderUVScale,SIGNAL(valueChanged(int)),glWidget,SLOT(setUVScale(int)));
-    connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderDepthScale,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderUVScale,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderUVXOffset,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderUVYOffset,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderDepthScale  ,SIGNAL(valueChanged(int)),glWidget,SLOT(setDepthScale(int)));
+    connect(ui->horizontalSliderUVScale     ,SIGNAL(valueChanged(int)),glWidget,SLOT(setUVScale(int)));    
+    connect(ui->horizontalSliderDepthScale  ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderUVScale     ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderUVXOffset   ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderUVYOffset   ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
 
     // Save signals
-    connect(ui->pushButtonSaveAll,SIGNAL(released()),this,SLOT(saveImages()));
+    connect(ui->pushButtonSaveAll    ,SIGNAL(released()),this,SLOT(saveImages()));
     connect(ui->pushButtonSaveChecked,SIGNAL(released()),this,SLOT(saveCheckedImages()));
-    connect(ui->pushButtonSaveAs,SIGNAL(released()),this,SLOT(saveCompressedForm()));
+    connect(ui->pushButtonSaveAs     ,SIGNAL(released()),this,SLOT(saveCompressedForm()));
+
+
+    // image properties signals
+    connect(ui->comboBoxResizeWidth   ,SIGNAL(currentIndexChanged(int)),this,SLOT(changeWidth(int)));
+    connect(ui->comboBoxResizeHeight  ,SIGNAL(currentIndexChanged(int)),this,SLOT(changeHeight(int)));
+
+    connect(ui->doubleSpinBoxRescaleWidth  ,SIGNAL(valueChanged(double)),this,SLOT(scaleWidth(double)));
+    connect(ui->doubleSpinBoxRescaleHeight ,SIGNAL(valueChanged(double)),this,SLOT(scaleHeight(double)));
+
+    connect(ui->pushButtonResizeApply ,SIGNAL(released()),this,SLOT(applyResizeImage()));
+    connect(ui->pushButtonRescaleApply,SIGNAL(released()),this,SLOT(applyScaleImage()));
+
 
     // Other signals
-    connect(ui->pushButtonReplotAll,SIGNAL(released()),this,SLOT(replotAllImages()));
-    connect(ui->pushButtonToggleDiffuse,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
-    connect(ui->pushButtonToggleSpecular,SIGNAL(toggled(bool)),glWidget,SLOT(toggleSpecularView(bool)));
-    connect(ui->pushButtonToggleOcclusion,SIGNAL(toggled(bool)),glWidget,SLOT(toggleOcclusionView(bool)));
+    connect(ui->pushButtonReplotAll         ,SIGNAL(released()),this,SLOT(replotAllImages()));
+    connect(ui->pushButtonToggleDiffuse     ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
+    connect(ui->pushButtonToggleSpecular    ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleSpecularView(bool)));
+    connect(ui->pushButtonToggleOcclusion   ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleOcclusionView(bool)));
     connect(ui->pushButtonSaveCurrentSettings,SIGNAL(released()),this,SLOT(saveSettings()));
-    connect(ui->horizontalSliderSpecularI,SIGNAL(valueChanged(int)),this,SLOT(setSpecularIntensity(int)));
-    connect(ui->horizontalSliderDiffuseI,SIGNAL(valueChanged(int)),this,SLOT(setDiffuseIntensity(int)));
-    connect(ui->comboBoxImageOutputFormat,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
+    connect(ui->horizontalSliderSpecularI   ,SIGNAL(valueChanged(int)),this,SLOT(setSpecularIntensity(int)));
+    connect(ui->horizontalSliderDiffuseI    ,SIGNAL(valueChanged(int)),this,SLOT(setDiffuseIntensity(int)));
+    connect(ui->comboBoxImageOutputFormat   ,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
 
 
     ui->progressBar->setValue(0);
 
-    connect(ui->actionReplot,SIGNAL(triggered()),this,SLOT(replotAllImages()));
-    connect(ui->actionShowDiffuseImage,SIGNAL(triggered()),this,SLOT(selectDiffuseTab()));
-    connect(ui->actionShowNormalImage,SIGNAL(triggered()),this,SLOT(selectNormalTab()));
-    connect(ui->actionShowSpecularImage,SIGNAL(triggered()),this,SLOT(selectSpecularTab()));
-    connect(ui->actionShowHeightImage,SIGNAL(triggered()),this,SLOT(selectHeightTab()));
+    connect(ui->actionReplot            ,SIGNAL(triggered()),this,SLOT(replotAllImages()));
+    connect(ui->actionShowDiffuseImage  ,SIGNAL(triggered()),this,SLOT(selectDiffuseTab()));
+    connect(ui->actionShowNormalImage   ,SIGNAL(triggered()),this,SLOT(selectNormalTab()));
+    connect(ui->actionShowSpecularImage ,SIGNAL(triggered()),this,SLOT(selectSpecularTab()));
+    connect(ui->actionShowHeightImage   ,SIGNAL(triggered()),this,SLOT(selectHeightTab()));
     connect(ui->actionShowOcclusiontImage,SIGNAL(triggered()),this,SLOT(selectOcclusionTab()));
-    connect(ui->actionShowSettingsImage,SIGNAL(triggered()),this,SLOT(selectGeneralSettingsTab()));
-    connect(ui->actionFitToScreen,SIGNAL(triggered()),this,SLOT(fitImage()));
+    connect(ui->actionShowSettingsImage ,SIGNAL(triggered()),this,SLOT(selectGeneralSettingsTab()));
+    connect(ui->actionFitToScreen       ,SIGNAL(triggered()),this,SLOT(fitImage()));
+
 
     // perspective tool
-    connect(ui->pushButtonResetTransform,SIGNAL(released()),this,SLOT(resetTransform()));
-    connect(ui->comboBoxPerspectiveTransformMethod,SIGNAL(activated(int)),glImage,SLOT(selectPerspectiveTransformMethod(int)));
+    connect(ui->pushButtonResetTransform            ,SIGNAL(released()),this,SLOT(resetTransform()));
+    connect(ui->comboBoxPerspectiveTransformMethod  ,SIGNAL(activated(int)),glImage,SLOT(selectPerspectiveTransformMethod(int)));
+    connect(ui->comboBoxSeamlessMode                ,SIGNAL(activated(int)),this,SLOT(selectSeamlessMode(int)));
 
+    // uv seamless algorithms
+    connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(sliderReleased()),this,SLOT(updateSliders()));
+    connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    QButtonGroup *groupMirroMode = new QButtonGroup( this );
+    groupMirroMode->addButton( ui->radioButtonMirrorModeX);
+    groupMirroMode->addButton( ui->radioButtonMirrorModeY);
+    groupMirroMode->addButton( ui->radioButtonMirrorModeXY);
+    connect(ui->radioButtonMirrorModeX ,SIGNAL(released()),this,SLOT(updateSliders()));
+    connect(ui->radioButtonMirrorModeY ,SIGNAL(released()),this,SLOT(updateSliders()));
+    connect(ui->radioButtonMirrorModeXY,SIGNAL(released()),this,SLOT(updateSliders()));
+
+    // random mode
+    connect(ui->pushButtonRandomPatchesRandomize,SIGNAL(released()),this,SLOT(randomizeAngles()));
+    connect(ui->pushButtonRandomPatchesReset,SIGNAL(released()),this,SLOT(resetRandomPatches()));
+    connect(ui->horizontalSliderRandomPatchesRotate,SIGNAL(sliderReleased()),this,SLOT(updateSliders()));
+    connect(ui->horizontalSliderRandomPatchesInnerRadius,SIGNAL(sliderReleased()),this,SLOT(updateSliders()));
+    connect(ui->horizontalSliderRandomPatchesOuterRadius,SIGNAL(sliderReleased()),this,SLOT(updateSliders()));
+
+    connect(ui->horizontalSliderRandomPatchesRotate,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderRandomPatchesInnerRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderRandomPatchesOuterRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+
+
+    ui->groupBoxSimpleSeamlessMode->hide();
+    ui->groupBoxMirrorMode->hide();
+    ui->groupBoxRandomPatchesMode->hide();
+
+
+    // 2D imate tool box settings
+    QActionGroup *group = new QActionGroup( this );
+    group->addAction( ui->actionTranslateUV );
+    group->addAction( ui->actionGrabCorners);
+    group->addAction( ui->actionScaleXY );
+    ui->actionTranslateUV->setChecked(true);
+    connect(ui->actionTranslateUV,SIGNAL(triggered()),this,SLOT(setUVManipulationMethod()));
+    connect(ui->actionGrabCorners,SIGNAL(triggered()),this,SLOT(setUVManipulationMethod()));
+    connect(ui->actionScaleXY    ,SIGNAL(triggered()),this,SLOT(setUVManipulationMethod()));
 
     loadSettings();
     // Loading default (initial) textures
-    diffuseImageProp ->setImage(QImage(QString(":/content/logo_D.png")));
-    normalImageProp  ->setImage(QImage(QString(":/content/logo_N.png")));
-    specularImageProp->setImage(QImage(QString(":/content/logo_D.png")));
-    heightImageProp  ->setImage(QImage(QString(":/content/logo_H.png")));
-    occlusionImageProp->setImage(QImage(QString(":/content/logo_O.png")));
+    diffuseImageProp   ->setImage(QImage(QString(":/content/logo_D.png")));
+    normalImageProp    ->setImage(QImage(QString(":/content/logo_N.png")));
+    specularImageProp  ->setImage(QImage(QString(":/content/logo_D.png")));
+    heightImageProp    ->setImage(QImage(QString(":/content/logo_H.png")));
+    occlusionImageProp ->setImage(QImage(QString(":/content/logo_O.png")));
 
     diffuseImageProp   ->setImageName(ui->lineEditOutputName->text());
     normalImageProp    ->setImageName(ui->lineEditOutputName->text());
@@ -189,6 +243,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Setting the active image
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
+
+
 
 #ifdef Q_OS_MAC
     if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
@@ -222,11 +278,20 @@ void MainWindow::replotAllImages(){
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < 5 ; i++){
-        updateImage(i);
+        // skip normal and ambient occlusion
+        if(i!=1 && i!=4)updateImage(i);
         glImage->repaint();
     }
+    // recalulate normal at the end
+    updateImage(1);
+    glImage->repaint();
+    // then ambient occlusion
+    updateImage(4);
+    glImage->repaint();
     glImage->enableShadowRender(false);
+
     glImage->setActiveImage(lastActive);
+    glWidget->repaint();
 }
 
 
@@ -435,6 +500,7 @@ void MainWindow::saveCompressedForm(){
 
 void MainWindow::updateDiffuseImage(){
     ui->lineEditOutputName->setText(diffuseImageProp->getImageName());
+    updateImageInformation();
     glImage->repaint();
     glWidget->repaint();
 }
@@ -451,6 +517,16 @@ void MainWindow::updateSpecularImage(){
 void MainWindow::updateHeightImage(){
     ui->lineEditOutputName->setText(heightImageProp->getImageName());
     glImage->repaint();
+
+    // replot normal if height was changed in attached mode
+    if(FBOImageProporties::bAttachNormalToHeightMap){
+        glImage->enableShadowRender(true);
+        updateImage(1);
+        glImage->updateGL();
+        glImage->enableShadowRender(false);
+        // set height tab back again
+        updateImage(3);
+    }
     glWidget->repaint();
 }
 
@@ -459,6 +535,22 @@ void MainWindow::updateOcclusionImage(){
     glImage->repaint();
     glWidget->repaint();
 
+}
+
+void MainWindow::repaintNormalImage(){
+    FBOImageProporties* lastActive = glImage->getActiveImage();
+    glImage->enableShadowRender(true);
+        updateImage(1);
+        glImage->repaint();
+    glImage->enableShadowRender(false);
+    glImage->setActiveImage(lastActive);
+    glWidget->repaint();
+}
+
+
+void MainWindow::updateImageInformation(){
+    ui->labelCurrentImageWidth ->setNum(diffuseImageProp->getImageProporties()->ref_fbo->width());
+    ui->labelCurrentImageHeight->setNum(diffuseImageProp->getImageProporties()->ref_fbo->height());
 }
 
 void MainWindow::initializeImages(){
@@ -472,7 +564,7 @@ void MainWindow::initializeImages(){
     replotAllImages();
     // SSAO recalculation
     FBOImageProporties* lastActive = glImage->getActiveImage();
-    glImage->enableRecalculateOcclusion(true);
+
     updateImage(4);
     glImage->repaint();
     glImage->setActiveImage(lastActive);
@@ -500,16 +592,109 @@ void MainWindow::updateImage(int tType){
     glWidget->repaint();
 }
 
+void MainWindow::changeWidth (int size){
+    if(ui->pushButtonResizePropTo->isChecked()){
+        ui->comboBoxResizeHeight->setCurrentText(ui->comboBoxResizeWidth->currentText());
+    }
+}
+void MainWindow::changeHeight(int size){
+    if(ui->pushButtonResizePropTo->isChecked()){
+        ui->comboBoxResizeWidth->setCurrentText(ui->comboBoxResizeHeight->currentText());
+    }
+}
 
-void MainWindow::enableMakeSeamless(bool bVal){
-    FBOImageProporties::bMakeSeamless = bVal;
-    glImage->repaint();
+
+
+void MainWindow::applyResizeImage(){
+    QCoreApplication::processEvents();
+    int width  = ui->comboBoxResizeWidth->currentText().toInt();
+    int height = ui->comboBoxResizeHeight->currentText().toInt();
+    qDebug() << "Image resize applied. Current image size is (" << width << "," << height << ")" ;
+
+    FBOImageProporties* lastActive = glImage->getActiveImage();
+    glImage->enableShadowRender(true);
+    for(int i = 0 ; i < 5 ; i++){
+        updateImage(i);
+        glImage->resizeFBO(width,height);
+    }
+    glImage->enableShadowRender(false);
+    glImage->setActiveImage(lastActive);
+    replotAllImages();
+    updateImageInformation();
     glWidget->repaint();
 }
-void MainWindow::setMakeSeamlessRadius(int iVal){
-    FBOImageProporties::MakeSeamlessRadius = iVal/100.0;
-    glImage->repaint();
+
+void MainWindow::scaleWidth(double){
+    if(ui->pushButtonRescalePropTo->isChecked()){
+        ui->doubleSpinBoxRescaleHeight->setValue(ui->doubleSpinBoxRescaleWidth->value());
+    }
+}
+void MainWindow::scaleHeight(double){
+    if(ui->pushButtonRescalePropTo->isChecked()){
+        ui->doubleSpinBoxRescaleWidth->setValue(ui->doubleSpinBoxRescaleHeight->value());
+    }
+}
+
+void MainWindow::applyScaleImage(){
+    QCoreApplication::processEvents();
+    float scale_width   = ui->doubleSpinBoxRescaleWidth ->value();
+    float scale_height  = ui->doubleSpinBoxRescaleHeight->value();
+    int width  = diffuseImageProp->getImageProporties()->scr_tex_width *scale_width;
+    int height = diffuseImageProp->getImageProporties()->scr_tex_height*scale_height;
+
+    qDebug() << "Image rescale applied. Current image size is (" << width << "," << height << ")" ;
+
+    FBOImageProporties* lastActive = glImage->getActiveImage();
+    glImage->enableShadowRender(true);
+    for(int i = 0 ; i < 5 ; i++){
+        updateImage(i);
+        glImage->resizeFBO(width,height);
+    }
+    glImage->enableShadowRender(false);
+    glImage->setActiveImage(lastActive);
+    replotAllImages();
+    updateImageInformation();
     glWidget->repaint();
+
+}
+
+
+void MainWindow::selectSeamlessMode(int mode){
+    // some gui interaction -> hide and show
+    ui->groupBoxSimpleSeamlessMode->hide();
+    ui->groupBoxMirrorMode->hide();
+    ui->groupBoxRandomPatchesMode->hide();
+    switch(mode){
+    case(SEAMLESS_NONE):
+
+        break;
+    case(SEAMLESS_SIMPLE):
+        ui->groupBoxSimpleSeamlessMode->show();
+        break;
+    case(SEAMLESS_MIRROR):
+        ui->groupBoxMirrorMode->show();
+        break;
+    case(SEAMLESS_RANDOM):
+        ui->groupBoxRandomPatchesMode->show();
+        break;
+    default:
+        break;
+    }
+    glImage->selectSeamlessMode((SeamlessMode)mode);
+    replotAllImages();
+}
+
+void MainWindow::randomizeAngles(){
+    FBOImageProporties::seamlessRandomTiling.randomize();
+    replotAllImages();
+}
+void MainWindow::resetRandomPatches(){
+    FBOImageProporties::seamlessRandomTiling = RandomTilingMode();
+    ui->horizontalSliderRandomPatchesRotate     ->setValue(FBOImageProporties::seamlessRandomTiling.common_phase);
+    ui->horizontalSliderRandomPatchesInnerRadius->setValue(FBOImageProporties::seamlessRandomTiling.inner_radius*100.0);
+    ui->horizontalSliderRandomPatchesOuterRadius->setValue(FBOImageProporties::seamlessRandomTiling.outer_radius*100.0);
+    updateSpinBoxes(0);
+    replotAllImages();
 }
 
 void MainWindow::setSpecularIntensity(int val){
@@ -523,11 +708,17 @@ void MainWindow::setDiffuseIntensity(int val){
     glWidget->setDiffuseIntensity(d);
 }
 void MainWindow::updateSpinBoxes(int){
+
     ui->doubleSpinBoxMakeSeamless->setValue(ui->horizontalSliderMakeSeamlessRadius->value()/100.0);
-    ui->doubleSpinBoxDepthScale->setValue(ui->horizontalSliderDepthScale->value()/100.0);
-    ui->doubleSpinBoxUVScale->setValue(ui->horizontalSliderUVScale->value()/10.0);
-    ui->doubleSpinBoxUVXOffset->setValue(ui->horizontalSliderUVXOffset->value()/100.0);
-    ui->doubleSpinBoxUVYOffset->setValue(ui->horizontalSliderUVYOffset->value()/100.0);
+    ui->doubleSpinBoxDepthScale  ->setValue(ui->horizontalSliderDepthScale->value()/100.0);
+    ui->doubleSpinBoxUVScale     ->setValue(ui->horizontalSliderUVScale   ->value()/10.0);
+    ui->doubleSpinBoxUVXOffset   ->setValue(ui->horizontalSliderUVXOffset ->value()/100.0);
+    ui->doubleSpinBoxUVYOffset   ->setValue(ui->horizontalSliderUVYOffset ->value()/100.0);
+
+    // random tiling mode
+    ui->doubleSpinBoxRandomPatchesAngle      ->setValue(ui->horizontalSliderRandomPatchesRotate     ->value());
+    ui->doubleSpinBoxRandomPatchesInnerRadius->setValue(ui->horizontalSliderRandomPatchesInnerRadius->value()/100.0);
+    ui->doubleSpinBoxRandomPatchesOuterRadius->setValue(ui->horizontalSliderRandomPatchesOuterRadius->value()/100.0);
 
     glWidget->setUVScaleOffset(ui->doubleSpinBoxUVXOffset->value(),ui->doubleSpinBoxUVYOffset->value());
 }
@@ -536,6 +727,7 @@ void MainWindow::updateSpinBoxes(int){
 void MainWindow::convertFromHtoN(){   
     glImage->setConversionType(CONVERT_FROM_H_TO_N);
     glImage->repaint();
+    replotAllImages();
     glWidget->repaint();
     qDebug() << "Conversion from height to normal applied";
 }
@@ -543,6 +735,7 @@ void MainWindow::convertFromHtoN(){
 void MainWindow::convertFromNtoH(){
     glImage->setConversionType(CONVERT_FROM_N_TO_H);
     glImage->repaint();
+    replotAllImages();
     glWidget->repaint();
     qDebug() << "Conversion from normal to height applied";
 }
@@ -558,19 +751,42 @@ void MainWindow::convertFromBase(){
     qDebug() << "Conversion from Base to others applied";
 }
 
-void MainWindow::recalculateOcclusion(){
-    glImage->enableRecalculateOcclusion(true);
+
+void MainWindow::updateSliders(){
+    updateSpinBoxes(0);
+    FBOImageProporties::seamlessSimpleModeRadius          = ui->doubleSpinBoxMakeSeamless->value();
+    FBOImageProporties::seamlessRandomTiling.common_phase = ui->doubleSpinBoxRandomPatchesAngle->value()/180.0*3.1415926;
+    FBOImageProporties::seamlessRandomTiling.inner_radius = ui->doubleSpinBoxRandomPatchesInnerRadius->value();
+    FBOImageProporties::seamlessRandomTiling.outer_radius = ui->doubleSpinBoxRandomPatchesOuterRadius->value();
+
+    // choosing the proper mirror mode
+    if(ui->radioButtonMirrorModeXY->isChecked()) FBOImageProporties::seamlessMirroModeType = 0;
+    if(ui->radioButtonMirrorModeX ->isChecked()) FBOImageProporties::seamlessMirroModeType = 1;
+    if(ui->radioButtonMirrorModeY ->isChecked()) FBOImageProporties::seamlessMirroModeType = 2;
+
+
     glImage ->repaint();
     glWidget->repaint();
+
 }
+
+
 
 
 void MainWindow::resetTransform(){
     QVector2D corner(0,0);
     glImage->updateCornersPosition(corner,corner,corner,corner);
+    glImage->updateCornersWeights(0,0,0,0);
     replotAllImages();
 }
 
+
+
+void MainWindow::setUVManipulationMethod(){
+    if(ui->actionTranslateUV->isChecked()) glImage->selectUVManipulationMethod(uvTranslate);
+    if(ui->actionGrabCorners->isChecked()) glImage->selectUVManipulationMethod(uvGrabCorners);
+    if(ui->actionScaleXY->isChecked())     glImage->selectUVManipulationMethod(uvScaleXY);
+}
 
 QSize MainWindow::sizeHint() const
 {
@@ -596,6 +812,7 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_specularW2"                       ,image->getImageProporties()->specularW2);
     settings.setValue("t_"+abbr+"_specularContrast"                 ,image->getImageProporties()->specularContrast);
     settings.setValue("t_"+abbr+"_specularAmplifier"                ,image->getImageProporties()->specularAmplifier);
+    settings.setValue("t_"+abbr+"_specularBrightness"               ,image->getImageProporties()->specularBrightness);
     settings.setValue("t_"+abbr+"_smallDetails"                     ,image->getImageProporties()->smallDetails);
     settings.setValue("t_"+abbr+"_mediumDetails"                    ,image->getImageProporties()->mediumDetails);
     settings.setValue("t_"+abbr+"_detailDepth"                      ,image->getImageProporties()->detailDepth);
@@ -642,6 +859,7 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->specularW2                         = settings.value("t_"+abbr+"_specularW2","0.0").toFloat();
     image->getImageProporties()->specularContrast                   = settings.value("t_"+abbr+"_specularContrast","0.0").toFloat();
     image->getImageProporties()->specularAmplifier                  = settings.value("t_"+abbr+"_specularAmplifier","0.0").toFloat();
+    image->getImageProporties()->specularBrightness                 = settings.value("t_"+abbr+"_specularBrightness","0.0").toFloat();
     image->getImageProporties()->smallDetails                       = settings.value("t_"+abbr+"_smallDetails","0.0").toFloat();
     image->getImageProporties()->mediumDetails                      = settings.value("t_"+abbr+"_mediumDetails","0.0").toFloat();
     image->getImageProporties()->detailDepth                        = settings.value("t_"+abbr+"_detailDepth","0.0").toFloat();
@@ -683,13 +901,15 @@ void MainWindow::saveSettings(){
     PostfixNames::heightName    = ui->lineEditPostfixHeight->text();
     PostfixNames::occlusionName = ui->lineEditPostfixOcclusion->text();
 
-
+    settings.setValue("3d_depth",ui->horizontalSliderDepthScale->value()/100.0);
     settings.setValue("d_postfix",ui->lineEditPostfixDiffuse->text());
     settings.setValue("n_postfix",ui->lineEditPostfixNormal->text());
     settings.setValue("s_postfix",ui->lineEditPostfixSpecular->text());
     settings.setValue("h_postfix",ui->lineEditPostfixHeight->text());
     settings.setValue("o_postfix",ui->lineEditPostfixOcclusion->text());
     settings.setValue("recent_dir",recentDir.absolutePath());
+
+    settings.setValue("h_attachNormal",FBOImageProporties::bAttachNormalToHeightMap);
 
     saveImageSettings("d",diffuseImageProp);
     saveImageSettings("n",normalImageProp);
@@ -717,14 +937,16 @@ void MainWindow::loadSettings(){
     PostfixNames::heightName    = settings.value("h_postfix","_h").toString();
     PostfixNames::occlusionName = settings.value("o_postfix","_o").toString();
 
-    ui->lineEditPostfixDiffuse->setText(PostfixNames::diffuseName);
-    ui->lineEditPostfixNormal->setText(PostfixNames::normalName);
-    ui->lineEditPostfixSpecular->setText(PostfixNames::specularName);
-    ui->lineEditPostfixHeight->setText(PostfixNames::heightName);
+    ui->horizontalSliderDepthScale->setValue(settings.value("3d_depth","0.25").toFloat()*100);
+    ui->lineEditPostfixDiffuse  ->setText(PostfixNames::diffuseName);
+    ui->lineEditPostfixNormal   ->setText(PostfixNames::normalName);
+    ui->lineEditPostfixSpecular ->setText(PostfixNames::specularName);
+    ui->lineEditPostfixHeight   ->setText(PostfixNames::heightName);
     ui->lineEditPostfixOcclusion->setText(PostfixNames::occlusionName);
 
 
-
+    FBOImageProporties::bAttachNormalToHeightMap = settings.value("h_attachNormal","").toBool();
+    heightImageProp->toggleAttachToNormal(FBOImageProporties::bAttachNormalToHeightMap);
     recentDir = settings.value("recent_dir","").toString();
 
     loadImageSettings("d",diffuseImageProp);

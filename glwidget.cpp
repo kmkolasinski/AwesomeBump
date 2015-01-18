@@ -211,29 +211,71 @@ void GLWidget::paintGL()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
 
         glActiveTexture(GL_TEXTURE0);
+
         if(bToggleDiffuseView) glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[0]))->texture());
         else glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
+        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glGenerateMipmap(GL_TEXTURE_2D);
 
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
+       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glGenerateMipmap(GL_TEXTURE_2D);
 
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[2]))->texture());
+       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glGenerateMipmap(GL_TEXTURE_2D);
 
         glActiveTexture(GL_TEXTURE3);        
         glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[3]))->texture());
+       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glGenerateMipmap(GL_TEXTURE_2D);
 
         glActiveTexture(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[4]))->texture());
+        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      //  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         //glGenerateMipmap(GL_TEXTURE_2D);
 
         glDrawElements(GL_TRIANGLES, 3*no_triangles, GL_UNSIGNED_INT, 0);
 
+        // restore filtering
+        glActiveTexture(GL_TEXTURE0);
+        /*
+        if(bToggleDiffuseView) glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[0]))->texture());
+        else glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glGenerateMipmap(GL_TEXTURE_2D);
 
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[2]))->texture());
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[3]))->texture());
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[4]))->texture());
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        */
     }
 
     emit rendered();

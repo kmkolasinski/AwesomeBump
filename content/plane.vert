@@ -21,15 +21,13 @@ out vec4 staticLightPosition;
 
 void main(void)
 {
-    texc = (texCoord)*gui_uvScale + vec4(gui_uvScaleOffset,0,1);
-    float camDist = distance(cameraPos.st+0.5,texc.st);
-    camDist = exp(-camDist*camDist*400);
+    texc = (texCoord)*gui_uvScale + vec4(gui_uvScaleOffset,0,1);    
     float hPos  =  texture(texHeight , texc.st ).x;
 
-    vertexPosition = ModelViewMatrix * ( vertex + vec4(0,0,(hPos+camDist*0)*0.06*gui_depthScale,0));
-    lightPosition    = lightPos;// ModelViewMatrix *  lightPos;
+    vertexPosition      = ModelViewMatrix * ( vertex + vec4(0,0,(hPos)*gui_depthScale*0.1/gui_uvScale,0));
+    lightPosition       = lightPos;// ModelViewMatrix *  lightPos;
     staticLightPosition = ModelViewMatrix *  vec4(0,0,5.0,1);
-    vertexNormal  = NormalMatrix * normalize(texture(texNormal , texc.st).rgb - 0.5);
-    gl_Position = ProjectionMatrix * (vertexPosition);
+    vertexNormal        = NormalMatrix * normalize(texture(texNormal , texc.st).rgb - 0.5);
+    gl_Position         = ProjectionMatrix * (vertexPosition);
 }
 

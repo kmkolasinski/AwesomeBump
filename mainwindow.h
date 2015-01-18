@@ -52,28 +52,46 @@ public slots:
     // repaint views after changes
     void updateDiffuseImage();
     void updateNormalImage();
+    void repaintNormalImage(); // used in case preview mode
     void updateSpecularImage();
     void updateHeightImage();
     void updateOcclusionImage();
     // repaint selected tab
     void updateImage(int tab);
 
-    // Setting the global parameters
-    void enableMakeSeamless(bool);
-    void setMakeSeamlessRadius(int);
+    void updateImageInformation();
+
+
+
+    // image properties
+    void changeWidth (int size); // change the combobox index
+    void changeHeight(int size);
+    void scaleWidth(double);
+    void scaleHeight(double);
+    void applyResizeImage();
+    void applyScaleImage();
+
+    // Setting the global parameters    
     void setSpecularIntensity(int);
     void setDiffuseIntensity(int);
     void updateSpinBoxes(int);
+
+
 
     // Conversion functions
     void convertFromHtoN();
     void convertFromNtoH();
     void convertFromBase();
-    void recalculateOcclusion();
 
+    // UV tools
+    void updateSliders();
     // Perspective tool    
-    void resetTransform();
+    void resetTransform();    
+    void setUVManipulationMethod();
 
+    void selectSeamlessMode(int mode);
+    void randomizeAngles();// in random mode
+    void resetRandomPatches();
 
 private:
     // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
@@ -99,7 +117,6 @@ private:
     FormImageProp* specularImageProp;
     FormImageProp* heightImageProp;
     FormImageProp* occlusionImageProp;
-
 
 };
 

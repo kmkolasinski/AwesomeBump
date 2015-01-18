@@ -3,8 +3,11 @@
 #include <QtOpenGL>
 #include <QImage>
 #include <cstdio>
+#include <iostream>
 #define PROGRAM_VERTEX_ATTRIBUTE 0
 #define PROGRAM_TEXCOORD_ATTRIBUTE 1
+
+using namespace std;
 
 enum TextureTypes{
     DIFFUSE_TEXTURE = 0,
@@ -18,7 +21,14 @@ enum ConversionType{
     CONVERT_NONE = 0,
     CONVERT_FROM_H_TO_N,
     CONVERT_FROM_N_TO_H,
-    CONVERT_FROM_D_TO_O // diffuse to others
+    CONVERT_FROM_D_TO_O, // diffuse to others
+    CONVERT_RESIZE
+};
+
+enum UVManipulationMethods{
+    uvTranslate = 0,
+    uvGrabCorners,
+    uvScaleXY
 };
 
 // Compressed texture type
@@ -89,6 +99,85 @@ public:
             default: return diffuseName;
         }
     }
+    static QString getTextureName(TextureTypes tType){
+        switch(tType){
+            case(DIFFUSE_TEXTURE ):
+                return "diffuse";
+                break;
+            case(NORMAL_TEXTURE  ):
+                return "normal";
+                break;
+            case(SPECULAR_TEXTURE):
+                return "specular";
+                break;
+            case(HEIGHT_TEXTURE  ):
+                return "height";
+                break;
+            case(OCCLUSION_TEXTURE  ):
+                return "occlusion";
+                break;
+            default: return "default-diffuse";
+        }
+    }
+
+};
+
+struct GrayScalePreset{
+    float R;
+    float G;
+    float B;
+    void mode1(){
+        R = 1.0;
+        G = 1.0;
+        B = 1.0;        
+        normalize();
+    }
+    void mode2(){
+        R = 0.3;
+        G = 0.59;
+        B = 0.11;
+        normalize();
+    }
+    QVector3D toQVector3D(){
+        //normalize();
+        return QVector3D(R,G,B);
+    }
+    void normalize(){
+        float sum = R + G + B;
+        if(fabs(sum) < 0.0001) sum = 1;
+        R /= sum;
+        G /= sum;
+        B /= sum;
+    }
+};
+
+// Methods of making the texture seamless
+enum SeamlessMode{
+    SEAMLESS_NONE = 0,
+    SEAMLESS_SIMPLE,
+    SEAMLESS_MIRROR,
+    SEAMLESS_RANDOM
+};
+
+struct RandomTilingMode{
+  float angles[9];
+  float common_phase;
+  float inner_radius;
+  float outer_radius;
+  RandomTilingMode(){
+      inner_radius = 0.2;
+      outer_radius = 0.4;
+      common_phase = 0.0;
+      for(int i = 0; i < 9 ; i++){
+          angles[i] = 0;
+      }
+  }
+  // generate random angles
+  void randomize(){
+      for(int i = 0; i < 9 ; i++){
+           angles[i] = 2 * 3.1415269 * rand() / (RAND_MAX + 0.0);
+      }
+  }
 };
 
 // Wrapper for FBO initialization.
@@ -107,6 +196,9 @@ public:
         glBindTexture(GL_TEXTURE_2D, fbo->texture());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         float aniso = 0.0;
@@ -121,6 +213,13 @@ public:
             FBOImages::create(src ,ref->width(),ref->height());
         }
     }
+    static void resize(QGLFramebufferObject *&src,int width, int height){
+        if( width  == src->width() &&
+            height == src->height() ){}else{
+            FBOImages::create(src ,width,height);
+        }
+    }
+
 
 };
 
@@ -133,12 +232,16 @@ public:
     QGLFramebufferObject *aux2_fbo; // the same
 
     GLuint scr_tex_id;       // Id of texture loaded from image, from loaded file
+    int scr_tex_width;       // width of the image loaded from file.
+    int scr_tex_height;      // height ...
     QGLWidget* glWidget_ptr; // pointer to GL context
     TextureTypes imageType;  // This will define what kind of preprocessing will be applied to image
 
     // Variables used  to control the image processing (most of them are controlled from GUI)
     bool bFirstDraw;
     bool bGrayScale;
+    GrayScalePreset grayScalePreset;
+
     bool bInvertR,bInvertG,bInvertB;
     bool bRemoveShading;
 
@@ -148,6 +251,7 @@ public:
     bool bSpeclarControl;
     int  specularRadius;
     float specularW1,specularW2,specularContrast,specularAmplifier;
+    float specularBrightness;
     // General processing
     float smallDetails;
     float mediumDetails;
@@ -181,10 +285,17 @@ public:
     float ssaoBias;
     float ssaoDepth;
 
-    // global settings
-    static bool bMakeSeamless;
-    static float MakeSeamlessRadius;
+    // height settings
+    float heightMinValue;
+    float heightMaxValue;
+    int   heightAveragingRadius;
 
+    // global settings seamless parameters
+    static bool bAttachNormalToHeightMap;
+    static SeamlessMode seamlessMode;
+    static float seamlessSimpleModeRadius;
+    static int seamlessMirroModeType; // values: 2 - x repear, 1 - y  repeat, 0 - xy  repeat
+    static RandomTilingMode seamlessRandomTiling;
      FBOImageProporties(){
 
         ref_fbo      = NULL;
@@ -192,53 +303,61 @@ public:
         aux_fbo      = NULL;
         aux2_fbo     = NULL;
         glWidget_ptr = NULL;
-        bFirstDraw    = true;
+        bFirstDraw   = true;
         bGrayScale   = false;
+        grayScalePreset.mode2();
         bInvertR = bInvertG = bInvertB = false;
 
-        scr_tex_id   = 0;
+        scr_tex_id     = 0;
         bRemoveShading = false;
         noRemoveShadingGaussIter = 10;
 
-        bSpeclarControl = false;
-        specularRadius = 10;
-        specularW1     = 0.1;
-        specularW2     = 10.0;
-        specularContrast = 0.05;
-        specularAmplifier = 3.0;
-        noBlurPasses = 0;        
-        smallDetails = 0;
-        mediumDetails = 0;
-        detailDepth  = 2.0;
-        sharpenBlurAmount = 0;
-        normalsStep = 0.0;
+        bSpeclarControl    = false;
+        specularRadius     = 10;
+        specularW1         = 0.1;
+        specularW2         = 10.0;
+        specularContrast   = 0.05;
+        specularAmplifier  = 3.0;
+        specularBrightness = 0.0;
+        noBlurPasses       = 0;
+        smallDetails       = 0;
+        mediumDetails      = 0;
+        detailDepth        = 2.0;
+        sharpenBlurAmount  = 0;
+        normalsStep        = 0.0;
 
         conversionHNDepth  = 2.0;
         bConversionHN      = false;
         bConversionNH      = false;
 
-        conversionNHItersHuge = 10;
-        conversionNHItersVeryLarge = 10;
-        conversionNHItersLarge = 10;
-        conversionNHItersMedium = 10;
-        conversionNHItersSmall = 10;
-        conversionNHItersVerySmall = 10;
+        conversionNHItersHuge       = 10;
+        conversionNHItersVeryLarge  = 10;
+        conversionNHItersLarge      = 10;
+        conversionNHItersMedium     = 10;
+        conversionNHItersSmall      = 10;
+        conversionNHItersVerySmall  = 10;
 
-        bConversionBaseMap = false;
-        conversionBaseMapAmplitude = 0;
-        conversionBaseMapFlatness = 0.5;
-        conversionBaseMapNoIters = 0;
-        conversionBaseMapFilterRadius = 3;
-        conversionBaseMapMixNormals = 1.0;
-        conversionBaseMapPreSmoothRadius = 0;
-        conversionBaseMapBlending  = 1.0;
+        bConversionBaseMap          = false;
+        conversionBaseMapAmplitude  = 0;
+        conversionBaseMapFlatness   = 0.5;
+        conversionBaseMapNoIters        = 0;
+        conversionBaseMapFilterRadius   = 3;
+        conversionBaseMapMixNormals     = 1.0;
+        conversionBaseMapPreSmoothRadius= 0;
+        conversionBaseMapBlending       = 1.0;
 
 
         ssaoNoIters   = 4;
-
         ssaoIntensity = 1.0;
         ssaoBias      = 0.0;
         ssaoDepth     = 0.1;
+
+
+        heightMinValue = 0.0;
+        heightMaxValue = 1.0;
+        heightAveragingRadius = 1;
+
+        seamlessMode = SEAMLESS_NONE;
 
      }
     void init(QImage& image){
@@ -246,14 +365,30 @@ public:
         glWidget_ptr->makeCurrent();
         if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
         scr_tex_id = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
-
-        FBOImages::create(ref_fbo ,image.width(),image.height());
+        scr_tex_width  = image.width();
+        scr_tex_height = image.height();
         bFirstDraw    = true;
 
+        FBOImages::create(ref_fbo ,image.width(),image.height());
         FBOImages::create(fbo     ,image.width(),image.height());
         FBOImages::create(aux_fbo ,image.width(),image.height());
         FBOImages::create(aux2_fbo,image.width(),image.height());
+    }
 
+    void updateSrcTexId(QGLFramebufferObject* in_ref_fbo){
+        glWidget_ptr->makeCurrent();
+        if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
+        QImage image = in_ref_fbo->toImage();
+        scr_tex_id   = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
+
+    }
+
+    void resizeFBO(int width, int height){
+        FBOImages::resize(ref_fbo ,width,height);
+        FBOImages::resize(fbo     ,width,height);
+        FBOImages::resize(aux_fbo ,width,height);
+        FBOImages::resize(aux2_fbo,width,height);
+        bFirstDraw = true;
     }
 
     /**

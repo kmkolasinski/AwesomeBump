@@ -11,6 +11,9 @@
 #include <QStandardPaths>
 
 #include "CommonObjects.h"
+#include "dialogheightcalculator.h"
+
+
 
 namespace Ui {
 class FormImageProp;
@@ -37,29 +40,35 @@ public:
     void hideSpecularGroupBox();
     void hideNormalStepBar();
     void hideSSAOBar();
-
+    void hideHeightProcessingBox();
+    void hideGrayScaleControl();
     void setSpecularControlChecked();
     void reloadSettings();
     ~FormImageProp();
 public slots:
     void open();
     void save();
-    void updateGuiSpinBoxes(int);
+    void updateGrayScalePreset(int index);
+    void updateGuiSpinBoxesAndLabes(int);
     void updateSlidersOnRelease();
     void updateGuiCheckBoxes();
-    void setRemoveShading(bool);
-    void setRemoveShadingGaussIter(int);
+
 
     void applyHeightToNormalConversion();
     void applyNormalToHeightConversion();
-    void applyBaseConversionConversion();
-    void applyRecalculateOcclusion();
+    void applyBaseConversionConversion();    
+    void toggleHNPreviewMode();
+    void toggleAttachToNormal(bool toggle);
+
+    void showHeightCalculatorDialog();
+
 signals:
     void imageChanged();
     void conversionHeightToNormalApplied();
     void conversionNormalToHeightApplied();
     void conversionBaseConversionApplied();
     void recalculateOcclusion();
+    void repaintNormalTexture();
 protected:
     void dropEvent(QDropEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
@@ -72,6 +81,7 @@ private:
     QImage image;
     QString imageName;
     FBOImageProporties imageProp;
+    DialogHeightCalculator *heightCalculator; // height calculator tool
 
 public:
     static QDir* recentDir;
