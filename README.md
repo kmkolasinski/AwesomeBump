@@ -1,4 +1,4 @@
-AwesomeBump  1.0
+AwesomeBump  2.0
 ===========
 
 AwesomeBump is a free and open source program written using Qt library designed to generate normal, height, specular or ambient occlusion textures from a single image. Since the image processing is done in 99% on GPU the program runs very fast and all the parameters can be changed in real time. AB was made to be a new alternative to known gimp plugin called Insane Bump or commercial tool: Crazy Bump.  
@@ -18,6 +18,34 @@ INSTALLATION:
 
 
 Project Webpage: http://awesomebump.besaba.com/
+
+New in version 2.0:
+============
+1) Slightly redesigned GUI: Tiling/UV methods, General Settings and 3D
+   preview sliders are now separated into different tabs.
+2) Added short explanation about most important algorithms in AB. See ShortAbout.pdf file.
+3) New random tiling algorithm was added. Which allow to generate 
+   infinite number of seamless textures.
+4) New perspective mode - image can be now stretched along x and y axis,
+   which is useful during the perspective manipulation.
+5) Height calculator tool was added. Now the depth of the Normal texture
+   can be controlled based on physical dimensions.
+6) Size of the texture can be changes at run-time.
+7) Gray Scale manipulator - now you can choose what weights are used to
+   convert image to Gray scale.
+8) Colour levelling tool was added. This can be used e.g. to make flat
+   surfaces.
+9) Now the normal image is by default attached to height texture, which
+   means any change of height will affect the normals.
+
+Minor changes:
+- Unused button in AO tab was removed.
+- Fixed problem with "cannot load image".
+- Medium detail algorithm changed - it should give better results.
+- Redefined the normal step slider, now it has more intuitive usage.
+- You can choose your preferred GUI style.
+- add many others small improvements.
+
 
 New in version 1.0:
 ============
