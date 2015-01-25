@@ -23,20 +23,29 @@ New in version 2.0:
 ============
 1) Slightly redesigned GUI: Tiling/UV methods, General Settings and 3D
    preview sliders are now separated into different tabs.
+   
 2) Added short explanation about most important algorithms in AB. See ShortAbout.pdf file.
+
 3) New random tiling algorithm was added. Which allow to generate 
    infinite number of seamless textures.
+   
 4) New perspective mode - image can be now stretched along x and y axis,
    which is useful during the perspective manipulation.
+   
 5) Height calculator tool was added. Now the depth of the Normal texture
    can be controlled based on physical dimensions.
+   
 6) Size of the texture can be changes at run-time.
+
 7) Gray Scale manipulator - now you can choose what weights are used to
    convert image to Gray scale.
+   
 8) Colour levelling tool was added. This can be used e.g. to make flat
    surfaces.
+   
 9) Now the normal image is by default attached to height texture, which
    means any change of height will affect the normals.
+   
 
 Minor changes:
 - Unused button in AO tab was removed.
