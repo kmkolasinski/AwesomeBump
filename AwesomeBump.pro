@@ -1,4 +1,4 @@
-CONFIG       += c++11 debug debug_and_release
+CONFIG       += c++11 debug release
 QT           += opengl gui widgets
 
 VPATH += ../shared
@@ -31,12 +31,5 @@ FORMS += \
     mainwindow.ui \
     formimageprop.ui \
     dialogheightcalculator.ui
-
-OTHER_FILES += \
-    cube.frag
-
-CONFIG(debug,debug|release) {
-    DEFINES += _DEBUG
-}
 
 ICON = content/icon.icns
