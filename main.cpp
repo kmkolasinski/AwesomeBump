@@ -82,6 +82,15 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
+    // Chossing proper GUI style from config.ini file.
+    QSettings settings("config.ini", QSettings::IniFormat);
+    // Dude, this default style is really amazing...
+    // Seriously?
+    // No...
+    QString guiStyle = settings.value("gui_style","DefaultAwesomeStyle").toString();
+    app.setStyle(QStyleFactory::create( guiStyle ));
+
+
     // removing old log file
     QFile outFile("log.txt");
     outFile.open(QIODevice::WriteOnly);

@@ -37,6 +37,13 @@ public slots:
     void saveCheckedImages();
     void saveCompressedForm();
     void saveSettings();
+    // loading the application setting from config.ini file
+    void loadSettings();
+    // the same but loading configs
+    void loadImageSettings(QString abbr,FormImageProp* image);
+    // the same as above but Image is choosen by proper switch using the given type
+    void loadImageSettings(TextureTypes type);
+
     void setOutputFormat(int index);
     void replotAllImages();
 
@@ -96,10 +103,8 @@ public slots:
 private:
     // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
     void saveImageSettings(QString abbr,FormImageProp* image);
-    // the same but loading configs
-    void loadImageSettings(QString abbr,FormImageProp* image);
-    // loading the application setting from config.ini file
-    void loadSettings();
+
+
     // saves all textures to given directory
     bool saveAllImages(const QString &dir);
 

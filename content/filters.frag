@@ -683,7 +683,23 @@ vec4 height_clamp(vec4 inputc, vec4 value,float vmin,float vmax){
     if(dmin_ave.b > 0) inputc.b   += dmin_ave.b;
     return inputc;
 }
+
+vec4 height_clamp2(vec4 inputc, float weight,float vmin,float vmax){
+    vec4 dmax_ave = weight*(inputc  - vec4(vmax));
+    vec4 output = inputc;
+    if(inputc.r > vmax) output.r = vmax + dmax_ave.r;
+    if(inputc.g > vmax) output.g = vmax + dmax_ave.g;
+    if(inputc.b > vmax) output.b = vmax + dmax_ave.b;
+
+    vec4 dmin_ave = weight*(inputc  - vec4(vmin));
+    if(inputc.r < vmin) output.r = vmin + dmin_ave.r;
+    if(inputc.g < vmin) output.g = vmin + dmin_ave.g;
+    if(inputc.b < vmin) output.b = vmin + dmin_ave.b;
+    return output;
+}
+
 subroutine(filterModeType) vec4 mode_height_processing_filter(){
+
     int radius      = gui_height_proc_ave_radius/5+1;
     float w         = gui_height_proc_ave_radius/50.0; // "details" slider in gui
     vec4 height     = texture( layerA, v2QuadCoords.xy);
@@ -702,6 +718,15 @@ subroutine(filterModeType) vec4 mode_height_processing_filter(){
     vec4 hmin = height_clamp(vec4(0.0),vec4(0.0),gui_height_proc_min_value,gui_height_proc_max_value);
     vec4 hmax = height_clamp(vec4(1.0),vec4(1.0),gui_height_proc_min_value,gui_height_proc_max_value);
     return vec4(height-hmin)/(hmax-hmin);
+
+/*
+    vec4 height     = texture( layerA, v2QuadCoords.xy);
+    float w         = gui_height_proc_ave_radius/100.0;
+    height = height_clamp2(height,w,gui_height_proc_min_value,gui_height_proc_max_value);
+    vec4 hmin = height_clamp2(vec4(0.0),w,gui_height_proc_min_value,gui_height_proc_max_value);
+    vec4 hmax = height_clamp2(vec4(1.0),w,gui_height_proc_min_value,gui_height_proc_max_value);
+    return vec4(height-hmin)/(hmax-hmin);
+*/
 }
 
 

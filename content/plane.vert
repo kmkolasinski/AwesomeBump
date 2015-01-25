@@ -21,8 +21,8 @@ out vec4 staticLightPosition;
 
 void main(void)
 {
-    texc = (texCoord)*gui_uvScale + vec4(gui_uvScaleOffset,0,1);    
-    float hPos  =  texture(texHeight , texc.st ).x;
+    texc                = (texCoord)*gui_uvScale + vec4(gui_uvScaleOffset,0,1);
+    float hPos          =  texture(texHeight , texc.st ).x;
 
     vertexPosition      = ModelViewMatrix * ( vertex + vec4(0,0,(hPos)*gui_depthScale*0.1/gui_uvScale,0));
     lightPosition       = lightPos;// ModelViewMatrix *  lightPos;

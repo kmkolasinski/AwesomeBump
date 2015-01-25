@@ -24,7 +24,7 @@ class FormImageProp : public QWidget
     Q_OBJECT
 
 public:
-    explicit FormImageProp(QWidget *parent = 0, QGLWidget* qlW_ptr = 0);
+    explicit FormImageProp(QMainWindow *parent = 0, QGLWidget* qlW_ptr = 0);
     void saveFileToDir(const QString &dir);
     void saveImageToDir(const QString &dir,QImage& image);
     void setImage(QImage image);
@@ -44,10 +44,13 @@ public:
     void hideGrayScaleControl();
     void setSpecularControlChecked();
     void reloadSettings();
+
     ~FormImageProp();
 public slots:
     void open();
-    void save();
+    void save();    
+    void reloadImageSettings();
+
     void updateGrayScalePreset(int index);
     void updateGuiSpinBoxesAndLabes(int);
     void updateSlidersOnRelease();
@@ -63,12 +66,14 @@ public slots:
     void showHeightCalculatorDialog();
 
 signals:
+    void reloadSettingsFromConfigFile(TextureTypes type);
     void imageChanged();
     void conversionHeightToNormalApplied();
     void conversionNormalToHeightApplied();
     void conversionBaseConversionApplied();
     void recalculateOcclusion();
     void repaintNormalTexture();
+
 protected:
     void dropEvent(QDropEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);

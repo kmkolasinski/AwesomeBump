@@ -108,13 +108,13 @@ void GLImage::initializeGL()
 
     qDebug() << "Loading filters (fragment shader)";
     QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile("content/filters.vert");
+    vshader->compileSourceFile(":/content/filters.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading filters (vertex shader)";
     QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-    fshader->compileSourceFile("content/filters.frag");
+    fshader->compileSourceFile(":/content/filters.frag");
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
     else qDebug() << "done";
 
@@ -873,8 +873,8 @@ void GLImage::applyMediumDetailsFilter(QGLFramebufferObject* inputFBO,
 
     glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_gauss_filter"]);
     program->setUniformValue("gui_depth", activeImage->detailDepth);
-    program->setUniformValue("gui_gauss_radius", int(30.0));
-    program->setUniformValue("gui_gauss_w", float(30.0));
+    program->setUniformValue("gui_gauss_radius", int(15.0));
+    program->setUniformValue("gui_gauss_w", float(15.0));
 
     program->setUniformValue("quad_scale", QVector2D(1.0,1.0));
     program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0));

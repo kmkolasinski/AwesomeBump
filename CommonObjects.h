@@ -4,6 +4,7 @@
 #include <QImage>
 #include <cstdio>
 #include <iostream>
+#include "qopenglerrorcheck.h"
 #define PROGRAM_VERTEX_ATTRIBUTE 0
 #define PROGRAM_TEXCOORD_ATTRIBUTE 1
 
@@ -126,20 +127,26 @@ struct GrayScalePreset{
     float R;
     float G;
     float B;
+    int grayScaleMode;
     void mode1(){
         R = 1.0;
         G = 1.0;
         B = 1.0;        
         normalize();
+        grayScaleMode = 0;
     }
     void mode2(){
         R = 0.3;
         G = 0.59;
         B = 0.11;
         normalize();
+        grayScaleMode = 1;
     }
-    QVector3D toQVector3D(){
-        //normalize();
+    void mode(){
+        if(grayScaleMode == 0) mode1();
+        if(grayScaleMode == 1) mode2();
+    }
+    QVector3D toQVector3D(){        
         return QVector3D(R,G,B);
     }
     void normalize(){
@@ -204,19 +211,19 @@ public:
         float aniso = 0.0;
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
         qDebug() << "FBOImages::creatig new FBO(" << width << "," << height << ") with id=" << fbo->texture() ;
     }
     static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref){
         if( ref->width()  == src->width() &&
             ref->height() == src->height() ){}else{
-            FBOImages::create(src ,ref->width(),ref->height());
+            GLCHK(FBOImages::create(src ,ref->width(),ref->height()));
         }
     }
     static void resize(QGLFramebufferObject *&src,int width, int height){
         if( width  == src->width() &&
             height == src->height() ){}else{
-            FBOImages::create(src ,width,height);
+            GLCHK(FBOImages::create(src ,width,height));
         }
     }
 
@@ -369,10 +376,11 @@ public:
         scr_tex_height = image.height();
         bFirstDraw    = true;
 
-        FBOImages::create(ref_fbo ,image.width(),image.height());
-        FBOImages::create(fbo     ,image.width(),image.height());
-        FBOImages::create(aux_fbo ,image.width(),image.height());
-        FBOImages::create(aux2_fbo,image.width(),image.height());
+        GLCHK(FBOImages::create(ref_fbo ,image.width(),image.height()));
+        GLCHK(FBOImages::create(fbo     ,image.width(),image.height()));
+        GLCHK(FBOImages::create(aux_fbo ,image.width(),image.height()));
+        GLCHK(FBOImages::create(aux2_fbo,image.width(),image.height()));
+
     }
 
     void updateSrcTexId(QGLFramebufferObject* in_ref_fbo){
@@ -384,10 +392,10 @@ public:
     }
 
     void resizeFBO(int width, int height){
-        FBOImages::resize(ref_fbo ,width,height);
-        FBOImages::resize(fbo     ,width,height);
-        FBOImages::resize(aux_fbo ,width,height);
-        FBOImages::resize(aux2_fbo,width,height);
+        GLCHK(FBOImages::resize(ref_fbo ,width,height));
+        GLCHK(FBOImages::resize(fbo     ,width,height));
+        GLCHK(FBOImages::resize(aux_fbo ,width,height));
+        GLCHK(FBOImages::resize(aux2_fbo,width,height));
         bFirstDraw = true;
     }
 
@@ -402,12 +410,14 @@ public:
 
     ~FBOImageProporties(){
         qDebug() << "<FBOImageProporties> delete.";
-        if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
+        glWidget_ptr->makeCurrent();
+        if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
         glWidget_ptr = NULL;
         if(ref_fbo    != NULL ) delete ref_fbo;
         if(fbo        != NULL ) delete fbo;
         if(aux_fbo    != NULL ) delete aux_fbo;
         if(aux2_fbo   != NULL ) delete aux2_fbo;
+
     }
 };
 

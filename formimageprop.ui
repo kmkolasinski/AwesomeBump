@@ -39,6 +39,48 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_7">
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonRestoreSettings">
+       <property name="maximumSize">
+        <size>
+         <width>50</width>
+         <height>2000</height>
+        </size>
+       </property>
+       <property name="whatsThis">
+        <string>Reloads the setting from ini file</string>
+       </property>
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 75 6pt &quot;Arial&quot;;</string>
+       </property>
+       <property name="text">
+        <string>Restore</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="Line" name="line_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -73,7 +115,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
+     <item row="0" column="4">
       <widget class="QPushButton" name="pushButtonSaveImage">
        <property name="toolTip">
         <string>Save current image (Ctrl+S)</string>
@@ -209,14 +251,17 @@
             <layout class="QGridLayout" name="gridLayout_11">
              <item row="0" column="1">
               <widget class="QComboBox" name="comboBoxGrayScalePresets">
+               <property name="currentIndex">
+                <number>1</number>
+               </property>
                <item>
                 <property name="text">
-                 <string>Human</string>
+                 <string>Equal</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>Equal</string>
+                 <string>Human</string>
                 </property>
                </item>
               </widget>
@@ -249,7 +294,7 @@
               <widget class="QLabel" name="label_55">
                <property name="minimumSize">
                 <size>
-                 <width>20</width>
+                 <width>30</width>
                  <height>0</height>
                 </size>
                </property>
@@ -587,7 +632,7 @@
          <widget class="QLabel" name="labelHeightProcMinValue">
           <property name="minimumSize">
            <size>
-            <width>30</width>
+            <width>40</width>
             <height>0</height>
            </size>
           </property>
@@ -1454,6 +1499,12 @@
         </item>
         <item row="0" column="2">
          <widget class="QLabel" name="label_48">
+          <property name="minimumSize">
+           <size>
+            <width>30</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>0</string>
           </property>
@@ -1529,13 +1580,6 @@
          <widget class="QLabel" name="label_26">
           <property name="text">
            <string>Iters</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="2">
-         <widget class="QLabel" name="label_31">
-          <property name="text">
-           <string>0</string>
           </property>
          </widget>
         </item>
@@ -1690,7 +1734,7 @@
          <widget class="QLabel" name="label_33">
           <property name="minimumSize">
            <size>
-            <width>25</width>
+            <width>30</width>
             <height>0</height>
            </size>
           </property>
@@ -1722,8 +1766,15 @@
           </property>
          </widget>
         </item>
+        <item row="5" column="2">
+         <widget class="QLabel" name="label_16">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
         <item row="6" column="2">
-         <widget class="QLabel" name="label_35">
+         <widget class="QLabel" name="label_31">
           <property name="text">
            <string>0</string>
           </property>
@@ -1774,11 +1825,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>273</x>
-     <y>305</y>
+     <y>334</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>305</y>
+     <y>334</y>
     </hint>
    </hints>
   </connection>
@@ -1790,11 +1841,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>273</x>
-     <y>330</y>
+     <y>359</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>330</y>
+     <y>359</y>
     </hint>
    </hints>
   </connection>
@@ -1806,11 +1857,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>273</x>
-     <y>355</y>
+     <y>384</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>355</y>
+     <y>384</y>
     </hint>
    </hints>
   </connection>
@@ -1822,11 +1873,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>273</x>
-     <y>380</y>
+     <y>409</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>380</y>
+     <y>409</y>
     </hint>
    </hints>
   </connection>
@@ -1838,11 +1889,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>273</x>
-     <y>405</y>
+     <y>434</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>405</y>
+     <y>434</y>
     </hint>
    </hints>
   </connection>
@@ -1854,11 +1905,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>273</x>
-     <y>430</y>
+     <y>459</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>430</y>
+     <y>459</y>
     </hint>
    </hints>
   </connection>
@@ -1870,11 +1921,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1184</y>
+     <y>1213</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1184</y>
+     <y>1213</y>
     </hint>
    </hints>
   </connection>
@@ -1886,11 +1937,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>273</x>
-     <y>455</y>
+     <y>484</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>455</y>
+     <y>484</y>
     </hint>
    </hints>
   </connection>
@@ -1902,11 +1953,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1471</y>
+     <y>1500</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1471</y>
+     <y>1500</y>
     </hint>
    </hints>
   </connection>
@@ -1918,11 +1969,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1496</y>
+     <y>1525</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1496</y>
+     <y>1525</y>
     </hint>
    </hints>
   </connection>
@@ -1934,27 +1985,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1421</y>
+     <y>1450</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1421</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSliderConversionBaseMapMixing</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>label_31</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>278</x>
-     <y>1521</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>309</x>
-     <y>1521</y>
+     <y>1450</y>
     </hint>
    </hints>
   </connection>
@@ -1966,11 +2001,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1396</y>
+     <y>1425</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1396</y>
+     <y>1425</y>
     </hint>
    </hints>
   </connection>
@@ -1982,11 +2017,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1446</y>
+     <y>1475</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1446</y>
+     <y>1475</y>
     </hint>
    </hints>
   </connection>
@@ -1997,12 +2032,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>305</x>
-     <y>1370</y>
+     <x>310</x>
+     <y>1399</y>
     </hint>
     <hint type="destinationlabel">
-     <x>305</x>
-     <y>1576</y>
+     <x>310</x>
+     <y>1605</y>
     </hint>
    </hints>
   </connection>
@@ -2013,12 +2048,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>305</x>
-     <y>1114</y>
+     <x>310</x>
+     <y>1143</y>
     </hint>
     <hint type="destinationlabel">
-     <x>305</x>
-     <y>1314</y>
+     <x>310</x>
+     <y>1343</y>
     </hint>
    </hints>
   </connection>
@@ -2029,28 +2064,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>305</x>
-     <y>998</y>
+     <x>310</x>
+     <y>1027</y>
     </hint>
     <hint type="destinationlabel">
-     <x>305</x>
-     <y>1058</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSliderConversionBaseMapBlending</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>label_35</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>278</x>
-     <y>1546</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>309</x>
-     <y>1546</y>
+     <x>310</x>
+     <y>1087</y>
     </hint>
    </hints>
   </connection>
@@ -2062,11 +2081,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1159</y>
+     <y>1188</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1159</y>
+     <y>1188</y>
     </hint>
    </hints>
   </connection>
@@ -2078,11 +2097,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1209</y>
+     <y>1238</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1209</y>
+     <y>1238</y>
     </hint>
    </hints>
   </connection>
@@ -2094,11 +2113,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1234</y>
+     <y>1263</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1234</y>
+     <y>1263</y>
     </hint>
    </hints>
   </connection>
@@ -2110,11 +2129,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1259</y>
+     <y>1288</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1259</y>
+     <y>1288</y>
     </hint>
    </hints>
   </connection>
@@ -2126,11 +2145,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>278</x>
-     <y>1284</y>
+     <y>1313</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1284</y>
+     <y>1313</y>
     </hint>
    </hints>
   </connection>
@@ -2141,12 +2160,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>565</y>
+     <x>263</x>
+     <y>594</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>565</y>
+     <y>594</y>
     </hint>
    </hints>
   </connection>
@@ -2157,12 +2176,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>203</x>
-     <y>105</y>
+     <x>309</x>
+     <y>144</y>
     </hint>
     <hint type="destinationlabel">
-     <x>197</x>
-     <y>131</y>
+     <x>309</x>
+     <y>282</y>
     </hint>
    </hints>
   </connection>
@@ -2173,12 +2192,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>265</x>
-     <y>182</y>
+     <x>272</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
-     <x>293</x>
-     <y>183</y>
+     <x>298</x>
+     <y>221</y>
     </hint>
    </hints>
   </connection>
@@ -2189,12 +2208,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>246</x>
-     <y>200</y>
+     <x>272</x>
+     <y>246</y>
     </hint>
     <hint type="destinationlabel">
-     <x>285</x>
-     <y>204</y>
+     <x>298</x>
+     <y>246</y>
     </hint>
    </hints>
   </connection>
@@ -2205,12 +2224,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>261</x>
-     <y>233</y>
+     <x>272</x>
+     <y>271</y>
     </hint>
     <hint type="destinationlabel">
-     <x>284</x>
-     <y>234</y>
+     <x>298</x>
+     <y>271</y>
     </hint>
    </hints>
   </connection>
@@ -2221,12 +2240,44 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>96</x>
-     <y>989</y>
+     <x>115</x>
+     <y>1027</y>
     </hint>
     <hint type="destinationlabel">
-     <x>103</x>
-     <y>966</y>
+     <x>122</x>
+     <y>1004</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderConversionBaseMapMixing</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_16</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>262</x>
+     <y>1541</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>1541</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderConversionBaseMapBlending</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_31</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>1566</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>1567</y>
     </hint>
    </hints>
   </connection>

@@ -2,7 +2,7 @@
 #include "ui_formimageprop.h"
 QDir* FormImageProp::recentDir;
 
-FormImageProp::FormImageProp( QWidget *parent,QGLWidget* qlW_ptr) :
+FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     QWidget(parent),
     ui(new Ui::FormImageProp)
 {
@@ -10,6 +10,7 @@ FormImageProp::FormImageProp( QWidget *parent,QGLWidget* qlW_ptr) :
     imageProp.glWidget_ptr = qlW_ptr;
     connect(ui->pushButtonOpenImage,SIGNAL(released()),this,SLOT(open()));
     connect(ui->pushButtonSaveImage,SIGNAL(released()),this,SLOT(save()));
+    connect(ui->pushButtonRestoreSettings,SIGNAL(released()),this,SLOT(reloadImageSettings()));
 
     connect(ui->checkBoxRemoveShading,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
     connect(ui->checkBoxGrayScale,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
@@ -198,6 +199,7 @@ void FormImageProp::save(){
     while (dialog.exec() == QDialog::Accepted && !saveFile(dialog.selectedFiles().first())) {}
 }
 
+
 bool FormImageProp::saveFile(const QString &fileName)
 {
     qDebug() << "<FormImageProp> save image:" << fileName;
@@ -344,6 +346,7 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
 }
 
 void FormImageProp::updateSlidersOnRelease(){
+    if(bLoading == true) return;
     updateGuiSpinBoxesAndLabes(0);
     emit imageChanged();
 }
@@ -362,7 +365,7 @@ void FormImageProp::updateGuiCheckBoxes(){
     imageProp.bConversionNH         = ui->checkBoxEnableNormalToHeight->isChecked();
     imageProp.bConversionBaseMap    = ui->checkBoxEnableBaseMapToOthers->isChecked();
 
-
+    // one must treat height separately
     if(imageProp.imageType == HEIGHT_TEXTURE) FBOImageProporties::bAttachNormalToHeightMap = ui->checkBoxConversionHNAttachToNormal->isChecked();
 
     emit imageChanged();
@@ -459,15 +462,17 @@ void FormImageProp::reloadSettings(){
     ui->horizontalSliderGrayScaleG->setValue(imageProp.grayScalePreset.G*255);
     ui->horizontalSliderGrayScaleB->setValue(imageProp.grayScalePreset.B*255);
 
-    ui->checkBoxSpecularControl->setChecked(imageProp.bSpeclarControl);
-    ui->checkBoxRemoveShading->setChecked(imageProp.bRemoveShading);
-    ui->checkBoxGrayScale->setChecked(imageProp.bGrayScale);
+    ui->checkBoxSpecularControl ->setChecked(imageProp.bSpeclarControl);
+    ui->checkBoxRemoveShading   ->setChecked(imageProp.bRemoveShading);
+    ui->checkBoxGrayScale       ->setChecked(imageProp.bGrayScale);
+
     ui->checkBoxInvertB->setChecked(imageProp.bInvertB);
     ui->checkBoxInvertR->setChecked(imageProp.bInvertR);
     ui->checkBoxInvertG->setChecked(imageProp.bInvertG);
-    ui->checkBoxEnableHeightToNormal->setChecked(imageProp.bConversionHN);
-    ui->checkBoxEnableNormalToHeight->setChecked(imageProp.bConversionNH);
-    ui->checkBoxEnableBaseMapToOthers->setChecked(imageProp.bConversionBaseMap);
+
+    ui->checkBoxEnableHeightToNormal    ->setChecked(imageProp.bConversionHN);
+    ui->checkBoxEnableNormalToHeight    ->setChecked(imageProp.bConversionNH);
+    ui->checkBoxEnableBaseMapToOthers   ->setChecked(imageProp.bConversionBaseMap);
 
     ui->horizontalSliderRemoveShadingGaussIter->setValue(imageProp.noRemoveShadingGaussIter);
 
@@ -480,42 +485,48 @@ void FormImageProp::reloadSettings(){
     ui->horizontalSliderSpecularBrightness->setValue(imageProp.specularBrightness*100);
 
 
-    ui->horizontalSliderBlurNoPasses->setValue(imageProp.noBlurPasses);
-    ui->horizontalSliderSmallDetails->setValue(imageProp.smallDetails*100);
-    ui->horizontalSliderMediumDetails->setValue(imageProp.mediumDetails*100);
+    ui->horizontalSliderBlurNoPasses    ->setValue(imageProp.noBlurPasses);
+    ui->horizontalSliderSmallDetails    ->setValue(imageProp.smallDetails*100);
+    ui->horizontalSliderMediumDetails   ->setValue(imageProp.mediumDetails*100);
 
     ui->horizontalSliderDetailDepth->setValue(imageProp.detailDepth*20);
     ui->horizontalSliderSharpenBlur->setValue(imageProp.sharpenBlurAmount);
     ui->horizontalSliderNormalsStep->setValue(imageProp.normalsStep*100);
 
-    ui->horizontalSliderConversionHNDepth->setValue(imageProp.conversionHNDepth*5);
-    ui->doubleSpinBoxConversionHNDepth->setValue(imageProp.conversionHNDepth);
+    ui->horizontalSliderHeightAveRadius     ->setValue(imageProp.heightAveragingRadius);
+    ui->horizontalSliderHeightProcMaxValue  ->setValue(imageProp.heightMaxValue*200);
+    ui->horizontalSliderHeightProcMinValue  ->setValue(imageProp.heightMinValue*200);
+    ui->labelHeightProcMinValue             ->setText(QString::number(imageProp.heightMinValue));
+    ui->labelHeightProcMaxValue             ->setText(QString::number(imageProp.heightMaxValue));
 
+    ui->horizontalSliderConversionHNDepth           ->setValue(imageProp.conversionHNDepth*5);
+    ui->doubleSpinBoxConversionHNDepth              ->setValue(imageProp.conversionHNDepth);
 
-    ui->horizontalSliderNormalToHeightItersHuge->setValue(imageProp.conversionNHItersHuge);
+    ui->horizontalSliderNormalToHeightItersHuge     ->setValue(imageProp.conversionNHItersHuge);
     ui->horizontalSliderNormalToHeightItersVeryLarge->setValue(imageProp.conversionNHItersVeryLarge);
-    ui->horizontalSliderNormalToHeightItersLarge->setValue(imageProp.conversionNHItersLarge);
-    ui->horizontalSliderNormalToHeightItersMedium->setValue(imageProp.conversionNHItersMedium);
+    ui->horizontalSliderNormalToHeightItersLarge    ->setValue(imageProp.conversionNHItersLarge);
+    ui->horizontalSliderNormalToHeightItersMedium   ->setValue(imageProp.conversionNHItersMedium);
     ui->horizontalSliderNormalToHeightItersVerySmall->setValue(imageProp.conversionNHItersVerySmall);
-    ui->horizontalSliderNormalToHeightItersSmall->setValue(imageProp.conversionNHItersSmall);
+    ui->horizontalSliderNormalToHeightItersSmall    ->setValue(imageProp.conversionNHItersSmall);
 
-    ui->horizontalSliderBaseMapAmplidute->setValue(imageProp.conversionBaseMapAmplitude*100);
-    ui->horizontalSliderConversionBaseMapFlatness->setValue(imageProp.conversionBaseMapFlatness*100);
-    ui->horizontalSliderBMNoIters->setValue(imageProp.conversionBaseMapNoIters);
+    ui->horizontalSliderBaseMapAmplidute            ->setValue(imageProp.conversionBaseMapAmplitude*100);
+    ui->horizontalSliderConversionBaseMapFlatness   ->setValue(imageProp.conversionBaseMapFlatness*100);
+    ui->horizontalSliderBMNoIters                   ->setValue(imageProp.conversionBaseMapNoIters);
 
-    ui->horizontalSliderConversionBMFilterRadius->setValue(imageProp.conversionBaseMapFilterRadius);
-    ui->horizontalSliderConversionBaseMapMixing->setValue(imageProp.conversionBaseMapMixNormals*200);
-    ui->horizontalSliderConversionBaseMapBlending->setValue(imageProp.conversionBaseMapBlending*100);
+    ui->horizontalSliderConversionBMFilterRadius    ->setValue(imageProp.conversionBaseMapFilterRadius);
+    ui->horizontalSliderConversionBaseMapMixing     ->setValue(imageProp.conversionBaseMapMixNormals*200);
+    ui->horizontalSliderConversionBaseMapBlending   ->setValue(imageProp.conversionBaseMapBlending*100);
 
-    ui->horizontalSliderSSAONoIters->setValue(imageProp.ssaoNoIters);
-    ui->horizontalSliderSSAOBias->setValue(imageProp.ssaoBias*100);
-    ui->horizontalSliderSSAOIntensity->setValue(imageProp.ssaoIntensity*100);
-    ui->horizontalSliderSSAODepth->setValue(imageProp.ssaoDepth*100);
 
-    ui->doubleSpinBoxSSAONoIters->setValue(imageProp.ssaoNoIters);
-    ui->doubleSpinBoxSSAODepth->setValue(imageProp.ssaoDepth);
-    ui->doubleSpinBoxSSAOBias->setValue(imageProp.ssaoBias);
-    ui->doubleSpinBoxSSAOIntensity->setValue(imageProp.ssaoIntensity);
+    ui->horizontalSliderSSAONoIters     ->setValue(imageProp.ssaoNoIters);
+    ui->horizontalSliderSSAOBias        ->setValue(imageProp.ssaoBias*100);
+    ui->horizontalSliderSSAOIntensity   ->setValue(imageProp.ssaoIntensity*100);
+    ui->horizontalSliderSSAODepth       ->setValue(imageProp.ssaoDepth*100);
+
+    ui->doubleSpinBoxSSAONoIters        ->setValue(imageProp.ssaoNoIters);
+    ui->doubleSpinBoxSSAODepth          ->setValue(imageProp.ssaoDepth);
+    ui->doubleSpinBoxSSAOBias           ->setValue(imageProp.ssaoBias);
+    ui->doubleSpinBoxSSAOIntensity      ->setValue(imageProp.ssaoIntensity);
 
 
     bLoading = false;
@@ -526,4 +537,8 @@ void FormImageProp::reloadSettings(){
         imageProp.bGrayScale = true;
     }
 
+}
+
+void FormImageProp::reloadImageSettings(){
+    emit reloadSettingsFromConfigFile(imageProp.imageType);
 }

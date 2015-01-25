@@ -32,5 +32,7 @@
         <file>content/translateUV.png</file>
         <file>content/grabCorners.png</file>
         <file>content/scaleXYUV.png</file>
+        <file>content/filters.frag</file>
+        <file>content/filters.vert</file>
     </qresource>
 </RCC>

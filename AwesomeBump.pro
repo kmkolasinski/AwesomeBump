@@ -1,3 +1,6 @@
+CONFIG       += c++11 debug debug_and_release
+QT           += opengl gui widgets
+
 VPATH += ../shared
 INCLUDEPATH += ../shared
 
@@ -7,7 +10,8 @@ HEADERS       = glwidget.h \
     formimageprop.h \
     glimageeditor.h \
     camera.h \
-    dialogheightcalculator.h
+    dialogheightcalculator.h \
+    qopenglerrorcheck.h
 SOURCES       = glwidget.cpp \
                 main.cpp \
     mainwindow.cpp \
@@ -16,7 +20,6 @@ SOURCES       = glwidget.cpp \
     CommonObjects.cpp \
     camera.cpp \
     dialogheightcalculator.cpp
-QT           += opengl widgets
 
 # install
 INSTALLS += target
@@ -31,3 +34,9 @@ FORMS += \
 
 OTHER_FILES += \
     cube.frag
+
+CONFIG(debug,debug|release) {
+    DEFINES += _DEBUG
+}
+
+ICON = content/icon.icns
