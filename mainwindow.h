@@ -45,7 +45,7 @@ public slots:
     void loadImageSettings(TextureTypes type);
 
     void setOutputFormat(int index);
-    void replotAllImages();
+    void replotAllImages(); // replot all images
 
     // repaint views after selecting tab
     void selectDiffuseTab();
