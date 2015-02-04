@@ -44,23 +44,35 @@ static void checkOpenGLError( const char* stmt, const char* function, const char
       case GLU_INCOMPATIBLE_GL_VERSION: error="GLU_INCOMPATIBLE_GL_VERSION"; break;
       case GLU_INVALID_OPERATION:     error="GLU_INVALID_OPERATION"; break;
 #endif
-      };
-      qDebug() << "OpenGL error" << error << hex << err << dec << "at" << stmt << "called from" << function << "in file" << file << "line" << line << (info?:"");
+      }
+      qDebug() << "OpenGL error" << error << hex << err << dec << "at" << stmt << "called from" << function << "in file" << file << "line" << line << (info?info:"");
 # ifdef ABORT_ON_GL_ERR
       abort();
 # endif
       err = glGetError();
     }
 }
-#define GLCHK(stmt) ({						    \
-      (stmt);							    \
-    checkOpenGLError(#stmt, Q_FUNC_INFO, __FILE__, __LINE__, NULL); \
-  })
-#define GLCHK2(stmt, R) ({					    \
-      R __ret=(stmt);						    \
-    checkOpenGLError(#stmt, Q_FUNC_INFO, __FILE__, __LINE__, NULL); \
-    __ret;							    \
-  })
+
+#define GLCHK(stmt) {                                                   \
+        (stmt);                                                         \
+        checkOpenGLError(#stmt, Q_FUNC_INFO, __FILE__, __LINE__, NULL); \
+    }
+
+#ifdef GNU_C
+    // In GNU_C we can use statement macros as expressions...
+    #define GLCHK2(stmt, R) {(                                          \
+        R __ret=(stmt);                                                 \
+        checkOpenGLError(#stmt, Q_FUNC_INFO, __FILE__, __LINE__, NULL); \
+        __ret;					    \
+    })
+#else
+    //... otherwise we just use lambda functions
+    #define GLCHK2(stmt, R) [](){                                         \
+          R __ret=(stmt);                                                 \
+          checkOpenGLError(#stmt, Q_FUNC_INFO, __FILE__, __LINE__, NULL); \
+          return __ret;                                                   \
+    }();
+#endif
 
 #endif
 
