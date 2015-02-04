@@ -272,17 +272,33 @@ uniform float gui_seamless_random_phase;
 uniform float gui_seamless_random_inner_radius;
 uniform float gui_seamless_random_outer_radius;
 
-float sobel_edge_detection(){
-    vec4 sobel_x = vec4(0);
-    vec4 sobel_y = vec4(0);
 
-    for(int i = 0 ; i < 3 ; i++){
-        for(int j = 0 ; j < 3 ; j++){
-            sobel_x += textureOffset(layerA,v2QuadCoords.st, ivec2(i-1,j-1))*sobel_kernel[i][j];
-            sobel_y -= textureOffset(layerA,v2QuadCoords.st, ivec2(i-1,j-1))*sobel_kernel[j][i];
-        }
-    }
-    return length(sobel_x) + length(sobel_y);
+float sobel_edge_detection(){
+    // Macro function that updates the sobel matrix values for a specific offset.
+    #define UPDATE_SOBEL_VALUES(x, y, sobelMat) \
+        (sobelMat)[0] += textureOffset(layerA,v2QuadCoords.st, ivec2( (x), (y) ) ) * sobel_kernel[ (x) + 1 ][ (y) + 1 ];   \
+        (sobelMat)[1] += textureOffset(layerA,v2QuadCoords.st, ivec2( (x), (y) ) ) * sobel_kernel[ (y) + 1 ][ (x) + 1 ];
+
+    mat2x4 sobel = mat2x4(0);
+
+    // Unrolled 2D loop over offset values
+    // Using unrolled loop + macro function, because the offset parameter of the textureOffset function
+    //  must be a constant or literal value.
+    UPDATE_SOBEL_VALUES(-1, -1, sobel)
+    UPDATE_SOBEL_VALUES(-1,  0, sobel)
+    UPDATE_SOBEL_VALUES(-1, +1, sobel)
+
+    UPDATE_SOBEL_VALUES( 0, -1, sobel)
+    UPDATE_SOBEL_VALUES( 0,  0, sobel)
+    UPDATE_SOBEL_VALUES( 0, +1, sobel)
+
+    UPDATE_SOBEL_VALUES(+1, -1, sobel)
+    UPDATE_SOBEL_VALUES(+1,  0, sobel)
+    UPDATE_SOBEL_VALUES(+1, +1, sobel)
+
+    return length(sobel[0]) + length(sobel[1]);
+
+    #undef UPDATE_SOBEL_VALUES
 }
 
 subroutine(filterModeType) vec4 mode_seamless_filter(){
@@ -686,16 +702,16 @@ vec4 height_clamp(vec4 inputc, vec4 value,float vmin,float vmax){
 
 vec4 height_clamp2(vec4 inputc, float weight,float vmin,float vmax){
     vec4 dmax_ave = weight*(inputc  - vec4(vmax));
-    vec4 output = inputc;
-    if(inputc.r > vmax) output.r = vmax + dmax_ave.r;
-    if(inputc.g > vmax) output.g = vmax + dmax_ave.g;
-    if(inputc.b > vmax) output.b = vmax + dmax_ave.b;
+    vec4 outputValue = inputc;
+    if(inputc.r > vmax) outputValue.r = vmax + dmax_ave.r;
+    if(inputc.g > vmax) outputValue.g = vmax + dmax_ave.g;
+    if(inputc.b > vmax) outputValue.b = vmax + dmax_ave.b;
 
     vec4 dmin_ave = weight*(inputc  - vec4(vmin));
-    if(inputc.r < vmin) output.r = vmin + dmin_ave.r;
-    if(inputc.g < vmin) output.g = vmin + dmin_ave.g;
-    if(inputc.b < vmin) output.b = vmin + dmin_ave.b;
-    return output;
+    if(inputc.r < vmin) outputValue.r = vmin + dmin_ave.r;
+    if(inputc.g < vmin) outputValue.g = vmin + dmin_ave.g;
+    if(inputc.b < vmin) outputValue.b = vmin + dmin_ave.b;
+    return outputValue;
 }
 
 subroutine(filterModeType) vec4 mode_height_processing_filter(){
