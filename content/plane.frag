@@ -22,7 +22,7 @@ void main(void)
     vec4  specularColor    =  texture(texSpecular, texc.st);
     float ambientOclusion  =  float(gui_bOcclusion)*texture(texSSAO, texc.st).r+float(!gui_bOcclusion);
 	
-	
+
     // Phong model
     vec3 N = normalize(vertexNormal.xyz);
     vec3 L = normalize(lightPosition.xyz-0*vertexPosition.xyz);
