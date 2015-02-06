@@ -43,17 +43,17 @@
 
 #include <QGLWidget>
 #include <QtOpenGL>
+#include <qmath.h>
 
-#include <QOpenGLFunctions>
 #include "CommonObjects.h"
 #include "camera.h"
-#include <qmath.h>
+
+#include <QOpenGLFunctions_4_0_Core>
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 
 
-//! [0]
-class GLWidget : public QGLWidget , protected QOpenGLFunctions
+class GLWidget : public QGLWidget , protected QOpenGLFunctions_4_0_Core
 {
     Q_OBJECT
 
@@ -77,13 +77,16 @@ public slots:
     void setDiffuseIntensity(double);
     void setUVScaleOffset(double x,double y);
 
+    void cleanup();
 signals:
-    void rendered();
+    void renderGL();
+    void readyGL();
 
 protected:
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
+    
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);

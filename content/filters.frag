@@ -29,15 +29,15 @@ uniform int gui_sobel_combine;
 uniform float gui_normal_flatting;
 uniform int gui_filter_radius;
 uniform int gui_combine_normals;
-uniform float  gui_mix_normals;
-uniform float  gui_smooth_radius;
+uniform float gui_mix_normals;
+uniform float gui_smooth_radius;
 uniform float gui_blend_normals;
-uniform	float  gui_gauss_w;
-uniform	int     gui_gauss_radius;
+uniform	float gui_gauss_w;
+uniform	int gui_gauss_radius;
 uniform int gui_compressed_type;
 uniform int gui_mode_dgaussian;
 
-uniform int    gui_ssao_no_iters;
+uniform int   gui_ssao_no_iters;
 uniform float gui_ssao_depth;
 uniform float gui_ssao_bias;
 uniform float gui_ssao_intensity;
@@ -596,7 +596,7 @@ subroutine(filterModeType) vec4 mode_sobel_filter(){
 //
 // ----------------------------------------------------------------
 subroutine(filterModeType) vec4 mode_normal_expansion_filter(){
-    vec3 filter  = vec3(0);
+    vec3 filt  = vec3(0);
     float wtotal = 0.0;
     int radius   = gui_filter_radius;
 
@@ -612,11 +612,11 @@ subroutine(filterModeType) vec4 mode_normal_expansion_filter(){
                       1/(20*gaussian(vec2(i,j),gui_filter_radius)*length(normal.xy)+1),
                       gui_normal_flatting+0.001);
         wtotal  += w;
-        filter  += normal*w;
+        filt  += normal*w;
     }}
-    filter /= (wtotal);//normalization
+    filt /= (wtotal);//normalization
 
-    return vec4(0.5*normalize(filter)+0.5,1);
+    return vec4(0.5*normalize(filt)+0.5,1);
 
     }else{// blending and slope-based mixing
 
@@ -715,7 +715,6 @@ vec4 height_clamp2(vec4 inputc, float weight,float vmin,float vmax){
 }
 
 subroutine(filterModeType) vec4 mode_height_processing_filter(){
-
     int radius      = gui_height_proc_ave_radius/5+1;
     float w         = gui_height_proc_ave_radius/50.0; // "details" slider in gui
     vec4 height     = texture( layerA, v2QuadCoords.xy);
@@ -734,15 +733,6 @@ subroutine(filterModeType) vec4 mode_height_processing_filter(){
     vec4 hmin = height_clamp(vec4(0.0),vec4(0.0),gui_height_proc_min_value,gui_height_proc_max_value);
     vec4 hmax = height_clamp(vec4(1.0),vec4(1.0),gui_height_proc_min_value,gui_height_proc_max_value);
     return vec4(height-hmin)/(hmax-hmin);
-
-/*
-    vec4 height     = texture( layerA, v2QuadCoords.xy);
-    float w         = gui_height_proc_ave_radius/100.0;
-    height = height_clamp2(height,w,gui_height_proc_min_value,gui_height_proc_max_value);
-    vec4 hmin = height_clamp2(vec4(0.0),w,gui_height_proc_min_value,gui_height_proc_max_value);
-    vec4 hmax = height_clamp2(vec4(1.0),w,gui_height_proc_min_value,gui_height_proc_max_value);
-    return vec4(height-hmin)/(hmax-hmin);
-*/
 }
 
 

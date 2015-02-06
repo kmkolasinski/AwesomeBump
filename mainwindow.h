@@ -12,6 +12,19 @@
 #include "formimageprop.h"
 #include "CommonObjects.h"
 
+#define TAB_SETTINGS 5
+#define TAB_TILING   6
+
+#ifdef Q_OS_MAC
+# define AB_INI "AwesomeBump.ini"
+# define AB_LOG "AwesomeBump.log" // log created in current directory
+# define AB_LOG_ALT (QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).arg(AB_LOG))
+#else
+# define AB_INI "config.ini"
+# define AB_LOG "log.txt"
+# define AB_LOG_ALT "log.txt"
+#endif
+
 namespace Ui {
 class MainWindow;
 }
@@ -27,17 +40,22 @@ public:
     ~MainWindow();
 protected:
      void closeEvent(QCloseEvent *event);
+     void resizeEvent(QResizeEvent* event);
      void showEvent(QShowEvent* event);
 
 public slots:
 
+    void aboutQt();
+    void about();
+  
+    void initializeGL();
     void initializeImages();
 
     void saveImages();
     void saveCheckedImages();
     void saveCompressedForm();
     void saveSettings();
-    // loading the application setting from config.ini file
+    // loading the application setting from ini file
     void loadSettings();
     // the same but loading configs
     void loadImageSettings(QString abbr,FormImageProp* image);
@@ -45,7 +63,7 @@ public slots:
     void loadImageSettings(TextureTypes type);
 
     void setOutputFormat(int index);
-    void replotAllImages(); // replot all images
+    void replotAllImages();
 
     // repaint views after selecting tab
     void selectDiffuseTab();
@@ -68,8 +86,6 @@ public slots:
 
     void updateImageInformation();
 
-
-
     // image properties
     void changeWidth (int size); // change the combobox index
     void changeHeight(int size);
@@ -78,12 +94,10 @@ public slots:
     void applyResizeImage();
     void applyScaleImage();
 
-    // Setting the global parameters    
+    // Setting the global parameters
     void setSpecularIntensity(int);
     void setDiffuseIntensity(int);
     void updateSpinBoxes(int);
-
-
 
     // Conversion functions
     void convertFromHtoN();
@@ -93,7 +107,7 @@ public slots:
     // UV tools
     void updateSliders();
     // Perspective tool    
-    void resetTransform();    
+    void resetTransform();
     void setUVManipulationMethod();
 
     void selectSeamlessMode(int mode);
@@ -103,15 +117,14 @@ public slots:
 private:
     // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
     void saveImageSettings(QString abbr,FormImageProp* image);
-
-
     // saves all textures to given directory
     bool saveAllImages(const QString &dir);
 
     // Pointers
     Ui::MainWindow *ui;
-    GLWidget *glWidget;
-    GLImage * glImage;
+    GLWidget* glWidget;
+    GLImage* glImage;
+    
     bool bSaveCheckedImages;
     bool bSaveCompressedFormImages;
 
@@ -123,6 +136,10 @@ private:
     FormImageProp* heightImageProp;
     FormImageProp* occlusionImageProp;
 
+    QAction *aboutQtAction;
+    QAction *aboutAction;
+
+    QSettings defaults;
 };
 
 #endif // MAINWINDOW_H

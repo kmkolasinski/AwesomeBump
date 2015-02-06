@@ -7,7 +7,9 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     ui(new Ui::FormImageProp)
 {
     ui->setupUi(this);
+
     imageProp.glWidget_ptr = qlW_ptr;
+    
     connect(ui->pushButtonOpenImage,SIGNAL(released()),this,SLOT(open()));
     connect(ui->pushButtonSaveImage,SIGNAL(released()),this,SLOT(save()));
     connect(ui->pushButtonRestoreSettings,SIGNAL(released()),this,SLOT(reloadImageSettings()));
@@ -24,14 +26,14 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->checkBoxInvertB,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
     connect(ui->checkBoxInvertR,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
     connect(ui->checkBoxInvertG,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
-    // standard enchancment
+    // standard enchancement
     connect(ui->horizontalSliderRemoveShadingGaussIter,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderBlurNoPasses          ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderSmallDetails          ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderMediumDetails         ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderDetailDepth           ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
 
-    // speculat manipulation tool
+    // specular manipulation tool
     connect(ui->checkBoxSpecularControl             ,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
     connect(ui->horizontalSliderSpeculatW1          ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderSpecularW2          ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
@@ -47,8 +49,6 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderSpecularContrast     ,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
     connect(ui->horizontalSliderSpecularAmplifier    ,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
     connect(ui->horizontalSliderSpecularBrightness   ,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
-
-
 
     connect(ui->horizontalSliderSharpenBlur,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderNormalsStep,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
@@ -107,6 +107,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderHeightAveRadius   ,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
 
     setAcceptDrops(true);
+
     ui->groupBoxGrayScale->hide();
     heightCalculator = new DialogHeightCalculator;
 
@@ -199,10 +200,9 @@ void FormImageProp::save(){
     while (dialog.exec() == QDialog::Accepted && !saveFile(dialog.selectedFiles().first())) {}
 }
 
+bool FormImageProp::saveFile(const QString &fileName){
+    qDebug() << Q_FUNC_INFO << "image:" << fileName;
 
-bool FormImageProp::saveFile(const QString &fileName)
-{
-    qDebug() << "<FormImageProp> save image:" << fileName;
     QFileInfo fileInfo(fileName);
     (*recentDir).setPath(fileInfo.absolutePath());
     image = imageProp.getImage();
@@ -243,7 +243,10 @@ void FormImageProp::saveImageToDir(const QString &dir,QImage& image){
 
 void FormImageProp::setImage(QImage _image){
     image    = _image;
-    imageProp.init(image);
+    if (imageProp.glWidget_ptr->isValid())
+      imageProp.init(image);
+    else
+        qDebug() << Q_FUNC_INFO << "Invalid context.";
 }
 void FormImageProp::setImageName(QString name){
     imageName = name;
@@ -255,7 +258,6 @@ QString FormImageProp::getImageName(){
 void FormImageProp::setSpecularControlChecked(){
     ui->checkBoxSpecularControl->setChecked(true);
 }
-
 
 void FormImageProp::updateGrayScalePreset(int index){
     switch(index){
@@ -272,13 +274,13 @@ void FormImageProp::updateGrayScalePreset(int index){
     ui->horizontalSliderGrayScaleG->setValue(imageProp.grayScalePreset.G*255);
     ui->horizontalSliderGrayScaleB->setValue(imageProp.grayScalePreset.B*255);
     bLoading = false;
+
     emit imageChanged();
 }
 
-
-
 void FormImageProp::updateGuiSpinBoxesAndLabes(int){
     if(bLoading == true) return;
+
     ui->doubleSpinBoxSpecularW1         ->setValue(ui->horizontalSliderSpeculatW1           ->value()/100.0);
     ui->doubleSpinBoxSpecularW2         ->setValue(ui->horizontalSliderSpecularW2           ->value()/100.0);
     ui->doubleSpinBoxSpecularRadius     ->setValue(ui->horizontalSliderSpecularRadius       ->value()*1.0);
@@ -342,7 +344,6 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
     ui->labelHeightProcMinValue->setText(QString::number(imageProp.heightMinValue));
     ui->labelHeightProcMaxValue->setText(QString::number(imageProp.heightMaxValue));
 
-
 }
 
 void FormImageProp::updateSlidersOnRelease(){
@@ -353,6 +354,7 @@ void FormImageProp::updateSlidersOnRelease(){
 
 void FormImageProp::updateGuiCheckBoxes(){
     if(bLoading == true) return;
+
     imageProp.bRemoveShading  = ui->checkBoxRemoveShading->isChecked();
     imageProp.bSpeclarControl = ui->checkBoxSpecularControl->isChecked();
 
@@ -462,9 +464,9 @@ void FormImageProp::reloadSettings(){
     ui->horizontalSliderGrayScaleG->setValue(imageProp.grayScalePreset.G*255);
     ui->horizontalSliderGrayScaleB->setValue(imageProp.grayScalePreset.B*255);
 
-    ui->checkBoxSpecularControl ->setChecked(imageProp.bSpeclarControl);
-    ui->checkBoxRemoveShading   ->setChecked(imageProp.bRemoveShading);
-    ui->checkBoxGrayScale       ->setChecked(imageProp.bGrayScale);
+    ui->checkBoxSpecularControl->setChecked(imageProp.bSpeclarControl);
+    ui->checkBoxRemoveShading  ->setChecked(imageProp.bRemoveShading);
+    ui->checkBoxGrayScale      ->setChecked(imageProp.bGrayScale);
 
     ui->checkBoxInvertB->setChecked(imageProp.bInvertB);
     ui->checkBoxInvertR->setChecked(imageProp.bInvertR);
@@ -531,6 +533,7 @@ void FormImageProp::reloadSettings(){
 
     bLoading = false;
     ui->horizontalSliderConversionBMPreSmoothRadius->setValue(imageProp.conversionBaseMapPreSmoothRadius*10);
+    
     // forcing gray scale for specular image
     if(imageProp.imageType == SPECULAR_TEXTURE){
         ui->checkBoxGrayScale->setChecked(true);

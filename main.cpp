@@ -68,7 +68,7 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
          break;
    }
 
-   QFile outFile("log.txt");
+   QFile outFile(AB_LOG);
    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
 
    QTextStream textStream(&outFile);

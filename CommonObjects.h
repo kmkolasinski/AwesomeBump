@@ -1,11 +1,14 @@
 #ifndef COMMONOBJECTS_H
 #define COMMONOBJECTS_H
+
 #include <QtOpenGL>
 #include <QImage>
 #include <cstdio>
 #include <iostream>
+
 #include "qopenglerrorcheck.h"
-#define PROGRAM_VERTEX_ATTRIBUTE 0
+
+#define PROGRAM_VERTEX_ATTRIBUTE   0
 #define PROGRAM_TEXCOORD_ATTRIBUTE 1
 
 using namespace std;
@@ -15,7 +18,8 @@ enum TextureTypes{
     NORMAL_TEXTURE ,
     SPECULAR_TEXTURE,
     HEIGHT_TEXTURE,
-    OCCLUSION_TEXTURE
+    OCCLUSION_TEXTURE,
+    MAX_TEXTURES_TYPE
 };
 
 enum ConversionType{
@@ -27,9 +31,9 @@ enum ConversionType{
 };
 
 enum UVManipulationMethods{
-    uvTranslate = 0,
-    uvGrabCorners,
-    uvScaleXY
+    UV_TRANSLATE = 0,
+    UV_GRAB_CORNERS,
+    UV_SCALE_XY
 };
 
 // Compressed texture type
@@ -42,9 +46,11 @@ enum TargaColorFormat{
     TARGA_BGRA,
     TARGA_LUMINANCE
 };
-#define TARGA_HEADER_SIZE 0x12
+
+#define TARGA_HEADER_SIZE    0x12
 #define TARGA_UNCOMP_RGB_IMG 0x02
-#define TARGA_UNCOMP_BW_IMG 0x03
+#define TARGA_UNCOMP_BW_IMG  0x03
+
 // Reading and writing to file TGA image
 class TargaImage{
     public:
@@ -368,7 +374,8 @@ public:
 
      }
     void init(QImage& image){
-        qDebug() << "<FBOImageProporties> init.";
+        qDebug() << Q_FUNC_INFO;
+
         glWidget_ptr->makeCurrent();
         if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
         scr_tex_id = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
@@ -409,7 +416,8 @@ public:
     }
 
     ~FBOImageProporties(){
-        qDebug() << "<FBOImageProporties> delete.";
+        qDebug() << Q_FUNC_INFO;
+
         glWidget_ptr->makeCurrent();
         if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
         glWidget_ptr = NULL;

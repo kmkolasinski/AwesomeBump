@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage          = new GLImage(this);
     glWidget         = new GLWidget(this,glImage);
 
+    connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
+
 
     QGLContext* glContext = (QGLContext *) glWidget->context();
     glContext->makeCurrent();    
@@ -49,11 +51,11 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp= new FormImageProp(this,glImage);
 
     // Setting pointers to 3D view (this pointer are used to bindTextures).
-    glWidget->setPointerToTexture(&diffuseImageProp  ->getImageProporties() ->fbo,DIFFUSE_TEXTURE);
-    glWidget->setPointerToTexture(&normalImageProp   ->getImageProporties() ->fbo,NORMAL_TEXTURE);
-    glWidget->setPointerToTexture(&specularImageProp ->getImageProporties() ->fbo,SPECULAR_TEXTURE);
-    glWidget->setPointerToTexture(&heightImageProp   ->getImageProporties() ->fbo,HEIGHT_TEXTURE);
-    glWidget->setPointerToTexture(&occlusionImageProp->getImageProporties() ->fbo,OCCLUSION_TEXTURE);
+    glWidget->setPointerToTexture(&diffuseImageProp->getImageProporties()  ->fbo,DIFFUSE_TEXTURE);
+    glWidget->setPointerToTexture(&normalImageProp->getImageProporties()   ->fbo,NORMAL_TEXTURE);
+    glWidget->setPointerToTexture(&specularImageProp->getImageProporties() ->fbo,SPECULAR_TEXTURE);
+    glWidget->setPointerToTexture(&heightImageProp->getImageProporties()   ->fbo,HEIGHT_TEXTURE);
+    glWidget->setPointerToTexture(&occlusionImageProp->getImageProporties()->fbo,OCCLUSION_TEXTURE);
 
     // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
@@ -70,8 +72,6 @@ MainWindow::MainWindow(QWidget *parent) :
     specularImageProp->hideNHGroupBox();
     specularImageProp->hideSSAOBar();
     specularImageProp->hideNormalStepBar();
-
-
 
     diffuseImageProp->hideHNGroupBox();
     diffuseImageProp->hideNHGroupBox();
@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp->hideNHGroupBox();
     occlusionImageProp->hideNormalStepBar();
     occlusionImageProp->hideGrayScaleControl();
-
+    
     glImage ->targetImageNormal    = normalImageProp   ->getImageProporties();
     glImage ->targetImageHeight    = heightImageProp   ->getImageProporties();
     glImage ->targetImageSpecular  = specularImageProp ->getImageProporties();
@@ -120,16 +120,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutHeightImage   ->addWidget(heightImageProp);
     ui->verticalLayoutOcclusionImage->addWidget(occlusionImageProp);
 
-    connect(glWidget,SIGNAL(rendered()),this,SLOT(initializeImages()));
+    ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
+    
+    connect(ui->tabWidget,SIGNAL(currentChanged(int)),this,SLOT(updateImage(int)));
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
-
+    
     // imageChange signals
-    connect(diffuseImageProp  ,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
-    connect(normalImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateNormalImage()));
-    connect(specularImageProp ,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
-    connect(heightImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateHeightImage()));
+    connect(diffuseImageProp,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
+    connect(normalImageProp,SIGNAL(imageChanged()),this,SLOT(updateNormalImage()));
+    connect(specularImageProp,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
+    connect(heightImageProp,SIGNAL(imageChanged()),this,SLOT(updateHeightImage()));
     connect(occlusionImageProp,SIGNAL(imageChanged()),this,SLOT(updateOcclusionImage()));
-
 
     // image reload settings signal
     connect(diffuseImageProp   ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
@@ -138,28 +139,26 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(heightImageProp    ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
     connect(occlusionImageProp ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
 
-
     // conversion signals
     connect(heightImageProp,SIGNAL(conversionHeightToNormalApplied()) ,this,SLOT(convertFromHtoN()));
     connect(heightImageProp,SIGNAL(repaintNormalTexture()) ,this,SLOT(repaintNormalImage()));
-
-    connect(normalImageProp ,SIGNAL(conversionNormalToHeightApplied()),this,SLOT(convertFromNtoH()));
+    
+    connect(normalImageProp,SIGNAL(conversionNormalToHeightApplied()) ,this,SLOT(convertFromNtoH()));
     connect(diffuseImageProp,SIGNAL(conversionBaseConversionApplied()),this,SLOT(convertFromBase()));
 
     // Global setting signals
     // sliders
-    connect(ui->horizontalSliderDepthScale  ,SIGNAL(valueChanged(int)),glWidget,SLOT(setDepthScale(int)));
-    connect(ui->horizontalSliderUVScale     ,SIGNAL(valueChanged(int)),glWidget,SLOT(setUVScale(int)));    
-    connect(ui->horizontalSliderDepthScale  ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderUVScale     ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderUVXOffset   ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderUVYOffset   ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderDepthScale ,SIGNAL(valueChanged(int)),glWidget,SLOT(setDepthScale(int)));
+    connect(ui->horizontalSliderUVScale    ,SIGNAL(valueChanged(int)),glWidget,SLOT(setUVScale(int)));
+    connect(ui->horizontalSliderDepthScale ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderUVScale    ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderUVXOffset  ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderUVYOffset  ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
 
     // Save signals
-    connect(ui->pushButtonSaveAll    ,SIGNAL(released()),this,SLOT(saveImages()));
+    connect(ui->pushButtonSaveAll,SIGNAL(released()),this,SLOT(saveImages()));
     connect(ui->pushButtonSaveChecked,SIGNAL(released()),this,SLOT(saveCheckedImages()));
-    connect(ui->pushButtonSaveAs     ,SIGNAL(released()),this,SLOT(saveCompressedForm()));
-
+    connect(ui->pushButtonSaveAs,SIGNAL(released()),this,SLOT(saveCompressedForm()));
 
     // image properties signals
     connect(ui->comboBoxResizeWidth   ,SIGNAL(currentIndexChanged(int)),this,SLOT(changeWidth(int)));
@@ -171,16 +170,15 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonResizeApply ,SIGNAL(released()),this,SLOT(applyResizeImage()));
     connect(ui->pushButtonRescaleApply,SIGNAL(released()),this,SLOT(applyScaleImage()));
 
-
     // Other signals
-    connect(ui->pushButtonReplotAll         ,SIGNAL(released()),this,SLOT(replotAllImages()));
-    connect(ui->pushButtonToggleDiffuse     ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
-    connect(ui->pushButtonToggleSpecular    ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleSpecularView(bool)));
-    connect(ui->pushButtonToggleOcclusion   ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleOcclusionView(bool)));
-    connect(ui->pushButtonSaveCurrentSettings,SIGNAL(released()),this,SLOT(saveSettings()));
-    connect(ui->horizontalSliderSpecularI   ,SIGNAL(valueChanged(int)),this,SLOT(setSpecularIntensity(int)));
-    connect(ui->horizontalSliderDiffuseI    ,SIGNAL(valueChanged(int)),this,SLOT(setDiffuseIntensity(int)));
-    connect(ui->comboBoxImageOutputFormat   ,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
+    connect(ui->pushButtonReplotAll           ,SIGNAL(released()),this,SLOT(replotAllImages()));
+    connect(ui->pushButtonToggleDiffuse       ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
+    connect(ui->pushButtonToggleSpecular      ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleSpecularView(bool)));
+    connect(ui->pushButtonToggleOcclusion     ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleOcclusionView(bool)));
+    connect(ui->pushButtonSaveCurrentSettings ,SIGNAL(released()),this,SLOT(saveSettings()));
+    connect(ui->horizontalSliderSpecularI     ,SIGNAL(valueChanged(int)),this,SLOT(setSpecularIntensity(int)));
+    connect(ui->horizontalSliderDiffuseI      ,SIGNAL(valueChanged(int)),this,SLOT(setDiffuseIntensity(int)));
+    connect(ui->comboBoxImageOutputFormat     ,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
 
 
     ui->progressBar->setValue(0);
@@ -193,7 +191,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowOcclusiontImage,SIGNAL(triggered()),this,SLOT(selectOcclusionTab()));
     connect(ui->actionShowSettingsImage ,SIGNAL(triggered()),this,SLOT(selectGeneralSettingsTab()));
     connect(ui->actionFitToScreen       ,SIGNAL(triggered()),this,SLOT(fitImage()));
-
 
     // perspective tool
     connect(ui->pushButtonResetTransform            ,SIGNAL(released()),this,SLOT(resetTransform()));
@@ -222,11 +219,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->horizontalSliderRandomPatchesInnerRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
     connect(ui->horizontalSliderRandomPatchesOuterRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
 
-
     ui->groupBoxSimpleSeamlessMode->hide();
     ui->groupBoxMirrorMode->hide();
     ui->groupBoxRandomPatchesMode->hide();
-
 
     // 2D imate tool box settings
     QActionGroup *group = new QActionGroup( this );
@@ -238,13 +233,18 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionGrabCorners,SIGNAL(triggered()),this,SLOT(setUVManipulationMethod()));
     connect(ui->actionScaleXY    ,SIGNAL(triggered()),this,SLOT(setUVManipulationMethod()));
 
+#ifdef Q_OS_MAC
+    if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
+#endif
 
     // Checking for GUI styles
     QStringList guiStyleList = QStyleFactory::keys();
     qDebug() << "Supported GUI styles: " << guiStyleList.join(", ");
     ui->comboBoxGUIStyle->addItems(guiStyleList);
 
+    // Now we can load settings
     loadSettings();
+
     // Loading default (initial) textures
     diffuseImageProp   ->setImage(QImage(QString(":/content/logo_D.png")));
     normalImageProp    ->setImage(QImage(QString(":/content/logo_N.png")));
@@ -262,53 +262,77 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
 
+    aboutAction = new QAction(QIcon(":/content/cube.png"), tr("&About %1").arg(qApp->applicationName()), this);
+    aboutAction->setToolTip(tr("Show information about AwesomeBump"));
+    aboutAction->setMenuRole(QAction::AboutQtRole);
+    aboutAction->setMenuRole(QAction::AboutRole);
+    aboutQtAction = new QAction(QIcon(":/content/QtLogo.png"), tr("About &Qt"), this);
+    aboutQtAction->setToolTip(tr("Show information about Qt"));
+    aboutQtAction->setMenuRole(QAction::AboutQtRole);
 
-#ifdef Q_OS_MAC
-    if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
-#endif
+    connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
+    connect(aboutQtAction, SIGNAL(triggered()), this, SLOT(aboutQt()));
+
+
+    QMenu *help = menuBar()->addMenu(tr("&Help"));
+    help->addAction(aboutAction);
+    help->addAction(aboutQtAction);
+
+    QAction *action = ui->toolBar->toggleViewAction();
+    ui->menubar->addAction(action);
+
+
 }
 
 MainWindow::~MainWindow()
 {
-
-    delete ui;
+  delete ui;
 }
 void MainWindow::closeEvent(QCloseEvent *event) {
     QWidget::closeEvent( event );
-    qDebug() << "<MainWindow> Close program.";
+    
+    qDebug() << "calling" << Q_FUNC_INFO;
 
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QSettings settings(AB_INI, QSettings::IniFormat);
     settings.setValue("d_win_w",this->width());
     settings.setValue("d_win_h",this->height());
     settings.setValue("recent_dir",recentDir.absolutePath());
+
     glWidget->close();
     glImage->close();
 
 }
+
+void MainWindow::resizeEvent(QResizeEvent* event){
+  QWidget::resizeEvent( event );
+  replotAllImages();
+  qDebug() << "calling " << Q_FUNC_INFO;
+}
+
 void MainWindow::showEvent(QShowEvent* event){
-    QWidget::showEvent( event );
-    qDebug() << "<MainWindow> Show window.";
-    replotAllImages();
+  QWidget::showEvent( event );
+  qDebug() << "calling" << Q_FUNC_INFO;
+  replotAllImages();
 }
 
 void MainWindow::replotAllImages(){
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
-    for(int i = 0 ; i < 5 ; i++){
+    for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
         // skip normal and ambient occlusion
-        if(i!=1 && i!=4)updateImage(i);
-        glImage->repaint();
+        if(i!=NORMAL_TEXTURE && i!=OCCLUSION_TEXTURE) updateImage(i);
+        glImage->update();
     }
     // recalulate normal at the end
-    updateImage(1);
-    glImage->repaint();
+    updateImage(NORMAL_TEXTURE);
+    glImage->update();
     // then ambient occlusion
-    updateImage(4);
-    glImage->repaint();
+    updateImage(OCCLUSION_TEXTURE);
+    glImage->update();
     glImage->enableShadowRender(false);
 
     glImage->setActiveImage(lastActive);
-    glWidget->repaint();
+    glWidget->update();
 }
 
 
@@ -334,7 +358,7 @@ void MainWindow::selectOcclusionTab(){
 }
 
 void MainWindow::selectGeneralSettingsTab(){
-    ui->tabWidget->setCurrentIndex(5);
+    ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
 }
 
 void MainWindow::fitImage(){
@@ -355,14 +379,14 @@ void MainWindow::saveImages(){
 }
 
 bool MainWindow::saveAllImages(const QString &dir){
-    QFileInfo fileInfo(dir);
+     QFileInfo fileInfo(dir);
     if (!fileInfo.exists()) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
                                  tr("Cannot save to %1.").arg(QDir::toNativeSeparators(dir)));
         return false;
     }
 
-    qDebug() << "<MainWindow>::Saving to dir:" << fileInfo.absoluteFilePath();
+    qDebug() << Q_FUNC_INFO << "Saving to dir:" << fileInfo.absoluteFilePath();
 
     diffuseImageProp  ->setImageName(ui->lineEditOutputName->text());
     normalImageProp   ->setImageName(ui->lineEditOutputName->text());
@@ -564,10 +588,34 @@ void MainWindow::repaintNormalImage(){
     glWidget->repaint();
 }
 
-
 void MainWindow::updateImageInformation(){
     ui->labelCurrentImageWidth ->setNum(diffuseImageProp->getImageProporties()->ref_fbo->width());
     ui->labelCurrentImageHeight->setNum(diffuseImageProp->getImageProporties()->ref_fbo->height());
+}
+
+void MainWindow::initializeGL(){  
+    static bool one_time = false;
+    // Context is vallid at this moment
+    if (!one_time){
+      one_time = true;
+
+      qDebug() << "calling" << Q_FUNC_INFO;
+      
+      // Loading default (initial) textures
+      diffuseImageProp  ->setImage(QImage(QString(":/content/logo_D.png")));
+      normalImageProp   ->setImage(QImage(QString(":/content/logo_N.png")));
+      specularImageProp ->setImage(QImage(QString(":/content/logo_D.png")));
+      heightImageProp   ->setImage(QImage(QString(":/content/logo_H.png")));
+      occlusionImageProp->setImage(QImage(QString(":/content/logo_O.png")));
+
+      diffuseImageProp  ->setImageName(ui->lineEditOutputName->text());
+      normalImageProp   ->setImageName(ui->lineEditOutputName->text());
+      heightImageProp   ->setImageName(ui->lineEditOutputName->text());
+      specularImageProp ->setImageName(ui->lineEditOutputName->text());
+      occlusionImageProp->setImageName(ui->lineEditOutputName->text());
+      // Setting the active image
+      glImage->setActiveImage(diffuseImageProp->getImageProporties());
+    }
 }
 
 void MainWindow::initializeImages(){
@@ -575,6 +623,7 @@ void MainWindow::initializeImages(){
 
     if(bInitializedFirstDraw) return;
     bInitializedFirstDraw = true;
+
     qDebug() << "MainWindow::Initialization";
     QCoreApplication::processEvents();
 
@@ -582,8 +631,8 @@ void MainWindow::initializeImages(){
     // SSAO recalculation
     FBOImageProporties* lastActive = glImage->getActiveImage();
 
-    updateImage(4);
-    glImage->repaint();
+    updateImage(OCCLUSION_TEXTURE);
+    glImage->update();
     glImage->setActiveImage(lastActive);
 
 }
@@ -605,6 +654,8 @@ void MainWindow::updateImage(int tType){
         case(OCCLUSION_TEXTURE  ):
             glImage->setActiveImage(occlusionImageProp->getImageProporties());
             break;
+        default: // Settings
+            return;
     }
     glWidget->repaint();
 }
@@ -619,8 +670,6 @@ void MainWindow::changeHeight(int size){
         ui->comboBoxResizeWidth->setCurrentText(ui->comboBoxResizeHeight->currentText());
     }
 }
-
-
 
 void MainWindow::applyResizeImage(){
     QCoreApplication::processEvents();
@@ -725,7 +774,6 @@ void MainWindow::setDiffuseIntensity(int val){
     glWidget->setDiffuseIntensity(d);
 }
 void MainWindow::updateSpinBoxes(int){
-
     ui->doubleSpinBoxMakeSeamless->setValue(ui->horizontalSliderMakeSeamlessRadius->value()/100.0);
     ui->doubleSpinBoxDepthScale  ->setValue(ui->horizontalSliderDepthScale->value()/100.0);
     ui->doubleSpinBoxUVScale     ->setValue(ui->horizontalSliderUVScale   ->value()/10.0);
@@ -768,7 +816,6 @@ void MainWindow::convertFromBase(){
     qDebug() << "Conversion from Base to others applied";
 }
 
-
 void MainWindow::updateSliders(){
     updateSpinBoxes(0);
     FBOImageProporties::seamlessSimpleModeRadius          = ui->doubleSpinBoxMakeSeamless->value();
@@ -788,8 +835,6 @@ void MainWindow::updateSliders(){
 }
 
 
-
-
 void MainWindow::resetTransform(){
     QVector2D corner(0,0);
     glImage->updateCornersPosition(corner,corner,corner,corner);
@@ -800,30 +845,31 @@ void MainWindow::resetTransform(){
 
 
 void MainWindow::setUVManipulationMethod(){
-    if(ui->actionTranslateUV->isChecked()) glImage->selectUVManipulationMethod(uvTranslate);
-    if(ui->actionGrabCorners->isChecked()) glImage->selectUVManipulationMethod(uvGrabCorners);
-    if(ui->actionScaleXY->isChecked())     glImage->selectUVManipulationMethod(uvScaleXY);
+    if(ui->actionTranslateUV->isChecked()) glImage->selectUVManipulationMethod(UV_TRANSLATE);
+    if(ui->actionGrabCorners->isChecked()) glImage->selectUVManipulationMethod(UV_GRAB_CORNERS);
+    if(ui->actionScaleXY->isChecked())     glImage->selectUVManipulationMethod(UV_SCALE_XY);
 }
 
 QSize MainWindow::sizeHint() const
 {
-    QSettings settings("config.ini", QSettings::IniFormat);
-    return QSize(settings.value("d_win_w","800").toInt(),settings.value("d_win_h","600").toInt());
+    QSettings settings(AB_INI, QSettings::IniFormat);
+    return QSize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
 }
 
 void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
 
 
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QSettings settings("AB_INI", QSettings::IniFormat);
 
     settings.setValue("t_"+abbr+"_bGrayScale"                       ,image->getImageProporties()->bGrayScale);
     settings.setValue("t_"+abbr+"_grayScaleR"                       ,image->getImageProporties()->grayScalePreset.R);
     settings.setValue("t_"+abbr+"_grayScaleG"                       ,image->getImageProporties()->grayScalePreset.G);
     settings.setValue("t_"+abbr+"_grayScaleB"                       ,image->getImageProporties()->grayScalePreset.B);
-
+ 
     settings.setValue("t_"+abbr+"_bInvertR"                         ,image->getImageProporties()->bInvertR);
     settings.setValue("t_"+abbr+"_bInvertG"                         ,image->getImageProporties()->bInvertG);
     settings.setValue("t_"+abbr+"_bInvertB"                         ,image->getImageProporties()->bInvertB);
+
     settings.setValue("t_"+abbr+"_bRemoveShading"                   ,image->getImageProporties()->bRemoveShading);
     settings.setValue("t_"+abbr+"_noRemoveShadingGaussIter"         ,image->getImageProporties()->noRemoveShadingGaussIter);
     settings.setValue("t_"+abbr+"_noBlurPasses"                     ,image->getImageProporties()->noBlurPasses);
@@ -843,7 +889,6 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_heightMinValue"                   ,image->getImageProporties()->heightMinValue);
     settings.setValue("t_"+abbr+"_heightMaxValue"                   ,image->getImageProporties()->heightMaxValue);
     settings.setValue("t_"+abbr+"_heightAveragingRadius"            ,image->getImageProporties()->heightAveragingRadius);
-
 
     settings.setValue("t_"+abbr+"_conversionHNDepth"                ,image->getImageProporties()->conversionHNDepth);
     settings.setValue("t_"+abbr+"_bConversionHN"                    ,image->getImageProporties()->bConversionHN);
@@ -956,13 +1001,17 @@ void MainWindow::loadImageSettings(TextureTypes type){
 }
 
 void MainWindow::saveSettings(){
-    qDebug() << "<MainWindow>:: saving settings";
-    QSettings settings("config.ini", QSettings::IniFormat);
+    qDebug() << "calling" << Q_FUNC_INFO;
+  
+    QSettings settings(AB_INI, QSettings::IniFormat);
+
+
     PostfixNames::diffuseName   = ui->lineEditPostfixDiffuse->text();
     PostfixNames::normalName    = ui->lineEditPostfixNormal->text();
     PostfixNames::specularName  = ui->lineEditPostfixSpecular->text();
     PostfixNames::heightName    = ui->lineEditPostfixHeight->text();
     PostfixNames::occlusionName = ui->lineEditPostfixOcclusion->text();
+
 
     settings.setValue("3d_depth",ui->horizontalSliderDepthScale->value()/100.0);
     settings.setValue("d_postfix",ui->lineEditPostfixDiffuse->text());
@@ -970,6 +1019,7 @@ void MainWindow::saveSettings(){
     settings.setValue("s_postfix",ui->lineEditPostfixSpecular->text());
     settings.setValue("h_postfix",ui->lineEditPostfixHeight->text());
     settings.setValue("o_postfix",ui->lineEditPostfixOcclusion->text());
+
     settings.setValue("recent_dir",recentDir.absolutePath());
     settings.setValue("gui_style",ui->comboBoxGUIStyle->currentText());
 
@@ -988,12 +1038,12 @@ void MainWindow::setOutputFormat(int index){
 }
 
 void MainWindow::loadSettings(){
+    qDebug() << "calling" << Q_FUNC_INFO;
+
+    QSettings settings(AB_INI, QSettings::IniFormat);
 
 
-    qDebug() << "<MainWindow>:: loading settings";
-    QSettings settings("config.ini", QSettings::IniFormat);
-
-    this->resize(settings.value("d_win_w","800").toInt(),settings.value("d_win_h","600").toInt());
+    this->resize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
 
     PostfixNames::diffuseName   = settings.value("d_postfix","_d").toString();
     PostfixNames::normalName    = settings.value("n_postfix","_n").toString();
@@ -1022,4 +1072,14 @@ void MainWindow::loadSettings(){
     loadImageSettings("h",heightImageProp);
     loadImageSettings("o",occlusionImageProp);
 
+}
+
+void MainWindow::about()
+{
+    QMessageBox::about(this, tr("Awesome Bump"), tr("AwesomeBump is an open source program designed to generate normal, height, specular or ambient occlusion textures from a single image. Since the image processing is done in 99% on GPU  the program runs very fast and all the parameters can be changed in real time."));
+}
+
+void MainWindow::aboutQt()
+{
+    QMessageBox::aboutQt(this, tr("Awesome Bump"));
 }

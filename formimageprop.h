@@ -48,7 +48,7 @@ public:
     ~FormImageProp();
 public slots:
     void open();
-    void save();    
+    void save();
     void reloadImageSettings();
 
     void updateGrayScalePreset(int index);

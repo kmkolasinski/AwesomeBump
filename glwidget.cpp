@@ -65,10 +65,18 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
 }
 
 GLWidget::~GLWidget()
+{
+  cleanup();
+}
+
+void GLWidget::cleanup()
 {   
+    makeCurrent();
 
     glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]);
     delete program;
+    
+    doneCurrent();
 }
 
 QSize GLWidget::minimumSizeHint() const
@@ -122,7 +130,7 @@ void GLWidget::setDiffuseIntensity(double val){
     updateGL();
 }
 
-//! [6]
+
 void GLWidget::initializeGL()
 {
     initializeOpenGLFunctions();
@@ -132,7 +140,7 @@ void GLWidget::initializeGL()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
+    // glEnable(GL_TEXTURE_2D); // non-core
 
 
     qDebug() << "Loading quad (fragment shader)";
@@ -165,22 +173,19 @@ void GLWidget::initializeGL()
 
     camera.position.setZ( -0 );
     camera.toggleFreeCamera(false);
+    emit readyGL();
 }
-//! [6]
 
-//! [7]
 void GLWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
-
-
-    program->bind();
+    GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+    GLCHK( glDisable(GL_CULL_FACE) );
+    GLCHK( glEnable(GL_DEPTH_TEST) );
+    
+    GLCHK( program->bind() );
     projectionMatrix.setToIdentity();
     projectionMatrix.perspective(zoom,ratio,0.1,100.0);
-    program->setUniformValue("ProjectionMatrix", projectionMatrix);
-
+    GLCHK( program->setUniformValue("ProjectionMatrix", projectionMatrix) );
 
     objectMatrix.setToIdentity();
     if( fboIdPtrs[0] != NULL){
@@ -191,17 +196,18 @@ void GLWidget::paintGL()
     modelViewMatrix = camera.updateCamera()*RotatePlaneMatrix*objectMatrix;
     QMatrix3x3 NormalMatrix = modelViewMatrix.normalMatrix();
 
-    program->setUniformValue("ModelViewMatrix", modelViewMatrix);    
-    program->setUniformValue("NormalMatrix", NormalMatrix);
-    program->setUniformValue("lightPos", lightPosition);
-    program->setUniformValue("cameraPos", cursorPositionOnPlane);
-    program->setUniformValue("gui_depthScale"     , depthScale);
-    program->setUniformValue("gui_uvScale"        , uvScale);
-    program->setUniformValue("gui_uvScaleOffset"  ,uvOffset);
-    program->setUniformValue("gui_bSpecular"      , bToggleSpecularView);
-    program->setUniformValue("gui_bOcclusion"     , bToggleOcclusionView);
-    program->setUniformValue("gui_SpecularIntensity"      , specularIntensity);
-    program->setUniformValue("gui_DiffuseIntensity"       , diffuseIntensity);
+    GLCHK( program->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );    
+    GLCHK( program->setUniformValue("NormalMatrix"          , NormalMatrix) );
+    GLCHK( program->setUniformValue("lightPos"              , lightPosition) );
+    GLCHK( program->setUniformValue("cameraPos"             , cursorPositionOnPlane) );
+    GLCHK( program->setUniformValue("gui_depthScale"        , depthScale) );
+    GLCHK( program->setUniformValue("gui_uvScale"           , uvScale) );
+    GLCHK( program->setUniformValue("gui_uvScaleOffset"     , uvOffset) );
+    GLCHK( program->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
+    GLCHK( program->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
+    GLCHK( program->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
+    GLCHK( program->setUniformValue("gui_SpecularIntensity" , specularIntensity) );
+    GLCHK( program->setUniformValue("gui_DiffuseIntensity"  , diffuseIntensity) );
 
     if( fboIdPtrs[0] != NULL){
         glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
@@ -210,88 +216,40 @@ void GLWidget::paintGL()
         glVertexAttribPointer(PROGRAM_TEXCOORD_ATTRIBUTE,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,(void*)0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
 
-        glActiveTexture(GL_TEXTURE0);
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+     //   if(bToggleDiffuseView)
+	       GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[0]))->texture()) );
+     //   else
+       //    GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture()) );
 
-        if(bToggleDiffuseView) glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[0]))->texture());
-        else glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
-        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glGenerateMipmap(GL_TEXTURE_2D);
+        GLCHK( glActiveTexture(GL_TEXTURE1) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture()) );
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
-       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glGenerateMipmap(GL_TEXTURE_2D);
+        GLCHK( glActiveTexture(GL_TEXTURE2) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[2]))->texture()) );
 
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[2]))->texture());
-       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glGenerateMipmap(GL_TEXTURE_2D);
+        GLCHK( glActiveTexture(GL_TEXTURE3) );        
+        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[3]))->texture()) );
 
-        glActiveTexture(GL_TEXTURE3);        
-        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[3]))->texture());
-       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-       // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glGenerateMipmap(GL_TEXTURE_2D);
+        GLCHK( glActiveTexture(GL_TEXTURE4) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[4]))->texture()) );
 
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[4]))->texture());
-        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      //  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glGenerateMipmap(GL_TEXTURE_2D);
-
-        glDrawElements(GL_TRIANGLES, 3*no_triangles, GL_UNSIGNED_INT, 0);
+        GLCHK( glDrawElements(GL_TRIANGLES, 3*no_triangles, GL_UNSIGNED_INT, 0) );
 
         // restore filtering
         glActiveTexture(GL_TEXTURE0);
-        /*
-        if(bToggleDiffuseView) glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[0]))->texture());
-        else glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glGenerateMipmap(GL_TEXTURE_2D);
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture());
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glGenerateMipmap(GL_TEXTURE_2D);
-
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[2]))->texture());
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glGenerateMipmap(GL_TEXTURE_2D);
-
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[3]))->texture());
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glGenerateMipmap(GL_TEXTURE_2D);
-
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[4]))->texture());
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        */
     }
 
-    emit rendered();
+    emit renderGL();
 
 }
-//! [7]
 
-//! [8]
 void GLWidget::resizeGL(int width, int height)
 {
     ratio = float(width)/height;
-    glViewport(0, 0, width, height);
+    GLCHK( glViewport(0, 0, width, height) );
 }
-//! [8]
 
-//! [9]
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();

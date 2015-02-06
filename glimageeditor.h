@@ -61,12 +61,13 @@ class GLImage : public QGLWidget , protected QOpenGLFunctions_4_0_Core
 public:
     GLImage(QWidget *parent = 0 );
     ~GLImage();
+    void cleanup();
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
     void setActiveImage(FBOImageProporties* ptr);
     FBOImageProporties* getActiveImage(){return activeImage;}
-    void enableShadowRender(bool enable);    
+    void enableShadowRender(bool enable);
     void setConversionType(ConversionType conversionType);
     void updateCornersPosition(QVector2D dc1,QVector2D dc2,QVector2D dc3,QVector2D dc4);
     void render();
@@ -85,6 +86,7 @@ public slots:
     void selectSeamlessMode(SeamlessMode mode);
 signals:
     void rendered();
+    void readyGL();
 
 //! [2]
 protected:
@@ -171,7 +173,7 @@ protected:
     void applyOcclusionFilter(QGLFramebufferObject* inputFBO,
                               QGLFramebufferObject* outputFBO);
 
-    void applyHeightProcessingfFilter(QGLFramebufferObject* inputFBO,
+    void applyHeightProcessingFilter(QGLFramebufferObject* inputFBO,
                                       QGLFramebufferObject* outputFBO);
 
     void applyCombineNormalHeightFilter(QGLFramebufferObject* normalFBO,
@@ -191,7 +193,7 @@ private:
 
     GLuint vbos[3];
     ConversionType conversionType;
-    bool bShadowRender;    
+    bool bShadowRender;
     bool bSkipProcessing;   // draw quad but skip all the processing step (using during mouse interaction)
     float windowRatio;      // window width-height ratio
     float fboRatio;         // active fbo width-height ratio
@@ -222,7 +224,6 @@ private:
     // uv manipulations method
     UVManipulationMethods uvManilupationMethod;
 };
-//! [3]
 
 
 #endif // GLIMAGEEDITOR_H
