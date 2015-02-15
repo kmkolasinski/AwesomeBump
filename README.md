@@ -25,6 +25,8 @@ New in version 2.1
 
 2) Simple project manager
 
+3) And few less important.
+
 
 New in version 2.0:
 ============
