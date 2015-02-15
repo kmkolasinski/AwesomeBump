@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>920</width>
-    <height>808</height>
+    <width>998</width>
+    <height>745</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -81,8 +81,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>358</width>
-             <height>685</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -134,8 +134,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>358</width>
-             <height>685</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -187,8 +187,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>358</width>
-             <height>685</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -240,8 +240,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>358</width>
-             <height>685</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -293,8 +293,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>358</width>
-             <height>685</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -347,7 +347,7 @@
              <x>28</x>
              <y>0</y>
              <width>300</width>
-             <height>637</height>
+             <height>574</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -616,6 +616,19 @@
                   </widget>
                  </item>
                 </layout>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="checkBoxUseLinearTextureInterpolation">
+                 <property name="whatsThis">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked the &lt;span style=&quot; font-weight:600;&quot;&gt;GL_LINEAR&lt;/span&gt; texture parameter is enabled thus all processing is done with texture filtering enabled which will lead to bluring of the orginal image. Otherwise &lt;span style=&quot; font-weight:600;&quot;&gt;GL_NEAREST&lt;/span&gt; filtering is applied. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Use texture linear interpolation (save and restart)</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -1156,8 +1169,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>356</width>
-             <height>683</height>
+             <width>253</width>
+             <height>369</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -1501,7 +1514,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_16">
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="pushButton3DSettings">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
              <horstretch>0</horstretch>
@@ -1523,7 +1536,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="widget_2" native="true">
+       <widget class="QWidget" name="widget3DSettings" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -1539,13 +1552,13 @@
         <property name="maximumSize">
          <size>
           <width>11000</width>
-          <height>200</height>
+          <height>230</height>
          </size>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_17">
          <item>
           <layout class="QGridLayout" name="gridLayout_8">
-           <item row="1" column="3">
+           <item row="1" column="8">
             <widget class="QPushButton" name="pushButtonToggleOcclusion">
              <property name="statusTip">
               <string>Toggle occlusion</string>
@@ -1556,35 +1569,6 @@
              <property name="icon">
               <iconset resource="content.qrc">
                <normaloff>:/content/occlusion.png</normaloff>:/content/occlusion.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>32</width>
-               <height>26</height>
-              </size>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="pushButtonToggleDiffuse">
-             <property name="statusTip">
-              <string>Toggle diffuse</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="content.qrc">
-               <normaloff>:/content/diffuse.png</normaloff>:/content/diffuse.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -1626,7 +1610,94 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="4">
+            <widget class="QPushButton" name="pushButtonToggleHeight">
+             <property name="statusTip">
+              <string>Toggle height</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/content/height.png</normaloff>:/content/height.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>26</height>
+              </size>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="1">
+            <widget class="QPushButton" name="pushButtonToggleDiffuse">
+             <property name="statusTip">
+              <string>Toggle diffuse</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/content/diffuse.png</normaloff>:/content/diffuse.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>26</height>
+              </size>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="pushButtonToggleNormal">
+             <property name="statusTip">
+              <string>Toggle normal</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/content/normal.png</normaloff>:/content/normal.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>26</height>
+              </size>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
             <widget class="QPushButton" name="pushButtonToggleSpecular">
              <property name="statusTip">
               <string>Toggle specular</string>
@@ -1891,7 +1962,7 @@
               <number>100</number>
              </property>
              <property name="value">
-              <number>50</number>
+              <number>25</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -1905,6 +1976,9 @@
              </property>
              <property name="buttonSymbols">
               <enum>QAbstractSpinBox::NoButtons</enum>
+             </property>
+             <property name="value">
+              <double>0.500000000000000</double>
              </property>
             </widget>
            </item>
@@ -1967,13 +2041,93 @@
            </item>
           </layout>
          </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QComboBox" name="comboBoxShadingType">
+             <item>
+              <property name="text">
+               <string>Refief Mapping</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Parallax Normal Mapping</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tessellation</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="comboBoxChooseOBJModel">
+             <item>
+              <property name="text">
+               <string>SmoothedCube</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Cube</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Capsule</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Cylinder</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Hexagon</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Plane</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Sphere</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonLoadMesh">
+             <property name="text">
+              <string>Load OBJ mesh</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
         </layout>
        </widget>
       </item>
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout2DImage"/>
+     <layout class="QVBoxLayout" name="verticalLayout2DImage">
+      <item>
+       <widget class="QPushButton" name="pushButtonProjectManager">
+        <property name="text">
+         <string>Project manager</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -1982,7 +2136,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>920</width>
+     <width>998</width>
      <height>21</height>
     </rect>
    </property>
@@ -2239,14 +2393,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>pushButton3DSettings</sender>
    <signal>toggled(bool)</signal>
-   <receiver>widget_2</receiver>
+   <receiver>widget3DSettings</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>631</x>
-     <y>254</y>
+     <x>720</x>
+     <y>223</y>
     </hint>
     <hint type="destinationlabel">
      <x>640</x>

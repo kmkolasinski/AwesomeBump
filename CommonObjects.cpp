@@ -16,7 +16,7 @@ QString  PostfixNames::occlusionName  = "_o";
 
 QString  PostfixNames::outputFormat  = ".png";
 
-
+bool FBOImages::bUseLinearInterpolation = true;
 
 void TargaImage::write(QImage image, QString fileName){
 

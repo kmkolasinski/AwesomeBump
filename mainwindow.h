@@ -10,6 +10,7 @@
 #include "glwidget.h"
 #include "glimageeditor.h"
 #include "formimageprop.h"
+#include "formsettingscontainer.h"
 #include "CommonObjects.h"
 
 #define TAB_SETTINGS 5
@@ -20,9 +21,9 @@
 # define AB_LOG "AwesomeBump.log" // log created in current directory
 # define AB_LOG_ALT (QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).arg(AB_LOG))
 #else
-# define AB_INI "config.ini"
-# define AB_LOG "log.txt"
-# define AB_LOG_ALT "log.txt"
+    #define AB_INI "config.ini"
+    #define AB_LOG "log.txt"
+    #define AB_LOG_ALT "log.txt"
 #endif
 
 namespace Ui {
@@ -61,6 +62,7 @@ public slots:
     void loadImageSettings(QString abbr,FormImageProp* image);
     // the same as above but Image is choosen by proper switch using the given type
     void loadImageSettings(TextureTypes type);
+    void showSettingsManager();
 
     void setOutputFormat(int index);
     void replotAllImages();
@@ -114,6 +116,8 @@ public slots:
     void randomizeAngles();// in random mode
     void resetRandomPatches();
 
+
+
 private:
     // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
     void saveImageSettings(QString abbr,FormImageProp* image);
@@ -129,12 +133,16 @@ private:
     bool bSaveCompressedFormImages;
 
     QDir recentDir;
+    QDir recentMeshDir; // path to last loaded OBJ Mesh folder
 
     FormImageProp* diffuseImageProp;
     FormImageProp* normalImageProp;
     FormImageProp* specularImageProp;
     FormImageProp* heightImageProp;
     FormImageProp* occlusionImageProp;
+
+    // Settings container
+    FormSettingsContainer *settingsContainer;
 
     QAction *aboutQtAction;
     QAction *aboutAction;

@@ -34,5 +34,11 @@
         <file>content/scaleXYUV.png</file>
         <file>content/filters.frag</file>
         <file>content/filters.vert</file>
+        <file>content/trash.png</file>
+        <file>content/text.png</file>
+        <file>content/Capsule.obj</file>
+        <file>content/plane.geom</file>
+        <file>content/plane.tcs.vert</file>
+        <file>content/plane.tes.vert</file>
     </qresource>
 </RCC>

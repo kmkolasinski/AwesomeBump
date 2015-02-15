@@ -47,7 +47,7 @@
 
 #include "CommonObjects.h"
 #include "camera.h"
-
+#include "utils/Mesh.hpp"
 #include <QOpenGLFunctions_4_0_Core>
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
@@ -72,12 +72,22 @@ public slots:
     void toggleDiffuseView(bool);
     void toggleSpecularView(bool);
     void toggleOcclusionView(bool);
+    void toggleNormalView(bool);
+    void toggleHeightView(bool);
+    void selectShadingType(int);
 
     void setSpecularIntensity(double);
     void setDiffuseIntensity(double);
     void setUVScaleOffset(double x,double y);
 
     void cleanup();
+
+    // mesh loading functions
+    void loadMeshFromFile();//opens file dialog
+    // mesh functions
+    bool loadMeshFile(const QString &fileName,bool bAddExtension = false);
+    void chooseMeshFile(const QString &fileName);
+
 signals:
     void renderGL();
     void readyGL();
@@ -93,11 +103,15 @@ protected:
     void wheelEvent(QWheelEvent *event);
 
 private:
+
+
+
+    // other functions
     QPointF pixelPosToViewPos(const QPointF& p);
     int glhUnProjectf(float &winx, float &winy, float &winz,
                       QMatrix4x4 &modelview, QMatrix4x4 &projection,
                       QVector4D& objectCoordinate);
-    void makeObject();
+
     QOpenGLShaderProgram *program;    
     QGLFramebufferObject**  fboIdPtrs[5];
 
@@ -111,10 +125,12 @@ private:
     bool bToggleDiffuseView;
     bool bToggleSpecularView;
     bool bToggleOcclusionView;
+    bool bToggleNormalView;
+    bool bToggleHeightView;
+
+    ShadingType shadingType;
 
     // 3D view parameters
-    GLuint vbos[3];
-    GLuint no_triangles;
     QMatrix4x4 projectionMatrix;
     QMatrix4x4 modelViewMatrix;
     QMatrix4x4 objectMatrix;
@@ -122,11 +138,14 @@ private:
     QVector4D cursorPositionOnPlane;
     float ratio;
     float zoom;
-    QPoint lastPos;
-    QMatrix4x4 RotatePlaneMatrix ;
+    QPoint lastPos;    
     AwesomeCamera camera;
     QCursor lightCursor;
+
+
+    Mesh* mesh;
 public:
+    static QDir* recentMeshDir;
 };
 //! [3]
 

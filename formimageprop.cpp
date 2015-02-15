@@ -472,9 +472,9 @@ void FormImageProp::reloadSettings(){
     ui->checkBoxInvertR->setChecked(imageProp.bInvertR);
     ui->checkBoxInvertG->setChecked(imageProp.bInvertG);
 
-    ui->checkBoxEnableHeightToNormal    ->setChecked(imageProp.bConversionHN);
-    ui->checkBoxEnableNormalToHeight    ->setChecked(imageProp.bConversionNH);
-    ui->checkBoxEnableBaseMapToOthers   ->setChecked(imageProp.bConversionBaseMap);
+    //ui->checkBoxEnableHeightToNormal    ->setChecked(imageProp.bConversionHN);
+    //ui->checkBoxEnableNormalToHeight    ->setChecked(imageProp.bConversionNH);
+    //ui->checkBoxEnableBaseMapToOthers   ->setChecked(imageProp.bConversionBaseMap);
 
     ui->horizontalSliderRemoveShadingGaussIter->setValue(imageProp.noRemoveShadingGaussIter);
 

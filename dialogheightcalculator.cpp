@@ -13,6 +13,7 @@ DialogHeightCalculator::DialogHeightCalculator(QWidget *parent) :
     ui->doubleSpinBoxPhysicalHeight->setValue(0.0);
     ui->doubleSpinBoxPhysicalDepth ->setValue(0.0);
 
+
 }
 
 DialogHeightCalculator::~DialogHeightCalculator()

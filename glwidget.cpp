@@ -42,7 +42,7 @@
 #include <QtOpenGL>
 #include <math.h>
 #include "glwidget.h"
-
+QDir* GLWidget::recentMeshDir = NULL;
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     : QGLWidget(QGLFormat::defaultFormat(), parent, shareWidget)
@@ -55,13 +55,17 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     bToggleDiffuseView      = true;
     bToggleSpecularView     = true;
     bToggleOcclusionView    = true;
-    specularIntensity       = 1.0;
+    bToggleHeightView       = true;
+    bToggleNormalView       = true;
+    shadingType             = SHADING_RELIEF_MAPPING;
+    specularIntensity       = 0.5;
     diffuseIntensity        = 1.0;
 
-    RotatePlaneMatrix.rotate(180.0f,QVector3D(0.0,1.0,0.0));
+
     setMouseTracking(true);
     setCursor(Qt::PointingHandCursor);
     lightCursor = QCursor(QPixmap(":/content/lightCursor.png"));
+
 }
 
 GLWidget::~GLWidget()
@@ -73,9 +77,10 @@ void GLWidget::cleanup()
 {   
     makeCurrent();
 
-    glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]);
+
     delete program;
-    
+    delete mesh;
+
     doneCurrent();
 }
 
@@ -121,6 +126,21 @@ void GLWidget::toggleOcclusionView(bool enable){
     updateGL();
 }
 
+void GLWidget::toggleNormalView(bool enable){
+    bToggleNormalView = enable;
+    updateGL();
+}
+
+void GLWidget::toggleHeightView(bool enable){
+    bToggleHeightView = enable;
+    updateGL();
+}
+
+void GLWidget::selectShadingType(int indeks){
+    shadingType = (ShadingType)indeks;
+    updateGL();
+}
+
 void GLWidget::setSpecularIntensity(double val){
     specularIntensity = val;
     updateGL();
@@ -140,48 +160,72 @@ void GLWidget::initializeGL()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
-    // glEnable(GL_TEXTURE_2D); // non-core
 
 
-    qDebug() << "Loading quad (fragment shader)";
+    qDebug() << "Loading quad (vertex shader)";
     QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/content/plane.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
-    qDebug() << "Loading quad (vertex shader)";
+    qDebug() << "Loading quad (fragment shader)";
     QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     fshader->compileSourceFile(":/content/plane.frag");
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
     else qDebug() << "done";
 
+    qDebug() << "Loading quad (tessellation control shader)";
+    QOpenGLShader *tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl, this);
+    tcshader->compileSourceFile(":/content/plane.tcs.vert");
+    if (!tcshader->log().isEmpty()) qDebug() << tcshader->log();
+    else qDebug() << "done";
+
+    qDebug() << "Loading quad (tessellation evaluation shader)";
+    QOpenGLShader *teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation, this);
+    teshader->compileSourceFile(":/content/plane.tes.vert");
+    if (!teshader->log().isEmpty()) qDebug() << teshader->log();
+    else qDebug() << "done";
+
+    qDebug() << "Loading quad (geometry shader)";
+    QOpenGLShader *gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
+    gshader->compileSourceFile(":/content/plane.geom");
+    if (!gshader->log().isEmpty()) qDebug() << gshader->log();
+    else qDebug() << "done";
 
     program = new QOpenGLShaderProgram(this);
     program->addShader(vshader);
     program->addShader(fshader);
-    program->bindAttributeLocation("vertex"  , PROGRAM_VERTEX_ATTRIBUTE);
-    program->bindAttributeLocation("texCoord", PROGRAM_TEXCOORD_ATTRIBUTE);
-    program->link();
+    program->addShader(tcshader);
+    program->addShader(teshader);
+    program->addShader(gshader);
+    GLCHK(program->link());
 
-    program->bind();
+    GLCHK(program->bind());
     program->setUniformValue("texDiffuse" , 0);
     program->setUniformValue("texNormal"  , 1);
     program->setUniformValue("texSpecular", 2);
     program->setUniformValue("texHeight"  , 3);
     program->setUniformValue("texSSAO"    , 4);
-    makeObject();
+
+    delete vshader;
+    delete fshader;
+    delete tcshader;
+    delete teshader;
+    delete gshader;
 
     camera.position.setZ( -0 );
     camera.toggleFreeCamera(false);
+
+    mesh = new Mesh("models/","Cube.obj");
     emit readyGL();
 }
 
 void GLWidget::paintGL()
 {
     GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
-    GLCHK( glDisable(GL_CULL_FACE) );
+    //GLCHK( glEnable(GL_CULL_FACE) );
     GLCHK( glEnable(GL_DEPTH_TEST) );
-    
+
     GLCHK( program->bind() );
     projectionMatrix.setToIdentity();
     projectionMatrix.perspective(zoom,ratio,0.1,100.0);
@@ -190,15 +234,20 @@ void GLWidget::paintGL()
     objectMatrix.setToIdentity();
     if( fboIdPtrs[0] != NULL){
         float fboRatio = float((*(fboIdPtrs[0]))->width())/(*(fboIdPtrs[0]))->height();
-        objectMatrix.scale(fboRatio,1,1);
+        objectMatrix.scale(fboRatio,1,fboRatio);
     }
+    if(mesh->isLoaded()){
 
-    modelViewMatrix = camera.updateCamera()*RotatePlaneMatrix*objectMatrix;
+        objectMatrix.scale(0.5/mesh->radius);
+        objectMatrix.translate(-mesh->centre_of_mass);
+    }
+    modelViewMatrix = camera.updateCamera()*objectMatrix;
     QMatrix3x3 NormalMatrix = modelViewMatrix.normalMatrix();
-
+    float mesh_scale = 0.5/mesh->radius;
     GLCHK( program->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );    
     GLCHK( program->setUniformValue("NormalMatrix"          , NormalMatrix) );
-    GLCHK( program->setUniformValue("lightPos"              , lightPosition) );
+    GLCHK( program->setUniformValue("meshScale"             , mesh_scale) );
+    GLCHK( program->setUniformValue("lightPos"              , lightPosition) );    
     GLCHK( program->setUniformValue("cameraPos"             , cursorPositionOnPlane) );
     GLCHK( program->setUniformValue("gui_depthScale"        , depthScale) );
     GLCHK( program->setUniformValue("gui_uvScale"           , uvScale) );
@@ -206,21 +255,18 @@ void GLWidget::paintGL()
     GLCHK( program->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
     GLCHK( program->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
     GLCHK( program->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
+    GLCHK( program->setUniformValue("gui_bHeight"           , bToggleHeightView) );
+    GLCHK( program->setUniformValue("gui_bNormal"           , bToggleNormalView) );
+    GLCHK( program->setUniformValue("gui_shading_type"      , shadingType) );
     GLCHK( program->setUniformValue("gui_SpecularIntensity" , specularIntensity) );
     GLCHK( program->setUniformValue("gui_DiffuseIntensity"  , diffuseIntensity) );
 
     if( fboIdPtrs[0] != NULL){
-        glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-        glVertexAttribPointer(PROGRAM_VERTEX_ATTRIBUTE,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
-        glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
-        glVertexAttribPointer(PROGRAM_TEXCOORD_ATTRIBUTE,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,(void*)0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
+
 
         GLCHK( glActiveTexture(GL_TEXTURE0) );
-     //   if(bToggleDiffuseView)
-	       GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[0]))->texture()) );
-     //   else
-       //    GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture()) );
+
+        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[0]))->texture()) );
 
         GLCHK( glActiveTexture(GL_TEXTURE1) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture()) );
@@ -234,12 +280,13 @@ void GLWidget::paintGL()
         GLCHK( glActiveTexture(GL_TEXTURE4) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[4]))->texture()) );
 
-        GLCHK( glDrawElements(GL_TRIANGLES, 3*no_triangles, GL_UNSIGNED_INT, 0) );
 
-        // restore filtering
+        GLCHK( mesh->drawMesh() );
+
+        // set default active texture
         glActiveTexture(GL_TEXTURE0);
     }
-
+    GLCHK( glDisable(GL_CULL_FACE) );
     emit renderGL();
 
 }
@@ -301,38 +348,15 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
     int dx = event->x() - lastPos.x();
     int dy = event->y() - lastPos.y();
-    /*
-    float zPos, xPos , yPos;
-    xPos = event->x();
-    yPos = event->y();
-    glReadPixels(event->x(),height()-event->y(),1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&zPos);
-    QVector4D oPos;
-    if(glhUnProjectf(xPos,yPos,zPos,modelViewMatrix,projectionMatrix,oPos)){
-        cursorPositionOnPlane = oPos;
-    }
-    */
-    if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton)) {
-        /*
-        QMatrix4x4 mvp = modelViewMatrix;
-        QVector4D corner1(-0.5,-0.5,0,1);
-        QVector4D corner2(+0.5,-0.5,0,1);
-        QVector4D corner3(-0.5,+0.5,0,1);
-        corner1 = mvp * corner1;
-        corner2 = mvp * corner2;
-        corner3 = mvp * corner3;
-        QVector3D r21 =QVector3D(corner2-corner1);
-        QVector3D r31 =QVector3D(corner3-corner1);
-        QVector3D n =  QVector3D::crossProduct(r21,r31);
 
-        QPoint p = mapFromGlobal(QCursor::pos());//getting the global position of cursor
-        QVector3D l0(double(p.x())/width()-0.5,(1.0-double(p.y()))/height()+0.5,1);
-        QVector3D l(0.0,0,-1);
-        QVector3D ll = -l0*QVector3D::dotProduct(l0,n)/QVector3D::dotProduct(l,n);
-        */
+    if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton)) {
+
     }else if (event->buttons() & Qt::LeftButton) {
         camera.rotateView(dx/1.0,dy/1.0);
     } else if (event->buttons() & Qt::RightButton) {
-        camera.position += QVector3D(dx/500.0,dy/500.0,0)*camera.radius;
+        camera.position +=QVector3D(dx/500.0,dy/500.0,0)*camera.radius;
+        //camera.position += camera.side_direction*0.001*dx;//
+        //camera.position += QVector3D(0,dy/500.0,0)*camera.radius;
     } else if (event->buttons() & Qt::MiddleButton) {
         lightPosition += QVector4D(0.05*dx,-0.05*dy,-0,0);
     }
@@ -342,66 +366,13 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 //! [10]
 
 void GLWidget::wheelEvent(QWheelEvent *event){
-    int numDegrees = event->delta();
+    int numDegrees = -event->delta();
     camera.mouseWheelMove((numDegrees));
+
     updateGL();
 }
 
-void GLWidget::makeObject()
-{
 
-    int size = 1024;
-    QVector<QVector3D> vertices;
-    QVector<QVector2D> texCoords;
-    texCoords = QVector<QVector2D>(size*size);
-    vertices  = QVector<QVector3D>(size*size);
-    int iter = 0;
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            float offset = 0.5;
-            float x = i/(size-1.0);
-            float y = j/(size-1.0);
-            vertices[iter]  = (QVector3D(x-offset,y-offset,0));
-            texCoords[iter] = (QVector2D(x,y));
-            iter++;
-    }}
-
-
-
-    glGenBuffers(3, &vbos[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float)*3, vertices.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(PROGRAM_VERTEX_ATTRIBUTE);
-    glVertexAttribPointer(PROGRAM_VERTEX_ATTRIBUTE,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
-    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float)*2, texCoords.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(PROGRAM_TEXCOORD_ATTRIBUTE);
-    glVertexAttribPointer(PROGRAM_TEXCOORD_ATTRIBUTE,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,(void*)0);
-
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
-
-
-    no_triangles = 2*(size - 1)*(size - 1);
-    QVector<GLuint> indices(no_triangles*3);
-    iter = 0;
-    for(int i = 0 ; i < size -1 ; i++){
-    for(int j = 0 ; j < size -1 ; j++){
-        GLuint i1 = i + j*size;
-        GLuint i2 = i + (j+1)*size;
-        GLuint i3 = i+1 + j*size;
-        GLuint i4 = i+1 + (j+1)*size;
-        indices[iter++] = (i1);
-        indices[iter++] = (i3);
-        indices[iter++] = (i2);
-        indices[iter++] = (i2);
-        indices[iter++] = (i3);
-        indices[iter++] = (i4);
-    }
-    }
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * no_triangles * 3 , indices.constData(), GL_STATIC_DRAW);
-}
 
 void GLWidget::setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes tType){
     switch(tType){
@@ -427,4 +398,53 @@ QPointF GLWidget::pixelPosToViewPos(const QPointF& p)
 {
     return QPointF(2.0 * float(p.x()) / width() - 1.0,
                    1.0 - 2.0 * float(p.y()) / height());
+}
+
+
+void GLWidget::loadMeshFromFile()
+{
+    QStringList picturesLocations;
+    if(recentMeshDir == NULL ) picturesLocations = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+    else  picturesLocations << recentMeshDir->absolutePath();
+
+
+    QFileDialog dialog(this,
+                       tr("Open Mesh File"),
+                       picturesLocations.isEmpty() ? QDir::currentPath() : picturesLocations.first(),
+                       tr("OBJ file format (*.obj *.OBJ );;"));
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+    while (dialog.exec() == QDialog::Accepted && !loadMeshFile(dialog.selectedFiles().first())) {}
+}
+
+bool GLWidget::loadMeshFile(const QString &fileName, bool bAddExtension)
+{
+
+    // loading new mesh
+    Mesh* new_mesh;
+    if(bAddExtension){
+        new_mesh = new Mesh(QString("models/"),fileName+QString(".obj"));
+    }else{
+        new_mesh = new Mesh(QString(""),fileName);
+    }
+
+    if(new_mesh->isLoaded()){
+         if(mesh != NULL) delete mesh;
+         mesh = new_mesh;
+         recentMeshDir->setPath(fileName);
+    }else{
+        QMessageBox msgBox;
+        msgBox.setText("Error!");
+        msgBox.setInformativeText("Sorry, but the loaded mesh is incorrect. See the log file for more info.");
+        msgBox.setStandardButtons(QMessageBox::Cancel);
+        msgBox.exec();
+        delete new_mesh;
+    }
+
+    updateGL();
+    return true;
+}
+
+void GLWidget::chooseMeshFile(const QString &fileName){
+    loadMeshFile(fileName,true);
 }

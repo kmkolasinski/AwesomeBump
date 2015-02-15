@@ -9,9 +9,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     recentDir                   = NULL;
+    recentMeshDir               = NULL;
     bSaveCheckedImages          = false;
     bSaveCompressedFormImages   = false;
     FormImageProp::recentDir    = &recentDir;
+    GLWidget::recentMeshDir     = &recentMeshDir;
+
     QGLFormat glFormat(QGL::SampleBuffers);
 
 #ifdef Q_OS_MAC
@@ -109,7 +112,17 @@ MainWindow::MainWindow(QWidget *parent) :
     //                      GUI setup
     // ------------------------------------------------------
     ui->setupUi(this);
-    ui->widget_2->hide();
+    ui->widget3DSettings->hide();
+
+    // Settings container
+    settingsContainer = new FormSettingsContainer;
+    ui->verticalLayout2DImage->addWidget(settingsContainer);
+    settingsContainer->hide();
+    connect(settingsContainer,SIGNAL(reloadConfigFile()),this,SLOT(loadSettings()));
+    connect(settingsContainer,SIGNAL(forceSaveCurrentConfig()),this,SLOT(saveSettings()));
+    connect(ui->pushButtonProjectManager,SIGNAL(toggled(bool)),settingsContainer,SLOT(setVisible(bool)));
+
+
     ui->verticalLayout3DImage->addWidget(glWidget);
     ui->verticalLayout2DImage->addWidget(glImage);
 
@@ -170,16 +183,23 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonResizeApply ,SIGNAL(released()),this,SLOT(applyResizeImage()));
     connect(ui->pushButtonRescaleApply,SIGNAL(released()),this,SLOT(applyScaleImage()));
 
-    // Other signals
+    // Other signals - 3D settings
     connect(ui->pushButtonReplotAll           ,SIGNAL(released()),this,SLOT(replotAllImages()));
     connect(ui->pushButtonToggleDiffuse       ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
     connect(ui->pushButtonToggleSpecular      ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleSpecularView(bool)));
     connect(ui->pushButtonToggleOcclusion     ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleOcclusionView(bool)));
+    connect(ui->pushButtonToggleNormal        ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleNormalView(bool)));
+    connect(ui->pushButtonToggleHeight        ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleHeightView(bool)));
     connect(ui->pushButtonSaveCurrentSettings ,SIGNAL(released()),this,SLOT(saveSettings()));
     connect(ui->horizontalSliderSpecularI     ,SIGNAL(valueChanged(int)),this,SLOT(setSpecularIntensity(int)));
     connect(ui->horizontalSliderDiffuseI      ,SIGNAL(valueChanged(int)),this,SLOT(setDiffuseIntensity(int)));
     connect(ui->comboBoxImageOutputFormat     ,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
 
+    // loading 3d mesh signal
+    connect(ui->pushButtonLoadMesh            ,SIGNAL(released()),glWidget,SLOT(loadMeshFromFile()));
+    connect(ui->comboBoxChooseOBJModel        ,SIGNAL(activated(QString)),glWidget,SLOT(chooseMeshFile(QString)));
+    connect(ui->comboBoxShadingType           ,SIGNAL(activated(int)),glWidget,SLOT(selectShadingType(int)));
+    // Other staff
 
     ui->progressBar->setValue(0);
 
@@ -286,6 +306,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+  delete settingsContainer;
   delete ui;
 }
 void MainWindow::closeEvent(QCloseEvent *event) {
@@ -293,13 +314,16 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     
     qDebug() << "calling" << Q_FUNC_INFO;
 
-    QSettings settings(AB_INI, QSettings::IniFormat);
+    QSettings settings(QString(AB_INI), QSettings::IniFormat);
     settings.setValue("d_win_w",this->width());
     settings.setValue("d_win_h",this->height());
     settings.setValue("recent_dir",recentDir.absolutePath());
+    settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
 
+    settingsContainer->close();
     glWidget->close();
     glImage->close();
+
 
 }
 
@@ -436,7 +460,8 @@ bool MainWindow::saveAllImages(const QString &dir){
         ui->progressBar->setValue(100);
 
     }else{
-
+        QCoreApplication::processEvents();
+        glImage->makeCurrent();
 
         QGLFramebufferObject* diffuseFBOImage  = diffuseImageProp->getImageProporties()->fbo;
         QGLFramebufferObject* normalFBOImage   = normalImageProp->getImageProporties()->fbo;
@@ -852,14 +877,14 @@ void MainWindow::setUVManipulationMethod(){
 
 QSize MainWindow::sizeHint() const
 {
-    QSettings settings(AB_INI, QSettings::IniFormat);
+    QSettings settings(QString(AB_INI), QSettings::IniFormat);
     return QSize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
 }
 
 void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
 
 
-    QSettings settings("AB_INI", QSettings::IniFormat);
+    QSettings settings(QString(AB_INI), QSettings::IniFormat);
 
     settings.setValue("t_"+abbr+"_bGrayScale"                       ,image->getImageProporties()->bGrayScale);
     settings.setValue("t_"+abbr+"_grayScaleR"                       ,image->getImageProporties()->grayScalePreset.R);
@@ -917,7 +942,7 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
 
 void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
 
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QSettings settings(QString(AB_INI), QSettings::IniFormat);
     image->getImageProporties()->bGrayScale                         = settings.value("t_"+abbr+"_bGrayScale",false).toBool();
     image->getImageProporties()->grayScalePreset.R                  = settings.value("t_"+abbr+"_grayScaleR",0.333).toFloat();
     image->getImageProporties()->grayScalePreset.G                  = settings.value("t_"+abbr+"_grayScaleG",0.333).toFloat();
@@ -951,8 +976,8 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
 
 
     image->getImageProporties()->conversionHNDepth                  = settings.value("t_"+abbr+"_conversionHNDepth",10.0).toFloat();
-    image->getImageProporties()->bConversionHN                      = settings.value("t_"+abbr+"_bConversionHN",false).toBool();
-    image->getImageProporties()->bConversionNH                      = settings.value("t_"+abbr+"_bConversionNH",false).toBool();
+    //image->getImageProporties()->bConversionHN                      = settings.value("t_"+abbr+"_bConversionHN",false).toBool();
+    //image->getImageProporties()->bConversionNH                      = settings.value("t_"+abbr+"_bConversionNH",false).toBool();
 
     image->getImageProporties()->conversionNHItersHuge              = settings.value("t_"+abbr+"_conversionNHItersHuge",10).toInt();
     image->getImageProporties()->conversionNHItersVeryLarge         = settings.value("t_"+abbr+"_conversionNHItersVeryLarge",10).toInt();
@@ -961,7 +986,7 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->conversionNHItersSmall             = settings.value("t_"+abbr+"_conversionNHItersSmall",10).toInt();
     image->getImageProporties()->conversionNHItersVerySmall         = settings.value("t_"+abbr+"_conversionNHItersVerySmall",10).toInt();
 
-    image->getImageProporties()->bConversionBaseMap                 = settings.value("t_"+abbr+"_bConversionBaseMap",false).toBool();
+    //image->getImageProporties()->bConversionBaseMap                 = settings.value("t_"+abbr+"_bConversionBaseMap",false).toBool();
     image->getImageProporties()->conversionBaseMapAmplitude         = settings.value("t_"+abbr+"_conversionBaseMapAmplitude",-1.0).toFloat();
     image->getImageProporties()->conversionBaseMapFlatness          = settings.value("t_"+abbr+"_conversionBaseMapFlatness",0.0).toFloat();
     image->getImageProporties()->conversionBaseMapNoIters           = settings.value("t_"+abbr+"_conversionBaseMapNoIters",2).toInt();
@@ -1000,11 +1025,18 @@ void MainWindow::loadImageSettings(TextureTypes type){
     glWidget->repaint();
 }
 
-void MainWindow::saveSettings(){
-    qDebug() << "calling" << Q_FUNC_INFO;
-  
-    QSettings settings(AB_INI, QSettings::IniFormat);
+void MainWindow::showSettingsManager(){
+    settingsContainer->show();
+}
 
+void MainWindow::saveSettings(){
+    qDebug() << "Calling" << Q_FUNC_INFO << "Saving to :"<< QString(AB_INI);
+  
+    QSettings settings(QString(AB_INI), QSettings::IniFormat);
+    settings.setValue("d_win_w",this->width());
+    settings.setValue("d_win_h",this->height());
+    settings.setValue("recent_dir",recentDir.absolutePath());
+    settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
 
     PostfixNames::diffuseName   = ui->lineEditPostfixDiffuse->text();
     PostfixNames::normalName    = ui->lineEditPostfixNormal->text();
@@ -1021,9 +1053,21 @@ void MainWindow::saveSettings(){
     settings.setValue("o_postfix",ui->lineEditPostfixOcclusion->text());
 
     settings.setValue("recent_dir",recentDir.absolutePath());
+    settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
     settings.setValue("gui_style",ui->comboBoxGUIStyle->currentText());
 
+    // UV Settings
+    settings.setValue("uv_tiling_type",ui->comboBoxSeamlessMode->currentIndex());
+    settings.setValue("uv_tiling_radius",ui->horizontalSliderMakeSeamlessRadius->value());
+    settings.setValue("uv_tiling_mirror_x",ui->radioButtonMirrorModeX->isChecked());
+    settings.setValue("uv_tiling_mirror_y",ui->radioButtonMirrorModeY->isChecked());
+    settings.setValue("uv_tiling_mirror_xy",ui->radioButtonMirrorModeXY->isChecked());
+    settings.setValue("uv_tiling_random_inner_radius",ui->horizontalSliderRandomPatchesInnerRadius->value());
+    settings.setValue("uv_tiling_random_outer_radius",ui->horizontalSliderRandomPatchesOuterRadius->value());
+    settings.setValue("uv_tiling_random_rotate",ui->horizontalSliderRandomPatchesRotate->value());
+
     settings.setValue("h_attachNormal",FBOImageProporties::bAttachNormalToHeightMap);
+    settings.setValue("use_texture_interpolation",ui->checkBoxUseLinearTextureInterpolation->isChecked());
 
     saveImageSettings("d",diffuseImageProp);
     saveImageSettings("n",normalImageProp);
@@ -1038,12 +1082,14 @@ void MainWindow::setOutputFormat(int index){
 }
 
 void MainWindow::loadSettings(){
-    qDebug() << "calling" << Q_FUNC_INFO;
+    static bool bFirstTime = true;
+    qDebug() << "Calling" << Q_FUNC_INFO << " loading from " << QString(AB_INI);
 
-    QSettings settings(AB_INI, QSettings::IniFormat);
+    QSettings settings(QString(AB_INI), QSettings::IniFormat);
 
-
-    this->resize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
+    if(bFirstTime){
+        this->resize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
+    }
 
     PostfixNames::diffuseName   = settings.value("d_postfix","_d").toString();
     PostfixNames::normalName    = settings.value("n_postfix","_n").toString();
@@ -1061,9 +1107,25 @@ void MainWindow::loadSettings(){
 
     FBOImageProporties::bAttachNormalToHeightMap = settings.value("h_attachNormal",true).toBool();
     heightImageProp->toggleAttachToNormal(FBOImageProporties::bAttachNormalToHeightMap);
-    recentDir = settings.value("recent_dir","").toString();
+    recentDir     = settings.value("recent_dir","").toString();
+    recentMeshDir = settings.value("recent_mesh_dir","").toString();
 
+    ui->checkBoxUseLinearTextureInterpolation->setChecked(settings.value("use_texture_interpolation",true).toBool());
+    FBOImages::bUseLinearInterpolation = ui->checkBoxUseLinearTextureInterpolation->isChecked();
     ui->comboBoxGUIStyle->setCurrentText(settings.value("gui_style","default").toString());
+
+
+    // UV Settings
+    ui->comboBoxSeamlessMode->setCurrentIndex(settings.value("uv_tiling_type",0).toInt());
+    selectSeamlessMode(ui->comboBoxSeamlessMode->currentIndex());
+    ui->horizontalSliderMakeSeamlessRadius->setValue(settings.value("uv_tiling_radius",50).toInt());
+    ui->radioButtonMirrorModeX->setChecked(settings.value("uv_tiling_mirror_x",false).toBool());
+    ui->radioButtonMirrorModeY->setChecked(settings.value("uv_tiling_mirror_y",false).toBool());
+    ui->radioButtonMirrorModeXY->setChecked(settings.value("uv_tiling_mirror_xy",true).toBool());
+    ui->horizontalSliderRandomPatchesInnerRadius->setValue(settings.value("uv_tiling_random_inner_radius",50).toInt());
+    ui->horizontalSliderRandomPatchesOuterRadius->setValue(settings.value("uv_tiling_random_outer_radius",50).toInt());
+    ui->horizontalSliderRandomPatchesRotate->setValue(settings.value("uv_tiling_random_rotate",50).toInt());
+
 
 
     loadImageSettings("d",diffuseImageProp);
@@ -1072,6 +1134,10 @@ void MainWindow::loadSettings(){
     loadImageSettings("h",heightImageProp);
     loadImageSettings("o",occlusionImageProp);
 
+    replotAllImages();
+    glImage ->repaint();
+    glWidget->repaint();
+    bFirstTime = false;
 }
 
 void MainWindow::about()

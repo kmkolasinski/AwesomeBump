@@ -8,8 +8,7 @@
 
 #include "qopenglerrorcheck.h"
 
-#define PROGRAM_VERTEX_ATTRIBUTE   0
-#define PROGRAM_TEXCOORD_ATTRIBUTE 1
+
 
 using namespace std;
 
@@ -34,6 +33,11 @@ enum UVManipulationMethods{
     UV_TRANSLATE = 0,
     UV_GRAB_CORNERS,
     UV_SCALE_XY
+};
+
+enum ShadingType{
+    SHADING_RELIEF_MAPPING = 0,
+    SHADING_PARALLAX_NORMAL_MAPPING
 };
 
 // Compressed texture type
@@ -210,15 +214,19 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+        if(FBOImages::bUseLinearInterpolation){
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        }else{
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        }
         float aniso = 0.0;
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
         GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
-        qDebug() << "FBOImages::creatig new FBO(" << width << "," << height << ") with id=" << fbo->texture() ;
+        qDebug() << "FBOImages::creating new FBO(" << width << "," << height << ") with id=" << fbo->texture() ;
     }
     static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref){
         if( ref->width()  == src->width() &&
@@ -232,7 +240,8 @@ public:
             GLCHK(FBOImages::create(src ,width,height));
         }
     }
-
+public:
+    static bool bUseLinearInterpolation;
 
 };
 

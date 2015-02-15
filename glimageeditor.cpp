@@ -124,13 +124,16 @@ void GLImage::initializeGL()
     program = new QOpenGLShaderProgram(this);
     program->addShader(vshader);
     program->addShader(fshader);
-    program->bindAttributeLocation("positionIn", PROGRAM_VERTEX_ATTRIBUTE);
+    program->bindAttributeLocation("positionIn", 0);
     GLCHK( program->link() );
 
     GLCHK( program->bind() );
     GLCHK( program->setUniformValue("layerA" , 0) );
     GLCHK( program->setUniformValue("layerB" , 1) );
     GLCHK( program->setUniformValue("layerC" , 2) );
+
+    delete vshader;
+    delete fshader;
 
     makeScreenQuad();
     GLCHK( subroutines["mode_normal_filter"]               = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_normal_filter") );
@@ -163,7 +166,6 @@ void GLImage::initializeGL()
 
 void GLImage::paintGL()
 {
-    resizeGL(width(),height());
     render();
     emit rendered();
 }
@@ -182,7 +184,7 @@ void GLImage::render(){
 
     // positions
     glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-    glVertexAttribPointer(PROGRAM_VERTEX_ATTRIBUTE,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
     // indices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
 
@@ -546,6 +548,8 @@ void GLImage::resizeGL(int width, int height)
     }
   } else
     qDebug() << Q_FUNC_INFO << "invalid context.";
+
+  resetView();
 }
 
 
@@ -1354,13 +1358,13 @@ void GLImage::makeScreenQuad()
     glGenBuffers(3, &vbos[0]);
     glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float)*3, vertices.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(PROGRAM_VERTEX_ATTRIBUTE);
-    glVertexAttribPointer(PROGRAM_VERTEX_ATTRIBUTE,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
     glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float)*2, texCoords.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(PROGRAM_TEXCOORD_ATTRIBUTE);
-    glVertexAttribPointer(PROGRAM_TEXCOORD_ATTRIBUTE,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,(void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,(void*)0);
 
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
@@ -1396,12 +1400,31 @@ void GLImage::updateMousePosition(){
 
 void GLImage::wheelEvent(QWheelEvent *event){
 
-    if( event->delta() > 0) zoom+=0.1;
-        else zoom-=0.1;
+    if( event->delta() > 0) zoom-=0.1;
+        else zoom+=0.1;
     if(zoom < -0.90) zoom = -0.90;
 
     updateMousePosition();
-    resizeGL(width(),height());
+
+    //resizeGL(width(),height());
+    windowRatio = float(width())/height();
+    if (isValid()) {
+      GLCHK( glViewport(0, 0, width(), height()) );
+
+      if (activeImage && activeImage->fbo){
+        fboRatio = float(activeImage->fbo->width())/activeImage->fbo->height();
+        orthographicProjHeight = (1+zoom)/windowRatio;
+        orthographicProjWidth = (1+zoom)/fboRatio;
+      } else {
+        qWarning() << Q_FUNC_INFO;
+        if (!activeImage) qWarning() << "  activeImage is null";
+        else
+      if (!activeImage->fbo) qWarning() << "  activeImage->fbo is null";
+      }
+    } else
+      qDebug() << Q_FUNC_INFO << "invalid context.";
+
+
 
     QPoint p = mapFromGlobal(QCursor::pos());//getting the global position of cursor
     // restoring the translation after zooming

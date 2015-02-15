@@ -112,6 +112,6 @@ void AwesomeCamera::rotateView(float z_angle,float x_angle){
 
 
 void AwesomeCamera::mouseWheelMove(int direction){
-    radius+=mouse_sens*0.005f*direction;
+    radius+=mouse_sens*0.0025f*direction;
     if(radius < 0.3) radius = 0.3;
 }
