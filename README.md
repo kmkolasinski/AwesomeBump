@@ -19,6 +19,12 @@ INSTALLATION:
 
 Project Webpage: http://awesomebump.besaba.com/
 
+New in version 2.1
+===========
+1) Added support for 3D models (only OBJ format)
+2) Simple project manager
+
+
 New in version 2.0:
 ============
 1) Slightly redesigned GUI: Tiling/UV methods, General Settings and 3D
