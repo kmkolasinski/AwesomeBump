@@ -22,6 +22,7 @@ Project Webpage: http://awesomebump.besaba.com/
 New in version 2.1
 ===========
 1) Added support for 3D models (only OBJ format)
+
 2) Simple project manager
 
 
