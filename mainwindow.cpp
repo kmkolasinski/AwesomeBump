@@ -107,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage ->targetImageHeight    = heightImageProp   ->getImageProporties();
     glImage ->targetImageSpecular  = specularImageProp ->getImageProporties();
     glImage ->targetImageOcclusion = occlusionImageProp->getImageProporties();
+    glImage ->targetImageDiffuse   = diffuseImageProp  ->getImageProporties();
 
     // ------------------------------------------------------
     //                      GUI setup
@@ -138,12 +139,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tabWidget,SIGNAL(currentChanged(int)),this,SLOT(updateImage(int)));
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
     
-    // imageChange signals
+    // imageChange and imageLoaded signals
     connect(diffuseImageProp,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
     connect(normalImageProp,SIGNAL(imageChanged()),this,SLOT(updateNormalImage()));
     connect(specularImageProp,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
     connect(heightImageProp,SIGNAL(imageChanged()),this,SLOT(updateHeightImage()));
     connect(occlusionImageProp,SIGNAL(imageChanged()),this,SLOT(updateOcclusionImage()));
+
+
+    connect(diffuseImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(normalImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(specularImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(heightImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(occlusionImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+
 
     // image reload settings signal
     connect(diffuseImageProp   ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
@@ -700,6 +709,25 @@ void MainWindow::applyResizeImage(){
     QCoreApplication::processEvents();
     int width  = ui->comboBoxResizeWidth->currentText().toInt();
     int height = ui->comboBoxResizeHeight->currentText().toInt();
+    qDebug() << "Image resize applied. Current image size is (" << width << "," << height << ")" ;
+
+    FBOImageProporties* lastActive = glImage->getActiveImage();
+    glImage->enableShadowRender(true);
+    for(int i = 0 ; i < 5 ; i++){
+        updateImage(i);
+        glImage->resizeFBO(width,height);
+    }
+    glImage->enableShadowRender(false);
+    glImage->setActiveImage(lastActive);
+    replotAllImages();
+    updateImageInformation();
+    glWidget->repaint();
+}
+
+void MainWindow::applyResizeImage(int width, int height){
+    QCoreApplication::processEvents();
+    //int width  = ui->comboBoxResizeWidth->currentText().toInt();
+    //int height = ui->comboBoxResizeHeight->currentText().toInt();
     qDebug() << "Image resize applied. Current image size is (" << width << "," << height << ")" ;
 
     FBOImageProporties* lastActive = glImage->getActiveImage();

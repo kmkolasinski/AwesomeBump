@@ -81,8 +81,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>65</width>
+             <height>16</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -134,8 +134,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>65</width>
+             <height>16</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -187,8 +187,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>65</width>
+             <height>16</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -240,8 +240,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>65</width>
+             <height>16</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -293,8 +293,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>65</width>
+             <height>16</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -2066,12 +2066,12 @@
             <widget class="QComboBox" name="comboBoxChooseOBJModel">
              <item>
               <property name="text">
-               <string>SmoothedCube</string>
+               <string>Cube</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Cube</string>
+               <string>CubeRounded</string>
               </property>
              </item>
              <item>

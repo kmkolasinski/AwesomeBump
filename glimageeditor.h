@@ -72,6 +72,7 @@ public:
     void updateCornersPosition(QVector2D dc1,QVector2D dc2,QVector2D dc3,QVector2D dc4);
     void render();
 
+    FBOImageProporties* targetImageDiffuse;
     FBOImageProporties* targetImageNormal;
     FBOImageProporties* targetImageHeight;
     FBOImageProporties* targetImageSpecular;

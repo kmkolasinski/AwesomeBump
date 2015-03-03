@@ -117,8 +117,8 @@ vec2 relief_mapping() {
         vec2 dp         = texcoord.xy;
 
 
-        const int linear_steps = 10;
-        const int binary_steps = 10;
+        const int linear_steps = 15;
+        const int binary_steps = 15;
         float depth_step = 1.0 / linear_steps;
         float size = depth_step;
         float depth = 1.0;
@@ -160,6 +160,6 @@ void main( void )
     // apply standarnd normal mapping
     FragColor = (bump_mapping(0,texcoords)+bump_mapping(1,texcoords))/2;
 
-    //FragColor = vec4(texcoord.xy,1,1);//texture( texDiffuse, texcoord.xy );
+    //FragColor = vec4(texcoord,1);//texture( texDiffuse, texcoord.xy );
 
 }

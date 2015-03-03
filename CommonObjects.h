@@ -407,12 +407,12 @@ public:
 
     }
 
-    void resizeFBO(int width, int height){
+    void resizeFBO(int width, int height, bool bResetFirstDraw = true){
         GLCHK(FBOImages::resize(ref_fbo ,width,height));
         GLCHK(FBOImages::resize(fbo     ,width,height));
         GLCHK(FBOImages::resize(aux_fbo ,width,height));
         GLCHK(FBOImages::resize(aux2_fbo,width,height));
-        bFirstDraw = true;
+        if(bResetFirstDraw)bFirstDraw = true;
     }
 
     /**

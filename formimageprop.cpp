@@ -171,7 +171,8 @@ bool FormImageProp::loadFile(const QString &fileName)
     image    = _image;
     imageProp.init(image);
 
-    emit imageChanged();
+    //emit imageChanged();
+    emit imageLoaded(image.width(),image.height());
     return true;
 }
 

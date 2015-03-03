@@ -255,6 +255,16 @@ void GLImage::render(){
     if(activeImage->bFirstDraw){
         resetView();
         qDebug() << "Doing first draw of" << PostfixNames::getTextureName(activeImage->imageType) << " texture.";
+        // automatic image resizing
+/*
+        resize_width  = activeImage->ref_fbo->width();
+        resize_height = activeImage->ref_fbo->height();
+        targetImageHeight   ->resizeFBO(resize_width,resize_height);
+        targetImageNormal   ->resizeFBO(resize_width,resize_height);
+        targetImageOcclusion->resizeFBO(resize_width,resize_height);
+        targetImageSpecular ->resizeFBO(resize_width,resize_height);
+        targetImageDiffuse  ->resizeFBO(resize_width,resize_height);
+        */
 
         activeImage->bFirstDraw = false;
         // Updating ref FBO...

@@ -94,6 +94,7 @@ public slots:
     void scaleWidth(double);
     void scaleHeight(double);
     void applyResizeImage();
+    void applyResizeImage(int width, int height);
     void applyScaleImage();
 
     // Setting the global parameters

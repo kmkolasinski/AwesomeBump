@@ -37,6 +37,8 @@ INSTALLS += target
 RESOURCES += \
     content.qrc
 
+RC_FILE = icon.rc
+
 FORMS += \
     mainwindow.ui \
     formimageprop.ui \

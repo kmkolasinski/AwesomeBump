@@ -68,6 +68,7 @@ public slots:
 signals:
     void reloadSettingsFromConfigFile(TextureTypes type);
     void imageChanged();
+    void imageLoaded(int width,int height);
     void conversionHeightToNormalApplied();
     void conversionNormalToHeightApplied();
     void conversionBaseConversionApplied();
