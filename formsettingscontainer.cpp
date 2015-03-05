@@ -62,8 +62,8 @@ void FormSettingsContainer::removeSetting(FormSettingsField* field){
     ui->verticalLayoutSettingsList->removeWidget(field);
     field->hide();
     repaint();
-    // removing from list
-    settingsList.removeOne(field);
+    // removing from list    
+    settingsList.remove(settingsList.indexOf(field));
     // removing pointer
     delete field;
 }
