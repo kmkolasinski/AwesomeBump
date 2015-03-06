@@ -13,8 +13,8 @@ INSTALLATION:
 ============
 0. Video tutorial: https://www.youtube.com/watch?v=R-WgHserrS0
 1. In order to build AwesomeBump you will need to have qt-sdk installed: http://www.qt.io/download/ 
-2. After installation open  new project using the AwesomeBump.pro file.
-3. Setup the build path and run path (in project build settings panel) and compile the project (remember that your graphics card has to support at least openGL 4.0)
+2. Download the sourcecode of AB from github and unzip it. Run Qt then open a new project using the AwesomeBump.pro file (located in AB source code folder.). 
+3. Setup the build path and run path (in project build settings panel) and compile the project (remember that your graphics card has to support at least openGL 4.0). Compilation step will take some time. Run the program. In case of problems see the log.txt file.
 4. I hope you will like it :)
 
 
