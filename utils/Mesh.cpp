@@ -5,12 +5,15 @@
 
 #include "Mesh.hpp"
 
+#define xyz(i,j,k)( i*100*100 + j*100 + k )
+
+
 
 Mesh::Mesh(QString dir, QString name):mesh_path(name){
 
     qDebug() << Q_FUNC_INFO << "Loading new mesh:" << dir + mesh_path ;
 
-
+    mesh_log = QString("");
     bLoaded = false;
     using namespace tinyobj;
     std::string inputfile = (dir + mesh_path).toStdString();
@@ -21,10 +24,12 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
 
     if (!err.empty()) {
         qDebug() << Q_FUNC_INFO << "Loading mesh file failed:" << dir + mesh_path ;
+        mesh_log += "Loading mesh file failed:" + dir + mesh_path + "\n";
         return;
     }
     if(shapes.size() == 0){
         qDebug() << "Woops:: This model has no shapes, so it cannot be loaded." ;
+        mesh_log += "Woops:: This model has no shapes, so it cannot be loaded.\n";
         return;
     }
     centre_of_mass = QVector3D(0,0,0);
@@ -33,14 +38,17 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
 
         if(shapes[i].mesh.texcoords.size() == 0){
             qDebug() << "Warning. Shape i=" << i << " with name: " << QString(shapes[i].name.c_str()) << " has no texcoords." ;
+            mesh_log += "Warning. Shape number " + QString::number(i+1) + " with name: " + QString(shapes[i].name.c_str()) + " has no texcoords.\n" ;
             continue;
         }
         if(shapes[i].mesh.normals.size() == 0){
-            qDebug() << "Warning. Shape i=" << i << " with name: " << QString(shapes[i].name.c_str()) << " has no normals." ;
+            qDebug() << "Warning. Shape number=" << i << " with name: " << QString(shapes[i].name.c_str()) << " has no normals." ;
+            mesh_log += "Warning. Shape number " + QString::number(i+1)+ " with name: " + QString(shapes[i].name.c_str()) + " has no normals.\n" ;
             continue;
         }
         if(shapes[i].mesh.positions.size() == 0){
             qDebug() << "Warning. Shape i=" << i << " with name: " << QString(shapes[i].name.c_str()) << " has no positions." ;
+            mesh_log += "Warning. Shape number " + QString::number(i+1) + " with name: " + QString(shapes[i].name.c_str()) + " has no positions.\n" ;
             continue;
         }
 
@@ -54,11 +62,11 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
                                         shapes[i].mesh.positions[3*index+2]);
             gl_vertices .push_back(pos);
             centre_of_mass += pos;
-            QVector3D uv(shapes[i].mesh.texcoords[2*index+0],
-                    shapes[i].mesh.texcoords[2*index+1],0);
-            gl_texcoords.push_back(QVector3D(shapes[i].mesh.texcoords[2*index+0],
-                                             shapes[i].mesh.texcoords[2*index+1],0));
 
+            QVector3D uv(shapes[i].mesh.texcoords[2*index+0],
+                         shapes[i].mesh.texcoords[2*index+1],0);
+
+            gl_texcoords.push_back(uv);
 
             QVector3D normal = QVector3D(shapes[i].mesh.normals  [3*index+0],
                                          shapes[i].mesh.normals  [3*index+1],
@@ -66,14 +74,17 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
 
 
             normal.normalize();
-            //qDebug() << f << ": index:" << index << " uv=" << uv << " pos=" << pos << " normal=" << normal ;
+            gl_smoothed_normals.push_back(normal);
             gl_normals  .push_back(normal);
-        }
-      }
-    }
+
+
+        } //end of for face loop
+      } // end of shape indices
+    } // end of for shape
 
     if(gl_vertices.size() == 0 || gl_normals.size() == 0 || gl_texcoords.size() == 0){
-        qDebug() << "Error. Mesh has no vertices or normals or UVs, so it cannot be loaded." ;
+        qDebug() << "Error! Mesh has no vertices or normals or UVs, so it cannot be loaded." ;
+        mesh_log += "Error! Mesh has no vertices or normals or UVs, so it cannot be loaded.\n" ;
         return;
     }
 
@@ -84,13 +95,135 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
         float dist = QVector3D(centre_of_mass - gl_vertices[i]).length();
         if(dist > radius) radius = dist;
     }
-    qDebug() << "mesh radius=" << radius;
-    qDebug() << "mesh center=" << centre_of_mass;
+
+    //qDebug() << "mesh radius=" << radius;
+    //qDebug() << "mesh center=" << centre_of_mass;
     calculateTangents();
+
+
+    QVector3D minPos,maxPos;
+    minPos = QVector3D();
+    maxPos = QVector3D();
+    for(int i = 0; i < gl_vertices.size() ; i++){
+           if(minPos.x() > gl_vertices[i].x()) minPos.setX(gl_vertices[i].x());
+           if(minPos.y() > gl_vertices[i].y()) minPos.setY(gl_vertices[i].y());
+           if(minPos.z() > gl_vertices[i].z()) minPos.setZ(gl_vertices[i].z());
+
+           if(maxPos.x() < gl_vertices[i].x()) maxPos.setX(gl_vertices[i].x());
+           if(maxPos.y() < gl_vertices[i].y()) maxPos.setY(gl_vertices[i].y());
+           if(maxPos.z() < gl_vertices[i].z()) maxPos.setZ(gl_vertices[i].z());
+    }
+
+    int vsize = 100*100*100;
+    vector< int> *verlet = new vector< int>[vsize];
+
+    for(int i = 0; i < gl_vertices.size() ; i++){
+
+             QVector3D pos = (gl_vertices[i] - minPos)/(maxPos-minPos).length()*100;
+             int ii = pos.x();
+             int jj = pos.y();
+             int kk = pos.z();
+             verlet[xyz(ii,jj,kk)].push_back(i);
+    }
+
+    int sum = 0;
+
+    for(int i = 0; i < vsize ; i++){
+        sum += verlet[i].size();
+    }
+
+    for(int i = 0; i < vsize ; i++){
+
+        for( int k = 0 ; k < verlet[i].size() ; k++){
+            QVector3D smoothed;            
+            int ki = verlet[i][k];
+            for( int l = 0 ; l < verlet[i].size() ; l++){
+                int li = verlet[i][l];
+                if( (gl_vertices[ki] - gl_vertices[li]).length()/radius < 1.0E-5 ){
+                     smoothed += gl_normals[li];                   
+                }
+
+
+            }
+            smoothed.normalize();
+            gl_smoothed_normals[ki] = smoothed;
+
+        }
+    }
+
+
+    delete[] verlet;
+
 
     bLoaded = true;
     initializeMesh();
 }
+/*
+bool Mesh::hasCommonEdge(int i, int j){
+    int ta = i/3; // triangle A ID
+    int tb = j/3; // triangle B ID
+    if( i > j ) return false;
+    if(ta > tb) return false;
+    if( ta == tb ) return false;
+
+    int la = i - 3*ta; // local indeks in triangle A
+    int lb = j - 3*tb;
+
+
+
+    for(int li = 0; li < 3 ; li++ ){
+        if( li != la){
+
+            for(int lj = 0; lj < 3 ; lj++){
+                if( lj != lb ){
+
+                    // check if two points are same
+                    if( (gl_vertices[3*ta+li] - gl_vertices[3*tb+lj]).length()/radius < 1.0E-5 ){
+                        // if yes both triangles has common edge
+                        qDebug() << "i =" << i << "\tj =" << j;
+                        qDebug() << "ta=" << ta << "\ttb=" << tb;
+                        qDebug() << "la=" << la << "\tlb=" << lb ;
+                        qDebug() << "ia=" << 3*ta+li << "\tjb=" << 3*tb+lj << endl;
+                        if(no_shared_edges[j] > 1 || no_shared_edges[i] > 1 ){
+                             qDebug() << "i =" << i << "\tj =" << j;
+                             qDebug() << "ia=" << 3*ta+li << "\tjb=" << 3*tb+lj << endl;
+                        }
+
+                        if(no_shared_edges[i] == 0){
+                           no_shared_edges[i]++;
+                           gl_shared_uvs[i].setX(gl_texcoords[j].x());
+                           gl_shared_uvs[i].setY(gl_texcoords[j].y());
+                        }else if(no_shared_edges[i] == 1){
+                           no_shared_edges[i]++;
+                           gl_shared_uvs[i].setZ(gl_texcoords[j].x());
+                           gl_shared_uvs[i].setW(gl_texcoords[j].y());
+                        }
+                        if(no_shared_edges[j] == 0){
+                           no_shared_edges[j]++;
+                           gl_shared_uvs[j].setX(gl_texcoords[i].x());
+                           gl_shared_uvs[j].setY(gl_texcoords[i].y());
+                        }else if(no_shared_edges[j] == 1){
+                           no_shared_edges[j]++;
+                           gl_shared_uvs[j].setZ(gl_texcoords[i].x());
+                           gl_shared_uvs[j].setW(gl_texcoords[i].y());
+                        }
+
+
+                        return true;
+
+
+
+                       //  return true;
+                    }
+                }
+            }
+
+        }// end of if li
+    }// end of for li
+    //qDebug() << "" ;
+    return false;
+}
+*/
 
 void Mesh::drawMesh(){
     if(bLoaded == false) return;
@@ -109,6 +242,9 @@ void Mesh::drawMesh(){
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[4]);
     glVertexAttribPointer(4,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[5]);
+    glVertexAttribPointer(5,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
 
 
  //   GLCHK(glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()));
@@ -130,7 +266,7 @@ void Mesh::initializeMesh(){
         return;
     }
     initializeOpenGLFunctions();
-    glGenBuffers(5, &mesh_vbos[0]);
+    glGenBuffers(6, &mesh_vbos[0]);
 
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[0]);
@@ -158,6 +294,14 @@ void Mesh::initializeMesh(){
     glBufferData(GL_ARRAY_BUFFER, gl_bitangents.size() * sizeof(QVector3D), gl_bitangents.constData(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(4);
     glVertexAttribPointer(4,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[5]);
+    glBufferData(GL_ARRAY_BUFFER, gl_smoothed_normals.size() * sizeof(QVector3D), gl_smoothed_normals.constData(), GL_STATIC_DRAW);
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+
+
+
 
 }
 
@@ -250,5 +394,7 @@ Mesh::~Mesh() {
     gl_texcoords .clear();
     gl_tangents  .clear();
     gl_bitangents.clear();
-    if(bLoaded) GLCHK(glDeleteBuffers(5 , mesh_vbos ));
+    gl_smoothed_normals.clear();
+
+    if(bLoaded) GLCHK(glDeleteBuffers(6 , mesh_vbos ));
 }

@@ -22,7 +22,7 @@ in vec3 teTexcoord[3];
 in vec3 teNormal[3];
 in vec3 teTangent[3];
 in vec3 teBitangent[3];
-
+in vec3 teSmoothedNormal[3];
 
 out vec3 texcoord;
 out vec3 ESVertexPosition;
@@ -67,18 +67,18 @@ void main()
 	float hfactor = 0;
 	if(gui_bHeight && gui_shading_type == 2) hfactor = 1;
 	for(int i = 0 ; i < 3 ; i++){
-		float height = texture( texHeight, teTexcoord[i].xy ).r;		
-		newPos[i] = tePosition[i] + height*normalize(teNormal[i])*gui_depthScale/meshScale*0.04/gui_uvScale*hfactor;
+
+                float height = texture( texHeight, teTexcoord[i] .xy ).r;
+                newPos[i] = tePosition[i] + height*normalize(teSmoothedNormal[i])*gui_depthScale/meshScale*0.05/gui_uvScale*hfactor;
 	}
 
 	
     for(int i = 0 ; i < 3 ; i++){
-		texcoord     = teTexcoord[i];
-		
+                texcoord.st     = (teTexcoord[i].st);
 		
 		ESVertexNormal 	   	= NormalMatrix * teNormal[i];
 		ESVertexTangent		= NormalMatrix * teTangent[i];
-		ESVertexBitangent   = NormalMatrix * teBitangent[i];
+                ESVertexBitangent       = NormalMatrix * teBitangent[i];
 		vec4 eyeVec 	   	= ModelViewMatrix * vec4(newPos[i],1);
 		ESVertexPosition   	= eyeVec.xyz;
 		

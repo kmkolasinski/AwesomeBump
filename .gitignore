@@ -46,7 +46,6 @@ build/
 *_p.c
 *.ilk
 *.meta
-*.obj
 *.pch
 *.pdb
 *.pgc
@@ -183,5 +182,5 @@ formsettingscontainer.h.rv1292
 glwidget.cpp.mw6064
 glwidget.cpp.mw6064
 mainwindow.cpp.dm4832
-models/head.mtl
-models/2Triangles.mtl
+
+

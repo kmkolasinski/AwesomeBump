@@ -39,6 +39,7 @@ public:
      * otherwise returns false.
      */
     inline bool isLoaded(){return bLoaded;}
+    inline QString& getMeshLog(){return mesh_log;}
     // Cleanings
     virtual ~Mesh();    
 
@@ -48,7 +49,7 @@ public:
     QVector3D centre_of_mass; // it helps to aling mesh to the center of the screen
     float     radius;         // contains maxiumum distance from centre of mass to some vertex
 private:       
-
+    bool hasCommonEdge(int i, int j);
     void calculateTangents();
 
 
@@ -59,12 +60,13 @@ private:
     // arrays
     QVector<QVector3D> gl_vertices;
     QVector<QVector3D> gl_normals;
+    QVector<QVector3D> gl_smoothed_normals;
     QVector<QVector3D> gl_texcoords;
     QVector<QVector3D> gl_tangents;
     QVector<QVector3D> gl_bitangents;
 
-    unsigned int mesh_vbos[5]; // VBO indices
-
+    unsigned int mesh_vbos[6]; // VBO indices
+    QString mesh_log;
 };
 
 

@@ -223,8 +223,9 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
     GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
-    //GLCHK( glEnable(GL_CULL_FACE) );
+    GLCHK( glEnable(GL_CULL_FACE) );
     GLCHK( glEnable(GL_DEPTH_TEST) );
+    GLCHK( glCullFace(GL_FRONT) );
 
     GLCHK( program->bind() );
     projectionMatrix.setToIdentity();
@@ -432,10 +433,18 @@ bool GLWidget::loadMeshFile(const QString &fileName, bool bAddExtension)
          if(mesh != NULL) delete mesh;
          mesh = new_mesh;
          recentMeshDir->setPath(fileName);
+         if( new_mesh->getMeshLog() != QString("")  ){
+             QMessageBox msgBox;
+             msgBox.setText("Warning! There were some problems during model loading.");
+             msgBox.setInformativeText("Loader message:\n"+new_mesh->getMeshLog());
+             msgBox.setStandardButtons(QMessageBox::Cancel);
+             msgBox.exec();
+         }
     }else{
         QMessageBox msgBox;
-        msgBox.setText("Error!");
-        msgBox.setInformativeText("Sorry, but the loaded mesh is incorrect. See the log file for more info.");
+        msgBox.setText("Error! Cannot load given model.");
+        msgBox.setInformativeText("Sorry, but the loaded mesh is incorrect.\nLoader message:\n"+new_mesh->getMeshLog());
+
         msgBox.setStandardButtons(QMessageBox::Cancel);
         msgBox.exec();
         delete new_mesh;
