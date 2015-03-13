@@ -46,7 +46,7 @@ FORMS += \
     formsettingsfield.ui \
     formsettingscontainer.ui
 
-ICON = content/icon.icns
+ICON = resources/icon.icns
 INCLUDEPATH += include
 
 

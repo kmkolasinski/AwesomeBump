@@ -81,8 +81,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -134,8 +134,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -187,8 +187,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -240,8 +240,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -293,8 +293,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -2071,12 +2071,12 @@
              </item>
              <item>
               <property name="text">
-               <string>CubeRounded</string>
+               <string>Plane</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Capsule</string>
+               <string>Sphere</string>
               </property>
              </item>
              <item>
@@ -2086,17 +2086,37 @@
              </item>
              <item>
               <property name="text">
+               <string>CubeRounded</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>SphereCuboid</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Capsule</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
                <string>Hexagon</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Plane</string>
+               <string>Cone</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Sphere</string>
+               <string>Torus</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>TorusKnot</string>
               </property>
              </item>
             </widget>
