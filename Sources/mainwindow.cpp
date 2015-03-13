@@ -275,11 +275,11 @@ MainWindow::MainWindow(QWidget *parent) :
     loadSettings();
 
     // Loading default (initial) textures
-    diffuseImageProp   ->setImage(QImage(QString(":/content/logo_D.png")));
-    normalImageProp    ->setImage(QImage(QString(":/content/logo_N.png")));
-    specularImageProp  ->setImage(QImage(QString(":/content/logo_D.png")));
-    heightImageProp    ->setImage(QImage(QString(":/content/logo_H.png")));
-    occlusionImageProp ->setImage(QImage(QString(":/content/logo_O.png")));
+    diffuseImageProp   ->setImage(QImage(QString(":/resources/logo_D.png")));
+    normalImageProp    ->setImage(QImage(QString(":/resources/logo_N.png")));
+    specularImageProp  ->setImage(QImage(QString(":/resources/logo_D.png")));
+    heightImageProp    ->setImage(QImage(QString(":/resources/logo_H.png")));
+    occlusionImageProp ->setImage(QImage(QString(":/resources/logo_O.png")));
 
     diffuseImageProp   ->setImageName(ui->lineEditOutputName->text());
     normalImageProp    ->setImageName(ui->lineEditOutputName->text());
@@ -291,11 +291,11 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
 
-    aboutAction = new QAction(QIcon(":/content/cube.png"), tr("&About %1").arg(qApp->applicationName()), this);
+    aboutAction = new QAction(QIcon(":/resources/cube.png"), tr("&About %1").arg(qApp->applicationName()), this);
     aboutAction->setToolTip(tr("Show information about AwesomeBump"));
     aboutAction->setMenuRole(QAction::AboutQtRole);
     aboutAction->setMenuRole(QAction::AboutRole);
-    aboutQtAction = new QAction(QIcon(":/content/QtLogo.png"), tr("About &Qt"), this);
+    aboutQtAction = new QAction(QIcon(":/resources/QtLogo.png"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
 
@@ -636,11 +636,11 @@ void MainWindow::initializeGL(){
       qDebug() << "calling" << Q_FUNC_INFO;
       
       // Loading default (initial) textures
-      diffuseImageProp  ->setImage(QImage(QString(":/content/logo_D.png")));
-      normalImageProp   ->setImage(QImage(QString(":/content/logo_N.png")));
-      specularImageProp ->setImage(QImage(QString(":/content/logo_D.png")));
-      heightImageProp   ->setImage(QImage(QString(":/content/logo_H.png")));
-      occlusionImageProp->setImage(QImage(QString(":/content/logo_O.png")));
+      diffuseImageProp  ->setImage(QImage(QString(":/resources/logo_D.png")));
+      normalImageProp   ->setImage(QImage(QString(":/resources/logo_N.png")));
+      specularImageProp ->setImage(QImage(QString(":/resources/logo_D.png")));
+      heightImageProp   ->setImage(QImage(QString(":/resources/logo_H.png")));
+      occlusionImageProp->setImage(QImage(QString(":/resources/logo_O.png")));
 
       diffuseImageProp  ->setImageName(ui->lineEditOutputName->text());
       normalImageProp   ->setImageName(ui->lineEditOutputName->text());

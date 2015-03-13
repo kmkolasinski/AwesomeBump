@@ -13,17 +13,17 @@ FormSettingsContainer::FormSettingsContainer(QWidget *parent) :
     ui->verticalLayoutSettingsList->setAlignment(Qt::AlignTop);
 
 
-    QSettings list_settings("configs/config_list",QSettings::IniFormat);
+    QSettings list_settings("Configs/config_list",QSettings::IniFormat);
     FormSettingsField::settingsGlobalID =  list_settings.value("last_id",0).toInt();
 
 
     QStringList nameFilter("*.ini");
-    QDir directory("configs/");
+    QDir directory("Configs/");
     QStringList iniFiles = directory.entryList(nameFilter);
     qDebug() << "Reading the list of available configs settings:" << iniFiles;
     // reading configs
     for (int i = 0; i < iniFiles.size(); ++i){
-        FormSettingsField* sfield = new FormSettingsField("configs/"+iniFiles[i],this);
+        FormSettingsField* sfield = new FormSettingsField("Configs/"+iniFiles[i],this);
         connect(sfield,SIGNAL(emitDeleteSettings(FormSettingsField*)),this,SLOT(removeSetting(FormSettingsField*)));
         connect(sfield,SIGNAL(emitLoadSettings(FormSettingsField*))  ,this,SLOT(reloadSettings(FormSettingsField*)));
         connect(sfield,SIGNAL(emitSaveSettings())  ,this,SLOT(saveSettings()));

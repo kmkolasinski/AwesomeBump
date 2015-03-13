@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="content.qrc">
-    <normaloff>:/content/logo.png</normaloff>:/content/logo.png</iconset>
+    <normaloff>:/resources/logo.png</normaloff>:/resources/logo.png</iconset>
   </property>
   <property name="statusTip">
    <string/>
@@ -708,7 +708,7 @@
                    </property>
                    <property name="icon">
                     <iconset resource="content.qrc">
-                     <normaloff>:/content/saveAll.png</normaloff>:/content/saveAll.png</iconset>
+                     <normaloff>:/resources/saveAll.png</normaloff>:/resources/saveAll.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -731,7 +731,7 @@
                    </property>
                    <property name="icon">
                     <iconset resource="content.qrc">
-                     <normaloff>:/content/saveSelected.png</normaloff>:/content/saveSelected.png</iconset>
+                     <normaloff>:/resources/saveSelected.png</normaloff>:/resources/saveSelected.png</iconset>
                    </property>
                    <property name="iconSize">
                     <size>
@@ -754,7 +754,7 @@
                    </property>
                    <property name="icon">
                     <iconset resource="content.qrc">
-                     <normaloff>:/content/diffuse.png</normaloff>:/content/diffuse.png</iconset>
+                     <normaloff>:/resources/diffuse.png</normaloff>:/resources/diffuse.png</iconset>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -777,7 +777,7 @@
                    </property>
                    <property name="icon">
                     <iconset resource="content.qrc">
-                     <normaloff>:/content/specular.png</normaloff>:/content/specular.png</iconset>
+                     <normaloff>:/resources/specular.png</normaloff>:/resources/specular.png</iconset>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -797,7 +797,7 @@
                    </property>
                    <property name="icon">
                     <iconset resource="content.qrc">
-                     <normaloff>:/content/normal.png</normaloff>:/content/normal.png</iconset>
+                     <normaloff>:/resources/normal.png</normaloff>:/resources/normal.png</iconset>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -817,7 +817,7 @@
                    </property>
                    <property name="icon">
                     <iconset resource="content.qrc">
-                     <normaloff>:/content/occlusion.png</normaloff>:/content/occlusion.png</iconset>
+                     <normaloff>:/resources/occlusion.png</normaloff>:/resources/occlusion.png</iconset>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -837,7 +837,7 @@
                    </property>
                    <property name="icon">
                     <iconset resource="content.qrc">
-                     <normaloff>:/content/height.png</normaloff>:/content/height.png</iconset>
+                     <normaloff>:/resources/height.png</normaloff>:/resources/height.png</iconset>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -919,7 +919,7 @@
                        <string/>
                       </property>
                       <property name="pixmap">
-                       <pixmap resource="content.qrc">:/content/showOcclusion.png</pixmap>
+                       <pixmap resource="content.qrc">:/resources/showOcclusion.png</pixmap>
                       </property>
                       <property name="scaledContents">
                        <bool>true</bool>
@@ -938,7 +938,7 @@
                        <string/>
                       </property>
                       <property name="pixmap">
-                       <pixmap resource="content.qrc">:/content/showDiffuse.png</pixmap>
+                       <pixmap resource="content.qrc">:/resources/showDiffuse.png</pixmap>
                       </property>
                       <property name="scaledContents">
                        <bool>true</bool>
@@ -970,7 +970,7 @@
                        <string/>
                       </property>
                       <property name="pixmap">
-                       <pixmap resource="content.qrc">:/content/showSpecular.png</pixmap>
+                       <pixmap resource="content.qrc">:/resources/showSpecular.png</pixmap>
                       </property>
                       <property name="scaledContents">
                        <bool>true</bool>
@@ -1015,7 +1015,7 @@
                        <string/>
                       </property>
                       <property name="pixmap">
-                       <pixmap resource="content.qrc">:/content/showNormal.png</pixmap>
+                       <pixmap resource="content.qrc">:/resources/showNormal.png</pixmap>
                       </property>
                       <property name="scaledContents">
                        <bool>true</bool>
@@ -1034,7 +1034,7 @@
                        <string/>
                       </property>
                       <property name="pixmap">
-                       <pixmap resource="content.qrc">:/content/showHeight.png</pixmap>
+                       <pixmap resource="content.qrc">:/resources/showHeight.png</pixmap>
                       </property>
                       <property name="scaledContents">
                        <bool>true</bool>
@@ -1082,7 +1082,7 @@
                     </property>
                     <property name="icon">
                      <iconset resource="content.qrc">
-                      <normaloff>:/content/showSettings.png</normaloff>:/content/showSettings.png</iconset>
+                      <normaloff>:/resources/showSettings.png</normaloff>:/resources/showSettings.png</iconset>
                     </property>
                    </widget>
                   </item>
@@ -1568,7 +1568,7 @@
              </property>
              <property name="icon">
               <iconset resource="content.qrc">
-               <normaloff>:/content/occlusion.png</normaloff>:/content/occlusion.png</iconset>
+               <normaloff>:/resources/occlusion.png</normaloff>:/resources/occlusion.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -1597,7 +1597,7 @@
              </property>
              <property name="icon">
               <iconset resource="content.qrc">
-               <normaloff>:/content/replot.png</normaloff>:/content/replot.png</iconset>
+               <normaloff>:/resources/replot.png</normaloff>:/resources/replot.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -1620,7 +1620,7 @@
              </property>
              <property name="icon">
               <iconset resource="content.qrc">
-               <normaloff>:/content/height.png</normaloff>:/content/height.png</iconset>
+               <normaloff>:/resources/height.png</normaloff>:/resources/height.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -1649,7 +1649,7 @@
              </property>
              <property name="icon">
               <iconset resource="content.qrc">
-               <normaloff>:/content/diffuse.png</normaloff>:/content/diffuse.png</iconset>
+               <normaloff>:/resources/diffuse.png</normaloff>:/resources/diffuse.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -1678,7 +1678,7 @@
              </property>
              <property name="icon">
               <iconset resource="content.qrc">
-               <normaloff>:/content/normal.png</normaloff>:/content/normal.png</iconset>
+               <normaloff>:/resources/normal.png</normaloff>:/resources/normal.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -1707,7 +1707,7 @@
              </property>
              <property name="icon">
               <iconset resource="content.qrc">
-               <normaloff>:/content/specular.png</normaloff>:/content/specular.png</iconset>
+               <normaloff>:/resources/specular.png</normaloff>:/resources/specular.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -2209,7 +2209,7 @@
   <action name="actionReplot">
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/replot.png</normaloff>:/content/replot.png</iconset>
+     <normaloff>:/resources/replot.png</normaloff>:/resources/replot.png</iconset>
    </property>
    <property name="text">
     <string>Replot</string>
@@ -2224,7 +2224,7 @@
   <action name="actionShowDiffuseImage">
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/showDiffuse.png</normaloff>:/content/showDiffuse.png</iconset>
+     <normaloff>:/resources/showDiffuse.png</normaloff>:/resources/showDiffuse.png</iconset>
    </property>
    <property name="text">
     <string>Show diffuse</string>
@@ -2239,7 +2239,7 @@
   <action name="actionShowNormalImage">
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/showNormal.png</normaloff>:/content/showNormal.png</iconset>
+     <normaloff>:/resources/showNormal.png</normaloff>:/resources/showNormal.png</iconset>
    </property>
    <property name="text">
     <string>Show normal</string>
@@ -2254,7 +2254,7 @@
   <action name="actionShowSpecularImage">
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/showSpecular.png</normaloff>:/content/showSpecular.png</iconset>
+     <normaloff>:/resources/showSpecular.png</normaloff>:/resources/showSpecular.png</iconset>
    </property>
    <property name="text">
     <string>Show specular</string>
@@ -2269,7 +2269,7 @@
   <action name="actionShowHeightImage">
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/showHeight.png</normaloff>:/content/showHeight.png</iconset>
+     <normaloff>:/resources/showHeight.png</normaloff>:/resources/showHeight.png</iconset>
    </property>
    <property name="text">
     <string>Show height</string>
@@ -2284,7 +2284,7 @@
   <action name="actionShowSettingsImage">
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/showSettings.png</normaloff>:/content/showSettings.png</iconset>
+     <normaloff>:/resources/showSettings.png</normaloff>:/resources/showSettings.png</iconset>
    </property>
    <property name="text">
     <string>Show settings</string>
@@ -2299,7 +2299,7 @@
   <action name="actionShowOcclusiontImage">
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/showOcclusion.png</normaloff>:/content/showOcclusion.png</iconset>
+     <normaloff>:/resources/showOcclusion.png</normaloff>:/resources/showOcclusion.png</iconset>
    </property>
    <property name="text">
     <string>Show occlusion</string>
@@ -2314,7 +2314,7 @@
   <action name="actionFitToScreen">
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/resize.png</normaloff>:/content/resize.png</iconset>
+     <normaloff>:/resources/resize.png</normaloff>:/resources/resize.png</iconset>
    </property>
    <property name="text">
     <string>Fit to window</string>
@@ -2332,7 +2332,7 @@
    </property>
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/translateUV.png</normaloff>:/content/translateUV.png</iconset>
+     <normaloff>:/resources/translateUV.png</normaloff>:/resources/translateUV.png</iconset>
    </property>
    <property name="text">
     <string>TranslateUV</string>
@@ -2347,7 +2347,7 @@
    </property>
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/grabCorners.png</normaloff>:/content/grabCorners.png</iconset>
+     <normaloff>:/resources/grabCorners.png</normaloff>:/resources/grabCorners.png</iconset>
    </property>
    <property name="text">
     <string>grabCorners</string>
@@ -2362,7 +2362,7 @@
    </property>
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/content/scaleXYUV.png</normaloff>:/content/scaleXYUV.png</iconset>
+     <normaloff>:/resources/scaleXYUV.png</normaloff>:/resources/scaleXYUV.png</iconset>
    </property>
    <property name="text">
     <string>scaleXY</string>

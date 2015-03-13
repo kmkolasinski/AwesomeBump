@@ -60,7 +60,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/content/text.png</normaloff>:/content/text.png</iconset>
+         <normaloff>:/resources/text.png</normaloff>:/resources/text.png</iconset>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -91,7 +91,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/content/save.png</normaloff>:/content/save.png</iconset>
+         <normaloff>:/resources/save.png</normaloff>:/resources/save.png</iconset>
        </property>
       </widget>
      </item>
@@ -114,7 +114,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/content/replot.png</normaloff>:/content/replot.png</iconset>
+         <normaloff>:/resources/replot.png</normaloff>:/resources/replot.png</iconset>
        </property>
       </widget>
      </item>
@@ -150,7 +150,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/content/trash.png</normaloff>:/content/trash.png</iconset>
+         <normaloff>:/resources/trash.png</normaloff>:/resources/trash.png</iconset>
        </property>
       </widget>
      </item>

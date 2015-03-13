@@ -64,7 +64,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
 
     setMouseTracking(true);
     setCursor(Qt::PointingHandCursor);
-    lightCursor = QCursor(QPixmap(":/content/lightCursor.png"));
+    lightCursor = QCursor(QPixmap(":/resources/lightCursor.png"));
 
 }
 
@@ -164,31 +164,31 @@ void GLWidget::initializeGL()
 
     qDebug() << "Loading quad (vertex shader)";
     QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/content/plane.vert");
+    vshader->compileSourceFile(":/resources/plane.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading quad (fragment shader)";
     QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-    fshader->compileSourceFile(":/content/plane.frag");
+    fshader->compileSourceFile(":/resources/plane.frag");
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading quad (tessellation control shader)";
     QOpenGLShader *tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl, this);
-    tcshader->compileSourceFile(":/content/plane.tcs.vert");
+    tcshader->compileSourceFile(":/resources/plane.tcs.vert");
     if (!tcshader->log().isEmpty()) qDebug() << tcshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading quad (tessellation evaluation shader)";
     QOpenGLShader *teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation, this);
-    teshader->compileSourceFile(":/content/plane.tes.vert");
+    teshader->compileSourceFile(":/resources/plane.tes.vert");
     if (!teshader->log().isEmpty()) qDebug() << teshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading quad (geometry shader)";
     QOpenGLShader *gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
-    gshader->compileSourceFile(":/content/plane.geom");
+    gshader->compileSourceFile(":/resources/plane.geom");
     if (!gshader->log().isEmpty()) qDebug() << gshader->log();
     else qDebug() << "done";
 
@@ -216,7 +216,7 @@ void GLWidget::initializeGL()
     camera.position.setZ( -0 );
     camera.toggleFreeCamera(false);
 
-    mesh = new Mesh("models/","Cube.obj");
+    mesh = new Mesh("Core/3D/","Cube.obj");
     emit readyGL();
 }
 
@@ -424,7 +424,7 @@ bool GLWidget::loadMeshFile(const QString &fileName, bool bAddExtension)
     // loading new mesh
     Mesh* new_mesh;
     if(bAddExtension){
-        new_mesh = new Mesh(QString("models/"),fileName+QString(".obj"));
+        new_mesh = new Mesh(QString("Core/3D/"),fileName+QString(".obj"));
     }else{
         new_mesh = new Mesh(QString(""),fileName);
     }

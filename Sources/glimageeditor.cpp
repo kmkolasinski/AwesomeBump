@@ -61,10 +61,10 @@ GLImage::GLImage(QWidget *parent)
     gui_perspective_mode =  0;
     gui_seamless_mode    =  0;
     setCursor(Qt::OpenHandCursor);
-    cornerCursors[0] = QCursor(QPixmap(":/content/corner1.png"));
-    cornerCursors[1] = QCursor(QPixmap(":/content/corner2.png"));
-    cornerCursors[2] = QCursor(QPixmap(":/content/corner3.png"));
-    cornerCursors[3] = QCursor(QPixmap(":/content/corner4.png"));
+    cornerCursors[0] = QCursor(QPixmap(":/resources/corner1.png"));
+    cornerCursors[1] = QCursor(QPixmap(":/resources/corner2.png"));
+    cornerCursors[2] = QCursor(QPixmap(":/resources/corner3.png"));
+    cornerCursors[3] = QCursor(QPixmap(":/resources/corner4.png"));
     setMouseTracking(true);
 }
 
@@ -111,13 +111,13 @@ void GLImage::initializeGL()
 
     qDebug() << "Loading filters (fragment shader)";
     QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/content/filters.vert");
+    vshader->compileSourceFile(":/resources/filters.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading filters (vertex shader)";
     QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-    fshader->compileSourceFile(":/content/filters.frag");
+    fshader->compileSourceFile(":/resources/filters.frag");
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
     else qDebug() << "done";
 

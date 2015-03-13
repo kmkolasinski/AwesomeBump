@@ -102,7 +102,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/content/save.png</normaloff>:/content/save.png</iconset>
+         <normaloff>:/resources/save.png</normaloff>:/resources/save.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -128,7 +128,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/content/open.png</normaloff>:/content/open.png</iconset>
+         <normaloff>:/resources/open.png</normaloff>:/resources/open.png</iconset>
        </property>
        <property name="iconSize">
         <size>
