@@ -52,4 +52,3 @@ ICON = resources/icon.icns
 INCLUDEPATH += include
 
 
-

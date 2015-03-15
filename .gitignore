@@ -1,8 +1,8 @@
+/Bin/config.ini
 build/Makefile
 *.pydevproject
 .project
 .metadata
-bin/
 tmp/
 *.tmp
 *.bak
@@ -21,7 +21,7 @@ local.properties
 
 .buildpath
 
-
+*.orig
 
 
 *.suo
@@ -36,7 +36,6 @@ pageContent/
 [Rr]elease/
 x64/
 build/
-[Bb]in/
 [Oo]bj/
 
 [Tt]est[Rr]esult*/
@@ -169,16 +168,5 @@ build/Makefile
 build/Makefile
 pageContent
 build
-AwesomeBump.pro.user.ef28e7a
-AwesomeBump.pro.user
-glimageeditor.cpp.BvB388
-AwesomeBump.pro.user.1ac2611
-AwesomeBump.pro.user.d869918
 log.txt
-mainwindow.cpp.xU4760
-formsettingscontainer.h.Jg1292
-formsettingscontainer.h.rv1292
-formsettingscontainer.h.rv1292
-glwidget.cpp.mw6064
-glwidget.cpp.mw6064
-mainwindow.cpp.dm4832
+
