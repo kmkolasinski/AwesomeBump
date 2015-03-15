@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>998</width>
+    <width>1094</width>
     <height>745</height>
    </rect>
   </property>
@@ -20,8 +20,8 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="content.qrc">
-    <normaloff>:/resources/logo.png</normaloff>:/resources/logo.png</iconset>
+   <iconset>
+    <normaloff>:/content/logo.png</normaloff>:/content/logo.png</iconset>
   </property>
   <property name="statusTip">
    <string/>
@@ -81,8 +81,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>349</width>
+             <height>612</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -134,8 +134,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>349</width>
+             <height>612</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -187,8 +187,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>349</width>
+             <height>612</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -240,8 +240,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>349</width>
+             <height>612</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -293,8 +293,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>100</width>
-             <height>30</height>
+             <width>349</width>
+             <height>612</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -344,10 +344,10 @@
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>28</x>
+             <x>15</x>
              <y>0</y>
              <width>300</width>
-             <height>574</height>
+             <height>600</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -1169,8 +1169,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>253</width>
-             <height>369</height>
+             <width>352</width>
+             <height>594</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -1552,7 +1552,7 @@
         <property name="maximumSize">
          <size>
           <width>11000</width>
-          <height>250</height>
+          <height>300</height>
          </size>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -2130,12 +2130,7 @@
            </item>
           </layout>
          </item>
-        </layout>
-       </widget>
-      </item>
-     </layout>
-    </item>
- <item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <widget class="QComboBox" name="comboBoxSkyBox">
@@ -2199,8 +2194,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>998</width>
-     <height>21</height>
+     <width>1094</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2425,7 +2420,7 @@
    </property>
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/resources/scaleXYUV.png</normaloff>:/resources/scaleXYUV.png</iconset>
+     <normaloff>:/resources/translateUV.png</normaloff>:/resources/translateUV.png</iconset>
    </property>
    <property name="text">
     <string>scaleXY</string>

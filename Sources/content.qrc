@@ -39,5 +39,10 @@
         <file>resources/plane.geom</file>
         <file>resources/plane.tcs.vert</file>
         <file>resources/plane.tes.vert</file>
+        <file>resources/env.frag</file>
+        <file>resources/env.geom</file>
+        <file>resources/env.vert</file>
+        <file>resources/skybox.frag.glsl</file>
+        <file>resources/skybox.vert.glsl</file>
     </qresource>
 </RCC>

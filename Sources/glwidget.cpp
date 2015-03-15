@@ -470,6 +470,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 }
 void GLWidget::mouseReleaseEvent(QMouseEvent *event){
     setCursor(Qt::PointingHandCursor);
+    event->accept();
 }
 
 

@@ -30,7 +30,7 @@ FormSettingsField::FormSettingsField(QString _name,QString _description,QWidget 
     settings.setValue("settings_path",settingsPath);
 
 
-    QSettings list_settings("configs/config_list",QSettings::IniFormat);
+    QSettings list_settings("Configs/config_list",QSettings::IniFormat);
     list_settings.setValue("last_id",settingsGlobalID);
 
 }
