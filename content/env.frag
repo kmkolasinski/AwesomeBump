@@ -28,9 +28,9 @@ vec4 PBR_Diffuse(vec3 surfaceColor,samplerCube texDiffuseEnv,
                            vec3 surfaceTangent,
                            vec3 surfaceBitangent){
 
-    vec3 ocolor;
-   // ocolor = texture(texDiffuseEnv, surfaceNormal).rgb;
-	//return vec4(ocolor,1) ;
+    vec3 ocolor = vec3(0);
+    //ocolor = texture(texDiffuseEnv, surfaceNormal).rgb;
+    //return vec4(ocolor,1) ;
 	
     int index = 0;
     for(float phi = 0; phi < 6.283; phi += 0.1)
@@ -49,7 +49,7 @@ vec4 PBR_Diffuse(vec3 surfaceColor,samplerCube texDiffuseEnv,
 
 void main( void )
 {
-	//FragColor = vec4(1);
+
 	
     FragColor = PBR_Diffuse(vec3(1),
                             texEnv,

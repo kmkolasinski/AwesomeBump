@@ -222,7 +222,7 @@ vec3 calc_random_vec(float roughness,vec3 up,vec3 right,vec3 dir){
 // http://www.codinglabs.net/article_physically_based_rendering_cook_torrance.aspx
 vec4 PBR_Specular(float roughness,
                   vec3 F0,
-                  out vec3 kS,
+                  inout vec3 kS,
                   samplerCube texEnvMap,
                   vec3 surfacePosition,
                   vec3 surfaceNormal,vec2 texcoords){
@@ -239,7 +239,7 @@ vec4 PBR_Specular(float roughness,
     vec3 right  = normalize(cross(up,l));
     up          = cross(l,right);
 
-    vec3 radiance;
+    vec3 radiance  = vec3(0);
     float  NoV     = clamp(dot(n, v),0,1);
 
 
@@ -270,56 +270,6 @@ vec4 PBR_Specular(float roughness,
     // Scale back for the samples count
     kS = clamp( kS / no_samples ,0,1);
     return vec4(radiance / no_samples,1);
-}
-
-vec4 PBR_Specular_Punctual(float roughness,
-                          vec3 F0,
-                          out vec3 kS,
-                          vec3  lightDir,
-                          vec3  lightColor,
-                          float lightPower,
-                          vec3  surfacePosition,
-                          vec3  surfaceNormal,
-                          vec2 texcoords){
-
-
-    vec3  ts_normal   = normalize( ( texture( texNormal, texcoords.xy ).xyz * 2.0 ) - 1.0 );
-    mat3  iTBN        = transpose(TBN);
-
-    vec3 v = normalize(cameraPos - surfacePosition);
-    vec3 n = normalize(iTBN*ts_normal); // approximated normal in world space
-    //vec3 n = normalize(surfaceNormal);
-    vec3 l = normalize(reflect(-v,n));
-    vec3 h = normalize(l + v);
-
-
-
-    vec3 radiance;
-    float  NoV     = clamp(dot(n, v),0,1);
-    float  LoL     = clamp(dot(n,lightDir),0,1);
-
-
-    vec3 lp = lightDir;
-
-    // Calculate the half vector
-    vec3 halfVector = normalize(lp + v);
-    float cosT = clamp(dot( lp, n ),0.0,1.0);
-    float sinT = sqrt( 1 - cosT * cosT);
-    // Calculate fresnel
-    vec3 fresnel   = Fresnel_Schlick( clamp(dot( halfVector, v ),0.0,1.0), F0 );
-    // Geometry term
-    float geometry = GGX_PartialGeometryTerm(v , n, halfVector, roughness)
-                   * GGX_PartialGeometryTerm(lp, n, halfVector, roughness);
-    // Calculate the Cook-Torrance denominator
-    float denominator = clamp( 4 * (NoV * clamp(dot(halfVector, n),0,1) + 0.025) ,0,1);
-    kS = fresnel ;
-    // Accumulate the radiance
-    vec3 color = lightColor*lightPower;
-    radiance = color * ( geometry * fresnel * sinT / denominator * LoL  );
-
-    // Scale back for the samples count
-    kS = clamp(kS,0,1);
-    return vec4(radiance,1);
 }
 
 void main( void )
@@ -382,20 +332,10 @@ void main( void )
     vec3 irradiance = texture(texDiffuseEnvMap, normalize(surfaceNormal)).rgb;
     vec3 diffuse    = materialColour * irradiance;
 
-    /*
-    vec4 pColor = PBR_Specular_Punctual(roughness,
-                              F0,
-                              kS,
-                              lightDirection,
-                              vec3(0.2),
-                              gui_DiffuseIntensity,
-                              WSPosition,
-                              surfaceNormal,
-                              texcoords);
-    */
-    vec4 pColor = vec4(0);
 
-    FragColor  =  gui_DiffuseIntensity * vec4(kD * diffuse,1)*aoColour + gui_SpecularIntensity * ( pColor + specular ) * vec4(kS,1) ;
+    FragColor  =  gui_DiffuseIntensity * vec4(kD * diffuse,1)*aoColour + gui_SpecularIntensity * ( specular ) * vec4(kS,1) ;
+
+
 
 
 }
