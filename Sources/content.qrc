@@ -1,0 +1,43 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/logo_D.png</file>
+        <file>resources/logo_N.png</file>
+        <file>resources/logo_H.png</file>
+        <file>resources/logo_O.png</file>
+        <file>resources/logo.png</file>
+        <file>resources/replot.png</file>
+        <file>resources/showDiffuse.png</file>
+        <file>resources/diffuse.png</file>
+        <file>resources/showNormal.png</file>
+        <file>resources/normal.png</file>
+        <file>resources/showSpecular.png</file>
+        <file>resources/specular.png</file>
+        <file>resources/showHeight.png</file>
+        <file>resources/height.png</file>
+        <file>resources/showSettings.png</file>
+        <file>resources/showOcclusion.png</file>
+        <file>resources/occlusion.png</file>
+        <file>resources/save.png</file>
+        <file>resources/saveAll.png</file>
+        <file>resources/saveSelected.png</file>
+        <file>resources/open.png</file>
+        <file>resources/plane.frag</file>
+        <file>resources/plane.vert</file>
+        <file>resources/lightCursor.png</file>
+        <file>resources/corner2.png</file>
+        <file>resources/corner3.png</file>
+        <file>resources/corner4.png</file>
+        <file>resources/corner1.png</file>
+        <file>resources/resize.png</file>
+        <file>resources/translateUV.png</file>
+        <file>resources/grabCorners.png</file>
+        <file>resources/scaleXYUV.png</file>
+        <file>resources/filters.frag</file>
+        <file>resources/filters.vert</file>
+        <file>resources/trash.png</file>
+        <file>resources/text.png</file>
+        <file>resources/plane.geom</file>
+        <file>resources/plane.tcs.vert</file>
+        <file>resources/plane.tes.vert</file>
+    </qresource>
+</RCC>
