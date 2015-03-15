@@ -52,3 +52,4 @@ void DialogHeightCalculator::calculateDepthInPixels(double p_depth){
 }
 
 
+

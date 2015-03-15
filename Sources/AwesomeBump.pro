@@ -50,3 +50,6 @@ FORMS += \
 
 ICON = resources/icon.icns
 INCLUDEPATH += include
+
+
+

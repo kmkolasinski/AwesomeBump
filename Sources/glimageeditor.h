@@ -228,3 +228,4 @@ private:
 
 
 #endif // GLIMAGEEDITOR_H
+

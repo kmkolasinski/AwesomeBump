@@ -1557,3 +1557,4 @@ void GLImage::mouseReleaseEvent(QMouseEvent *event){
     setCursor(Qt::OpenHandCursor);
     draggingCorner = -1;
 }
+

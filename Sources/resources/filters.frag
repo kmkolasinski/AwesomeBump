@@ -567,7 +567,6 @@ subroutine(filterModeType) vec4 mode_height_to_normal(){
     vec3 vb   = normalize(vec3(size.yx,gui_hn_conversion_depth*(s12-s11)));
     vec3 bump = normalize( cross(va,vb) );
     return vec4(clamp(bump*0.5 + 0.5,vec3(0),vec3(1)),1);
-
 }
 
 

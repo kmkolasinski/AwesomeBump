@@ -79,10 +79,12 @@ void main()
     for(int i = 0 ; i < 3 ; i++){
                 texcoord.st     = (teTexcoord[i].st);
 		
-		ESVertexNormal 	   	= NormalMatrix * teNormal[i];
+                ESVertexNormal 	   	= NormalMatrix * teNormal[i];
 		ESVertexTangent		= NormalMatrix * teTangent[i];
                 ESVertexBitangent       = NormalMatrix * teBitangent[i];
 		vec4 eyeVec 	   	= ModelViewMatrix * vec4(newPos[i],1);
+                vec4 eyeLight           = ModelViewMatrix * lightPos;
+
 		ESVertexPosition   	= eyeVec.xyz;
 		
 		vec3 eyeLightVectors[2];
@@ -93,7 +95,7 @@ void main()
 		eyeViewVectors[0] = -normalize(eyeVec.xyz);
 		eyeViewVectors[1] = -normalize(eyeVec.xyz);
 
-		vec4 lightV =  vec4(0,0,5,0);		
+                vec4 lightV =  vec4(0,0,5,0);
 		bump_mapping(eyeLightVectors,eyeViewVectors,normalize(lightV.xyz+eyeVec.xyz));
 		gl_Position        	= ProjectionMatrix * eyeVec; 
 

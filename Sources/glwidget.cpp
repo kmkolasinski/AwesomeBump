@@ -632,3 +632,4 @@ void GLWidget::chooseSkyBox(QString cubeMapName){
     m_env_map = new GLTextureCube(list);
 
 }
+

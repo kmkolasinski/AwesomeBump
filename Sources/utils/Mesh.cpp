@@ -247,6 +247,7 @@ void Mesh::drawMesh(bool bUseArrays ){
     glVertexAttribPointer(5,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
 
 
+
     if(bUseArrays){
         GLCHK(glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()));
     }else{

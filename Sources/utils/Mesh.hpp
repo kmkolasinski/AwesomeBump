@@ -16,8 +16,8 @@
 #include <QVector>
 #include <QVector3D>
 #include <iostream>
-#include "qopenglerrorcheck.h"
-#include "utils/tinyobj/tiny_obj_loader.h"
+#include "../qopenglerrorcheck.h"
+#include "tinyobj/tiny_obj_loader.h"
 using namespace std;
 
 class Mesh : public QOpenGLFunctions_4_0_Core {
