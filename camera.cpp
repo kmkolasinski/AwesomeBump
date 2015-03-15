@@ -46,7 +46,13 @@ QMatrix4x4& AwesomeCamera::updateCamera(void){
     rotM = unit_mat;
     return rotM;
 }
-
+QVector3D AwesomeCamera::get_position(){
+    if(isFree){
+        return position;
+    }else{
+        return position - (radius)*direction;
+    }
+}
 
 void AwesomeCamera::toggleFreeCamera(bool free){
     isFree = free;

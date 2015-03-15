@@ -1,3 +1,8 @@
+/**
+ * Simple class which allows to calculate the depth of the nomral texture
+ * based on the height texture and its given physical parameters.
+ *
+*/
 #ifndef DIALOGHEIGHTCALCULATOR_H
 #define DIALOGHEIGHTCALCULATOR_H
 
@@ -14,7 +19,9 @@ class DialogHeightCalculator : public QDialog
 public:
     explicit DialogHeightCalculator(QWidget *parent = 0);
     ~DialogHeightCalculator();
-    void setImageSize(int width, int height);
+    void setImageSize(int width, int height); // set current image size
+    // calculate the depth of the normal map based on given parameters
+    // this parameter is then used during normal map evaluation
     float getDepthInPixels();
 
 private slots:

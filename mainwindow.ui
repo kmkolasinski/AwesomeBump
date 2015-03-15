@@ -81,8 +81,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -134,8 +134,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -187,8 +187,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -240,8 +240,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -293,8 +293,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>65</width>
-             <height>16</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1169,8 +1169,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>253</width>
-             <height>369</height>
+             <width>356</width>
+             <height>620</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -1552,7 +1552,7 @@
         <property name="maximumSize">
          <size>
           <width>11000</width>
-          <height>230</height>
+          <height>250</height>
          </size>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -2106,6 +2106,44 @@
              <property name="text">
               <string>Load OBJ mesh</string>
              </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QComboBox" name="comboBoxSkyBox">
+             <item>
+              <property name="text">
+               <string>LancellottiChapel</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>MarriottMadisonWest</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Park</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>PereaBeach</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>SaintLazarusChurch</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Yokohama</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>

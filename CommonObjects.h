@@ -37,7 +37,16 @@ enum UVManipulationMethods{
 
 enum ShadingType{
     SHADING_RELIEF_MAPPING = 0,
-    SHADING_PARALLAX_NORMAL_MAPPING
+    SHADING_PARALLAX_NORMAL_MAPPING,
+    SHADING_TESSELATION
+};
+
+// Methods of making the texture seamless
+enum SeamlessMode{
+    SEAMLESS_NONE = 0,
+    SEAMLESS_SIMPLE,
+    SEAMLESS_MIRROR,
+    SEAMLESS_RANDOM
 };
 
 // Compressed texture type
@@ -45,6 +54,9 @@ enum CompressedFromTypes{
     H_TO_D_AND_S_TO_N = 0,
     S_TO_D_AND_H_TO_N = 1
 };
+
+
+
 enum TargaColorFormat{
     TARGA_BGR=0,
     TARGA_BGRA,
@@ -168,13 +180,7 @@ struct GrayScalePreset{
     }
 };
 
-// Methods of making the texture seamless
-enum SeamlessMode{
-    SEAMLESS_NONE = 0,
-    SEAMLESS_SIMPLE,
-    SEAMLESS_MIRROR,
-    SEAMLESS_RANDOM
-};
+
 
 struct RandomTilingMode{
   float angles[9];
@@ -318,7 +324,7 @@ public:
     static float seamlessSimpleModeRadius;
     static int seamlessMirroModeType; // values: 2 - x repear, 1 - y  repeat, 0 - xy  repeat
     static RandomTilingMode seamlessRandomTiling;
-     FBOImageProporties(){
+    FBOImageProporties(){
 
         ref_fbo      = NULL;
         fbo          = NULL;
@@ -381,7 +387,7 @@ public:
 
         seamlessMode = SEAMLESS_NONE;
 
-     }
+    }
     void init(QImage& image){
         qDebug() << Q_FUNC_INFO;
 

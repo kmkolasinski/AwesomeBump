@@ -21,7 +21,6 @@
         <file>content/saveAll.png</file>
         <file>content/saveSelected.png</file>
         <file>content/open.png</file>
-        <file>content/plane.frag</file>
         <file>content/plane.vert</file>
         <file>content/lightCursor.png</file>
         <file>content/corner2.png</file>
@@ -36,8 +35,14 @@
         <file>content/filters.vert</file>
         <file>content/trash.png</file>
         <file>content/text.png</file>
-        <file>content/plane.geom</file>
         <file>content/plane.tcs.vert</file>
         <file>content/plane.tes.vert</file>
+        <file>content/skybox.frag.glsl</file>
+        <file>content/skybox.vert.glsl</file>
+        <file>content/env.frag</file>
+        <file>content/env.geom</file>
+        <file>content/env.vert</file>
+        <file>content/plane.frag</file>      
+        <file>content/plane.geom</file>
     </qresource>
 </RCC>

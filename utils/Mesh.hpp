@@ -33,7 +33,7 @@ public:
 	/**
     * @brief Draw the mesh if bLoaded is true otherwise does nothing
 	*/
-    void drawMesh();
+    void drawMesh(bool bUseArrays = false);
     /**
      * @brief isLoaded returns true if mesh was succsesfully loaded from file,
      * otherwise returns false.

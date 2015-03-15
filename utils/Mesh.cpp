@@ -225,7 +225,7 @@ bool Mesh::hasCommonEdge(int i, int j){
 }
 */
 
-void Mesh::drawMesh(){
+void Mesh::drawMesh(bool bUseArrays ){
     if(bLoaded == false) return;
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[0]);
@@ -247,10 +247,12 @@ void Mesh::drawMesh(){
     glVertexAttribPointer(5,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
 
 
- //   GLCHK(glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()));
-    glPatchParameteri(GL_PATCH_VERTICES, 3);       // tell OpenGL that every patch has 16 verts
-    GLCHK(glDrawArrays(GL_PATCHES, 0, gl_vertices.size())); // draw a bunch of patches
-
+    if(bUseArrays){
+        GLCHK(glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()));
+    }else{
+        glPatchParameteri(GL_PATCH_VERTICES, 3);       // tell OpenGL that every patch has 16 verts
+        GLCHK(glDrawArrays(GL_PATCHES, 0, gl_vertices.size())); // draw a bunch of patches
+    }
 
 }
 

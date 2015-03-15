@@ -30,7 +30,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     QGLContext* glContext = (QGLContext *) glWidget->context();
-    glContext->makeCurrent();    
+    glContext->makeCurrent();
+    qDebug() << "Running the " + QString(AWESOME_BUMP_VERSION);
+    qDebug() << "Checking OpenGL version...";
     qDebug() << "Widget OpenGL: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() ;
     qDebug() << "Context valid: " << glContext->isValid() ;
     qDebug() << "OpenGL information: " ;
@@ -43,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if((QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_3_2) == 0)
     {
-       qDebug() << "GL 3.2 Not supported" ;
+       qDebug() << "GL 3.2 is not supported by AwesomeBump" ;
        exit(-1);
     }
 
@@ -205,9 +207,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->comboBoxImageOutputFormat     ,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
 
     // loading 3d mesh signal
-    connect(ui->pushButtonLoadMesh            ,SIGNAL(released()),glWidget,SLOT(loadMeshFromFile()));
+    connect(ui->pushButtonLoadMesh            ,SIGNAL(released()),        glWidget,SLOT(loadMeshFromFile()));
     connect(ui->comboBoxChooseOBJModel        ,SIGNAL(activated(QString)),glWidget,SLOT(chooseMeshFile(QString)));
-    connect(ui->comboBoxShadingType           ,SIGNAL(activated(int)),glWidget,SLOT(selectShadingType(int)));
+    connect(ui->comboBoxShadingType           ,SIGNAL(activated(int)),    glWidget,SLOT(selectShadingType(int)));
+
+
+    // PBR settings
+    connect(ui->comboBoxSkyBox        ,SIGNAL(activated(QString)),glWidget,SLOT(chooseSkyBox(QString)));
     // Other staff
 
     ui->progressBar->setValue(0);
@@ -291,7 +297,7 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
 
-    aboutAction = new QAction(QIcon(":/content/cube.png"), tr("&About %1").arg(qApp->applicationName()), this);
+    aboutAction = new QAction(QIcon(":/content/logo.png"), tr("&About %1").arg(qApp->applicationName()), this);
     aboutAction->setToolTip(tr("Show information about AwesomeBump"));
     aboutAction->setMenuRole(QAction::AboutQtRole);
     aboutAction->setMenuRole(QAction::AboutRole);
@@ -468,7 +474,7 @@ bool MainWindow::saveAllImages(const QString &dir){
         }
         ui->progressBar->setValue(100);
 
-    }else{
+    }else{ // if using compressed format
         QCoreApplication::processEvents();
         glImage->makeCurrent();
 
@@ -1170,10 +1176,15 @@ void MainWindow::loadSettings(){
 
 void MainWindow::about()
 {
-    QMessageBox::about(this, tr("Awesome Bump"), tr("AwesomeBump is an open source program designed to generate normal, height, specular or ambient occlusion textures from a single image. Since the image processing is done in 99% on GPU  the program runs very fast and all the parameters can be changed in real time."));
+    QMessageBox::about(this, tr(AWESOME_BUMP_VERSION),
+                       tr("AwesomeBump is an open source program designed to generate normal, "
+                          "height, specular or ambient occlusion etc. textures from a single image. "
+                          "Since the image processing is done in 99% on GPU  the program runs very fast "
+                          "and all the parameters can be changed in real time.\n"
+                          "Program written by: Krzysztof Kolasinski (Copyright 2015)"));
 }
 
 void MainWindow::aboutQt()
 {
-    QMessageBox::aboutQt(this, tr("Awesome Bump"));
+    QMessageBox::aboutQt(this, tr(AWESOME_BUMP_VERSION));
 }

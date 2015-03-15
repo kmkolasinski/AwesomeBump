@@ -9,10 +9,10 @@ DialogHeightCalculator::DialogHeightCalculator(QWidget *parent) :
     connect(ui->doubleSpinBoxPhysicalDepth,SIGNAL(valueChanged(double)),this,SLOT(calculateDepthInPixels(double)));
     connect(ui->doubleSpinBoxPhysicalHeight,SIGNAL(valueChanged(double)),this,SLOT(calculateDepthInPixels(double)));
     connect(ui->doubleSpinBoxPhysicalWidth,SIGNAL(valueChanged(double)),this,SLOT(calculateDepthInPixels(double)));
-    ui->doubleSpinBoxPhysicalWidth ->setValue(0.0);
-    ui->doubleSpinBoxPhysicalHeight->setValue(0.0);
-    ui->doubleSpinBoxPhysicalDepth ->setValue(0.0);
-
+    ui->doubleSpinBoxPhysicalWidth ->setValue(1.0);
+    ui->doubleSpinBoxPhysicalHeight->setValue(1.0);
+    ui->doubleSpinBoxPhysicalDepth ->setValue(0.01);
+    ui->doubleSpinBoxPhysicalDepth->setValue(10.4);
 
 }
 

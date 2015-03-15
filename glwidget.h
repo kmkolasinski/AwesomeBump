@@ -48,6 +48,7 @@
 #include "CommonObjects.h"
 #include "camera.h"
 #include "utils/Mesh.hpp"
+#include "utils/qglbuffers.h"
 #include <QOpenGLFunctions_4_0_Core>
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
@@ -88,6 +89,8 @@ public slots:
     bool loadMeshFile(const QString &fileName,bool bAddExtension = false);
     void chooseMeshFile(const QString &fileName);
 
+    // pbr functions
+    void chooseSkyBox(QString cubeMapName);
 signals:
     void renderGL();
     void readyGL();
@@ -111,8 +114,10 @@ private:
     int glhUnProjectf(float &winx, float &winy, float &winz,
                       QMatrix4x4 &modelview, QMatrix4x4 &projection,
                       QVector4D& objectCoordinate);
-
+    void bakeEnviromentalMaps();
     QOpenGLShaderProgram *program;    
+    QOpenGLShaderProgram *skybox_program;
+    QOpenGLShaderProgram *env_program;
     QGLFramebufferObject**  fboIdPtrs[5];
 
 
@@ -133,17 +138,26 @@ private:
     // 3D view parameters
     QMatrix4x4 projectionMatrix;
     QMatrix4x4 modelViewMatrix;
+    QMatrix3x3 NormalMatrix;
+    QMatrix4x4 viewMatrix;
     QMatrix4x4 objectMatrix;
     QVector4D lightPosition;
+
     QVector4D cursorPositionOnPlane;
     float ratio;
     float zoom;
     QPoint lastPos;    
-    AwesomeCamera camera;
+    AwesomeCamera camera;   // light used for standard phong shading
+    AwesomeCamera lightDirection;//second light - use camera class to rotate light
     QCursor lightCursor;
 
 
-    Mesh* mesh;
+    Mesh* mesh; // displayed 3d mesh
+    Mesh* skybox_mesh; // sky box cube
+    Mesh* env_mesh; // one trinagle used for calculation of prefiltered env. map
+    GLTextureCube* m_env_map; // orginal cube map
+    GLTextureCube* m_prefiltered_env_map; // filtered lambertian cube map
+    bool bDiffuseMapBaked; // prevent program from calculating diffuse env. map many times
 public:
     static QDir* recentMeshDir;
 };

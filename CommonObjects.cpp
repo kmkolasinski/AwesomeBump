@@ -2,9 +2,9 @@
 
 bool FBOImageProporties::bAttachNormalToHeightMap = false;
 
-SeamlessMode FBOImageProporties::seamlessMode = SEAMLESS_NONE;
-float FBOImageProporties::seamlessSimpleModeRadius   = 0.5;
-int FBOImageProporties::seamlessMirroModeType = 0;
+SeamlessMode FBOImageProporties::seamlessMode             = SEAMLESS_NONE;
+float FBOImageProporties::seamlessSimpleModeRadius        = 0.5;
+int FBOImageProporties::seamlessMirroModeType             = 0;
 RandomTilingMode FBOImageProporties::seamlessRandomTiling = RandomTilingMode();
 
 

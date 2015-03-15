@@ -60,7 +60,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     shadingType             = SHADING_RELIEF_MAPPING;
     specularIntensity       = 0.5;
     diffuseIntensity        = 1.0;
-
+    m_env_map               = NULL;
 
     setMouseTracking(true);
     setCursor(Qt::PointingHandCursor);
@@ -79,7 +79,13 @@ void GLWidget::cleanup()
 
 
     delete program;
+    delete skybox_program;
+    delete env_program;
     delete mesh;
+    delete skybox_mesh;
+    delete env_mesh;
+    delete m_env_map;
+    delete m_prefiltered_env_map;
 
     doneCurrent();
 }
@@ -154,6 +160,7 @@ void GLWidget::setDiffuseIntensity(double val){
 void GLWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+    makeCurrent();
     qglClearColor(QColor::fromCmykF(0.79, 0.79, 0.79, 0.0).dark());
 
 
@@ -206,6 +213,9 @@ void GLWidget::initializeGL()
     program->setUniformValue("texSpecular", 2);
     program->setUniformValue("texHeight"  , 3);
     program->setUniformValue("texSSAO"    , 4);
+    program->setUniformValue("texDiffuseEnvMap", 5);
+    program->setUniformValue("texEnvMap"       , 6);
+
 
     delete vshader;
     delete fshader;
@@ -213,23 +223,130 @@ void GLWidget::initializeGL()
     delete teshader;
     delete gshader;
 
+
+    // loading sky box shader
+    qDebug() << "Loading skybox shader (vertex shader)";
+    vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
+    vshader->compileSourceFile(":/content/skybox.vert.glsl");
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    else qDebug() << "done";
+
+    qDebug() << "Loading skybox shader (fragment shader)";
+    fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
+    fshader->compileSourceFile(":/content/skybox.frag.glsl");
+    if (!fshader->log().isEmpty()) qDebug() << fshader->log();
+    else qDebug() << "done";
+
+    skybox_program = new QOpenGLShaderProgram(this);
+    skybox_program->addShader(vshader);
+    skybox_program->addShader(fshader);
+
+    GLCHK(skybox_program->link());
+    GLCHK(skybox_program->bind());
+    skybox_program->setUniformValue("texEnv" , 0);
+
+
+    // loading enviromental shader
+    qDebug() << "Loading enviromental shader (vertex shader)";
+    vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
+    vshader->compileSourceFile(":/content/env.vert");
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    else qDebug() << "done";
+
+    qDebug() << "Loading enviromental shader (geometry shader)";
+    gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
+    gshader->compileSourceFile(":/content/env.geom");
+    if (!gshader->log().isEmpty()) qDebug() << gshader->log();
+    else qDebug() << "done";
+
+    qDebug() << "Loading enviromental shader (fragment shader)";
+    fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
+    fshader->compileSourceFile(":/content/env.frag");
+    if (!fshader->log().isEmpty()) qDebug() << fshader->log();
+    else qDebug() << "done";
+
+    env_program = new QOpenGLShaderProgram(this);
+    env_program->addShader(vshader);
+    env_program->addShader(gshader);
+    env_program->addShader(fshader);
+
+    GLCHK(env_program->link());
+    GLCHK(env_program->bind());
+    env_program->setUniformValue("texEnv" , 0);
+
+    delete vshader;
+    delete fshader;
+    delete gshader;
+
+
     camera.position.setZ( -0 );
     camera.toggleFreeCamera(false);
 
-    mesh = new Mesh("models/","Cube.obj");
+    lightDirection.position.setZ(0);
+    lightDirection.toggleFreeCamera(false);
+    lightDirection.radius = 1;
+
+    mesh        = new Mesh("models/","Cube.obj");
+    skybox_mesh = new Mesh("models/","sky_cube.obj");
+    env_mesh    = new Mesh("models/","sky_cube_env.obj");
+
+
+    chooseSkyBox("SaintLazarusChurch");
+
+    m_prefiltered_env_map = new GLTextureCube(256);
     emit readyGL();
 }
 
 void GLWidget::paintGL()
 {
+    // setting the camera viewpoint
+    viewMatrix = camera.updateCamera();
+
+
     GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+    GLCHK( glDisable(GL_CULL_FACE) );
+    projectionMatrix.setToIdentity();
+    projectionMatrix.perspective(zoom,ratio,0.1,350.0);
+
+    // ---------------------------------------------------------
+    // Drawing skybox
+    // ---------------------------------------------------------
+    skybox_program->bind();
+
+    objectMatrix.setToIdentity();
+    if(skybox_mesh->isLoaded()){
+        objectMatrix.translate(camera.position);
+        objectMatrix.scale(150.0);
+    }
+    modelViewMatrix         = viewMatrix * objectMatrix;
+    NormalMatrix            = modelViewMatrix.normalMatrix();
+
+
+
+    glDisable(GL_DEPTH_TEST); // disable depth
+
+    GLCHK( skybox_program->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );
+    GLCHK( skybox_program->setUniformValue("NormalMatrix"          , NormalMatrix) );
+    GLCHK( skybox_program->setUniformValue("ModelMatrix"           , objectMatrix) );
+    GLCHK( skybox_program->setUniformValue("ProjectionMatrix"      , projectionMatrix) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( m_env_map->bind());
+    GLCHK( skybox_mesh->drawMesh(true) );
+
+
+    // ---------------------------------------------------------
+    // Drawing env
+    // ---------------------------------------------------------
+    bakeEnviromentalMaps();
+
+    // ---------------------------------------------------------
+    // Drawing model
+    // ---------------------------------------------------------
     GLCHK( glEnable(GL_CULL_FACE) );
     GLCHK( glEnable(GL_DEPTH_TEST) );
     GLCHK( glCullFace(GL_FRONT) );
-
     GLCHK( program->bind() );
-    projectionMatrix.setToIdentity();
-    projectionMatrix.perspective(zoom,ratio,0.1,100.0);
+
     GLCHK( program->setUniformValue("ProjectionMatrix", projectionMatrix) );
 
     objectMatrix.setToIdentity();
@@ -243,13 +360,17 @@ void GLWidget::paintGL()
         objectMatrix.translate(-mesh->centre_of_mass);
     }
     modelViewMatrix = camera.updateCamera()*objectMatrix;
-    QMatrix3x3 NormalMatrix = modelViewMatrix.normalMatrix();
+    NormalMatrix = modelViewMatrix.normalMatrix();
     float mesh_scale = 0.5/mesh->radius;
+
     GLCHK( program->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );    
     GLCHK( program->setUniformValue("NormalMatrix"          , NormalMatrix) );
+    GLCHK( program->setUniformValue("ModelMatrix"           , objectMatrix) );
     GLCHK( program->setUniformValue("meshScale"             , mesh_scale) );
-    GLCHK( program->setUniformValue("lightPos"              , lightPosition) );    
-    GLCHK( program->setUniformValue("cameraPos"             , cursorPositionOnPlane) );
+    GLCHK( program->setUniformValue("lightPos"              , lightPosition) );
+
+    GLCHK( program->setUniformValue("lightDirection"        , lightDirection.direction) );
+    GLCHK( program->setUniformValue("cameraPos"             , camera.get_position()) );
     GLCHK( program->setUniformValue("gui_depthScale"        , depthScale) );
     GLCHK( program->setUniformValue("gui_uvScale"           , uvScale) );
     GLCHK( program->setUniformValue("gui_uvScaleOffset"     , uvOffset) );
@@ -281,15 +402,52 @@ void GLWidget::paintGL()
         GLCHK( glActiveTexture(GL_TEXTURE4) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[4]))->texture()) );
 
-
+        GLCHK( glActiveTexture(GL_TEXTURE5) );
+        GLCHK(m_prefiltered_env_map->bind());
+        GLCHK( glActiveTexture(GL_TEXTURE6) );
+        GLCHK(m_env_map->bind());
         GLCHK( mesh->drawMesh() );
 
         // set default active texture
         glActiveTexture(GL_TEXTURE0);
     }
+
+
+
     GLCHK( glDisable(GL_CULL_FACE) );
     emit renderGL();
 
+}
+
+void GLWidget::bakeEnviromentalMaps(){
+    if(bDiffuseMapBaked) return;
+    bDiffuseMapBaked = true;
+    // ---------------------------------------------------------
+    // Drawing env - one pass method
+    // ---------------------------------------------------------
+    env_program->bind();
+    m_prefiltered_env_map->bindFBO();
+    glViewport(0,0,256,256);
+
+    objectMatrix.setToIdentity();
+    objectMatrix.scale(1.0);
+    objectMatrix.rotate(90.0,1,0,0);
+
+    modelViewMatrix         = viewMatrix * objectMatrix;
+    NormalMatrix            = modelViewMatrix.normalMatrix();
+
+
+    GLCHK( env_program->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );
+    GLCHK( env_program->setUniformValue("NormalMatrix"          , NormalMatrix) );
+    GLCHK( env_program->setUniformValue("ModelMatrix"           , objectMatrix) );
+    GLCHK( env_program->setUniformValue("ProjectionMatrix"      , projectionMatrix) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( m_env_map->bind());
+    GLCHK( env_mesh->drawMesh(true) );
+
+    glBindFramebuffer   (GL_FRAMEBUFFER, 0);
+
+    glViewport(0, 0, width(), height()) ;
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -360,6 +518,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         //camera.position += QVector3D(0,dy/500.0,0)*camera.radius;
     } else if (event->buttons() & Qt::MiddleButton) {
         lightPosition += QVector4D(0.05*dx,-0.05*dy,-0,0);
+        lightDirection.rotateView(dx/1.0,dy/1.0);
     }
     lastPos = event->pos();
     updateGL();
@@ -456,4 +615,19 @@ bool GLWidget::loadMeshFile(const QString &fileName, bool bAddExtension)
 
 void GLWidget::chooseMeshFile(const QString &fileName){
     loadMeshFile(fileName,true);
+}
+
+
+void GLWidget::chooseSkyBox(QString cubeMapName){
+    QStringList list;
+    makeCurrent();
+    list << "content/skyboxes/" + cubeMapName + "/posx.jpg" << "content/skyboxes/" + cubeMapName  + "/negx.jpg" << "content/skyboxes/" + cubeMapName + "/posy.jpg"
+         << "content/skyboxes/" + cubeMapName + "/negy.jpg" << "content/skyboxes/" + cubeMapName  + "/posz.jpg" << "content/skyboxes/" + cubeMapName + "/negz.jpg";
+
+
+    qDebug() << "Reading new cube map:" << list;
+    bDiffuseMapBaked = false;
+    if(m_env_map != NULL) delete m_env_map;
+    m_env_map = new GLTextureCube(list);
+
 }

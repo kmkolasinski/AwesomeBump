@@ -15,7 +15,8 @@ HEADERS       = glwidget.h \
     utils/Mesh.hpp \
     utils/tinyobj/tiny_obj_loader.h \
     formsettingsfield.h \
-    formsettingscontainer.h
+    formsettingscontainer.h \
+    utils/qglbuffers.h
 
 SOURCES       = glwidget.cpp \
                 main.cpp \
@@ -28,7 +29,8 @@ SOURCES       = glwidget.cpp \
     utils/Mesh.cpp \
     utils/tinyobj/tiny_obj_loader.cc \
     formsettingsfield.cpp \
-    formsettingscontainer.cpp
+    formsettingscontainer.cpp \
+    utils/qglbuffers.cpp
 
 
 # install

@@ -89,13 +89,10 @@ int main(int argc, char *argv[])
     // No...
     QString guiStyle = settings.value("gui_style","DefaultAwesomeStyle").toString();
     app.setStyle(QStyleFactory::create( guiStyle ));
-    //setlocale(LC_NUMERIC,"en_US");
+
 
     // removing old log file
-    QFile outFile("log.txt");
-    outFile.open(QIODevice::WriteOnly);
-    outFile.remove();
-    outFile.close();
+    QFile::remove("log.txt");
 
 
     qInstallMessageHandler(customMessageHandler);

@@ -26,6 +26,8 @@
     #define AB_LOG_ALT "log.txt"
 #endif
 
+#define AWESOME_BUMP_VERSION "AwesomeBump v3.0"
+
 namespace Ui {
 class MainWindow;
 }
