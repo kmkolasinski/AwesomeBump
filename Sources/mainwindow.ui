@@ -81,8 +81,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>349</width>
-             <height>612</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -134,8 +134,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>349</width>
-             <height>612</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -187,8 +187,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>349</width>
-             <height>612</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -240,8 +240,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>349</width>
-             <height>612</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -293,8 +293,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>349</width>
-             <height>612</height>
+             <width>358</width>
+             <height>622</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -344,10 +344,10 @@
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>15</x>
+             <x>28</x>
              <y>0</y>
              <width>300</width>
-             <height>600</height>
+             <height>574</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -1169,8 +1169,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>352</width>
-             <height>594</height>
+             <width>356</width>
+             <height>620</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -2164,6 +2164,11 @@
                <string>Yokohama</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>White</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>
@@ -2195,7 +2200,7 @@
      <x>0</x>
      <y>0</y>
      <width>1094</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2468,4 +2473,3 @@
   </connection>
  </connections>
 </ui>
-

@@ -50,13 +50,12 @@ vec4 PBR_Diffuse(vec3 surfaceColor,samplerCube texDiffuseEnv,
 void main( void )
 {
 
-	
-    FragColor = PBR_Diffuse(vec3(1),
-                            texEnv,
-                            WSPosition,
-                            normalize(WSNormal),
-                            normalize(WSTangent),
-                            normalize(WSBitangent));
-							
 
+    FragColor = PBR_Diffuse(vec3(1),
+                        texEnv,
+                        WSPosition,
+                        normalize(WSNormal),
+                        normalize(WSTangent),
+                        normalize(WSBitangent));
+							
 }

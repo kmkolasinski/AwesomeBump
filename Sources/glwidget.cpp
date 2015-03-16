@@ -441,6 +441,7 @@ void GLWidget::bakeEnviromentalMaps(){
     GLCHK( env_program->setUniformValue("NormalMatrix"          , NormalMatrix) );
     GLCHK( env_program->setUniformValue("ModelMatrix"           , objectMatrix) );
     GLCHK( env_program->setUniformValue("ProjectionMatrix"      , projectionMatrix) );
+
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( m_env_map->bind());
     GLCHK( env_mesh->drawMesh(true) );
@@ -627,9 +628,14 @@ void GLWidget::chooseSkyBox(QString cubeMapName){
 
 
     qDebug() << "Reading new cube map:" << list;
-    bDiffuseMapBaked = false;
+    bDiffuseMapBaked     = false;
+
     if(m_env_map != NULL) delete m_env_map;
-    m_env_map = new GLTextureCube(list);
+    m_env_map     = new GLTextureCube(list);
+
+    if(m_env_map->failed()){
+        qWarning() << "Cannot load cube map: check if images listed above exist.";
+    }
 
 }
 

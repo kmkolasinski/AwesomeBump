@@ -114,7 +114,8 @@ private:
     int glhUnProjectf(float &winx, float &winy, float &winz,
                       QMatrix4x4 &modelview, QMatrix4x4 &projection,
                       QVector4D& objectCoordinate);
-    void bakeEnviromentalMaps();
+
+    void bakeEnviromentalMaps(); // calculate prefiltered enviromental map
     QOpenGLShaderProgram *program;    
     QOpenGLShaderProgram *skybox_program;
     QOpenGLShaderProgram *env_program;
@@ -158,6 +159,7 @@ private:
     GLTextureCube* m_env_map; // orginal cube map
     GLTextureCube* m_prefiltered_env_map; // filtered lambertian cube map
     bool bDiffuseMapBaked; // prevent program from calculating diffuse env. map many times
+
 public:
     static QDir* recentMeshDir;
 };
