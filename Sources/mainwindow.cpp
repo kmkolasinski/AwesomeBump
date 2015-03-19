@@ -382,6 +382,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     settings.setValue("d_win_h",this->height());
     settings.setValue("recent_dir",recentDir.absolutePath());
     settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
+    settings.setValue("gui_style",ui->comboBoxGUIStyle->currentText());
 
     settingsContainer->close();
     glWidget->close();
