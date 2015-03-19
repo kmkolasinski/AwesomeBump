@@ -18,6 +18,8 @@ enum TextureTypes{
     SPECULAR_TEXTURE,
     HEIGHT_TEXTURE,
     OCCLUSION_TEXTURE,
+    ROUGHNESS_TEXTURE,
+    METALLIC_TEXTURE,
     MAX_TEXTURES_TYPE
 };
 
@@ -55,7 +57,11 @@ enum CompressedFromTypes{
     S_TO_D_AND_H_TO_N = 1
 };
 
-
+// Selective blur methods
+enum SelectiveBlurType{
+    SELECTIVE_BLUR_DIFFERENCE_OF_GAUSSIANS = 0,
+    SELECTIVE_BLUR_LEVELS
+};
 
 enum TargaColorFormat{
     TARGA_BGR=0,
@@ -100,6 +106,8 @@ public:
     static    QString   specularName;
     static    QString   heightName;
     static    QString   occlusionName;
+    static    QString   roughnessName;
+    static    QString   metallicName;
     static    QString   outputFormat;
 
     static QString getPostfix(TextureTypes tType){
@@ -118,6 +126,12 @@ public:
                 break;
             case(OCCLUSION_TEXTURE  ):
                 return occlusionName;
+                break;
+            case(ROUGHNESS_TEXTURE  ):
+                return roughnessName;
+                break;
+            case(METALLIC_TEXTURE  ):
+                return metallicName;
                 break;
             default: return diffuseName;
         }
@@ -138,6 +152,12 @@ public:
                 break;
             case(OCCLUSION_TEXTURE  ):
                 return "occlusion";
+                break;
+            case(ROUGHNESS_TEXTURE  ):
+                return "roughness";
+                break;
+            case(METALLIC_TEXTURE  ):
+                return "metallic";
                 break;
             default: return "default-diffuse";
         }
@@ -274,12 +294,14 @@ public:
 
     // Specular settings
     int  noRemoveShadingGaussIter;
+    float aoCancellation;
     int  noBlurPasses;
     bool bSpeclarControl;
     int  specularRadius;
     float specularW1,specularW2,specularContrast,specularAmplifier;
     float specularBrightness;
     // General processing
+    float colorHue;
     float smallDetails;
     float mediumDetails;
     float detailDepth;
@@ -316,6 +338,27 @@ public:
     float heightMinValue;
     float heightMaxValue;
     int   heightAveragingRadius;
+    float heightOffsetValue;
+
+
+    // selective blur variables
+    SelectiveBlurType selectiveBlurType;
+    bool bSelectiveBlurPreviewMask;
+    bool bSelectiveBlurInvertMask;
+    bool bSelectiveBlurEnable;
+
+    float selectiveBlurBlending;
+    int   selectiveBlurMaskRadius;
+    int selectiveBlurDOGRadius;
+    float selectiveBlurDOGConstrast;
+    float selectiveBlurDOGAmplifier;
+    float selectiveBlurDOGOffset;
+
+    float selectiveBlurMinValue;
+    float selectiveBlurMaxValue;
+    int   selectiveBlurDetails;
+    float selectiveBlurOffsetValue;
+
 
     // global settings seamless parameters
     static bool bAttachNormalToHeightMap;
@@ -338,8 +381,10 @@ public:
         scr_tex_id     = 0;
         bRemoveShading = false;
         noRemoveShadingGaussIter = 10;
+        aoCancellation   = 0.0;
 
         bSpeclarControl    = false;
+        colorHue           = 0;
         specularRadius     = 10;
         specularW1         = 0.1;
         specularW2         = 10.0;
@@ -380,9 +425,27 @@ public:
         ssaoDepth     = 0.1;
 
 
-        heightMinValue = 0.0;
-        heightMaxValue = 1.0;
+        heightMinValue        = 0.0;
+        heightMaxValue        = 1.0;
         heightAveragingRadius = 1;
+        heightOffsetValue     = 0.0;
+
+        // selective blur variables
+        selectiveBlurType = SELECTIVE_BLUR_DIFFERENCE_OF_GAUSSIANS;
+        bSelectiveBlurPreviewMask = false;
+        bSelectiveBlurInvertMask  = false;
+        bSelectiveBlurEnable      = false;
+        selectiveBlurBlending     = 0.0;
+        selectiveBlurMaskRadius   = 5 ;
+        selectiveBlurDOGRadius    = 5;
+        selectiveBlurDOGConstrast = 0.05;
+        selectiveBlurDOGAmplifier = 3.0;
+        selectiveBlurDOGOffset    = 0.0;
+
+        selectiveBlurMinValue        = 0.0;
+        selectiveBlurMaxValue        = 1.0;
+        selectiveBlurDetails         = 1.0;
+        selectiveBlurOffsetValue     = 0.0;
 
         seamlessMode = SEAMLESS_NONE;
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>330</width>
-    <height>1731</height>
+    <height>2184</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -372,113 +372,104 @@
        </layout>
       </item>
       <item>
+       <widget class="QGroupBox" name="groupBoxRemoveShading">
+        <property name="title">
+         <string>Remove shading</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_14">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="0" column="1">
+            <widget class="QSlider" name="horizontalSliderRemoveShadingGaussIter">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In case if option &lt;span style=&quot; font-weight:600;&quot;&gt;Remove shading&lt;/span&gt; is enabled it changes the number of iterations to be performed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>15</number>
+             </property>
+             <property name="pageStep">
+              <number>2</number>
+             </property>
+             <property name="value">
+              <number>10</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="label">
+             <property name="minimumSize">
+              <size>
+               <width>30</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>R. shading iters</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_62">
+             <property name="text">
+              <string>Remove AO</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSlider" name="horizontalSliderAOCancelation">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QLabel" name="label_83">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="1" column="2">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>0</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Depth</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_13">
-          <property name="text">
-           <string>Sharpen/Blur</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QSlider" name="horizontalSliderSharpenBlur">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Smooth or sharpen the image (it uses the gaussian distribution  in both cases).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="minimum">
-           <number>-20</number>
-          </property>
-          <property name="maximum">
-           <number>20</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>Medium Details</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>0</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QSlider" name="horizontalSliderMediumDetails">
-          <property name="toolTip">
-           <string>The same as above.</string>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>Small Details</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLabel" name="label_10">
-          <property name="text">
-           <string>0</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QSlider" name="horizontalSliderSmallDetails">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhance small details. This option is connected with &lt;span style=&quot; font-weight:600;&quot;&gt;Depth&lt;/span&gt; scroll bar. &lt;/p&gt;&lt;p&gt;Note that if &lt;span style=&quot; font-weight:600;&quot;&gt;Depth&lt;/span&gt; scroll bar is set to zero, this parameter does not affect the image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
          <widget class="QLabel" name="label_5">
           <property name="text">
            <string>Enhance</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="2">
+        <item row="6" column="2">
          <widget class="QLabel" name="label_12">
           <property name="text">
            <string>0</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="3" column="1">
          <widget class="QSlider" name="horizontalSliderBlurNoPasses">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Basically it works like gamma correction. &lt;/p&gt;&lt;p&gt;Especially useful in case of height texture.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -500,49 +491,7 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>R. shading iters</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QSlider" name="horizontalSliderRemoveShadingGaussIter">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In case if option &lt;span style=&quot; font-weight:600;&quot;&gt;Remove shading&lt;/span&gt; is enabled it changes the number of iterations to be performed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>15</number>
-          </property>
-          <property name="pageStep">
-           <number>2</number>
-          </property>
-          <property name="value">
-           <number>10</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label">
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>0</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
+        <item row="6" column="1">
          <widget class="QSlider" name="horizontalSliderDetailDepth">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It changes the depth of the &lt;span style=&quot; font-weight:600;&quot;&gt;Small details&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;Medium details&lt;/span&gt; effect.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -558,21 +507,21 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="2">
+        <item row="7" column="2">
          <widget class="QLabel" name="label_14">
           <property name="text">
            <string>0</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
+        <item row="8" column="0">
          <widget class="QLabel" name="labelNormalStep">
           <property name="text">
            <string>Normals step</string>
           </property>
          </widget>
         </item>
-        <item row="6" column="1">
+        <item row="8" column="1">
          <widget class="QSlider" name="horizontalSliderNormalsStep">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It changes the steepness of the normal image in %.&lt;/p&gt;&lt;p&gt;For example 100% means that the image is not changed. 0% means that the  image is completely flat.  &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -588,10 +537,128 @@
           </property>
          </widget>
         </item>
-        <item row="6" column="2">
+        <item row="8" column="2">
          <widget class="QLabel" name="labelNormalStepValue">
           <property name="text">
            <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSlider" name="horizontalSliderColorHue">
+          <property name="minimum">
+           <number>-180</number>
+          </property>
+          <property name="maximum">
+           <number>180</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="labelHueValue">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelHue">
+          <property name="text">
+           <string>Hue</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Depth</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>Sharpen/Blur</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QSlider" name="horizontalSliderSharpenBlur">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Smooth or sharpen the image (it uses the gaussian distribution  in both cases).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="minimum">
+           <number>-20</number>
+          </property>
+          <property name="maximum">
+           <number>20</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Medium Details</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QSlider" name="horizontalSliderMediumDetails">
+          <property name="toolTip">
+           <string>The same as above.</string>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Small Details</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QSlider" name="horizontalSliderSmallDetails">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhance small details. This option is connected with &lt;span style=&quot; font-weight:600;&quot;&gt;Depth&lt;/span&gt; scroll bar. &lt;/p&gt;&lt;p&gt;Note that if &lt;span style=&quot; font-weight:600;&quot;&gt;Depth&lt;/span&gt; scroll bar is set to zero, this parameter does not affect the image.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
@@ -618,13 +685,76 @@
           </property>
          </widget>
         </item>
+        <item row="2" column="1">
+         <widget class="QSlider" name="horizontalSliderHeightAveRadius">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="pageStep">
+           <number>0</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="1">
          <widget class="QSlider" name="horizontalSliderHeightProcMinValue">
           <property name="maximum">
            <number>200</number>
           </property>
+          <property name="pageStep">
+           <number>0</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="labelHeightProcMaxValue">
+          <property name="text">
+           <string>1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_52">
+          <property name="text">
+           <string>1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_50">
+          <property name="text">
+           <string>Details</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QSlider" name="horizontalSliderHeightProcMaxValue">
+          <property name="maximum">
+           <number>200</number>
+          </property>
+          <property name="pageStep">
+           <number>0</number>
+          </property>
+          <property name="value">
+           <number>200</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_51">
+          <property name="text">
+           <string>Max value</string>
           </property>
          </widget>
         </item>
@@ -641,57 +771,33 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_51">
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_35">
           <property name="text">
-           <string>Max value</string>
+           <string>Offset</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QSlider" name="horizontalSliderHeightProcMaxValue">
-          <property name="maximum">
-           <number>200</number>
-          </property>
-          <property name="value">
-           <number>200</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLabel" name="labelHeightProcMaxValue">
-          <property name="text">
-           <string>1</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_50">
-          <property name="text">
-           <string>Details</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QSlider" name="horizontalSliderHeightAveRadius">
+        <item row="3" column="1">
+         <widget class="QSlider" name="horizontalSliderHeightOffsetValue">
           <property name="minimum">
-           <number>1</number>
+           <number>-100</number>
           </property>
           <property name="maximum">
            <number>100</number>
           </property>
+          <property name="pageStep">
+           <number>0</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_52">
+        <item row="3" column="2">
+         <widget class="QLabel" name="label_61">
           <property name="text">
-           <string>1</string>
+           <string>0</string>
           </property>
          </widget>
         </item>
@@ -749,7 +855,7 @@
            <bool>true</bool>
           </property>
           <property name="maximum">
-           <double>20.000000000000000</double>
+           <double>50.000000000000000</double>
           </property>
           <property name="singleStep">
            <double>0.010000000000000</double>
@@ -771,7 +877,7 @@
            <bool>true</bool>
           </property>
           <property name="maximum">
-           <double>20.000000000000000</double>
+           <double>50.000000000000000</double>
           </property>
           <property name="singleStep">
            <double>0.010000000000000</double>
@@ -803,7 +909,7 @@
            <number>0</number>
           </property>
           <property name="maximum">
-           <double>20.000000000000000</double>
+           <double>50.000000000000000</double>
           </property>
           <property name="singleStep">
            <double>1.000000000000000</double>
@@ -1022,6 +1128,407 @@
          </widget>
         </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxSelectiveBlur">
+     <property name="title">
+      <string>Selective bluring</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_10">
+      <item>
+       <widget class="QCheckBox" name="checkBoxSelectiveBlurEnable">
+        <property name="text">
+         <string>Enable masking</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBoxSelectiveBlurOptions">
+        <property name="title">
+         <string>Options</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_13">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <layout class="QGridLayout" name="gridLayout_15">
+           <item row="2" column="4">
+            <widget class="QLabel" name="label_63">
+             <property name="minimumSize">
+              <size>
+               <width>30</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="QSlider" name="horizontalSliderSelectiveBlurBlending">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="label_64">
+             <property name="text">
+              <string>Blending</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="label_65">
+             <property name="text">
+              <string>Mask radius</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QSlider" name="horizontalSliderSelectiveBlurMaskRadius">
+             <property name="maximum">
+              <number>50</number>
+             </property>
+             <property name="value">
+              <number>5</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="4">
+            <widget class="QLabel" name="label_66">
+             <property name="text">
+              <string>5</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QCheckBox" name="checkBoxSelectiveBlurInvertMask">
+             <property name="text">
+              <string>Invert </string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QComboBox" name="comboBoxSelectiveBlurTypes">
+             <item>
+              <property name="text">
+               <string>Difference of gaussians</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Levels</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="1" column="4">
+            <widget class="QPushButton" name="pushButtonSelectiveBlurPreviewMask">
+             <property name="text">
+              <string>Preview mask</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBoxSelectiveBlurDOG">
+           <property name="title">
+            <string>DOG mask</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <item>
+             <layout class="QGridLayout" name="gridLayout_14">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_67">
+                <property name="text">
+                 <string>Radius</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QSlider" name="horizontalSliderSelectiveBlurDOGRadius">
+                <property name="maximum">
+                 <number>50</number>
+                </property>
+                <property name="pageStep">
+                 <number>0</number>
+                </property>
+                <property name="value">
+                 <number>5</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="label_68">
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>5</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_69">
+                <property name="text">
+                 <string>Contrast</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QSlider" name="horizontalSliderSelectiveBlurDOGContrast">
+                <property name="minimum">
+                 <number>-100</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="pageStep">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="label_70">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_71">
+                <property name="text">
+                 <string>Amplifier</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QSlider" name="horizontalSliderSelectiveBlurDOGAmplifier">
+                <property name="minimum">
+                 <number>-100</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="pageStep">
+                 <number>0</number>
+                </property>
+                <property name="value">
+                 <number>-30</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLabel" name="label_72">
+                <property name="text">
+                 <string>-30</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_73">
+                <property name="text">
+                 <string>Offset</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QSlider" name="horizontalSliderSelectiveBlurDOGOffset">
+                <property name="minimum">
+                 <number>-255</number>
+                </property>
+                <property name="maximum">
+                 <number>255</number>
+                </property>
+                <property name="pageStep">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLabel" name="label_74">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBoxSelectiveBlurLevels">
+           <property name="title">
+            <string>Levels mask</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <layout class="QGridLayout" name="gridLayout_16">
+              <item row="0" column="2">
+               <widget class="QLabel" name="label_76">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_75">
+                <property name="text">
+                 <string>Min. value</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_77">
+                <property name="text">
+                 <string>Max. value</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="label_78">
+                <property name="text">
+                 <string>255</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QSlider" name="horizontalSliderSelectiveBlurMinValue">
+                <property name="maximum">
+                 <number>255</number>
+                </property>
+                <property name="pageStep">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QSlider" name="horizontalSliderSelectiveBlurMaxValue">
+                <property name="maximum">
+                 <number>255</number>
+                </property>
+                <property name="pageStep">
+                 <number>0</number>
+                </property>
+                <property name="value">
+                 <number>255</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_79">
+                <property name="text">
+                 <string>Details</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLabel" name="label_80">
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QSlider" name="horizontalSliderSelectiveBlurDetails">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="pageStep">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_81">
+                <property name="text">
+                 <string>Offset</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QSlider" name="horizontalSliderSelectiveBlurOffset">
+                <property name="minimum">
+                 <number>-255</number>
+                </property>
+                <property name="maximum">
+                 <number>255</number>
+                </property>
+                <property name="pageStep">
+                 <number>0</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLabel" name="label_82">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -1824,12 +2331,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>334</y>
+     <x>263</x>
+     <y>349</y>
     </hint>
     <hint type="destinationlabel">
-     <x>309</x>
-     <y>334</y>
+     <x>299</x>
+     <y>349</y>
     </hint>
    </hints>
   </connection>
@@ -1840,12 +2347,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>359</y>
+     <x>269</x>
+     <y>454</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>359</y>
+     <y>454</y>
     </hint>
    </hints>
   </connection>
@@ -1856,12 +2363,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>384</y>
+     <x>269</x>
+     <y>479</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>384</y>
+     <y>479</y>
     </hint>
    </hints>
   </connection>
@@ -1872,12 +2379,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>409</y>
+     <x>269</x>
+     <y>504</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>409</y>
+     <y>504</y>
     </hint>
    </hints>
   </connection>
@@ -1888,12 +2395,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>434</y>
+     <x>269</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>434</y>
+     <y>529</y>
     </hint>
    </hints>
   </connection>
@@ -1904,12 +2411,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>459</y>
+     <x>269</x>
+     <y>554</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>459</y>
+     <y>554</y>
     </hint>
    </hints>
   </connection>
@@ -1920,12 +2427,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1213</y>
+     <x>273</x>
+     <y>1759</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1213</y>
+     <y>1759</y>
     </hint>
    </hints>
   </connection>
@@ -1936,12 +2443,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
-     <y>484</y>
+     <x>269</x>
+     <y>579</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>484</y>
+     <y>579</y>
     </hint>
    </hints>
   </connection>
@@ -1952,12 +2459,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1500</y>
+     <x>273</x>
+     <y>2046</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1500</y>
+     <y>2046</y>
     </hint>
    </hints>
   </connection>
@@ -1968,12 +2475,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1525</y>
+     <x>273</x>
+     <y>2071</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1525</y>
+     <y>2071</y>
     </hint>
    </hints>
   </connection>
@@ -1984,12 +2491,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1450</y>
+     <x>273</x>
+     <y>1996</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1450</y>
+     <y>1996</y>
     </hint>
    </hints>
   </connection>
@@ -2000,12 +2507,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1425</y>
+     <x>273</x>
+     <y>1971</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1425</y>
+     <y>1971</y>
     </hint>
    </hints>
   </connection>
@@ -2016,12 +2523,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1475</y>
+     <x>273</x>
+     <y>2021</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1475</y>
+     <y>2021</y>
     </hint>
    </hints>
   </connection>
@@ -2033,11 +2540,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>310</x>
-     <y>1399</y>
+     <y>1947</y>
     </hint>
     <hint type="destinationlabel">
      <x>310</x>
-     <y>1605</y>
+     <y>2153</y>
     </hint>
    </hints>
   </connection>
@@ -2049,11 +2556,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>310</x>
-     <y>1143</y>
+     <y>1691</y>
     </hint>
     <hint type="destinationlabel">
      <x>310</x>
-     <y>1343</y>
+     <y>1891</y>
     </hint>
    </hints>
   </connection>
@@ -2065,11 +2572,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>310</x>
-     <y>1027</y>
+     <y>1575</y>
     </hint>
     <hint type="destinationlabel">
      <x>310</x>
-     <y>1087</y>
+     <y>1635</y>
     </hint>
    </hints>
   </connection>
@@ -2080,12 +2587,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1188</y>
+     <x>273</x>
+     <y>1735</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1188</y>
+     <y>1735</y>
     </hint>
    </hints>
   </connection>
@@ -2096,12 +2603,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1238</y>
+     <x>273</x>
+     <y>1785</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1238</y>
+     <y>1785</y>
     </hint>
    </hints>
   </connection>
@@ -2112,12 +2619,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1263</y>
+     <x>273</x>
+     <y>1809</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1263</y>
+     <y>1809</y>
     </hint>
    </hints>
   </connection>
@@ -2128,12 +2635,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1288</y>
+     <x>273</x>
+     <y>1835</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1288</y>
+     <y>1835</y>
     </hint>
    </hints>
   </connection>
@@ -2144,12 +2651,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>278</x>
-     <y>1313</y>
+     <x>273</x>
+     <y>1859</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>1313</y>
+     <y>1859</y>
     </hint>
    </hints>
   </connection>
@@ -2161,11 +2668,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>263</x>
-     <y>594</y>
+     <y>685</y>
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>594</y>
+     <y>685</y>
     </hint>
    </hints>
   </connection>
@@ -2181,7 +2688,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>309</x>
-     <y>282</y>
+     <y>204</y>
     </hint>
    </hints>
   </connection>
@@ -2192,12 +2699,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>272</x>
-     <y>221</y>
+     <x>262</x>
+     <y>205</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
-     <y>221</y>
+     <y>205</y>
     </hint>
    </hints>
   </connection>
@@ -2208,12 +2715,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>272</x>
-     <y>246</y>
+     <x>262</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
-     <y>246</y>
+     <y>230</y>
     </hint>
    </hints>
   </connection>
@@ -2224,12 +2731,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>272</x>
-     <y>271</y>
+     <x>262</x>
+     <y>255</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
-     <y>271</y>
+     <y>255</y>
     </hint>
    </hints>
   </connection>
@@ -2240,12 +2747,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>115</x>
-     <y>1027</y>
+     <x>153</x>
+     <y>1575</y>
     </hint>
     <hint type="destinationlabel">
-     <x>122</x>
-     <y>1004</y>
+     <x>160</x>
+     <y>1552</y>
     </hint>
    </hints>
   </connection>
@@ -2256,12 +2763,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>262</x>
-     <y>1541</y>
+     <x>273</x>
+     <y>2096</y>
     </hint>
     <hint type="destinationlabel">
-     <x>294</x>
-     <y>1541</y>
+     <x>309</x>
+     <y>2096</y>
     </hint>
    </hints>
   </connection>
@@ -2272,12 +2779,252 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>261</x>
-     <y>1566</y>
+     <x>273</x>
+     <y>2120</y>
     </hint>
     <hint type="destinationlabel">
-     <x>294</x>
-     <y>1567</y>
+     <x>309</x>
+     <y>2120</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderHeightOffsetValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_61</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>263</x>
+     <y>710</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>710</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurBlending</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_63</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>1063</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>232</x>
+     <y>1063</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurMaskRadius</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_66</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>1080</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>230</x>
+     <y>1087</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurDOGRadius</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_68</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>253</x>
+     <y>1131</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>262</x>
+     <y>1130</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurDOGContrast</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_70</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>252</x>
+     <y>1152</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>261</x>
+     <y>1152</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurDOGAmplifier</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_72</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>253</x>
+     <y>1177</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>265</x>
+     <y>1178</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurDOGOffset</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_74</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>253</x>
+     <y>1205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>265</x>
+     <y>1205</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurMinValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_76</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>265</x>
+     <y>1257</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>277</x>
+     <y>1256</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurMaxValue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_78</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>235</x>
+     <y>1283</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>279</x>
+     <y>1283</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurDetails</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_80</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>265</x>
+     <y>1301</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>280</x>
+     <y>1301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderSelectiveBlurOffset</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_82</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>265</x>
+     <y>1332</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>275</x>
+     <y>1332</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxSelectiveBlurEnable</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBoxSelectiveBlurOptions</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>28</x>
+     <y>991</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>42</x>
+     <y>1010</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderColorHue</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>labelHueValue</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>223</x>
+     <y>419</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>422</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderAOCancelation</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_83</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>218</x>
+     <y>377</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>284</x>
+     <y>376</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxRemoveShading</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBoxRemoveShading</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>61</x>
+     <y>139</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>52</x>
+     <y>338</y>
     </hint>
    </hints>
   </connection>

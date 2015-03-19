@@ -17,7 +17,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->checkBoxRemoveShading,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
     connect(ui->checkBoxGrayScale,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
     // gray scale properties
-    connect(ui->comboBoxGrayScalePresets,SIGNAL(activated(int)),this,SLOT(updateGrayScalePreset(int)));
+    connect(ui->comboBoxGrayScalePresets,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
     connect(ui->horizontalSliderGrayScaleR,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderGrayScaleG,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderGrayScaleB,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
@@ -28,10 +28,13 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->checkBoxInvertG,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
     // standard enchancement
     connect(ui->horizontalSliderRemoveShadingGaussIter,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderAOCancelation         ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+
     connect(ui->horizontalSliderBlurNoPasses          ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderSmallDetails          ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderMediumDetails         ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderDetailDepth           ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderColorHue              ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
 
     // specular manipulation tool
     connect(ui->checkBoxSpecularControl             ,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
@@ -101,15 +104,42 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderHeightProcMinValue,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));    
     connect(ui->horizontalSliderHeightProcMaxValue,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderHeightAveRadius   ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderHeightOffsetValue ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
 
     connect(ui->horizontalSliderHeightProcMinValue,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
     connect(ui->horizontalSliderHeightProcMaxValue,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
     connect(ui->horizontalSliderHeightAveRadius   ,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
 
-    setAcceptDrops(true);
+    // selective blur buttons and sliders
+    connect(ui->pushButtonSelectiveBlurPreviewMask,SIGNAL(released()),this,SLOT(updateGuiCheckBoxes()));
+    connect(ui->checkBoxSelectiveBlurInvertMask,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+    connect(ui->checkBoxSelectiveBlurEnable,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
 
+    connect(ui->comboBoxSelectiveBlurTypes,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
+
+    connect(ui->horizontalSliderSelectiveBlurBlending,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderSelectiveBlurMaskRadius,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderSelectiveBlurDOGAmplifier,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderSelectiveBlurDOGContrast,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderSelectiveBlurDOGOffset,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderSelectiveBlurDOGRadius,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+
+    connect(ui->horizontalSliderSelectiveBlurMinValue,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderSelectiveBlurMaxValue,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderSelectiveBlurDetails,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderSelectiveBlurOffset,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+
+    setAcceptDrops(true);
+    ui->groupBoxRemoveShading->hide();
+    ui->checkBoxRemoveShading->hide();
     ui->groupBoxGrayScale->hide();
+    ui->groupBoxSelectiveBlurOptions->setDisabled(true);
+    ui->groupBoxSelectiveBlurLevels->hide();
     heightCalculator = new DialogHeightCalculator;
+
+    ui->labelHue->hide();
+    ui->labelHueValue->hide();
+    ui->horizontalSliderColorHue->hide();
 
 }
 
@@ -260,7 +290,8 @@ void FormImageProp::setSpecularControlChecked(){
     ui->checkBoxSpecularControl->setChecked(true);
 }
 
-void FormImageProp::updateGrayScalePreset(int index){
+void FormImageProp::updateComboBoxes(int index){
+    index = ui->comboBoxGrayScalePresets->currentIndex();
     switch(index){
         case(0):
         imageProp.grayScalePreset.mode1();
@@ -270,11 +301,29 @@ void FormImageProp::updateGrayScalePreset(int index){
         break;
         default:break;
     };
+
+    // updating selective blur groupboxes
+    imageProp.selectiveBlurType = (SelectiveBlurType) ui->comboBoxSelectiveBlurTypes->currentIndex();
+
+    switch(imageProp.selectiveBlurType){
+        case(SELECTIVE_BLUR_DIFFERENCE_OF_GAUSSIANS):
+            ui->groupBoxSelectiveBlurLevels->hide();
+            ui->groupBoxSelectiveBlurDOG->show();
+        break;
+        case(SELECTIVE_BLUR_LEVELS):
+            ui->groupBoxSelectiveBlurLevels->show();
+            ui->groupBoxSelectiveBlurDOG->hide();
+        break;
+    };
+
     bLoading = true;
     ui->horizontalSliderGrayScaleR->setValue(imageProp.grayScalePreset.R*255);
     ui->horizontalSliderGrayScaleG->setValue(imageProp.grayScalePreset.G*255);
     ui->horizontalSliderGrayScaleB->setValue(imageProp.grayScalePreset.B*255);
     bLoading = false;
+
+
+
 
     emit imageChanged();
 }
@@ -302,10 +351,13 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
     imageProp.specularBrightness= ui->doubleSpinBoxSpecularBrightness->value();
 
     imageProp.noRemoveShadingGaussIter = ui->horizontalSliderRemoveShadingGaussIter->value();
+    imageProp.aoCancellation            = ui->horizontalSliderAOCancelation->value()/100.0;
 
     imageProp.noBlurPasses      = ui->horizontalSliderBlurNoPasses ->value();
     imageProp.smallDetails      = ui->horizontalSliderSmallDetails ->value()/100.0;
     imageProp.mediumDetails     = ui->horizontalSliderMediumDetails->value()/100.0;
+    imageProp.colorHue          = ui->horizontalSliderColorHue->value()/180.0;
+
 
     imageProp.detailDepth       = ui->horizontalSliderDetailDepth->value()/20.0;
     imageProp.sharpenBlurAmount = ui->horizontalSliderSharpenBlur->value();
@@ -341,9 +393,24 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
     imageProp.heightMinValue        = ui->horizontalSliderHeightProcMinValue->value()/200.0;
     imageProp.heightMaxValue        = ui->horizontalSliderHeightProcMaxValue->value()/200.0;
     imageProp.heightAveragingRadius = ui->horizontalSliderHeightAveRadius->value();
+    imageProp.heightOffsetValue     = ui->horizontalSliderHeightOffsetValue->value()/100.0;
 
     ui->labelHeightProcMinValue->setText(QString::number(imageProp.heightMinValue));
     ui->labelHeightProcMaxValue->setText(QString::number(imageProp.heightMaxValue));
+
+
+    // selective blur
+    imageProp.selectiveBlurBlending     = ui->horizontalSliderSelectiveBlurBlending->value()/100.0;
+    imageProp.selectiveBlurMaskRadius   = ui->horizontalSliderSelectiveBlurMaskRadius->value() ;
+    imageProp.selectiveBlurDOGRadius    = ui->horizontalSliderSelectiveBlurDOGRadius->value();
+    imageProp.selectiveBlurDOGConstrast = ui->horizontalSliderSelectiveBlurDOGContrast->value()/100.0;
+    imageProp.selectiveBlurDOGAmplifier = ui->horizontalSliderSelectiveBlurDOGAmplifier->value()/10.0;
+    imageProp.selectiveBlurDOGOffset    = ui->horizontalSliderSelectiveBlurDOGOffset->value()/255.0;
+
+    imageProp.selectiveBlurMinValue        = ui->horizontalSliderSelectiveBlurMinValue->value()/255.0;
+    imageProp.selectiveBlurMaxValue        = ui->horizontalSliderSelectiveBlurMaxValue->value()/255.0;
+    imageProp.selectiveBlurDetails         = ui->horizontalSliderSelectiveBlurDetails->value();
+    imageProp.selectiveBlurOffsetValue     = ui->horizontalSliderSelectiveBlurOffset->value()/255.0;
 
 }
 
@@ -368,6 +435,9 @@ void FormImageProp::updateGuiCheckBoxes(){
     imageProp.bConversionNH         = ui->checkBoxEnableNormalToHeight->isChecked();
     imageProp.bConversionBaseMap    = ui->checkBoxEnableBaseMapToOthers->isChecked();
 
+    imageProp.bSelectiveBlurPreviewMask = ui->pushButtonSelectiveBlurPreviewMask->isChecked();
+    imageProp.bSelectiveBlurInvertMask  = ui->checkBoxSelectiveBlurInvertMask   ->isChecked();
+    imageProp.bSelectiveBlurEnable      = ui->checkBoxSelectiveBlurEnable       ->isChecked();
     // one must treat height separately
     if(imageProp.imageType == HEIGHT_TEXTURE) FBOImageProporties::bAttachNormalToHeightMap = ui->checkBoxConversionHNAttachToNormal->isChecked();
 
@@ -434,6 +504,14 @@ void FormImageProp::hideHeightProcessingBox(){
     ui->groupBoxHeightProcessing->hide();
 }
 
+void FormImageProp::hideSelectiveBlurBox(){
+    ui->groupBoxSelectiveBlur->hide();
+    ui->groupBoxSelectiveBlurDOG->hide();
+    ui->groupBoxSelectiveBlurLevels->hide();
+    ui->groupBoxSelectiveBlurOptions->hide();
+}
+
+
 void FormImageProp::hideGrayScaleControl(){
     ui->checkBoxGrayScale->hide();
 }
@@ -499,6 +577,8 @@ void FormImageProp::reloadSettings(){
     ui->horizontalSliderHeightAveRadius     ->setValue(imageProp.heightAveragingRadius);
     ui->horizontalSliderHeightProcMaxValue  ->setValue(imageProp.heightMaxValue*200);
     ui->horizontalSliderHeightProcMinValue  ->setValue(imageProp.heightMinValue*200);
+    ui->horizontalSliderHeightOffsetValue   ->setValue(imageProp.heightOffsetValue*100);
+
     ui->labelHeightProcMinValue             ->setText(QString::number(imageProp.heightMinValue));
     ui->labelHeightProcMaxValue             ->setText(QString::number(imageProp.heightMaxValue));
 
@@ -539,6 +619,21 @@ void FormImageProp::reloadSettings(){
     if(imageProp.imageType == SPECULAR_TEXTURE){
         ui->checkBoxGrayScale->setChecked(true);
         imageProp.bGrayScale = true;
+    }
+
+    if(imageProp.imageType != HEIGHT_TEXTURE &&
+       imageProp.imageType != NORMAL_TEXTURE &&
+       imageProp.imageType != OCCLUSION_TEXTURE &&
+       imageProp.imageType != ROUGHNESS_TEXTURE){
+
+        // hue manipulation
+        ui->labelHue->show();
+        ui->labelHueValue->show();
+        ui->horizontalSliderColorHue->show();
+    }
+    // Shading removal only for diffuse texture
+    if(imageProp.imageType == DIFFUSE_TEXTURE ){
+        ui->checkBoxRemoveShading->show();
     }
 
 }

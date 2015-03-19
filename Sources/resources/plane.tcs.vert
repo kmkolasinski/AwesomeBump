@@ -64,9 +64,9 @@ void main()
             float dtv = dot(normalize(normal),normalize(eyePos.xyz));
 
             if( dtv < -0.2 ){
-                    e0 = 0;
-                    e1 = 0;
-                    e2 = 0;
+                //    e0 = 0;
+               //     e1 = 0;
+                //    e2 = 0;
             }
 
 

@@ -54,6 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
     specularImageProp = new FormImageProp(this,glImage);
     heightImageProp   = new FormImageProp(this,glImage);
     occlusionImageProp= new FormImageProp(this,glImage);
+    roughnessImageProp= new FormImageProp(this,glImage);
+    metallicImageProp = new FormImageProp(this,glImage);
 
     // Setting pointers to 3D view (this pointer are used to bindTextures).
     glWidget->setPointerToTexture(&diffuseImageProp->getImageProporties()  ->fbo,DIFFUSE_TEXTURE);
@@ -61,6 +63,8 @@ MainWindow::MainWindow(QWidget *parent) :
     glWidget->setPointerToTexture(&specularImageProp->getImageProporties() ->fbo,SPECULAR_TEXTURE);
     glWidget->setPointerToTexture(&heightImageProp->getImageProporties()   ->fbo,HEIGHT_TEXTURE);
     glWidget->setPointerToTexture(&occlusionImageProp->getImageProporties()->fbo,OCCLUSION_TEXTURE);
+    glWidget->setPointerToTexture(&roughnessImageProp->getImageProporties()->fbo,ROUGHNESS_TEXTURE);
+    glWidget->setPointerToTexture(&metallicImageProp->getImageProporties()->fbo,METALLIC_TEXTURE);
 
     // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
@@ -68,6 +72,8 @@ MainWindow::MainWindow(QWidget *parent) :
     specularImageProp ->getImageProporties()->imageType = SPECULAR_TEXTURE;
     heightImageProp   ->getImageProporties()->imageType = HEIGHT_TEXTURE;
     occlusionImageProp->getImageProporties()->imageType = OCCLUSION_TEXTURE;
+    roughnessImageProp->getImageProporties()->imageType = ROUGHNESS_TEXTURE;
+    metallicImageProp ->getImageProporties()->imageType = METALLIC_TEXTURE;
 
     // disabling some options for each texture
     specularImageProp->setSpecularControlChecked();
@@ -77,12 +83,14 @@ MainWindow::MainWindow(QWidget *parent) :
     specularImageProp->hideNHGroupBox();
     specularImageProp->hideSSAOBar();
     specularImageProp->hideNormalStepBar();
+    specularImageProp->hideSelectiveBlurBox();
 
     diffuseImageProp->hideHNGroupBox();
     diffuseImageProp->hideNHGroupBox();
     diffuseImageProp->hideSpecularGroupBox();
     diffuseImageProp->hideNormalStepBar();
     diffuseImageProp->hideSSAOBar();
+    diffuseImageProp->hideSelectiveBlurBox();
 
     normalImageProp->hideHNGroupBox();
     normalImageProp->hideBMGroupBox();
@@ -90,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     normalImageProp->hideSSAOBar();
     normalImageProp->hideHeightProcessingBox();
     normalImageProp->hideGrayScaleControl();
+    normalImageProp->hideSelectiveBlurBox();
 
     heightImageProp->hideBMGroupBox();
     heightImageProp->hideNHGroupBox();
@@ -104,12 +113,30 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp->hideNHGroupBox();
     occlusionImageProp->hideNormalStepBar();
     occlusionImageProp->hideGrayScaleControl();
+    occlusionImageProp->hideSelectiveBlurBox();
     
+    roughnessImageProp->hideNormalStepBar();
+    roughnessImageProp->hideHNGroupBox();
+    roughnessImageProp->hideNHGroupBox();
+    roughnessImageProp->hideSSAOBar();
+    roughnessImageProp->hideBMGroupBox();
+    roughnessImageProp->hideSelectiveBlurBox();
+
+    metallicImageProp->hideNormalStepBar();
+    metallicImageProp->hideHNGroupBox();
+    metallicImageProp->hideNHGroupBox();
+    metallicImageProp->hideSSAOBar();
+    metallicImageProp->hideBMGroupBox();
+    metallicImageProp->hideSelectiveBlurBox();
+
+
     glImage ->targetImageNormal    = normalImageProp   ->getImageProporties();
     glImage ->targetImageHeight    = heightImageProp   ->getImageProporties();
     glImage ->targetImageSpecular  = specularImageProp ->getImageProporties();
     glImage ->targetImageOcclusion = occlusionImageProp->getImageProporties();
     glImage ->targetImageDiffuse   = diffuseImageProp  ->getImageProporties();
+    glImage ->targetImageRoughness = roughnessImageProp->getImageProporties();
+    glImage ->targetImageMetallic  = metallicImageProp ->getImageProporties();
 
     // ------------------------------------------------------
     //                      GUI setup
@@ -135,6 +162,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutSpecularImage ->addWidget(specularImageProp);
     ui->verticalLayoutHeightImage   ->addWidget(heightImageProp);
     ui->verticalLayoutOcclusionImage->addWidget(occlusionImageProp);
+    ui->verticalLayoutRoughnessImage->addWidget(roughnessImageProp);
+    ui->verticalLayoutMetallicImage ->addWidget(metallicImageProp);
 
     ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
     
@@ -147,13 +176,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(specularImageProp,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
     connect(heightImageProp,SIGNAL(imageChanged()),this,SLOT(updateHeightImage()));
     connect(occlusionImageProp,SIGNAL(imageChanged()),this,SLOT(updateOcclusionImage()));
+    connect(roughnessImageProp,SIGNAL(imageChanged()),this,SLOT(updateRoughnessImage()));
+    connect(metallicImageProp,SIGNAL(imageChanged()),this,SLOT(updateMetallicImage()));
 
 
-    connect(diffuseImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
-    connect(normalImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
-    connect(specularImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
-    connect(heightImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(diffuseImageProp  ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(normalImageProp   ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(specularImageProp ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(heightImageProp   ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
     connect(occlusionImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(roughnessImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
+    connect(metallicImageProp ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
 
 
     // image reload settings signal
@@ -162,6 +195,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(specularImageProp  ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
     connect(heightImageProp    ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
     connect(occlusionImageProp ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
+    connect(roughnessImageProp ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
+    connect(metallicImageProp  ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
 
     // conversion signals
     connect(heightImageProp,SIGNAL(conversionHeightToNormalApplied()) ,this,SLOT(convertFromHtoN()));
@@ -224,6 +259,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowSpecularImage ,SIGNAL(triggered()),this,SLOT(selectSpecularTab()));
     connect(ui->actionShowHeightImage   ,SIGNAL(triggered()),this,SLOT(selectHeightTab()));
     connect(ui->actionShowOcclusiontImage,SIGNAL(triggered()),this,SLOT(selectOcclusionTab()));
+    //connect(ui->actionShowOcclusiontImage,SIGNAL(triggered()),this,SLOT(selectOcclusionTab()));
+
     connect(ui->actionShowSettingsImage ,SIGNAL(triggered()),this,SLOT(selectGeneralSettingsTab()));
     connect(ui->actionFitToScreen       ,SIGNAL(triggered()),this,SLOT(fitImage()));
 
@@ -286,12 +323,16 @@ MainWindow::MainWindow(QWidget *parent) :
     specularImageProp  ->setImage(QImage(QString(":/resources/logo_D.png")));
     heightImageProp    ->setImage(QImage(QString(":/resources/logo_H.png")));
     occlusionImageProp ->setImage(QImage(QString(":/resources/logo_O.png")));
+    roughnessImageProp ->setImage(QImage(QString(":/resources/logo_R.png")));
+    metallicImageProp  ->setImage(QImage(QString(":/resources/logo_M.png")));
 
     diffuseImageProp   ->setImageName(ui->lineEditOutputName->text());
     normalImageProp    ->setImageName(ui->lineEditOutputName->text());
     heightImageProp    ->setImageName(ui->lineEditOutputName->text());
     specularImageProp  ->setImageName(ui->lineEditOutputName->text());
     occlusionImageProp ->setImageName(ui->lineEditOutputName->text());
+    roughnessImageProp ->setImageName(ui->lineEditOutputName->text());
+    metallicImageProp  ->setImageName(ui->lineEditOutputName->text());
 
     // Setting the active image
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
@@ -321,8 +362,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-  delete settingsContainer;
-  delete ui;
+    delete settingsContainer;
+    delete diffuseImageProp;
+    delete normalImageProp;
+    delete specularImageProp;
+    delete heightImageProp;
+    delete occlusionImageProp;
+    delete roughnessImageProp;
+    delete metallicImageProp;
+    delete ui;
 }
 void MainWindow::closeEvent(QCloseEvent *event) {
     QWidget::closeEvent( event );
@@ -427,11 +475,13 @@ bool MainWindow::saveAllImages(const QString &dir){
 
     qDebug() << Q_FUNC_INFO << "Saving to dir:" << fileInfo.absoluteFilePath();
 
-    diffuseImageProp  ->setImageName(ui->lineEditOutputName->text());
-    normalImageProp   ->setImageName(ui->lineEditOutputName->text());
-    heightImageProp   ->setImageName(ui->lineEditOutputName->text());
-    specularImageProp ->setImageName(ui->lineEditOutputName->text());
+    diffuseImageProp   ->setImageName(ui->lineEditOutputName->text());
+    normalImageProp    ->setImageName(ui->lineEditOutputName->text());
+    heightImageProp    ->setImageName(ui->lineEditOutputName->text());
+    specularImageProp  ->setImageName(ui->lineEditOutputName->text());
     occlusionImageProp ->setImageName(ui->lineEditOutputName->text());
+    roughnessImageProp ->setImageName(ui->lineEditOutputName->text());
+    metallicImageProp  ->setImageName(ui->lineEditOutputName->text());
 
     replotAllImages();
     setCursor(Qt::WaitCursor);
@@ -444,7 +494,7 @@ bool MainWindow::saveAllImages(const QString &dir){
             diffuseImageProp ->saveFileToDir(dir);
 
         }
-        ui->progressBar->setValue(20);
+        ui->progressBar->setValue(15);
 
 
         ui->labelProgressInfo->setText("Saving normal image...");
@@ -452,25 +502,35 @@ bool MainWindow::saveAllImages(const QString &dir){
             normalImageProp  ->saveFileToDir(dir);
 
         }
-        ui->progressBar->setValue(40);
-
-
+        ui->progressBar->setValue(30);
         ui->labelProgressInfo->setText("Saving specular image...");
         if(bSaveCheckedImages*ui->checkBoxSaveSpecular->isChecked() || !bSaveCheckedImages ){
             specularImageProp->saveFileToDir(dir);
 
         }
-        ui->progressBar->setValue(60);
+        ui->progressBar->setValue(45);
 
         ui->labelProgressInfo->setText("Saving height image...");
         if(bSaveCheckedImages*ui->checkBoxSaveHeight->isChecked() || !bSaveCheckedImages ){
             occlusionImageProp  ->saveFileToDir(dir);
         }
 
-         ui->progressBar->setValue(80);
+        ui->progressBar->setValue(60);
         ui->labelProgressInfo->setText("Saving occlusion image...");
         if(bSaveCheckedImages*ui->checkBoxSaveOcclusion->isChecked() || !bSaveCheckedImages ){
             heightImageProp  ->saveFileToDir(dir);
+        }
+
+        ui->progressBar->setValue(75);
+        ui->labelProgressInfo->setText("Saving roughness image...");
+        if(bSaveCheckedImages*ui->checkBoxSaveRoughness->isChecked() || !bSaveCheckedImages ){
+            roughnessImageProp  ->saveFileToDir(dir);
+        }
+
+        ui->progressBar->setValue(90);
+        ui->labelProgressInfo->setText("Saving metallic image...");
+        if(bSaveCheckedImages*ui->checkBoxSaveMetallic->isChecked() || !bSaveCheckedImages ){
+            metallicImageProp ->saveFileToDir(dir);
         }
         ui->progressBar->setValue(100);
 
@@ -615,7 +675,18 @@ void MainWindow::updateOcclusionImage(){
     ui->lineEditOutputName->setText(occlusionImageProp->getImageName());
     glImage->repaint();
     glWidget->repaint();
+}
 
+void MainWindow::updateRoughnessImage(){
+    ui->lineEditOutputName->setText(roughnessImageProp->getImageName());
+    glImage->repaint();
+    glWidget->repaint();
+}
+
+void MainWindow::updateMetallicImage(){
+    ui->lineEditOutputName->setText(metallicImageProp->getImageName());
+    glImage->repaint();
+    glWidget->repaint();
 }
 
 void MainWindow::repaintNormalImage(){
@@ -647,12 +718,16 @@ void MainWindow::initializeGL(){
       specularImageProp ->setImage(QImage(QString(":/resources/logo_D.png")));
       heightImageProp   ->setImage(QImage(QString(":/resources/logo_H.png")));
       occlusionImageProp->setImage(QImage(QString(":/resources/logo_O.png")));
+      roughnessImageProp->setImage(QImage(QString(":/resources/logo_R.png")));
+      metallicImageProp ->setImage(QImage(QString(":/resources/logo_M.png")));
 
       diffuseImageProp  ->setImageName(ui->lineEditOutputName->text());
       normalImageProp   ->setImageName(ui->lineEditOutputName->text());
       heightImageProp   ->setImageName(ui->lineEditOutputName->text());
       specularImageProp ->setImageName(ui->lineEditOutputName->text());
       occlusionImageProp->setImageName(ui->lineEditOutputName->text());
+      roughnessImageProp->setImageName(ui->lineEditOutputName->text());
+      metallicImageProp ->setImageName(ui->lineEditOutputName->text());
       // Setting the active image
       glImage->setActiveImage(diffuseImageProp->getImageProporties());
     }
@@ -694,6 +769,12 @@ void MainWindow::updateImage(int tType){
         case(OCCLUSION_TEXTURE  ):
             glImage->setActiveImage(occlusionImageProp->getImageProporties());
             break;
+        case(ROUGHNESS_TEXTURE  ):
+            glImage->setActiveImage(roughnessImageProp->getImageProporties());
+            break;
+        case(METALLIC_TEXTURE  ):
+            glImage->setActiveImage(metallicImageProp->getImageProporties());
+            break;
         default: // Settings
             return;
     }
@@ -701,11 +782,13 @@ void MainWindow::updateImage(int tType){
 }
 
 void MainWindow::changeWidth (int size){
+
     if(ui->pushButtonResizePropTo->isChecked()){
         ui->comboBoxResizeHeight->setCurrentText(ui->comboBoxResizeWidth->currentText());
     }
 }
 void MainWindow::changeHeight(int size){
+
     if(ui->pushButtonResizePropTo->isChecked()){
         ui->comboBoxResizeWidth->setCurrentText(ui->comboBoxResizeHeight->currentText());
     }
@@ -719,7 +802,7 @@ void MainWindow::applyResizeImage(){
 
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
-    for(int i = 0 ; i < 5 ; i++){
+    for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
         updateImage(i);
         glImage->resizeFBO(width,height);
     }
@@ -738,7 +821,7 @@ void MainWindow::applyResizeImage(int width, int height){
 
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
-    for(int i = 0 ; i < 5 ; i++){
+    for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
         updateImage(i);
         glImage->resizeFBO(width,height);
     }
@@ -771,7 +854,7 @@ void MainWindow::applyScaleImage(){
 
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
-    for(int i = 0 ; i < 5 ; i++){
+    for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
         updateImage(i);
         glImage->resizeFBO(width,height);
     }
@@ -870,6 +953,8 @@ void MainWindow::convertFromBase(){
     heightImageProp   ->setImageName(diffuseImageProp->getImageName());
     specularImageProp ->setImageName(diffuseImageProp->getImageName());
     occlusionImageProp->setImageName(diffuseImageProp->getImageName());
+    roughnessImageProp->setImageName(diffuseImageProp->getImageName());
+    metallicImageProp ->setImageName(diffuseImageProp->getImageName());
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
     replotAllImages();
     qDebug() << "Conversion from Base to others applied";
@@ -948,6 +1033,7 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_heightMinValue"                   ,image->getImageProporties()->heightMinValue);
     settings.setValue("t_"+abbr+"_heightMaxValue"                   ,image->getImageProporties()->heightMaxValue);
     settings.setValue("t_"+abbr+"_heightAveragingRadius"            ,image->getImageProporties()->heightAveragingRadius);
+    settings.setValue("t_"+abbr+"_heightOffsetValue"                ,image->getImageProporties()->heightOffsetValue);
 
     settings.setValue("t_"+abbr+"_conversionHNDepth"                ,image->getImageProporties()->conversionHNDepth);
     settings.setValue("t_"+abbr+"_bConversionHN"                    ,image->getImageProporties()->bConversionHN);
@@ -1007,6 +1093,7 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->heightAveragingRadius              = settings.value("t_"+abbr+"_heightAveragingRadius",0.0).toFloat();
     image->getImageProporties()->heightMinValue                     = settings.value("t_"+abbr+"_heightMinValue",0.0).toFloat();
     image->getImageProporties()->heightMaxValue                     = settings.value("t_"+abbr+"_heightMaxValue",1.0).toFloat();
+    image->getImageProporties()->heightOffsetValue                  = settings.value("t_"+abbr+"_heightOffsetValue",0.0).toFloat();
 
 
     image->getImageProporties()->conversionHNDepth                  = settings.value("t_"+abbr+"_conversionHNDepth",10.0).toFloat();
@@ -1054,6 +1141,13 @@ void MainWindow::loadImageSettings(TextureTypes type){
         case(OCCLUSION_TEXTURE):
             loadImageSettings("o",occlusionImageProp);
             break;
+        case(ROUGHNESS_TEXTURE):
+            loadImageSettings("r",roughnessImageProp);
+            break;
+        case(METALLIC_TEXTURE):
+            loadImageSettings("m",metallicImageProp);
+            break;
+        default: qWarning() << "Trying to load non supported image! Given textureType:" << type;
     }
     glImage ->repaint();
     glWidget->repaint();
@@ -1108,10 +1202,13 @@ void MainWindow::saveSettings(){
     saveImageSettings("s",specularImageProp);
     saveImageSettings("h",heightImageProp);
     saveImageSettings("o",occlusionImageProp);
+    saveImageSettings("r",roughnessImageProp);
+    saveImageSettings("m",metallicImageProp);
 
 }
 
 void MainWindow::setOutputFormat(int index){
+
     PostfixNames::outputFormat = ui->comboBoxImageOutputFormat->currentText();
 }
 
@@ -1167,6 +1264,8 @@ void MainWindow::loadSettings(){
     loadImageSettings("s",specularImageProp);
     loadImageSettings("h",heightImageProp);
     loadImageSettings("o",occlusionImageProp);
+    loadImageSettings("r",roughnessImageProp);
+    loadImageSettings("m",metallicImageProp);
 
     replotAllImages();
     glImage ->repaint();

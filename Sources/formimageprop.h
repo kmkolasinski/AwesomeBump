@@ -41,6 +41,7 @@ public:
     void hideNormalStepBar();
     void hideSSAOBar();
     void hideHeightProcessingBox();
+    void hideSelectiveBlurBox();
     void hideGrayScaleControl();
     void setSpecularControlChecked();
     void reloadSettings();
@@ -51,7 +52,7 @@ public slots:
     void save();
     void reloadImageSettings();
 
-    void updateGrayScalePreset(int index);
+    void updateComboBoxes(int index);
     void updateGuiSpinBoxesAndLabes(int);
     void updateSlidersOnRelease();
     void updateGuiCheckBoxes();

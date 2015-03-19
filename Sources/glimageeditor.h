@@ -77,6 +77,8 @@ public:
     FBOImageProporties* targetImageHeight;
     FBOImageProporties* targetImageSpecular;
     FBOImageProporties* targetImageOcclusion;
+    FBOImageProporties* targetImageRoughness;
+    FBOImageProporties* targetImageMetallic;
 public slots:
     void resizeFBO(int width, int height);
 
@@ -104,12 +106,25 @@ protected:
 
     void applyGaussFilter(QGLFramebufferObject* sourceFBO, QGLFramebufferObject *auxFBO,
                           QGLFramebufferObject* outputFBO, int no_iter);
+    void applyMaskedGaussFilter(QGLFramebufferObject* sourceFBO,
+                                QGLFramebufferObject* maskFBO,
+                                QGLFramebufferObject *auxFBO,
+                                QGLFramebufferObject* outputFBO);
 
     void applyInverseColorFilter(QGLFramebufferObject* inputFBO,
                                  QGLFramebufferObject* outputFBO);
 
+    void applyAOCancellationFilter(QGLFramebufferObject* inputFBO,
+                                   QGLFramebufferObject* aoMaskFBO,
+                                   QGLFramebufferObject* outputFBO);
+
     void applyNormalFilter(  QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject* outputFBO);
+
+    void applyColorHueFilter(  QGLFramebufferObject* inputFBO,
+                               QGLFramebufferObject* outputFBO);
+
+
     void applyPerspectiveTransformFilter(  QGLFramebufferObject* inputFBO,
                                            QGLFramebufferObject* outputFBO);
 
@@ -126,9 +141,9 @@ protected:
                              QGLFramebufferObject* outputFBO);
     void applyDGaussiansFilter(QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject *auxFBO,
-                             QGLFramebufferObject* outputFBO);
+                             QGLFramebufferObject* outputFBO, bool bUseSelectiveBlur = false);
     void applyContrastFilter(QGLFramebufferObject* inputFBO,
-                             QGLFramebufferObject* outputFBO);
+                             QGLFramebufferObject* outputFBO, bool bUseSelectiveBlur = false);
     void applySmallDetailsFilter(QGLFramebufferObject* inputFBO,
                                  QGLFramebufferObject *auxFBO,
                                  QGLFramebufferObject* outputFBO);
@@ -174,8 +189,9 @@ protected:
     void applyOcclusionFilter(QGLFramebufferObject* inputFBO,
                               QGLFramebufferObject* outputFBO);
 
-    void applyHeightProcessingFilter(QGLFramebufferObject* inputFBO,
-                                      QGLFramebufferObject* outputFBO);
+    void applyHeightProcessingFilter( QGLFramebufferObject* inputFBO,
+                                      QGLFramebufferObject* outputFBO,
+                                      bool bUseSelectiveBlur = false);
 
     void applyCombineNormalHeightFilter(QGLFramebufferObject* normalFBO,
                                         QGLFramebufferObject *heightFBO,

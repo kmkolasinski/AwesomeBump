@@ -85,6 +85,8 @@ public slots:
     void updateSpecularImage();
     void updateHeightImage();
     void updateOcclusionImage();
+    void updateRoughnessImage();
+    void updateMetallicImage();
     // repaint selected tab
     void updateImage(int tab);
 
@@ -143,6 +145,8 @@ private:
     FormImageProp* specularImageProp;
     FormImageProp* heightImageProp;
     FormImageProp* occlusionImageProp;
+    FormImageProp* roughnessImageProp;
+    FormImageProp* metallicImageProp;
 
     // Settings container
     FormSettingsContainer *settingsContainer;

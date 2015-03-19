@@ -44,5 +44,7 @@
         <file>resources/env.vert</file>
         <file>resources/skybox.frag.glsl</file>
         <file>resources/skybox.vert.glsl</file>
+        <file>resources/logo_M.png</file>
+        <file>resources/logo_R.png</file>
     </qresource>
 </RCC>

@@ -119,7 +119,7 @@ private:
     QOpenGLShaderProgram *program;    
     QOpenGLShaderProgram *skybox_program;
     QOpenGLShaderProgram *env_program;
-    QGLFramebufferObject**  fboIdPtrs[5];
+    QGLFramebufferObject**  fboIdPtrs[7];
 
 
     // parameters plane

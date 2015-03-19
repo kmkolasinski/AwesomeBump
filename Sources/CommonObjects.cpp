@@ -13,6 +13,8 @@ QString  PostfixNames::normalName     = "_n";
 QString  PostfixNames::specularName   = "_s";
 QString  PostfixNames::heightName     = "_h";
 QString  PostfixNames::occlusionName  = "_o";
+QString  PostfixNames::roughnessName  = "_r";
+QString  PostfixNames::metallicName   = "_m";
 
 QString  PostfixNames::outputFormat  = ".png";
 
@@ -42,6 +44,7 @@ void TargaImage::write(QImage image, QString fileName){
           pixels[4 * ((h-i-1) * w + j) + 3] = imageBuffer[4 * (i * w + j)+3  ];
         }
     bool test = save_targa(fileName.toStdString().c_str(),width,height,format,pixels);
+    if(test == false) qWarning() << "Cannot save image to targa file:" << fileName ;
     delete[] pixels;
 }
 

@@ -58,7 +58,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     bToggleHeightView       = true;
     bToggleNormalView       = true;
     shadingType             = SHADING_RELIEF_MAPPING;
-    specularIntensity       = 0.5;
+    specularIntensity       = 1.0;
     diffuseIntensity        = 1.0;
     m_env_map               = NULL;
 
@@ -160,6 +160,7 @@ void GLWidget::setDiffuseIntensity(double val){
 void GLWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     makeCurrent();
     qglClearColor(QColor::fromCmykF(0.79, 0.79, 0.79, 0.0).dark());
 
@@ -208,13 +209,16 @@ void GLWidget::initializeGL()
     GLCHK(program->link());
 
     GLCHK(program->bind());
-    program->setUniformValue("texDiffuse" , 0);
-    program->setUniformValue("texNormal"  , 1);
-    program->setUniformValue("texSpecular", 2);
-    program->setUniformValue("texHeight"  , 3);
-    program->setUniformValue("texSSAO"    , 4);
-    program->setUniformValue("texDiffuseEnvMap", 5);
-    program->setUniformValue("texEnvMap"       , 6);
+    program->setUniformValue("texDiffuse"  , 0);
+    program->setUniformValue("texNormal"   , 1);
+    program->setUniformValue("texSpecular" , 2);
+    program->setUniformValue("texHeight"   , 3);
+    program->setUniformValue("texSSAO"     , 4);
+    program->setUniformValue("texRoughness", 5);
+    program->setUniformValue("texMetallic",  6);
+
+    program->setUniformValue("texDiffuseEnvMap", 7);
+    program->setUniformValue("texEnvMap"       , 8);
 
 
     delete vshader;
@@ -385,26 +389,17 @@ void GLWidget::paintGL()
 
     if( fboIdPtrs[0] != NULL){
 
+        int tindeks = 0;
+        for(tindeks = 0 ; tindeks < MAX_TEXTURES_TYPE ; tindeks++){
+            GLCHK( glActiveTexture(GL_TEXTURE0+tindeks) );
+            GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[tindeks]))->texture()) );
+        }
 
-        GLCHK( glActiveTexture(GL_TEXTURE0) );
-
-        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[0]))->texture()) );
-
-        GLCHK( glActiveTexture(GL_TEXTURE1) );
-        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[1]))->texture()) );
-
-        GLCHK( glActiveTexture(GL_TEXTURE2) );
-        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[2]))->texture()) );
-
-        GLCHK( glActiveTexture(GL_TEXTURE3) );        
-        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[3]))->texture()) );
-
-        GLCHK( glActiveTexture(GL_TEXTURE4) );
-        GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[4]))->texture()) );
-
-        GLCHK( glActiveTexture(GL_TEXTURE5) );
+        GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks ) );
         GLCHK(m_prefiltered_env_map->bind());
-        GLCHK( glActiveTexture(GL_TEXTURE6) );
+
+        tindeks++;
+        GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks) );
         GLCHK(m_env_map->bind());
         GLCHK( mesh->drawMesh() );
 
@@ -553,6 +548,12 @@ void GLWidget::setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes 
         case(OCCLUSION_TEXTURE ):
             fboIdPtrs[4] = pointer;
             break;
+        case(ROUGHNESS_TEXTURE ):
+            fboIdPtrs[5] = pointer;
+            break;
+        case(METALLIC_TEXTURE ):
+            fboIdPtrs[6] = pointer;
+            break;
     }
 }
 
@@ -636,6 +637,7 @@ void GLWidget::chooseSkyBox(QString cubeMapName){
     if(m_env_map->failed()){
         qWarning() << "Cannot load cube map: check if images listed above exist.";
     }
+    updateGL();
 
 }
 

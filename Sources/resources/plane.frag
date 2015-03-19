@@ -1,5 +1,5 @@
-#version 430 core
-
+#version 400 core
+//#extension GL_ARB_texture_query_levels : enable
 
 
 // Uniform variables
@@ -8,6 +8,8 @@ uniform sampler2D texNormal;
 uniform sampler2D texSpecular;
 uniform sampler2D texHeight;
 uniform sampler2D texSSAO;
+uniform sampler2D texRoughness;
+uniform sampler2D texMetallic;
 
 uniform samplerCube texDiffuseEnvMap;  // prefilltered diffuse cube map
 uniform samplerCube texEnvMap;         // full cube map
@@ -52,6 +54,8 @@ vec3  fvESVertexNormal;
 vec4  fvBaseColor;
 vec4  fvSpecularColor;
 vec4  fvSSAOColor;
+vec4  fvRoughness;
+vec4  fvMetallic;
 
 vec4 bump_mapping(int lightIndeks,vec2 texcoord){
 
@@ -176,23 +180,36 @@ float GGX_Distribution(vec3 n, vec3 h, float alpha)
 }
 
 
-float GGX_PartialGeometryTerm(vec3 v, vec3 n, vec3 h, float alpha)
+float GGX_PartialGeometryTerm(vec3 v, vec3 n, vec3 h, float alpha2)
 {
     float VoH2 = clamp(dot(v,h),0,1);
     float chi = chiGGX( VoH2 / clamp(dot(v,n),0,1) );
     VoH2 = VoH2 * VoH2;
     float tan2 = ( 1 - VoH2 ) / VoH2;
-    return (chi * 2) / ( 1 + sqrt( 1 + alpha * alpha * tan2 ) );
+    return (chi * 2) / ( 1 + sqrt( 1 + alpha2 * tan2 ) );
 }
+
+
+float GGX_PartialGeometryTerm_OPT(float VdotH, float VdotN, float alpha2)
+{
+    float VoH2 = VdotH;//clamp(dot(v,h),0,1);
+    float chi = chiGGX( VoH2 / VdotN );
+    VoH2 = VoH2 * VoH2;
+    float tan2 = ( 1 - VoH2 ) / VoH2;
+    return (chi * 2) / ( 1 + sqrt( 1 + alpha2 * tan2 ) );
+}
+
+
 
 vec3 Fresnel_Schlick(float cosT, vec3 F0)
 {
   return F0 + (1-F0) * pow( 1 - cosT, 5);
 }
 
+
 // randon number starting seed
-ivec2 seed = ivec2(64523*length(WSPosition.yz)*gl_FragCoord.x,
-                  -62310*length(WSPosition.xz)*gl_FragCoord.y);
+ivec2 seed = ivec2(+64523*length(WSPosition.yz)*gl_FragCoord.y,
+                   +62310*length(WSPosition.xz)*gl_FragCoord.x);
 
 
 // Random number generator based on:
@@ -209,13 +226,13 @@ vec2 wang_hash()
 
 vec3 calc_random_vec(float roughness,vec3 up,vec3 right,vec3 dir){
 
-    vec2 fseed = wang_hash();
+    vec2 fseed = clamp(wang_hash(),vec2(0),vec2(1));
 
 
     float theta = atan(roughness*sqrt(fseed.x)/sqrt(1-fseed.x));
-    float phi   = 2*PI*fseed.y;
+    float phi   = 4*PI*fseed.y;
     vec3 temp = cos(phi) * up + sin(phi) * right;
-    return cos(theta) * dir + sin(theta) * temp;
+    return (cos(theta) * dir + sin(theta) * temp);
 }
 
 // Based on:
@@ -240,31 +257,44 @@ vec4 PBR_Specular(float roughness,
     up          = cross(l,right);
 
     vec3 radiance  = vec3(0);
-    float  NoV     = clamp(dot(n, v),0,1);
+    float  NdotV     = clamp(dot(n, v),0,1);
 
 
-    int no_mipmap = textureQueryLevels(texEnvMap); // get number of mipmaps
-    const int no_samples = 15; // number of monte carlo samples
+    //int no_mipmap = textureQueryLevels(texEnvMap); // get number of mipmaps
 
+    #define no_samples 20
+    // do the lighting calculation for each fragment.
+
+    float r2 = roughness * roughness;
     for(int i = 0 ; i < no_samples ; i++ ){
-         vec3 lp = calc_random_vec(roughness,up,right,l);
+         vec3 lp =  calc_random_vec(r2,up,right,l);
+
+
 
          // Calculate the half vector
          vec3 halfVector = normalize(lp + v);
-         float cosT = clamp(dot( lp, n ),0.0,1.0);
-         float sinT = sqrt( 1 - cosT * cosT);
-         // Calculate fresnel
-         vec3 fresnel   = Fresnel_Schlick( clamp(dot( halfVector, v ),0.0,1.0), F0 );
+
+
+         float VdotH = max(dot( halfVector, v ),0);
+         float HdotN = max(dot( halfVector, n ),0);
+         float LdotN = max(dot( lp, n ),0);
+         float LdotH = max(dot( lp, halfVector ),0);
+
+
+         vec3 fresnel   = Fresnel_Schlick( VdotH, F0 );
+
          // Geometry term
-         float geometry = GGX_PartialGeometryTerm(v , n, halfVector, roughness)
-                        * GGX_PartialGeometryTerm(lp, n, halfVector, roughness);
+         float geometry = GGX_PartialGeometryTerm_OPT( VdotH, NdotV, r2)
+                        * GGX_PartialGeometryTerm_OPT( LdotH, LdotN, r2);
+
          // Calculate the Cook-Torrance denominator
-         float denominator = clamp( 4 * (NoV * clamp(dot(halfVector, n),0,1) + 0.05) ,0,1);
-         kS += fresnel ;//* gui_SpecularIntensity;
+         float denominator = clamp( 4 * (NdotV * HdotN + 0.05) ,0,1);
+
+         kS += fresnel ;
          // Accumulate the radiance
-         vec3 color = texture( texEnvMap, lp , ( roughness * no_mipmap ) ).rgb;
-         //color = exp(color) ;
-         radiance +=   color * geometry * fresnel * sinT / denominator ;
+         vec3 color = texture( texEnvMap, lp ).rgb;
+
+         radiance +=  color  * geometry * fresnel / denominator;// * sinT;
 
     }
     // Scale back for the samples count
@@ -289,15 +319,20 @@ void main( void )
     fvBaseColor        = texture( texDiffuse, texcoords.xy );
     fvSpecularColor    = texture( texSpecular, texcoords.xy );
     fvSSAOColor        = texture( texSSAO, texcoords.xy );
+    fvRoughness        = texture( texRoughness, texcoords.xy );
+    fvMetallic         = texture( texMetallic, texcoords.xy );
 
     if(!gui_bDiffuse)  fvBaseColor     = vec4(0.8); // some gray color
     if(!gui_bOcclusion)fvSSAOColor     = vec4(1.0);
     if(!gui_bSpecular) fvSpecularColor = vec4(0);
+    // TODO: add here R and M control
 
     vec3  ts_normal   = normalize( ( texture( texNormal, texcoords.xy ).xyz * 2.0 ) - 1.0 );
     mat3  iTBN        = transpose(TBN);
     vec3 snormal      = iTBN*normalize(vec3(ts_normal.x,ts_normal.y,5*ts_normal.z));
     vec3 surfaceNormal= normalize(snormal); // approximated normal in world space
+    // surfaceNormal     = normalize(WSNormal);
+
     float  LoL        = clamp(dot(surfaceNormal,lightDirection),0,1);
 
     // apply standarnd normal mapping
@@ -306,17 +341,14 @@ void main( void )
 
 
     // PBR calculations
-    vec3  materialColour = fvBaseColor.rgb;     //texture( texDiffuse, texcoords.xy ).rgb;
-    vec4  aoColour       = fvSSAOColor;         //texture( texSSAO, texcoords.xy );
-    float roughness      = fvSpecularColor.r;   //texture( texSpecular, texcoords.xy ).r;
-    float metallic       = 0;//!gui_SpecularIntensity;
+    vec3  materialColour = fvBaseColor.rgb;
+    vec4  aoColour       = fvSSAOColor;
+    float roughness      = fvRoughness.r;
+    vec3  metallicColour = fvMetallic.rgb;
 
 
-    vec3 F0 = vec3(1.0);//materialColour; // vec3(abs ((1.0 - ior) / (1.0 + ior)));
-    F0 = F0 * F0;
-    F0 = mix(F0, materialColour, vec3(metallic));
 
-
+    vec3 F0 = vec3(metallicColour);
     vec3 kS = vec3(0);
 
     vec4 specular = PBR_Specular(roughness,
@@ -324,18 +356,15 @@ void main( void )
                                  texEnvMap,
                                  WSPosition,
                                  surfaceNormal,texcoords);
-
-    vec3 kD = (1 - kS) * (1 - metallic) * 0 + 1;
-
-
+//    fvSpecularColor = vec4(1);
+    vec3 kD = (1 - kS) ;
+    if(!gui_bSpecular) fvSpecularColor = vec4(1.0);
     // Calculate the diffuse contribution
     vec3 irradiance = texture(texDiffuseEnvMap, normalize(surfaceNormal)).rgb;
-    vec3 diffuse    = materialColour * irradiance;
+    vec3 diffuse    = materialColour * irradiance ;
 
-
-    FragColor  =  gui_DiffuseIntensity * vec4(kD * diffuse,1)*aoColour + gui_SpecularIntensity * ( specular ) * vec4(kS,1) ;
-
-
+    FragColor  =  gui_DiffuseIntensity  * vec4(kD * diffuse,1) * aoColour
+               +  gui_SpecularIntensity * fvSpecularColor*  vec4(materialColour,1) * ( specular ) ;
 
 
 }

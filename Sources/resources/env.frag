@@ -39,7 +39,7 @@ vec4 PBR_Diffuse(vec3 surfaceColor,samplerCube texDiffuseEnv,
             {
                 vec3 temp = cos(phi) * surfaceTangent + sin(phi) * surfaceBitangent;
                 vec3 sampleVector = cos(theta) * surfaceNormal + sin(theta) * temp;
-                ocolor += 5*exp( - 5*sin(theta) * sin(theta)) * texture( texDiffuseEnv, sampleVector ).rgb * cos(theta) * sin(theta);
+                ocolor += texture( texDiffuseEnv, sampleVector ).rgb * cos(theta) * sin(theta);
                 index ++;
             }
         }
