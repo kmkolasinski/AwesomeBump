@@ -262,7 +262,7 @@ vec4 PBR_Specular(float roughness,
 
     //int no_mipmap = textureQueryLevels(texEnvMap); // get number of mipmaps
 
-    #define no_samples 20
+    #define no_samples 15
     // do the lighting calculation for each fragment.
 
     float r2 = roughness * roughness;
@@ -327,7 +327,7 @@ void main( void )
     if(!gui_bSpecular) fvSpecularColor = vec4(0);
     // TODO: add here R and M control
 
-    vec3  ts_normal   = normalize( ( texture( texNormal, texcoords.xy ).xyz * 2.0 ) - 1.0 );
+    vec3  ts_normal   = fvESVertexNormal;
     mat3  iTBN        = transpose(TBN);
     vec3 snormal      = iTBN*normalize(vec3(ts_normal.x,ts_normal.y,5*ts_normal.z));
     vec3 surfaceNormal= normalize(snormal); // approximated normal in world space

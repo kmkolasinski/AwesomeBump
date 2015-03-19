@@ -482,6 +482,14 @@ void GLImage::render(){
         copyFBO(activeImage->ref_fbo,targetImageSpecular->fbo);
         targetImageSpecular->updateSrcTexId(activeImage->ref_fbo);
 
+        copyFBO(activeImage->ref_fbo,targetImageRoughness->ref_fbo);
+        copyFBO(activeImage->ref_fbo,targetImageRoughness->fbo);
+        targetImageRoughness->updateSrcTexId(activeImage->ref_fbo);
+
+        copyFBO(activeImage->ref_fbo,targetImageMetallic->ref_fbo);
+        copyFBO(activeImage->ref_fbo,targetImageMetallic->fbo);
+        targetImageMetallic->updateSrcTexId(activeImage->ref_fbo);
+
         break;
         default:
         break;

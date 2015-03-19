@@ -26,7 +26,7 @@ out vec3 tcSmoothedNormal[];
 
 float lod_factor = 0.004;
 float level(vec4 v0, vec4 v1){     
-         return clamp(distance(v0.xyz, v1.xyz)/lod_factor, 1, 64);
+         return clamp(distance(v0.xyz, v1.xyz)/lod_factor, 1, 32);
  }
 
 vec4 project(vec3 vertex){
