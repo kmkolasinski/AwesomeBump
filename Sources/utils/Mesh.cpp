@@ -33,23 +33,35 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
         return;
     }
     centre_of_mass = QVector3D(0,0,0);
+    int max_wrong_shapes = 10;
+    int no_wrong_shapes  = 0;
+
+    //qDebug() << "List of problematic shapes:";
+    //mesh_log += "List of problematic shapes:\n";
 
     for (size_t i = 0; i < shapes.size(); i++) {
-
+        bool problemWith[3] = {false,false,false};
         if(shapes[i].mesh.texcoords.size() == 0){
-            qDebug() << "Warning. Shape i=" << i << " with name: " << QString(shapes[i].name.c_str()) << " has no texcoords." ;
-            mesh_log += "Warning. Shape number " + QString::number(i+1) + " with name: " + QString(shapes[i].name.c_str()) + " has no texcoords.\n" ;
-            continue;
+            problemWith[0] = true;
         }
         if(shapes[i].mesh.normals.size() == 0){
-            qDebug() << "Warning. Shape number=" << i << " with name: " << QString(shapes[i].name.c_str()) << " has no normals." ;
-            mesh_log += "Warning. Shape number " + QString::number(i+1)+ " with name: " + QString(shapes[i].name.c_str()) + " has no normals.\n" ;
-            continue;
+            problemWith[1] = true;
         }
         if(shapes[i].mesh.positions.size() == 0){
-            qDebug() << "Warning. Shape i=" << i << " with name: " << QString(shapes[i].name.c_str()) << " has no positions." ;
-            mesh_log += "Warning. Shape number " + QString::number(i+1) + " with name: " + QString(shapes[i].name.c_str()) + " has no positions.\n" ;
-            continue;
+            problemWith[2] = true;
+        }
+
+        // check shapes
+        bool shapeTest = problemWith[0] || problemWith[1] || problemWith[2];
+        if(shapeTest){
+          if(no_wrong_shapes < max_wrong_shapes){
+              QString doesNotHave = QString(problemWith[0]?" UVs ":"")+QString(problemWith[0]?" normals ":"")+QString(problemWith[0]?" positions ":"");
+              QString message = "[" + QString::number(i+1) + "] "+ QString(shapes[i].name.c_str()) +" has no: " + doesNotHave ;
+              qDebug() << message;
+              mesh_log += message + "\n";
+          }
+          no_wrong_shapes++;
+          continue;
         }
 
       for (size_t f = 0; f < shapes[i].mesh.indices.size() / 3; f++) {
@@ -83,8 +95,11 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
     } // end of for shape
 
     if(gl_vertices.size() == 0 || gl_normals.size() == 0 || gl_texcoords.size() == 0){
-        qDebug() << "Error! Mesh has no vertices or normals or UVs, so it cannot be loaded." ;
-        mesh_log += "Error! Mesh has no vertices or normals or UVs, so it cannot be loaded.\n" ;
+        if(no_wrong_shapes >= max_wrong_shapes){
+            mesh_log += "Total number of problematic shapes is:"+ QString::number(no_wrong_shapes) +". Listed only first ten of them.\n" ;
+        }
+        qDebug() << "Conclusion: Mesh has no vertices or normals or UVs, so it cannot be loaded." ;
+        mesh_log += "Conclusion: Mesh has no vertices or normals or UVs, so it cannot be loaded.\n" ;
         return;
     }
 

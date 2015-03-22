@@ -204,12 +204,16 @@ subroutine(filterModeType) vec4 mode_invert_components_filter(){
 //
 // ----------------------------------------------------------------
 uniform float gui_ao_cancellation;
-
+uniform int gui_remove_shading;
 subroutine(filterModeType) vec4 mode_ao_cancellation_filter(){
-    vec4 colorA = texture( layerA, v2QuadCoords.xy);
-    vec4 colorB = texture( layerB, v2QuadCoords.xy);
+    float remove_sh = gui_remove_shading/100.0; // normalization to 1
+    vec4 colorA   = texture( layerA, v2QuadCoords.xy); // color
+    vec4 colorB   = texture( layerB, v2QuadCoords.xy); // ao
+    vec4 refColor = texture( layerC, v2QuadCoords.xy); // refcolor
 
-    return clamp(colorA + (1-colorB)*gui_ao_cancellation,vec4(0),vec4(1));
+    colorA = mix(refColor,colorA,remove_sh);
+
+    return (colorA + (1-colorB)*gui_ao_cancellation)/(1 + (1-colorB.a)*gui_ao_cancellation);
 }
 // ----------------------------------------------------------------
 //
@@ -290,26 +294,19 @@ subroutine(filterModeType) vec4 mode_gauss_filter(){
         }else if(gauss_mode == 2){
                 return gauss_filter_v(layerA,w,radius,gui_depth);
         }
-    }else{ // when using masking texture
+    }else{ // when using masking texture == 1
         // original color
         vec4  ocolor = texture(layerA,v2QuadCoords.xy);
         // mask texture
         float mask   = abs(float(gui_gauss_invert_mask) - clamp(texture(layerB,v2QuadCoords.xy).r,0,1));
-        vec4 scolor;
-        if(gauss_mode == 0){
-                // smoothed color
-                  scolor = gauss_filter(layerA,w*mask,int(radius*mask),gui_depth);
+        vec4 scolor  = texture(layerC,v2QuadCoords.xy); // blured image
 
-        }else if(gauss_mode == 1){
-                  scolor = gauss_filter_h(layerA,w*mask,int(radius*mask),gui_depth);
-
-        }else if(gauss_mode == 2){
-                  scolor = gauss_filter_v(layerA,w*mask,int(radius*mask),gui_depth);
-
-        }
         // draw mask on image
-        if(gui_gauss_show_mask == true) scolor = vec4(mask);
-        else scolor = mix(ocolor,scolor,gui_gauss_blending);
+        if(gui_gauss_show_mask == true){
+            vec2 grid = 2*abs(fract(v2QuadCoords.xy*10)-0.5);
+            grid      = pow(grid,vec2(16));
+            scolor    = mix(vec4(mask),vec4(0.4,0.8,0.2,0),min(grid.x+grid.y,1.0));
+        }else scolor  = mix(ocolor,scolor,mask*gui_gauss_blending);
         return scolor;
     } // end of if else masking
 }
@@ -590,18 +587,18 @@ subroutine(filterModeType) vec4 mode_normal_to_height(){
 
 	
 	float hxp  = texture(layerA,tex_coord + off.yz).x;
-	float hxm = texture(layerA,tex_coord + off.xz).x;
+        float hxm  = texture(layerA,tex_coord + off.xz).x;
 	float hyp  = texture(layerA,tex_coord + off.zy).x;
-	float hym = texture(layerA,tex_coord + off.zx).x;	
+        float hym  = texture(layerA,tex_coord + off.zx).x;
 	
-	float nxp   = 2*(texture(layerB,tex_coord + off.yz ).x-0.5);
+        float nxp  = 2*(texture(layerB,tex_coord + off.yz ).x-0.5);
 	float nxm  = 2*(texture(layerB,tex_coord + off.xz ).x-0.5);
 	
-	float nyp   = 2*(texture(layerB,tex_coord + off.zy ).y-0.5);
+        float nyp  = 2*(texture(layerB,tex_coord + off.zy ).y-0.5);
 	float nym  = 2*(texture(layerB,tex_coord + off.zx ).y-0.5);
 	
-	float h = (nxp-nxm+nyp-nym)/8.0*scale + (hxp + hxm + hyp + hym)/4.0;	
-
+        float h = (nxp-nxm+nyp-nym)/8.0*scale + (hxp + hxm + hyp + hym)/4.0;
+        //h =   h / (1.0 + abs(nxp-nxm+nyp-nym)/8.0*scale);
 
         return vec4(h);
 	
@@ -789,6 +786,84 @@ subroutine(filterModeType) vec4 mode_height_processing_filter(){
     vec4 hmin = height_clamp(vec4(0.0),vec4(0.0),gui_height_proc_min_value,gui_height_proc_max_value);
     vec4 hmax = height_clamp(vec4(1.0),vec4(1.0),gui_height_proc_min_value,gui_height_proc_max_value);
     return clamp(vec4(height-hmin)/(hmax-hmin) + vec4(gui_height_proc_offset_value),vec4(0),vec4(1));
+}
+
+
+// ----------------------------------------------------------------
+//
+// ----------------------------------------------------------------
+
+
+uniform float gui_roughness_depth;
+uniform float gui_roughness_treshold;
+uniform float gui_roughness_amplifier;
+subroutine(filterModeType) vec4 mode_roughness_filter(){
+
+    float depth     = gui_roughness_depth ;
+    float treshold  = gui_roughness_treshold/20.0;
+    float amplifier = gui_roughness_amplifier*50;
+    float ave       = texture( layerB, v2QuadCoords.xy ).r;
+
+
+    float curvature = 0;
+    for(int x  = -10 ; x <= 10 ; x++){
+        for(int y  = -10 ; y <= 10 ; y++){
+          float val = texture( layerA, v2QuadCoords.xy + depth * vec2(x,y) * dxy ).r;
+          curvature += pow(val - ave,2.0) ;
+    }}
+    curvature = sqrt(curvature/100.0);
+    float cc = curvature;
+    float dc =  clamp(clamp(  curvature - abs(treshold) ,0.0,1.0) * amplifier,0,1);
+    if(treshold < 0) dc = 1 - dc;
+    /*
+    if(treshold > 0){
+        if( curvature > treshold ) curvature = 1.0;
+        else curvature = 0.0;
+        cc = -cc;
+    }else{
+        if( curvature > abs(treshold) ) curvature = 0.0;
+        else curvature = 1.0;
+
+    }
+
+    float dc = 0*amplifier*cc + curvature ;// mix(curvature,cc,(curvature-treshold)*amplifier);
+    */
+    return  vec4(dc) ;
+}
+// ----------------------------------------------------------------
+//
+// ----------------------------------------------------------------
+uniform vec3 gui_roughness_picked_color;
+uniform int  gui_roughness_color_method;
+uniform bool gui_roughness_invert_mask;
+uniform float gui_roughness_color_offset;
+uniform float gui_roughness_color_global_offset;
+uniform float gui_roughness_color_amplifier;
+
+subroutine(filterModeType) vec4 mode_roughness_color_filter(){
+    // differente approaches to measure difference in colors
+    float angle;
+    float amp = (1+5*gui_roughness_color_amplifier);
+    float offset = gui_roughness_color_offset*2;
+
+    if(gui_roughness_color_method == 0){ // angle based A
+        // treat colors like normals
+        vec3 colorA     = normalize(texture( layerA, v2QuadCoords.xy).rgb-0.5);
+        vec3 maskColor  = normalize(gui_roughness_picked_color-0.5); // normalized value of picked color
+        angle           = clamp(dot(colorA,maskColor)*amp+offset,0.0,1.0);
+
+    }else if(gui_roughness_color_method == 1){ // angle based B
+        vec3 colorA     = normalize(texture( layerA, v2QuadCoords.xy).rgb);
+        vec3 maskColor  = normalize(gui_roughness_picked_color); // normalized value of picked color
+        angle           = clamp(dot(colorA,maskColor)*amp+offset,0.0,1.0);
+
+    }else if(gui_roughness_color_method == 2){ // distance based
+        vec3 colorA     = (texture( layerA, v2QuadCoords.xy).rgb);
+        vec3 maskColor  = (gui_roughness_picked_color);
+        angle           = clamp((1-distance(colorA,maskColor)/sqrt(3))*amp + offset,0.0,1.0);
+
+    }
+    return vec4(abs(float(gui_roughness_invert_mask)-angle)+gui_roughness_color_global_offset) ;
 }
 
 

@@ -16,7 +16,8 @@ HEADERS       = glwidget.h \
     utils/tinyobj/tiny_obj_loader.h \
     formsettingsfield.h \
     formsettingscontainer.h \
-    utils/qglbuffers.h
+    utils/qglbuffers.h \
+    dialoglogger.h
 
 SOURCES       = glwidget.cpp \
                 main.cpp \
@@ -30,7 +31,8 @@ SOURCES       = glwidget.cpp \
     utils/tinyobj/tiny_obj_loader.cc \
     formsettingsfield.cpp \
     formsettingscontainer.cpp \
-    utils/qglbuffers.cpp
+    utils/qglbuffers.cpp \
+    dialoglogger.cpp
 
 
 # install
@@ -46,7 +48,8 @@ FORMS += \
     formimageprop.ui \
     dialogheightcalculator.ui \
     formsettingsfield.ui \
-    formsettingscontainer.ui
+    formsettingscontainer.ui \
+    dialoglogger.ui
 
 ICON = resources/icon.icns
 INCLUDEPATH += include

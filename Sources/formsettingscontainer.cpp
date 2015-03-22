@@ -47,6 +47,7 @@ void FormSettingsContainer::toggleAdding(){
 }
 
 
+
 void FormSettingsContainer::addNewSettingsField(){
     FormSettingsField* sfield = new FormSettingsField(ui->lineEditName->text(),ui->textEditDescription->toPlainText());
     connect(sfield,SIGNAL(emitDeleteSettings(FormSettingsField*)),this,SLOT(removeSetting(FormSettingsField*)));

@@ -199,6 +199,7 @@ GLTextureCube::GLTextureCube(int size)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE);
+    //glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
     // from http://stackoverflow.com/questions/462721/rendering-to-cube-map
@@ -220,7 +221,7 @@ GLTextureCube::GLTextureCube(const QStringList& fileNames, int size)
 {
     // TODO: Add error handling.
 
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
+    GLCHK(glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture));
 
     int index = 0;
     foreach (QString file, fileNames) {
@@ -240,8 +241,8 @@ GLTextureCube::GLTextureCube(const QStringList& fileNames, int size)
 
         // Works on x86, so probably works on all little-endian systems.
         // Does it work on big-endian systems?
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, 4, image.width(), image.height(), 0,
-            GL_BGRA, GL_UNSIGNED_BYTE, image.bits());
+        GLCHK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, 4, image.width(), image.height(), 0,
+            GL_BGRA, GL_UNSIGNED_BYTE, image.bits()) );
 
         if (++index == 6)
             break;
@@ -249,20 +250,31 @@ GLTextureCube::GLTextureCube(const QStringList& fileNames, int size)
 
     // Clear remaining faces.
     while (index < 6) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, 4, size, size, 0,
-            GL_BGRA, GL_UNSIGNED_BYTE, 0);
+        GLCHK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, 4, size, size, 0,
+            GL_BGRA, GL_UNSIGNED_BYTE, 0));
         ++index;
     }
 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE);
-    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE));
+    GLCHK(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
+
+
+    // get number of mip maps
+    if ( (numMipmaps = textureCalcLevels(GL_TEXTURE_CUBE_MAP_POSITIVE_X)) == -1 ) {
+            int max_level;
+            glGetTexParameteriv( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, &max_level );
+            numMipmaps = 1 + floor(log2(size > max_level?size:max_level) );
+    }
+
+    GLCHK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+    qDebug() << "Generated number of mipmaps:" << numMipmaps;
+
 }
 
 void GLTextureCube::load(int size, int face, QRgb *data)
@@ -290,6 +302,24 @@ void GLTextureCube::unbind()
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     glDisable(GL_TEXTURE_CUBE_MAP);
 }
+
+int GLTextureCube::textureCalcLevels(GLenum target)
+{
+  int max_level;
+  GLCHK(glGetTexParameteriv( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, &max_level ));
+  int max_mipmap = -1;
+  for ( int i = 0; i < max_level; ++i ) {
+    int width;
+    GLCHK(glGetTexLevelParameteriv( target, i, GL_TEXTURE_WIDTH, &width ));
+    if ( 0 == width || GL_INVALID_VALUE == width) {
+      max_mipmap = i - 1;
+      break;
+    }
+  }
+  return max_mipmap;
+}
+
+
 
 //============================================================================//
 //                            GLFrameBufferObject                             //

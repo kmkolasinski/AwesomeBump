@@ -9,6 +9,8 @@ uniform mat3 NormalMatrix;
 uniform int gui_shading_type;
 uniform  float gui_depthScale;
 uniform bool gui_bHeight;
+uniform bool gui_bUseCullFace;
+uniform int gui_noTessSub;
 in vec3 vPosition[];
 in vec3 vNormal[];
 in vec3 vTexcoord[];
@@ -26,7 +28,7 @@ out vec3 tcSmoothedNormal[];
 
 float lod_factor = 0.004;
 float level(vec4 v0, vec4 v1){     
-         return clamp(distance(v0.xyz, v1.xyz)/lod_factor, 1, 32);
+         return clamp(distance(v0.xyz, v1.xyz)/lod_factor, 1, gui_noTessSub);
  }
 
 vec4 project(vec3 vertex){
@@ -63,10 +65,10 @@ void main()
             vec4 eyePos = ModelViewMatrix * vec4(vPosition[0],1);
             float dtv = dot(normalize(normal),normalize(eyePos.xyz));
 
-            if( dtv < -0.2 ){
-                //    e0 = 0;
-               //     e1 = 0;
-                //    e2 = 0;
+            if( dtv < -0.0 && gui_bUseCullFace ){
+                    e0 = 0;
+                    e1 = 0;
+                    e2 = 0;
             }
 
 

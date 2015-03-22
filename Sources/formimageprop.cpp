@@ -58,15 +58,12 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 
     // height conversion buttons
     connect(ui->horizontalSliderConversionHNDepth   ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
-    connect(ui->checkBoxEnableHeightToNormal        ,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
-    connect(ui->checkBoxConversionHNAttachToNormal  ,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
-    connect(ui->checkBoxEnableHeightToNormal        ,SIGNAL(clicked()),this,SLOT(toggleHNPreviewMode()));
     connect(ui->pushButtonConverToNormal            ,SIGNAL(released()),this,SLOT(applyHeightToNormalConversion()));
     connect(ui->pushButtonShowDepthCalculator       ,SIGNAL(released()),this,SLOT(showHeightCalculatorDialog()));
 
 
     // normal convertion buttons and sliders
-    connect(ui->checkBoxEnableNormalToHeight                ,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+
     connect(ui->horizontalSliderNormalToHeightItersHuge     ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderNormalToHeightItersVeryLarge,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderNormalToHeightItersLarge    ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
@@ -99,6 +96,9 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderSSAOIntensity   ,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
     connect(ui->horizontalSliderSSAONoIters     ,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
 
+    connect(ui->pushButtonConvertOcclusionFromHN,SIGNAL(released()),this,SLOT(applyHeightNormalToOcclusionConversion()));
+
+
 
     // levels properties
     connect(ui->horizontalSliderHeightProcMinValue,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));    
@@ -112,6 +112,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 
     // selective blur buttons and sliders
     connect(ui->pushButtonSelectiveBlurPreviewMask,SIGNAL(released()),this,SLOT(updateGuiCheckBoxes()));
+    connect(ui->pushButtonSelectiveBlurPreviewMask,SIGNAL(toggled(bool)),this,SLOT(togglePreviewSelectiveBlurMask(bool)));
     connect(ui->checkBoxSelectiveBlurInvertMask,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
     connect(ui->checkBoxSelectiveBlurEnable,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
 
@@ -128,18 +129,57 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderSelectiveBlurMaxValue,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderSelectiveBlurDetails,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderSelectiveBlurOffset,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->comboBoxMaskInputImage,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
+    connect(ui->horizontalSliderSelectiveBlurNoIters,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+
+    // roughness settings
+    connect(ui->horizontalSliderRoughnessDepth,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderRoughnessTreshold,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderRoughnessAmplifier,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+
+    connect(ui->radioButtonRoughnessEnable,SIGNAL(clicked()),this,SLOT(cancelColorPicking()));
+    connect(ui->radioButtonEnableColorPicking,SIGNAL(clicked()),this,SLOT(cancelColorPicking()));
+    connect(ui->radioButtonRoughnessNoneEffect,SIGNAL(clicked()),this,SLOT(cancelColorPicking()));
+
+    connect(ui->radioButtonRoughnessEnable,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+    connect(ui->radioButtonEnableColorPicking,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+    connect(ui->radioButtonRoughnessNoneEffect,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+
+
+    connect(ui->pushButtonRoughnessPickColor,SIGNAL(toggled(bool)),this,SLOT(toggleColorPicking(bool)));
+    connect(ui->comboBoxColorPickerMethod,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
+    connect(ui->horizontalSliderRoughnessColorOffset,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderRoughnessColorGlobalOffset,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderRoughnessColorAmplifier,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->checkBoxRoughnessColorInvert,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+
+
+
+    // input image boxes
+    connect(ui->comboBoxNormalInputImage,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
+    connect(ui->comboBoxSpecularInputImage,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
+    connect(ui->comboBoxOcclusionInputImage,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
+    connect(ui->comboBoxRoughnessInputImage,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
+
+
+
 
     setAcceptDrops(true);
     ui->groupBoxRemoveShading->hide();
     ui->checkBoxRemoveShading->hide();
     ui->groupBoxGrayScale->hide();
-    ui->groupBoxSelectiveBlurOptions->setDisabled(true);
+    ui->groupBoxSelectiveBlurOptions->hide();
     ui->groupBoxSelectiveBlurLevels->hide();
     heightCalculator = new DialogHeightCalculator;
 
     ui->labelHue->hide();
     ui->labelHueValue->hide();
     ui->horizontalSliderColorHue->hide();
+
+    ui->groupBoxRoughnessSurfaceFilter->hide();
+    ui->groupBoxRoughnessColorFilter_2->hide();
+    ui->groupBoxBaseToOthersProcessing->hide();
+    ui->groupBoxSpecularProcessing->hide();
 
 }
 
@@ -322,8 +362,94 @@ void FormImageProp::updateComboBoxes(int index){
     ui->horizontalSliderGrayScaleB->setValue(imageProp.grayScalePreset.B*255);
     bLoading = false;
 
+    // input image case study
+    switch(imageProp.imageType){
+        case(NORMAL_TEXTURE):
+        // select propper input image for normals
+        ui->pushButtonConverToNormal->setEnabled(false);
+
+        switch(ui->comboBoxNormalInputImage->currentIndex()){
+            case(0):
+                imageProp.inputImageType = INPUT_FROM_NORMAL_INPUT ;
+                ui->pushButtonConverToNormal->setEnabled(true);
+                break;
+            case(1): imageProp.inputImageType = INPUT_FROM_HEIGHT_INPUT; break;
+            case(2): imageProp.inputImageType = INPUT_FROM_HEIGHT_OUTPUT; break;
+        }
+        break;
+         // end of case NORMAL
+        case(SPECULAR_TEXTURE):
+        // select propper input image for specular
+
+        switch(ui->comboBoxSpecularInputImage->currentIndex()){
+            case(0):
+                imageProp.inputImageType = INPUT_FROM_SPECULAR_INPUT;
+                break;
+            case(1): imageProp.inputImageType = INPUT_FROM_DIFFUSE_INPUT; break;
+            case(2): imageProp.inputImageType = INPUT_FROM_DIFFUSE_OUTPUT; break;
+            case(3): imageProp.inputImageType = INPUT_FROM_HEIGHT_INPUT; break;
+            case(4): imageProp.inputImageType = INPUT_FROM_HEIGHT_OUTPUT; break;
+        }
+        break;
+         // end of case SPECULAR
+        case(OCCLUSION_TEXTURE):
+        // select propper input image for occlusion
+        ui->pushButtonConvertOcclusionFromHN->setEnabled(false);
+        switch(ui->comboBoxOcclusionInputImage->currentIndex()){
+            case(0):
+                imageProp.inputImageType = INPUT_FROM_OCCLUSION_INPUT;
+                ui->pushButtonConvertOcclusionFromHN->setEnabled(true);
+                break;
+            case(1): imageProp.inputImageType = INPUT_FROM_HI_NI; break;
+            case(2): imageProp.inputImageType = INPUT_FROM_HO_NO; break;
+        }
+        break;
+         // end of case OCCLUSION
+        case(ROUGHNESS_TEXTURE):
+        // select propper input image for roughness
+
+        switch(ui->comboBoxRoughnessInputImage->currentIndex()){
+            case(0):
+                imageProp.inputImageType = INPUT_FROM_ROUGHNESS_INPUT;
+                break;
+            case(1): imageProp.inputImageType = INPUT_FROM_DIFFUSE_INPUT;  break;
+            case(2): imageProp.inputImageType = INPUT_FROM_DIFFUSE_OUTPUT; break;
+
+        }
+        break;
+         // end of case ROUGHNESS
+        case(METALLIC_TEXTURE):
+        // select propper input image for roughness
+
+        switch(ui->comboBoxRoughnessInputImage->currentIndex()){
+            case(0):
+                imageProp.inputImageType = INPUT_FROM_METALLIC_INPUT;
+                break;
+            case(1): imageProp.inputImageType = INPUT_FROM_DIFFUSE_INPUT;  break;
+            case(2): imageProp.inputImageType = INPUT_FROM_DIFFUSE_OUTPUT; break;
+
+        }
+        break;
+         // end of case Metallic
+        case(HEIGHT_TEXTURE):
+        // select propper input image for roughness
+
+        switch(ui->comboBoxMaskInputImage->currentIndex()){
+            case(0):
+                imageProp.selectiveBlurMaskInputImageType = INPUT_FROM_HEIGHT_OUTPUT;
+                break;
+            case(1): imageProp.selectiveBlurMaskInputImageType = INPUT_FROM_DIFFUSE_OUTPUT  ;  break;
+            case(2): imageProp.selectiveBlurMaskInputImageType = INPUT_FROM_METALLIC_OUTPUT ;  break;
+            case(3): imageProp.selectiveBlurMaskInputImageType = INPUT_FROM_ROUGHNESS_OUTPUT;  break;
+        }
+        break;
+         // end of case Metallic
+        default:break; // do nothing
+    };
 
 
+    // color picker
+    imageProp.colorPickerMethod = (ColorPickerMethod) ui->comboBoxColorPickerMethod->currentIndex();
 
     emit imageChanged();
 }
@@ -411,6 +537,17 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
     imageProp.selectiveBlurMaxValue        = ui->horizontalSliderSelectiveBlurMaxValue->value()/255.0;
     imageProp.selectiveBlurDetails         = ui->horizontalSliderSelectiveBlurDetails->value();
     imageProp.selectiveBlurOffsetValue     = ui->horizontalSliderSelectiveBlurOffset->value()/255.0;
+    imageProp.selectiveBlurNoIters         = ui->horizontalSliderSelectiveBlurNoIters->value();
+
+    // roughness settings
+    imageProp.roughnessDepth    = ui->horizontalSliderRoughnessDepth->value()/100.0;
+    imageProp.roughnessTreshold = ui->horizontalSliderRoughnessTreshold->value()/100.0;
+    imageProp.roughnessAmplifier= ui->horizontalSliderRoughnessAmplifier->value()/100.0;
+
+    imageProp.roughnessColorOffset= ui->horizontalSliderRoughnessColorOffset->value()/100.0;
+    imageProp.roughnessColorAmplifier= ui->horizontalSliderRoughnessColorAmplifier->value()/100.0;
+    imageProp.roughnessColorGlobalOffset= ui->horizontalSliderRoughnessColorGlobalOffset->value()/255.0;
+
 
 }
 
@@ -431,35 +568,42 @@ void FormImageProp::updateGuiCheckBoxes(){
     imageProp.bInvertR              = ui->checkBoxInvertR->isChecked();
     imageProp.bInvertG              = ui->checkBoxInvertG->isChecked();
 
-    imageProp.bConversionHN         = ui->checkBoxEnableHeightToNormal->isChecked();
-    imageProp.bConversionNH         = ui->checkBoxEnableNormalToHeight->isChecked();
+
+
     imageProp.bConversionBaseMap    = ui->checkBoxEnableBaseMapToOthers->isChecked();
 
     imageProp.bSelectiveBlurPreviewMask = ui->pushButtonSelectiveBlurPreviewMask->isChecked();
     imageProp.bSelectiveBlurInvertMask  = ui->checkBoxSelectiveBlurInvertMask   ->isChecked();
     imageProp.bSelectiveBlurEnable      = ui->checkBoxSelectiveBlurEnable       ->isChecked();
-    // one must treat height separately
-    if(imageProp.imageType == HEIGHT_TEXTURE) FBOImageProporties::bAttachNormalToHeightMap = ui->checkBoxConversionHNAttachToNormal->isChecked();
+
+
+    imageProp.bRoughnessSurfaceEnable           = ui->radioButtonRoughnessEnable->isChecked();
+    imageProp.bRoughnessEnableColorPicking      = ui->radioButtonEnableColorPicking->isChecked();
+    imageProp.bRoughnessInvertColorMask         = ui->checkBoxRoughnessColorInvert->isChecked();
+
+
+    if(imageProp.bRoughnessEnableColorPicking){
+         if(!imageProp.bRoughnessColorPickingToggled)ui->groupBoxGeneral->setDisabled(true);
+    }else{
+         ui->groupBoxGeneral->setDisabled(false);
+    }
 
     emit imageChanged();
 }
 
 void FormImageProp::applyHeightToNormalConversion(){
-    conversionHeightToNormalApplied();
+    emit conversionHeightToNormalApplied();
 }
 void FormImageProp::applyNormalToHeightConversion(){
-   conversionNormalToHeightApplied();
+    emit conversionNormalToHeightApplied();
 }
 
 void FormImageProp::applyBaseConversionConversion(){
-    conversionBaseConversionApplied();
+    emit conversionBaseConversionApplied();
 }
 
-void FormImageProp::toggleHNPreviewMode(){
-    repaintNormalTexture();
-}
-void FormImageProp::toggleAttachToNormal(bool toggle){
- ui->checkBoxConversionHNAttachToNormal->setChecked(toggle);
+void FormImageProp::applyHeightNormalToOcclusionConversion(){
+    emit conversionHeightNormalToOcclusionApplied();
 }
 
 
@@ -474,17 +618,79 @@ void FormImageProp::showHeightCalculatorDialog(){
      }
 }
 
+void FormImageProp::toggleColorPicking(bool toggle){
+    imageProp.bRoughnessColorPickingToggled = toggle;
+
+    if(imageProp.bRoughnessEnableColorPicking && toggle){
+        QPalette palette = ui->pushButtonRoughnessPickColor->palette();
+        palette.setColor(ui->pushButtonRoughnessPickColor->backgroundRole(), QColor(255, 0, 0, 127));
+        ui->pushButtonRoughnessPickColor->setPalette(palette);
+        ui->pushButtonRoughnessPickColor->setText("pick color");
+
+        emit toggleColorPickingApplied(toggle);
+
+    }
+    if(toggle == false){
+        QPalette palette = ui->pushButtonRoughnessPickColor->palette();
+        palette.setColor(ui->pushButtonRoughnessPickColor->backgroundRole(), QColor(0, 255, 0, 127));
+        ui->pushButtonRoughnessPickColor->setPalette(palette);
+        ui->pushButtonRoughnessPickColor->setText("click to pick");
+
+    }
+    emit imageChanged();
+}
+
+void FormImageProp::colorPicked(QVector4D color){
+
+    if(imageProp.bRoughnessColorPickingToggled){
+
+        ui->pushButtonRoughnessPickColor->setChecked(false);
+        imageProp.bRoughnessColorPickingToggled = false;
+        imageProp.pickedColor                   = color.toVector3D()/255.0;
+        QPalette palette = ui->labelRoughnessPickedColor->palette();
+        palette.setColor(ui->labelRoughnessPickedColor->backgroundRole(), QColor(color.x(),color.y(),color.z()));
+        palette.setColor(ui->labelRoughnessPickedColor->foregroundRole(), QColor(color.x(),color.y(),color.z()));
+        ui->labelRoughnessPickedColor->setPalette(palette);
+        update();
+        emit imageChanged();
+    }
+}
+
+void FormImageProp::cancelColorPicking(){
+    imageProp.bRoughnessColorPickingToggled = false;
+    ui->pushButtonRoughnessPickColor->setChecked(false);
+
+}
+
+void FormImageProp::togglePreviewSelectiveBlurMask(bool toggle){
+    QPalette palette = ui->pushButtonSelectiveBlurPreviewMask->palette();
+    palette.setColor(ui->pushButtonSelectiveBlurPreviewMask->backgroundRole(), QColor(255*int(toggle), 255*int(!toggle), 0, 127));
+    if(toggle) ui->pushButtonSelectiveBlurPreviewMask->setText("Disable preview");
+    else ui->pushButtonSelectiveBlurPreviewMask->setText("Preview mask");
+    ui->pushButtonSelectiveBlurPreviewMask->setPalette(palette);
+}
 
 void FormImageProp::hideSpecularGroupBox(){
     ui->groupBoxSpecular->hide();
 }
 
-void FormImageProp::hideHNGroupBox(){
-    ui->checkBoxConversionHNAttachToNormal->setChecked(false);
-    ui->groupBoxHN->hide();
+void FormImageProp::hideNormalInputGroup(){
+    ui->groupBoxNormalInputImage->hide();
 }
-void FormImageProp::hideNHGroupBox(){
-    ui->groupBoxNH->hide();
+void FormImageProp::hideSpecularInputGroup(){
+    ui->groupBoxSpecularInputImage->hide();
+}
+
+void FormImageProp::hideRoughnessInputGroup(){
+    ui->groupBoxRoughnessInputImage->hide();
+}
+
+void FormImageProp::hideOcclusionInputGroup(){
+    ui->groupBoxOcclusionInputImage->hide();
+}
+
+void FormImageProp::hideHeightInputGroup(){
+    ui->groupBoxHeightInputImage->hide();
 }
 void FormImageProp::hideBMGroupBox(){
     ui->groupBoxBM->hide();
@@ -496,9 +702,6 @@ void FormImageProp::hideNormalStepBar(){
     ui->horizontalSliderNormalsStep->hide();
 }
 
-void FormImageProp::hideSSAOBar(){
-    ui->groupBoxSSAO->hide();
-}
 
 void FormImageProp::hideHeightProcessingBox(){
     ui->groupBoxHeightProcessing->hide();
@@ -610,6 +813,140 @@ void FormImageProp::reloadSettings(){
     ui->doubleSpinBoxSSAODepth          ->setValue(imageProp.ssaoDepth);
     ui->doubleSpinBoxSSAOBias           ->setValue(imageProp.ssaoBias);
     ui->doubleSpinBoxSSAOIntensity      ->setValue(imageProp.ssaoIntensity);
+
+
+    ui->horizontalSliderAOCancelation   ->setValue(imageProp.aoCancellation*100);
+    ui->horizontalSliderColorHue        ->setValue(imageProp.colorHue*180);
+
+    ui->horizontalSliderSelectiveBlurBlending->setValue(imageProp.selectiveBlurBlending*100);
+    ui->horizontalSliderSelectiveBlurMaskRadius->setValue(imageProp.selectiveBlurMaskRadius);
+    ui->horizontalSliderSelectiveBlurDOGRadius->setValue(imageProp.selectiveBlurDOGRadius);
+    ui->horizontalSliderSelectiveBlurDOGContrast->setValue(imageProp.selectiveBlurDOGConstrast*100);
+    ui->horizontalSliderSelectiveBlurDOGAmplifier->setValue(imageProp.selectiveBlurDOGAmplifier*10);
+    ui->horizontalSliderSelectiveBlurDOGOffset->setValue(imageProp.selectiveBlurDOGOffset*255);
+
+    ui->horizontalSliderSelectiveBlurMinValue      ->setValue(imageProp.selectiveBlurMinValue*255);
+    ui->horizontalSliderSelectiveBlurMaxValue      ->setValue(imageProp.selectiveBlurMaxValue*255);
+    ui->horizontalSliderSelectiveBlurOffset        ->setValue(imageProp.selectiveBlurOffsetValue*255);
+    ui->horizontalSliderSelectiveBlurDetails       ->setValue(imageProp.selectiveBlurDetails);
+
+    ui->horizontalSliderRoughnessDepth      ->setValue(imageProp.roughnessDepth*100.0);
+    ui->horizontalSliderRoughnessTreshold   ->setValue(imageProp.roughnessTreshold*100.0);
+    ui->horizontalSliderRoughnessAmplifier  ->setValue(imageProp.roughnessAmplifier*100.0);
+
+
+    ui->comboBoxSelectiveBlurTypes->setCurrentIndex(imageProp.selectiveBlurType);    
+
+    ui->checkBoxSelectiveBlurEnable->setChecked(imageProp.bSelectiveBlurEnable);
+    ui->checkBoxSelectiveBlurInvertMask->setChecked(imageProp.bSelectiveBlurInvertMask);
+    ui->pushButtonSelectiveBlurPreviewMask->setChecked(imageProp.bSelectiveBlurPreviewMask);
+
+    ui->radioButtonRoughnessEnable->setChecked(imageProp.bRoughnessSurfaceEnable);
+    ui->radioButtonEnableColorPicking->setChecked(imageProp.bRoughnessEnableColorPicking);
+    if(!imageProp.bRoughnessSurfaceEnable && !imageProp.bRoughnessEnableColorPicking) ui->radioButtonRoughnessNoneEffect->setChecked(true);
+    if(imageProp.bRoughnessEnableColorPicking) ui->groupBoxGeneral->setDisabled(true);
+
+    imageProp.bRoughnessColorPickingToggled = false;
+
+    QColor color(255*imageProp.pickedColor.x(),255*imageProp.pickedColor.y(),255*imageProp.pickedColor.z());
+    QPalette palette = ui->labelRoughnessPickedColor->palette();
+    palette.setColor(ui->labelRoughnessPickedColor->backgroundRole(), color);
+    palette.setColor(ui->labelRoughnessPickedColor->foregroundRole(), color);
+    ui->labelRoughnessPickedColor->setPalette(palette);
+
+
+    ui->checkBoxRoughnessColorInvert->setChecked(imageProp.bRoughnessInvertColorMask);
+    ui->horizontalSliderRoughnessColorOffset->setValue(imageProp.roughnessColorOffset*100);
+    ui->horizontalSliderRoughnessColorOffset->setValue(imageProp.roughnessColorGlobalOffset*255);
+
+    ui->horizontalSliderRoughnessColorAmplifier->setValue(imageProp.roughnessColorAmplifier*100);
+
+    ui->horizontalSliderSelectiveBlurNoIters->setValue(imageProp.selectiveBlurNoIters);
+    ui->comboBoxColorPickerMethod->setCurrentIndex(imageProp.colorPickerMethod);
+
+    // input image case study
+    switch(imageProp.imageType){
+        case(NORMAL_TEXTURE):
+        // select propper input image for normals
+        ui->pushButtonConverToNormal->setEnabled(false);
+
+        switch(imageProp.inputImageType){
+            case(INPUT_FROM_NORMAL_INPUT):
+                ui->comboBoxNormalInputImage->setCurrentIndex(0);
+                ui->pushButtonConverToNormal->setEnabled(true);
+                break;
+            case(INPUT_FROM_HEIGHT_INPUT): ui->comboBoxNormalInputImage->setCurrentIndex(1); ; break;
+            case(INPUT_FROM_HEIGHT_OUTPUT): ui->comboBoxNormalInputImage->setCurrentIndex(2); ; break;
+            default: break;
+        }
+        break;
+         // end of case NORMAL
+        case(SPECULAR_TEXTURE):
+        // select propper input image for specular
+
+        switch(imageProp.inputImageType){
+            case(INPUT_FROM_SPECULAR_INPUT): ui->comboBoxSpecularInputImage->setCurrentIndex(0); break;
+            case(INPUT_FROM_DIFFUSE_INPUT) : ui->comboBoxSpecularInputImage->setCurrentIndex(0); break;
+            case(INPUT_FROM_DIFFUSE_OUTPUT): ui->comboBoxSpecularInputImage->setCurrentIndex(1); break;
+            case(INPUT_FROM_HEIGHT_INPUT)  : ui->comboBoxSpecularInputImage->setCurrentIndex(2); break;
+            case(INPUT_FROM_HEIGHT_OUTPUT) : ui->comboBoxSpecularInputImage->setCurrentIndex(3); break;
+            default: break;
+        }
+        break;
+         // end of case SPECULAR
+        case(OCCLUSION_TEXTURE):
+        // select propper input image for occlusion
+        ui->pushButtonConvertOcclusionFromHN->setEnabled(false);
+        switch(imageProp.inputImageType){
+            case(INPUT_FROM_OCCLUSION_INPUT):
+                ui->comboBoxOcclusionInputImage->setCurrentIndex(0);
+                ui->pushButtonConvertOcclusionFromHN->setEnabled(true);
+                break;
+            case(INPUT_FROM_HI_NI): ui->comboBoxOcclusionInputImage->setCurrentIndex(1); break;
+            case(INPUT_FROM_HO_NO): ui->comboBoxOcclusionInputImage->setCurrentIndex(2); break;
+            default: break;
+        }
+        break;
+         // end of case OCCLUSION
+        case(ROUGHNESS_TEXTURE):
+        // select propper input image for roughness
+
+        switch(imageProp.inputImageType){
+            case(INPUT_FROM_ROUGHNESS_INPUT): ui->comboBoxRoughnessInputImage->setCurrentIndex(0);  break;
+            case(INPUT_FROM_DIFFUSE_INPUT)  : ui->comboBoxRoughnessInputImage->setCurrentIndex(1);  break;
+            case(INPUT_FROM_DIFFUSE_OUTPUT) : ui->comboBoxRoughnessInputImage->setCurrentIndex(2);  break;
+            default: break;
+
+        }
+        break;
+         // end of case ROUGHNESS
+        case(METALLIC_TEXTURE):
+        // select propper input image for roughness
+
+        switch(imageProp.inputImageType){
+            case(INPUT_FROM_METALLIC_INPUT): ui->comboBoxRoughnessInputImage->setCurrentIndex(0);  break;
+            case(INPUT_FROM_DIFFUSE_INPUT) : ui->comboBoxRoughnessInputImage->setCurrentIndex(1);  break;
+            case(INPUT_FROM_DIFFUSE_OUTPUT): ui->comboBoxRoughnessInputImage->setCurrentIndex(2);  break;
+            default: break;
+        }
+        break;
+         // end of case Metallic
+        case(HEIGHT_TEXTURE):
+        // select propper input image for roughness
+
+        switch(imageProp.selectiveBlurMaskInputImageType){
+            case(INPUT_FROM_HEIGHT_OUTPUT)   : ui->comboBoxMaskInputImage->setCurrentIndex(0);  break;
+            case(INPUT_FROM_DIFFUSE_OUTPUT)  : ui->comboBoxMaskInputImage->setCurrentIndex(1);  break;
+            case(INPUT_FROM_METALLIC_OUTPUT) : ui->comboBoxMaskInputImage->setCurrentIndex(2);  break;
+            case(INPUT_FROM_ROUGHNESS_OUTPUT): ui->comboBoxMaskInputImage->setCurrentIndex(3);  break;
+            default: break;
+        }
+        break;
+         // end of case Metallic
+        default:break; // do nothing
+    };
+
+
 
 
     bLoading = false;

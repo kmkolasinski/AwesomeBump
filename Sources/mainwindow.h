@@ -12,21 +12,9 @@
 #include "formimageprop.h"
 #include "formsettingscontainer.h"
 #include "CommonObjects.h"
+#include "dialoglogger.h"
 
-#define TAB_SETTINGS 5
-#define TAB_TILING   6
 
-#ifdef Q_OS_MAC
-# define AB_INI "AwesomeBump.ini"
-# define AB_LOG "AwesomeBump.log" // log created in current directory
-# define AB_LOG_ALT (QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).arg(AB_LOG))
-#else
-    #define AB_INI "config.ini"
-    #define AB_LOG "log.txt"
-    #define AB_LOG_ALT "log.txt"
-#endif
-
-#define AWESOME_BUMP_VERSION "AwesomeBump v3.0"
 
 namespace Ui {
 class MainWindow;
@@ -75,13 +63,15 @@ public slots:
     void selectSpecularTab();
     void selectHeightTab();
     void selectOcclusionTab();
+    void selectRoughnessTab();
+    void selectMetallicTab();
     void selectGeneralSettingsTab();
     void fitImage();// resize 2D image
 
     // repaint views after changes
     void updateDiffuseImage();
     void updateNormalImage();
-    void repaintNormalImage(); // used in case preview mode
+
     void updateSpecularImage();
     void updateHeightImage();
     void updateOcclusionImage();
@@ -105,11 +95,15 @@ public slots:
     void setSpecularIntensity(int);
     void setDiffuseIntensity(int);
     void updateSpinBoxes(int);
+    // change current performance settings
+    void updatePerformanceSettings();
+    void updatePerformanceSettings(int);
 
     // Conversion functions
     void convertFromHtoN();
     void convertFromNtoH();
     void convertFromBase();
+    void convertFromHNtoOcc();
 
     // UV tools
     void updateSliders();
@@ -120,8 +114,6 @@ public slots:
     void selectSeamlessMode(int mode);
     void randomizeAngles();// in random mode
     void resetRandomPatches();
-
-
 
 private:
     // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
@@ -153,8 +145,10 @@ private:
 
     QAction *aboutQtAction;
     QAction *aboutAction;
-
+    QAction *logAction; // show logger
+    DialogLogger* logger;
     QSettings defaults;
+
 };
 
 #endif // MAINWINDOW_H

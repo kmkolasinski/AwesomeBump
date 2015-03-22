@@ -28,27 +28,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
 
-
-    QGLContext* glContext = (QGLContext *) glWidget->context();
-    glContext->makeCurrent();
-    qDebug() << "Running the " + QString(AWESOME_BUMP_VERSION);
-    qDebug() << "Checking OpenGL version...";
-    qDebug() << "Widget OpenGL: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() ;
-    qDebug() << "Context valid: " << glContext->isValid() ;
-    qDebug() << "OpenGL information: " ;
-    qDebug() << "VENDOR: "       << (const char*)glGetString(GL_VENDOR) ;
-    qDebug() << "RENDERER: "     << (const char*)glGetString(GL_RENDERER) ;
-    qDebug() << "VERSION: "      << (const char*)glGetString(GL_VERSION) ;
-    qDebug() << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
-
-    qDebug() << "OpenGLVersionFlags(): " << QGLFormat::OpenGLVersionFlags();
-
-    if((QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_3_2) == 0)
-    {
-       qDebug() << "GL 3.2 is not supported by AwesomeBump" ;
-       exit(-1);
-    }
-
     diffuseImageProp  = new FormImageProp(this,glImage);
     normalImageProp   = new FormImageProp(this,glImage);
     specularImageProp = new FormImageProp(this,glImage);
@@ -79,55 +58,75 @@ MainWindow::MainWindow(QWidget *parent) :
     specularImageProp->setSpecularControlChecked();
     specularImageProp->getImageProporties()->bSpeclarControl = true;
     specularImageProp->hideBMGroupBox();
-    specularImageProp->hideHNGroupBox();
-    specularImageProp->hideNHGroupBox();
-    specularImageProp->hideSSAOBar();
+    specularImageProp->hideNormalInputGroup();
+    specularImageProp->hideHeightInputGroup();
+    specularImageProp->hideOcclusionInputGroup();
     specularImageProp->hideNormalStepBar();
     specularImageProp->hideSelectiveBlurBox();
+    specularImageProp->hideRoughnessInputGroup();
 
-    diffuseImageProp->hideHNGroupBox();
-    diffuseImageProp->hideNHGroupBox();
+
+    diffuseImageProp->hideNormalInputGroup();
+    diffuseImageProp->hideSpecularInputGroup();
+    diffuseImageProp->hideHeightInputGroup();
     diffuseImageProp->hideSpecularGroupBox();
     diffuseImageProp->hideNormalStepBar();
-    diffuseImageProp->hideSSAOBar();
+    diffuseImageProp->hideOcclusionInputGroup();
     diffuseImageProp->hideSelectiveBlurBox();
+    diffuseImageProp->hideRoughnessInputGroup();
 
-    normalImageProp->hideHNGroupBox();
+
+    normalImageProp->hideSpecularInputGroup();
     normalImageProp->hideBMGroupBox();
     normalImageProp->hideSpecularGroupBox();
-    normalImageProp->hideSSAOBar();
+    normalImageProp->hideOcclusionInputGroup();
     normalImageProp->hideHeightProcessingBox();
     normalImageProp->hideGrayScaleControl();
     normalImageProp->hideSelectiveBlurBox();
+    normalImageProp->hideHeightInputGroup();
+    normalImageProp->hideRoughnessInputGroup();
 
+
+    heightImageProp->hideSpecularInputGroup();
+    heightImageProp->hideNormalInputGroup();
     heightImageProp->hideBMGroupBox();
-    heightImageProp->hideNHGroupBox();
     heightImageProp->hideSpecularGroupBox();
     heightImageProp->hideNormalStepBar();
-    heightImageProp->hideSSAOBar();
+    heightImageProp->hideOcclusionInputGroup();
     heightImageProp->hideGrayScaleControl();
+    heightImageProp->hideRoughnessInputGroup();
 
+
+    occlusionImageProp->hideSpecularInputGroup();
     occlusionImageProp->hideSpecularGroupBox();
     occlusionImageProp->hideBMGroupBox();
-    occlusionImageProp->hideHNGroupBox();
-    occlusionImageProp->hideNHGroupBox();
+    occlusionImageProp->hideNormalInputGroup();
+    occlusionImageProp->hideHeightInputGroup();
     occlusionImageProp->hideNormalStepBar();
     occlusionImageProp->hideGrayScaleControl();
     occlusionImageProp->hideSelectiveBlurBox();
+    occlusionImageProp->hideRoughnessInputGroup();
+
     
+    roughnessImageProp->hideSpecularInputGroup();
     roughnessImageProp->hideNormalStepBar();
-    roughnessImageProp->hideHNGroupBox();
-    roughnessImageProp->hideNHGroupBox();
-    roughnessImageProp->hideSSAOBar();
+    roughnessImageProp->hideNormalInputGroup();
+    roughnessImageProp->hideHeightInputGroup();
+    roughnessImageProp->hideOcclusionInputGroup();
     roughnessImageProp->hideBMGroupBox();
     roughnessImageProp->hideSelectiveBlurBox();
 
+    roughnessImageProp->hideGrayScaleControl();
+
+    metallicImageProp->hideSpecularInputGroup();
     metallicImageProp->hideNormalStepBar();
-    metallicImageProp->hideHNGroupBox();
-    metallicImageProp->hideNHGroupBox();
-    metallicImageProp->hideSSAOBar();
+    metallicImageProp->hideNormalInputGroup();
+    metallicImageProp->hideHeightInputGroup();
+    metallicImageProp->hideOcclusionInputGroup();
     metallicImageProp->hideBMGroupBox();
     metallicImageProp->hideSelectiveBlurBox();
+    //metallicImageProp->hideRoughnessInputGroup();
+
 
 
     glImage ->targetImageNormal    = normalImageProp   ->getImageProporties();
@@ -198,12 +197,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(roughnessImageProp ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
     connect(metallicImageProp  ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
 
+
     // conversion signals
-    connect(heightImageProp,SIGNAL(conversionHeightToNormalApplied()) ,this,SLOT(convertFromHtoN()));
-    connect(heightImageProp,SIGNAL(repaintNormalTexture()) ,this,SLOT(repaintNormalImage()));
-    
-    connect(normalImageProp,SIGNAL(conversionNormalToHeightApplied()) ,this,SLOT(convertFromNtoH()));
-    connect(diffuseImageProp,SIGNAL(conversionBaseConversionApplied()),this,SLOT(convertFromBase()));
+    connect(normalImageProp   ,SIGNAL(conversionHeightToNormalApplied()) ,this,SLOT(convertFromHtoN()));
+    connect(heightImageProp   ,SIGNAL(conversionNormalToHeightApplied()) ,this,SLOT(convertFromNtoH()));
+    connect(diffuseImageProp  ,SIGNAL(conversionBaseConversionApplied()),this,SLOT(convertFromBase()));
+    connect(occlusionImageProp,SIGNAL(conversionHeightNormalToOcclusionApplied()),this,SLOT(convertFromHNtoOcc()));
+
+
 
     // Global setting signals
     // sliders
@@ -230,21 +231,38 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonRescaleApply,SIGNAL(released()),this,SLOT(applyScaleImage()));
 
     // Other signals - 3D settings
+
+    // 3D settings
+    connect(ui->comboBoxPerformanceNoRays     ,SIGNAL(activated(int)),this,SLOT(updatePerformanceSettings(int)));
+    connect(ui->comboBoxPerformanceNoTessSub  ,SIGNAL(activated(int)),this,SLOT(updatePerformanceSettings(int)));
+    connect(ui->checkBoxPerformanceCullFace   ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
+    connect(ui->checkBoxPerformanceSimplePBR  ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
+
+
+
     connect(ui->pushButtonReplotAll           ,SIGNAL(released()),this,SLOT(replotAllImages()));
     connect(ui->pushButtonToggleDiffuse       ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
     connect(ui->pushButtonToggleSpecular      ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleSpecularView(bool)));
     connect(ui->pushButtonToggleOcclusion     ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleOcclusionView(bool)));
     connect(ui->pushButtonToggleNormal        ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleNormalView(bool)));
     connect(ui->pushButtonToggleHeight        ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleHeightView(bool)));
+    connect(ui->pushButtonToggleRoughness     ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleRoughnessView(bool)));
+    connect(ui->pushButtonToggleMetallic      ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleMetallicView(bool)));
     connect(ui->pushButtonSaveCurrentSettings ,SIGNAL(released()),this,SLOT(saveSettings()));
     connect(ui->horizontalSliderSpecularI     ,SIGNAL(valueChanged(int)),this,SLOT(setSpecularIntensity(int)));
     connect(ui->horizontalSliderDiffuseI      ,SIGNAL(valueChanged(int)),this,SLOT(setDiffuseIntensity(int)));
+
+    connect(ui->horizontalSliderLightPower      ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+    connect(ui->horizontalSliderLightRadius     ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+
+
     connect(ui->comboBoxImageOutputFormat     ,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
 
     // loading 3d mesh signal
     connect(ui->pushButtonLoadMesh            ,SIGNAL(released()),        glWidget,SLOT(loadMeshFromFile()));
     connect(ui->comboBoxChooseOBJModel        ,SIGNAL(activated(QString)),glWidget,SLOT(chooseMeshFile(QString)));
     connect(ui->comboBoxShadingType           ,SIGNAL(activated(int)),    glWidget,SLOT(selectShadingType(int)));
+    connect(ui->comboBoxShadingModel          ,SIGNAL(activated(int)),    glWidget,SLOT(selectShadingModel(int)));
 
 
     // PBR settings
@@ -253,12 +271,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->progressBar->setValue(0);
 
-    connect(ui->actionReplot            ,SIGNAL(triggered()),this,SLOT(replotAllImages()));
-    connect(ui->actionShowDiffuseImage  ,SIGNAL(triggered()),this,SLOT(selectDiffuseTab()));
-    connect(ui->actionShowNormalImage   ,SIGNAL(triggered()),this,SLOT(selectNormalTab()));
-    connect(ui->actionShowSpecularImage ,SIGNAL(triggered()),this,SLOT(selectSpecularTab()));
-    connect(ui->actionShowHeightImage   ,SIGNAL(triggered()),this,SLOT(selectHeightTab()));
+    connect(ui->actionReplot             ,SIGNAL(triggered()),this,SLOT(replotAllImages()));
+    connect(ui->actionShowDiffuseImage   ,SIGNAL(triggered()),this,SLOT(selectDiffuseTab()));
+    connect(ui->actionShowNormalImage    ,SIGNAL(triggered()),this,SLOT(selectNormalTab()));
+    connect(ui->actionShowSpecularImage  ,SIGNAL(triggered()),this,SLOT(selectSpecularTab()));
+    connect(ui->actionShowHeightImage    ,SIGNAL(triggered()),this,SLOT(selectHeightTab()));
     connect(ui->actionShowOcclusiontImage,SIGNAL(triggered()),this,SLOT(selectOcclusionTab()));
+    connect(ui->actionShowRoughnessImage ,SIGNAL(triggered()),this,SLOT(selectRoughnessTab()));
+    connect(ui->actionShowMetallicImage  ,SIGNAL(triggered()),this,SLOT(selectMetallicTab()));
     //connect(ui->actionShowOcclusiontImage,SIGNAL(triggered()),this,SLOT(selectOcclusionTab()));
 
     connect(ui->actionShowSettingsImage ,SIGNAL(triggered()),this,SLOT(selectGeneralSettingsTab()));
@@ -291,9 +311,21 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->horizontalSliderRandomPatchesInnerRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
     connect(ui->horizontalSliderRandomPatchesOuterRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
 
+
+
+
     ui->groupBoxSimpleSeamlessMode->hide();
     ui->groupBoxMirrorMode->hide();
     ui->groupBoxRandomPatchesMode->hide();
+
+
+    // color picking
+    connect(metallicImageProp ,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
+    connect(glImage           ,SIGNAL(colorPicked(QVector4D)),metallicImageProp,SLOT(colorPicked(QVector4D)));
+
+    connect(roughnessImageProp ,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
+    connect(glImage           ,SIGNAL(colorPicked(QVector4D)),roughnessImageProp,SLOT(colorPicked(QVector4D)));
+
 
     // 2D imate tool box settings
     QActionGroup *group = new QActionGroup( this );
@@ -346,22 +378,28 @@ MainWindow::MainWindow(QWidget *parent) :
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
 
+    logAction = new QAction("Show log file",this);
+    logger    = new DialogLogger(this);
+    logger->setModal(true);
+
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
     connect(aboutQtAction, SIGNAL(triggered()), this, SLOT(aboutQt()));
+    connect(logAction, SIGNAL(triggered()), logger, SLOT(showLog()));
 
 
     QMenu *help = menuBar()->addMenu(tr("&Help"));
     help->addAction(aboutAction);
     help->addAction(aboutQtAction);
+    help->addAction(logAction);
 
     QAction *action = ui->toolBar->toggleViewAction();
     ui->menubar->addAction(action);
-
 
 }
 
 MainWindow::~MainWindow()
 {
+    delete logger;
     delete settingsContainer;
     delete diffuseImageProp;
     delete normalImageProp;
@@ -370,11 +408,14 @@ MainWindow::~MainWindow()
     delete occlusionImageProp;
     delete roughnessImageProp;
     delete metallicImageProp;
+    delete glImage;
+    delete glWidget;
     delete ui;
+
 }
 void MainWindow::closeEvent(QCloseEvent *event) {
     QWidget::closeEvent( event );
-    
+
     qDebug() << "calling" << Q_FUNC_INFO;
 
     QSettings settings(QString(AB_INI), QSettings::IniFormat);
@@ -406,17 +447,32 @@ void MainWindow::showEvent(QShowEvent* event){
 void MainWindow::replotAllImages(){
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
-    for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
-        // skip normal and ambient occlusion
-        if(i!=NORMAL_TEXTURE && i!=OCCLUSION_TEXTURE) updateImage(i);
-        glImage->update();
-    }
+
+
+    updateImage(DIFFUSE_TEXTURE);
+    glImage->update();
+
+    updateImage(ROUGHNESS_TEXTURE);
+    glImage->update();
+
+    updateImage(METALLIC_TEXTURE);
+    glImage->update();
+
+    updateImage(HEIGHT_TEXTURE);
+    glImage->update();
+
+
     // recalulate normal at the end
     updateImage(NORMAL_TEXTURE);
     glImage->update();
     // then ambient occlusion
     updateImage(OCCLUSION_TEXTURE);
     glImage->update();
+
+    updateImage(SPECULAR_TEXTURE);
+    glImage->update();
+
+
     glImage->enableShadowRender(false);
 
     glImage->setActiveImage(lastActive);
@@ -443,6 +499,16 @@ void MainWindow::selectHeightTab(){
 void MainWindow::selectOcclusionTab(){
     ui->tabWidget->setCurrentIndex(4);
     updateImage(4);
+}
+
+void MainWindow::selectRoughnessTab(){
+    ui->tabWidget->setCurrentIndex(5);
+    updateImage(5);
+}
+
+void MainWindow::selectMetallicTab(){
+    ui->tabWidget->setCurrentIndex(6);
+    updateImage(6);
 }
 
 void MainWindow::selectGeneralSettingsTab(){
@@ -642,13 +708,55 @@ void MainWindow::saveCompressedForm(){
 
 void MainWindow::updateDiffuseImage(){
     ui->lineEditOutputName->setText(diffuseImageProp->getImageName());
-    updateImageInformation();
+    updateImageInformation();   
     glImage->repaint();
+
+    // replot normal if height was changed in attached mode
+    if(specularImageProp->getImageProporties()->inputImageType == INPUT_FROM_DIFFUSE_OUTPUT){
+        glImage->enableShadowRender(true);
+        updateImage(SPECULAR_TEXTURE);
+        glImage->updateGL();
+        glImage->enableShadowRender(false);
+        // set height tab back again
+        updateImage(DIFFUSE_TEXTURE);
+    }
+
+    // replot normal if height was changed in attached mode
+    if(roughnessImageProp->getImageProporties()->inputImageType == INPUT_FROM_DIFFUSE_OUTPUT){
+        glImage->enableShadowRender(true);
+        updateImage(ROUGHNESS_TEXTURE);
+        glImage->updateGL();
+        glImage->enableShadowRender(false);
+        // set height tab back again
+        updateImage(DIFFUSE_TEXTURE);
+    }
+
+    // replot normal if height was changed in attached mode
+    if(metallicImageProp->getImageProporties()->inputImageType == INPUT_FROM_DIFFUSE_OUTPUT){
+        glImage->enableShadowRender(true);
+        updateImage(METALLIC_TEXTURE);
+        glImage->updateGL();
+        glImage->enableShadowRender(false);
+        // set height tab back again
+        updateImage(DIFFUSE_TEXTURE);
+    }
+
     glWidget->repaint();
 }
 void MainWindow::updateNormalImage(){
     ui->lineEditOutputName->setText(normalImageProp->getImageName());
     glImage->repaint();
+
+    // replot normal if  was changed in attached mode
+    if(occlusionImageProp->getImageProporties()->inputImageType == INPUT_FROM_HO_NO){
+        glImage->enableShadowRender(true);
+        updateImage(OCCLUSION_TEXTURE);
+        glImage->updateGL();
+        glImage->enableShadowRender(false);
+        // set height tab back again
+        updateImage(NORMAL_TEXTURE);
+    }
+
     glWidget->repaint();
 }
 void MainWindow::updateSpecularImage(){
@@ -660,14 +768,54 @@ void MainWindow::updateHeightImage(){
     ui->lineEditOutputName->setText(heightImageProp->getImageName());
     glImage->repaint();
 
+
     // replot normal if height was changed in attached mode
-    if(FBOImageProporties::bAttachNormalToHeightMap){
+    if(normalImageProp->getImageProporties()->inputImageType == INPUT_FROM_HEIGHT_OUTPUT){
         glImage->enableShadowRender(true);
-        updateImage(1);
+        updateImage(NORMAL_TEXTURE);
         glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
-        updateImage(3);
+        updateImage(HEIGHT_TEXTURE);
+    }
+    // replot normal if  was changed in attached mode
+    if(specularImageProp->getImageProporties()->inputImageType == INPUT_FROM_HEIGHT_OUTPUT){
+        glImage->enableShadowRender(true);
+        updateImage(SPECULAR_TEXTURE);
+        glImage->updateGL();
+        glImage->enableShadowRender(false);
+        // set height tab back again
+        updateImage(HEIGHT_TEXTURE);
+    }
+
+    // replot normal if  was changed in attached mode
+    if(occlusionImageProp->getImageProporties()->inputImageType == INPUT_FROM_HI_NI||
+       occlusionImageProp->getImageProporties()->inputImageType == INPUT_FROM_HO_NO){
+        glImage->enableShadowRender(true);
+        updateImage(OCCLUSION_TEXTURE);
+        glImage->updateGL();
+        glImage->enableShadowRender(false);
+        // set height tab back again
+        updateImage(HEIGHT_TEXTURE);
+    }
+
+    // replot normal if  was changed in attached mode
+    if(roughnessImageProp->getImageProporties()->inputImageType == INPUT_FROM_HEIGHT_OUTPUT){
+        glImage->enableShadowRender(true);
+        updateImage(ROUGHNESS_TEXTURE);
+        glImage->updateGL();
+        glImage->enableShadowRender(false);
+        // set height tab back again
+        updateImage(HEIGHT_TEXTURE);
+    }
+    // replot normal if  was changed in attached mode
+    if(metallicImageProp->getImageProporties()->inputImageType == INPUT_FROM_HEIGHT_OUTPUT){
+        glImage->enableShadowRender(true);
+        updateImage(METALLIC_TEXTURE);
+        glImage->updateGL();
+        glImage->enableShadowRender(false);
+        // set height tab back again
+        updateImage(HEIGHT_TEXTURE);
     }
     glWidget->repaint();
 }
@@ -687,16 +835,6 @@ void MainWindow::updateRoughnessImage(){
 void MainWindow::updateMetallicImage(){
     ui->lineEditOutputName->setText(metallicImageProp->getImageName());
     glImage->repaint();
-    glWidget->repaint();
-}
-
-void MainWindow::repaintNormalImage(){
-    FBOImageProporties* lastActive = glImage->getActiveImage();
-    glImage->enableShadowRender(true);
-        updateImage(1);
-        glImage->repaint();
-    glImage->enableShadowRender(false);
-    glImage->setActiveImage(lastActive);
     glWidget->repaint();
 }
 
@@ -757,28 +895,36 @@ void MainWindow::updateImage(int tType){
     switch(tType){
         case(DIFFUSE_TEXTURE ):
             glImage->setActiveImage(diffuseImageProp->getImageProporties());
+            diffuseImageProp->cancelColorPicking();
             break;
         case(NORMAL_TEXTURE  ):
             glImage->setActiveImage(normalImageProp->getImageProporties());
+            normalImageProp->cancelColorPicking();
             break;
         case(SPECULAR_TEXTURE):
             glImage->setActiveImage(specularImageProp->getImageProporties());
+            specularImageProp->cancelColorPicking();
             break;
         case(HEIGHT_TEXTURE  ):
             glImage->setActiveImage(heightImageProp->getImageProporties());
+            heightImageProp->cancelColorPicking();
             break;
         case(OCCLUSION_TEXTURE  ):
             glImage->setActiveImage(occlusionImageProp->getImageProporties());
+            occlusionImageProp->cancelColorPicking();
             break;
         case(ROUGHNESS_TEXTURE  ):
             glImage->setActiveImage(roughnessImageProp->getImageProporties());
+            roughnessImageProp->cancelColorPicking();
             break;
         case(METALLIC_TEXTURE  ):
             glImage->setActiveImage(metallicImageProp->getImageProporties());
+            metallicImageProp->cancelColorPicking();
             break;
         default: // Settings
             return;
     }
+    glImage->toggleColorPicking(false);
     glWidget->repaint();
 }
 
@@ -923,28 +1069,59 @@ void MainWindow::updateSpinBoxes(int){
     ui->doubleSpinBoxUVXOffset   ->setValue(ui->horizontalSliderUVXOffset ->value()/100.0);
     ui->doubleSpinBoxUVYOffset   ->setValue(ui->horizontalSliderUVYOffset ->value()/100.0);
 
-    // random tiling mode
+    // random tilling mode
     ui->doubleSpinBoxRandomPatchesAngle      ->setValue(ui->horizontalSliderRandomPatchesRotate     ->value());
     ui->doubleSpinBoxRandomPatchesInnerRadius->setValue(ui->horizontalSliderRandomPatchesInnerRadius->value()/100.0);
     ui->doubleSpinBoxRandomPatchesOuterRadius->setValue(ui->horizontalSliderRandomPatchesOuterRadius->value()/100.0);
 
+    ui->doubleSpinBoxLightPower->setValue(ui->horizontalSliderLightPower->value()/100.0);
+    ui->doubleSpinBoxLightRadius->setValue(ui->horizontalSliderLightRadius->value()/100.0);
+    glWidget->setLightParameters(ui->doubleSpinBoxLightPower->value(),ui->doubleSpinBoxLightRadius->value());
     glWidget->setUVScaleOffset(ui->doubleSpinBoxUVXOffset->value(),ui->doubleSpinBoxUVYOffset->value());
 }
 
 
+void MainWindow::updatePerformanceSettings(){
+    Performance3DSettings settings;
+    settings.bUseCullFace       = ui->checkBoxPerformanceCullFace->isChecked();
+    settings.bUseSimplePBR      = ui->checkBoxPerformanceSimplePBR->isChecked();
+    settings.noPBRRays          = ui->comboBoxPerformanceNoRays->currentText().toInt();
+    settings.noTessSubdivision  = ui->comboBoxPerformanceNoTessSub->currentText().toInt();
+    glWidget->updatePerformanceSettings(settings);
+}
+void MainWindow::updatePerformanceSettings(int indeks){
+    updatePerformanceSettings();
+}
+
 void MainWindow::convertFromHtoN(){   
     glImage->setConversionType(CONVERT_FROM_H_TO_N);
-    glImage->repaint();
+    glImage->enableShadowRender(true);
+    glImage->setActiveImage(heightImageProp->getImageProporties());
+    glImage->enableShadowRender(true);
+    glImage->setConversionType(CONVERT_FROM_H_TO_N);
+    glImage->setActiveImage(normalImageProp->getImageProporties());
+    glImage->enableShadowRender(false);
+    glImage->setConversionType(CONVERT_NONE);
+
+
     replotAllImages();
-    glWidget->repaint();
+
     qDebug() << "Conversion from height to normal applied";
 }
 
 void MainWindow::convertFromNtoH(){
+    glImage->setConversionType(CONVERT_FROM_H_TO_N);// fake conversion
+    glImage->enableShadowRender(true);
+    glImage->setActiveImage(heightImageProp->getImageProporties());
     glImage->setConversionType(CONVERT_FROM_N_TO_H);
-    glImage->repaint();
+    glImage->enableShadowRender(true);
+    glImage->setActiveImage(normalImageProp->getImageProporties());
+    glImage->setConversionType(CONVERT_FROM_N_TO_H);
+    glImage->enableShadowRender(true);
+    glImage->setActiveImage(heightImageProp->getImageProporties());
+    glImage->enableShadowRender(false);
     replotAllImages();
-    glWidget->repaint();
+
     qDebug() << "Conversion from normal to height applied";
 }
 
@@ -959,6 +1136,25 @@ void MainWindow::convertFromBase(){
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
     replotAllImages();
     qDebug() << "Conversion from Base to others applied";
+}
+
+void MainWindow::convertFromHNtoOcc(){
+
+    glImage->setConversionType(CONVERT_FROM_HN_TO_OC);
+    glImage->enableShadowRender(true);
+    glImage->setActiveImage(heightImageProp->getImageProporties());
+
+    glImage->setConversionType(CONVERT_FROM_HN_TO_OC);
+    glImage->enableShadowRender(true);
+    glImage->setActiveImage(normalImageProp->getImageProporties());
+
+    glImage->setConversionType(CONVERT_FROM_HN_TO_OC);
+    glImage->enableShadowRender(true);
+    glImage->setActiveImage(occlusionImageProp->getImageProporties());
+    glImage->enableShadowRender(false);
+    replotAllImages();
+
+    qDebug() << "Conversion from Height and Normal to Occlusion applied";
 }
 
 void MainWindow::updateSliders(){
@@ -1059,6 +1255,49 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_ssaoDepth"                        ,image->getImageProporties()->ssaoDepth);
     settings.setValue("t_"+abbr+"_ssaoIntensity"                    ,image->getImageProporties()->ssaoIntensity);
 
+    settings.setValue("t_"+abbr+"_selectiveBlurType"                ,image->getImageProporties()->selectiveBlurType);
+    settings.setValue("t_"+abbr+"_bSelectiveBlurPreviewMask"        ,image->getImageProporties()->bSelectiveBlurPreviewMask);
+    settings.setValue("t_"+abbr+"_bSelectiveBlurInvertMask"         ,image->getImageProporties()->bSelectiveBlurInvertMask);
+    settings.setValue("t_"+abbr+"_bSelectiveBlurEnable"             ,image->getImageProporties()->bSelectiveBlurEnable);
+
+    settings.setValue("t_"+abbr+"_selectiveBlurBlending"            ,image->getImageProporties()->selectiveBlurBlending);
+    settings.setValue("t_"+abbr+"_selectiveBlurMaskRadius"          ,image->getImageProporties()->selectiveBlurMaskRadius);
+    settings.setValue("t_"+abbr+"_selectiveBlurDOGRadius"           ,image->getImageProporties()->selectiveBlurDOGRadius);
+    settings.setValue("t_"+abbr+"_selectiveBlurDOGConstrast"        ,image->getImageProporties()->selectiveBlurDOGConstrast);
+    settings.setValue("t_"+abbr+"_selectiveBlurDOGAmplifier"        ,image->getImageProporties()->selectiveBlurDOGAmplifier);
+    settings.setValue("t_"+abbr+"_selectiveBlurBlending"            ,image->getImageProporties()->selectiveBlurBlending);
+    settings.setValue("t_"+abbr+"_selectiveBlurDOGOffset"           ,image->getImageProporties()->selectiveBlurDOGOffset);
+
+    settings.setValue("t_"+abbr+"_selectiveBlurMinValue"            ,image->getImageProporties()->selectiveBlurMinValue);
+    settings.setValue("t_"+abbr+"_selectiveBlurMaxValue"            ,image->getImageProporties()->selectiveBlurMaxValue);
+    settings.setValue("t_"+abbr+"_selectiveBlurDetails"             ,image->getImageProporties()->selectiveBlurDetails);
+    settings.setValue("t_"+abbr+"_selectiveBlurOffsetValue"         ,image->getImageProporties()->selectiveBlurOffsetValue);
+
+    settings.setValue("t_"+abbr+"_inputImageType"                   ,image->getImageProporties()->inputImageType);
+    settings.setValue("t_"+abbr+"_roughnessDepth"                   ,image->getImageProporties()->roughnessDepth);
+    settings.setValue("t_"+abbr+"_roughnessTreshold"                ,image->getImageProporties()->roughnessTreshold);
+    settings.setValue("t_"+abbr+"_roughnessAmplifier"               ,image->getImageProporties()->roughnessAmplifier);
+    settings.setValue("t_"+abbr+"_bRoughnessSurfaceEnable"          ,image->getImageProporties()->bRoughnessSurfaceEnable);
+
+    settings.setValue("t_"+abbr+"_aoCancellation"                   ,image->getImageProporties()->aoCancellation);
+    settings.setValue("t_"+abbr+"_colorHue"                         ,image->getImageProporties()->colorHue);
+
+    settings.setValue("t_"+abbr+"_bRoughnessEnableColorPicking"     ,image->getImageProporties()->bRoughnessEnableColorPicking);
+    settings.setValue("t_"+abbr+"_bRoughnessColorPickingToggled"    ,image->getImageProporties()->bRoughnessColorPickingToggled);
+    settings.setValue("t_"+abbr+"_bRoughnessInvertColorMask"        ,image->getImageProporties()->bRoughnessInvertColorMask);
+
+    settings.setValue("t_"+abbr+"_roughnessColorOffset"             ,image->getImageProporties()->roughnessColorOffset);
+    settings.setValue("t_"+abbr+"_roughnessColorGlobalOffset"       ,image->getImageProporties()->roughnessColorGlobalOffset);
+    settings.setValue("t_"+abbr+"_roughnessColorAmplifier"          ,image->getImageProporties()->roughnessColorAmplifier);
+    settings.setValue("t_"+abbr+"_selectiveBlurNoIters"             ,image->getImageProporties()->selectiveBlurNoIters);
+    settings.setValue("t_"+abbr+"_selectiveBlurMaskInputImageType"  ,image->getImageProporties()->selectiveBlurMaskInputImageType);
+    settings.setValue("t_"+abbr+"_colorPickerMethod"                ,image->getImageProporties()->colorPickerMethod);
+    settings.setValue("t_"+abbr+"_pickedColorR"                     ,image->getImageProporties()->pickedColor.x());
+    settings.setValue("t_"+abbr+"_pickedColorG"                     ,image->getImageProporties()->pickedColor.y());
+    settings.setValue("t_"+abbr+"_pickedColorB"                     ,image->getImageProporties()->pickedColor.z());
+
+
+
 }
 
 void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
@@ -1120,6 +1359,48 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->ssaoBias                           = settings.value("t_"+abbr+"_ssaoBias",-1.5).toFloat();
     image->getImageProporties()->ssaoDepth                          = settings.value("t_"+abbr+"_ssaoDepth",0.3).toFloat();
     image->getImageProporties()->ssaoIntensity                      = settings.value("t_"+abbr+"_ssaoIntensity",1.0).toFloat();
+
+    image->getImageProporties()->aoCancellation                     = settings.value("t_"+abbr+"_aoCancellation",0.0).toFloat();
+    image->getImageProporties()->colorHue                           = settings.value("t_"+abbr+"_colorHue",0.0).toFloat();
+
+    image->getImageProporties()->selectiveBlurType                  = (SelectiveBlurType)settings.value("t_"+abbr+"_selectiveBlurType",0).toInt();
+    image->getImageProporties()->bSelectiveBlurPreviewMask          = settings.value("t_"+abbr+"_bSelectiveBlurPreviewMask",false).toBool();
+    image->getImageProporties()->bSelectiveBlurInvertMask           = settings.value("t_"+abbr+"_bSelectiveBlurInvertMask",false).toBool();
+    image->getImageProporties()->bSelectiveBlurEnable               = settings.value("t_"+abbr+"_bSelectiveBlurEnable",false).toBool();
+
+    image->getImageProporties()->selectiveBlurBlending              = settings.value("t_"+abbr+"_selectiveBlurBlending",0.3).toFloat();
+    image->getImageProporties()->selectiveBlurMaskRadius            = settings.value("t_"+abbr+"_selectiveBlurMaskRadius",5).toInt();
+    image->getImageProporties()->selectiveBlurDOGRadius             = settings.value("t_"+abbr+"_selectiveBlurDOGRadius",5).toInt();
+    image->getImageProporties()->selectiveBlurDOGConstrast          = settings.value("t_"+abbr+"_selectiveBlurDOGConstrast",0.0).toFloat();
+    image->getImageProporties()->selectiveBlurDOGAmplifier          = settings.value("t_"+abbr+"_selectiveBlurDOGAmplifier",5.0).toFloat();
+    image->getImageProporties()->selectiveBlurDOGOffset             = settings.value("t_"+abbr+"_selectiveBlurDOGOffset",0.0).toFloat();
+
+    image->getImageProporties()->selectiveBlurMinValue              = settings.value("t_"+abbr+"_selectiveBlurMinValue",0.0).toFloat();
+    image->getImageProporties()->selectiveBlurMaxValue              = settings.value("t_"+abbr+"_selectiveBlurMaxValue",1.0).toFloat();
+    image->getImageProporties()->selectiveBlurDetails               = settings.value("t_"+abbr+"_selectiveBlurDetails",0).toInt();
+    image->getImageProporties()->selectiveBlurOffsetValue           = settings.value("t_"+abbr+"_selectiveBlurOffsetValue",0.0).toFloat();
+    image->getImageProporties()->inputImageType                     = (SourceImageType)settings.value("t_"+abbr+"_inputImageType",0).toInt();
+    image->getImageProporties()->roughnessDepth                     = settings.value("t_"+abbr+"_roughnessDepth",0.3).toFloat();
+    image->getImageProporties()->roughnessTreshold                  = settings.value("t_"+abbr+"_roughnessTreshold",0.0).toFloat();
+    image->getImageProporties()->roughnessAmplifier                 = settings.value("t_"+abbr+"_roughnessAmplifier",0.0).toFloat();
+    image->getImageProporties()->bRoughnessSurfaceEnable            = settings.value("t_"+abbr+"_bRoughnessSurfaceEnable",false).toBool();
+
+    image->getImageProporties()->bRoughnessEnableColorPicking       = settings.value("t_"+abbr+"_bRoughnessEnableColorPicking",false).toBool();
+    image->getImageProporties()->bRoughnessColorPickingToggled      = settings.value("t_"+abbr+"_bRoughnessColorPickingToggled",false).toBool();
+
+    image->getImageProporties()->pickedColor.setX(settings.value("t_"+abbr+"_pickedColorR",0.0).toFloat());
+    image->getImageProporties()->pickedColor.setY(settings.value("t_"+abbr+"_pickedColorG",0.0).toFloat());
+    image->getImageProporties()->pickedColor.setZ(settings.value("t_"+abbr+"_pickedColorB",0.0).toFloat());
+
+    image->getImageProporties()->colorPickerMethod              = (ColorPickerMethod)settings.value("t_"+abbr+"_colorPickerMethod",0).toInt();
+    image->getImageProporties()->bRoughnessInvertColorMask      = settings.value("t_"+abbr+"_bRoughnessInvertColorMask",false).toBool();
+    image->getImageProporties()->roughnessColorOffset           = settings.value("t_"+abbr+"_roughnessColorOffset",0.0).toFloat();
+    image->getImageProporties()->roughnessColorGlobalOffset     = settings.value("t_"+abbr+"_roughnessColorGlobalOffset",0.0).toFloat();
+    image->getImageProporties()->roughnessColorAmplifier        = settings.value("t_"+abbr+"_roughnessColorAmplifier",1.0).toFloat();
+    image->getImageProporties()->selectiveBlurMaskInputImageType= (SourceImageType)settings.value("t_"+abbr+"_selectiveBlurMaskInputImageType",0).toInt();
+    image->getImageProporties()->selectiveBlurNoIters           = settings.value("t_"+abbr+"_selectiveBlurNoIters",1).toInt();
+
+
     image->reloadSettings();
 
 }
@@ -1172,6 +1453,8 @@ void MainWindow::saveSettings(){
     PostfixNames::specularName  = ui->lineEditPostfixSpecular->text();
     PostfixNames::heightName    = ui->lineEditPostfixHeight->text();
     PostfixNames::occlusionName = ui->lineEditPostfixOcclusion->text();
+    PostfixNames::roughnessName = ui->lineEditPostfixRoughness->text();
+    PostfixNames::metallicName  = ui->lineEditPostfixMetallic->text();
 
 
     settings.setValue("3d_depth",ui->horizontalSliderDepthScale->value()/100.0);
@@ -1180,10 +1463,12 @@ void MainWindow::saveSettings(){
     settings.setValue("s_postfix",ui->lineEditPostfixSpecular->text());
     settings.setValue("h_postfix",ui->lineEditPostfixHeight->text());
     settings.setValue("o_postfix",ui->lineEditPostfixOcclusion->text());
+    settings.setValue("r_postfix",ui->lineEditPostfixRoughness->text());
+    settings.setValue("m_postfix",ui->lineEditPostfixMetallic->text());
 
-    settings.setValue("recent_dir",recentDir.absolutePath());
-    settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
-    settings.setValue("gui_style",ui->comboBoxGUIStyle->currentText());
+    settings.setValue("recent_dir"      ,recentDir.absolutePath());
+    settings.setValue("recent_mesh_dir" ,recentMeshDir.absolutePath());
+    settings.setValue("gui_style"       ,ui->comboBoxGUIStyle->currentText());
 
     // UV Settings
     settings.setValue("uv_tiling_type",ui->comboBoxSeamlessMode->currentIndex());
@@ -1195,7 +1480,7 @@ void MainWindow::saveSettings(){
     settings.setValue("uv_tiling_random_outer_radius",ui->horizontalSliderRandomPatchesOuterRadius->value());
     settings.setValue("uv_tiling_random_rotate",ui->horizontalSliderRandomPatchesRotate->value());
 
-    settings.setValue("h_attachNormal",FBOImageProporties::bAttachNormalToHeightMap);
+
     settings.setValue("use_texture_interpolation",ui->checkBoxUseLinearTextureInterpolation->isChecked());
 
     saveImageSettings("d",diffuseImageProp);
@@ -1228,6 +1513,8 @@ void MainWindow::loadSettings(){
     PostfixNames::specularName  = settings.value("s_postfix","_s").toString();
     PostfixNames::heightName    = settings.value("h_postfix","_h").toString();
     PostfixNames::occlusionName = settings.value("o_postfix","_o").toString();
+    PostfixNames::roughnessName = settings.value("m_postfix","_m").toString();
+    PostfixNames::metallicName  = settings.value("r_postfix","_r").toString();
 
     ui->horizontalSliderDepthScale->setValue(settings.value("3d_depth","0.25").toFloat()*100);
     ui->lineEditPostfixDiffuse  ->setText(PostfixNames::diffuseName);
@@ -1235,10 +1522,12 @@ void MainWindow::loadSettings(){
     ui->lineEditPostfixSpecular ->setText(PostfixNames::specularName);
     ui->lineEditPostfixHeight   ->setText(PostfixNames::heightName);
     ui->lineEditPostfixOcclusion->setText(PostfixNames::occlusionName);
+    ui->lineEditPostfixRoughness->setText(PostfixNames::roughnessName);
+    ui->lineEditPostfixMetallic ->setText(PostfixNames::metallicName);
 
 
-    FBOImageProporties::bAttachNormalToHeightMap = settings.value("h_attachNormal",true).toBool();
-    heightImageProp->toggleAttachToNormal(FBOImageProporties::bAttachNormalToHeightMap);
+
+
     recentDir     = settings.value("recent_dir","").toString();
     recentMeshDir = settings.value("recent_mesh_dir","").toString();
 
@@ -1268,6 +1557,9 @@ void MainWindow::loadSettings(){
     loadImageSettings("r",roughnessImageProp);
     loadImageSettings("m",metallicImageProp);
 
+
+    QString name = settings.value("settings_name","Default").toString();
+    ui->pushButtonProjectManager->setText("Project manager ("+name + ")");
     replotAllImages();
     glImage ->repaint();
     glWidget->repaint();

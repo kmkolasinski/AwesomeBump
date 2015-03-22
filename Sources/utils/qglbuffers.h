@@ -37,6 +37,8 @@
 #include <QtOpenGL>
 #include <QOpenGLFunctions_4_0_Core>
 #include <QtWidgets>
+#include <QDebug>
+#include "../qopenglerrorcheck.h"
 
 
 #define BUFFER_OFFSET(i) ((char*)0 + (i))
@@ -112,7 +114,9 @@ public:
     virtual void bind() Q_DECL_OVERRIDE;
     virtual void bindFBO();
     virtual void unbind() Q_DECL_OVERRIDE;
-
+    int textureCalcLevels(GLenum target);
+public:
+    int numMipmaps;
 };
 
 

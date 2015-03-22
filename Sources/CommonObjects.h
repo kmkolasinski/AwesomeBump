@@ -8,7 +8,20 @@
 
 #include "qopenglerrorcheck.h"
 
+#define TAB_SETTINGS 7
+#define TAB_TILING   8
 
+#ifdef Q_OS_MAC
+# define AB_INI "AwesomeBump.ini"
+# define AB_LOG "AwesomeBump.log" // log created in current directory
+# define AB_LOG_ALT (QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).arg(AB_LOG))
+#else
+    #define AB_INI "config.ini"
+    #define AB_LOG "log.txt"
+    #define AB_LOG_ALT "log.txt"
+#endif
+
+#define AWESOME_BUMP_VERSION "AwesomeBump v3.0"
 
 using namespace std;
 
@@ -28,6 +41,7 @@ enum ConversionType{
     CONVERT_FROM_H_TO_N,
     CONVERT_FROM_N_TO_H,
     CONVERT_FROM_D_TO_O, // diffuse to others
+    CONVERT_FROM_HN_TO_OC,
     CONVERT_RESIZE
 };
 
@@ -43,6 +57,10 @@ enum ShadingType{
     SHADING_TESSELATION
 };
 
+enum ShadingModel{
+    SHADING_MODEL_PBR = 0,
+    SHADING_MODEL_BUMP_MAPPING
+};
 // Methods of making the texture seamless
 enum SeamlessMode{
     SEAMLESS_NONE = 0,
@@ -59,14 +77,38 @@ enum CompressedFromTypes{
 
 // Selective blur methods
 enum SelectiveBlurType{
-    SELECTIVE_BLUR_DIFFERENCE_OF_GAUSSIANS = 0,
-    SELECTIVE_BLUR_LEVELS
+    SELECTIVE_BLUR_LEVELS = 0,
+    SELECTIVE_BLUR_DIFFERENCE_OF_GAUSSIANS
 };
 
 enum TargaColorFormat{
     TARGA_BGR=0,
     TARGA_BGRA,
     TARGA_LUMINANCE
+};
+
+enum SourceImageType{
+    INPUT_NONE = 0,
+    INPUT_FROM_HEIGHT_INPUT,
+    INPUT_FROM_HEIGHT_OUTPUT,
+    INPUT_FROM_NORMAL_INPUT,
+    INPUT_FROM_NORMAL_OUTPUT,
+    INPUT_FROM_SPECULAR_INPUT,
+    INPUT_FROM_SPECULAR_OUTPUT,
+    INPUT_FROM_DIFFUSE_INPUT,
+    INPUT_FROM_DIFFUSE_OUTPUT,
+    INPUT_FROM_OCCLUSION_INPUT,
+    INPUT_FROM_ROUGHNESS_INPUT,
+    INPUT_FROM_ROUGHNESS_OUTPUT,
+    INPUT_FROM_METALLIC_INPUT,
+    INPUT_FROM_METALLIC_OUTPUT,
+    INPUT_FROM_HI_NI,
+    INPUT_FROM_HO_NO
+};
+
+enum ColorPickerMethod{
+    COLOR_PICKER_METHOD_A = 0,
+    COLOR_PICKER_METHOD_B ,
 };
 
 #define TARGA_HEADER_SIZE    0x12
@@ -222,6 +264,20 @@ struct RandomTilingMode{
   }
 };
 
+
+struct Performance3DSettings{
+  bool bUseCullFace;
+  bool bUseSimplePBR;
+  int  noTessSubdivision;
+  int  noPBRRays;
+  Performance3DSettings(){
+        bUseCullFace  = false;
+        bUseSimplePBR = false;
+        noTessSubdivision = 16;
+        noPBRRays         = 15;
+  }
+};
+
 // Wrapper for FBO initialization.
 class FBOImages{
 public:
@@ -283,6 +339,8 @@ public:
     int scr_tex_height;      // height ...
     QGLWidget* glWidget_ptr; // pointer to GL context
     TextureTypes imageType;  // This will define what kind of preprocessing will be applied to image
+
+
 
     // Variables used  to control the image processing (most of them are controlled from GUI)
     bool bFirstDraw;
@@ -359,9 +417,29 @@ public:
     int   selectiveBlurDetails;
     float selectiveBlurOffsetValue;
 
+    // Input image type
+    SourceImageType inputImageType;
+
+    // roughness settings
+    float roughnessDepth;
+    float roughnessTreshold;
+    float roughnessAmplifier;
+    bool bRoughnessSurfaceEnable;
+
+    bool bRoughnessEnableColorPicking;
+    bool bRoughnessColorPickingToggled;
+    QVector3D pickedColor;
+    ColorPickerMethod colorPickerMethod;
+    bool bRoughnessInvertColorMask;
+    float roughnessColorOffset;
+    float roughnessColorAmplifier;
+    SourceImageType selectiveBlurMaskInputImageType;
+
+    int selectiveBlurNoIters;
+    float roughnessColorGlobalOffset;
 
     // global settings seamless parameters
-    static bool bAttachNormalToHeightMap;
+
     static SeamlessMode seamlessMode;
     static float seamlessSimpleModeRadius;
     static int seamlessMirroModeType; // values: 2 - x repear, 1 - y  repeat, 0 - xy  repeat
@@ -447,8 +525,28 @@ public:
         selectiveBlurDetails         = 1.0;
         selectiveBlurOffsetValue     = 0.0;
 
-        seamlessMode = SEAMLESS_NONE;
 
+        inputImageType = INPUT_NONE;
+
+        roughnessDepth = 0;
+        roughnessTreshold = 0.0;
+        roughnessAmplifier = 0.0;
+        bRoughnessSurfaceEnable = false;
+
+
+        bRoughnessEnableColorPicking  = false;
+        bRoughnessColorPickingToggled = false;
+        pickedColor                   = QVector3D(1.0,1.0,1.0);
+        colorPickerMethod             = COLOR_PICKER_METHOD_A;
+
+        bRoughnessInvertColorMask     = false;
+        roughnessColorOffset          = 0.0;
+        roughnessColorGlobalOffset    = 0.0;
+        roughnessColorAmplifier       = 0.0;
+        selectiveBlurMaskInputImageType = INPUT_FROM_HEIGHT_OUTPUT;
+        selectiveBlurNoIters            = 1;
+
+        seamlessMode   = SEAMLESS_NONE;
      }
     void init(QImage& image){
         qDebug() << Q_FUNC_INFO;

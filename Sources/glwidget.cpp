@@ -57,9 +57,14 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     bToggleOcclusionView    = true;
     bToggleHeightView       = true;
     bToggleNormalView       = true;
+    bToggleRoughnessView    = true;
+    bToggleMetallicView     = true;
     shadingType             = SHADING_RELIEF_MAPPING;
+    shadingModel            = SHADING_MODEL_PBR;
     specularIntensity       = 1.0;
     diffuseIntensity        = 1.0;
+    lightPower              = 1.0;
+    lightRadius             = 0.1;
     m_env_map               = NULL;
 
     setMouseTracking(true);
@@ -142,10 +147,26 @@ void GLWidget::toggleHeightView(bool enable){
     updateGL();
 }
 
+void GLWidget::toggleRoughnessView(bool enable){
+    bToggleRoughnessView = enable;
+    updateGL();
+
+}
+void GLWidget::toggleMetallicView(bool enable){
+    bToggleMetallicView = enable;
+    updateGL();
+}
+
 void GLWidget::selectShadingType(int indeks){
     shadingType = (ShadingType)indeks;
     updateGL();
 }
+
+void GLWidget::selectShadingModel(int i){
+       shadingModel = (ShadingModel) i;
+       updateGL();
+}
+
 
 void GLWidget::setSpecularIntensity(double val){
     specularIntensity = val;
@@ -156,6 +177,11 @@ void GLWidget::setDiffuseIntensity(double val){
     updateGL();
 }
 
+void GLWidget::setLightParameters(float power,float radius){
+    lightPower  = power;
+    lightRadius = radius;
+    updateGL();
+}
 
 void GLWidget::initializeGL()
 {
@@ -294,15 +320,16 @@ void GLWidget::initializeGL()
     skybox_mesh = new Mesh("Core/3D/","sky_cube.obj");
     env_mesh    = new Mesh("Core/3D/","sky_cube_env.obj");
 
+    m_prefiltered_env_map = new GLTextureCube(512);
+    chooseSkyBox("SaintLazarusChurch",true);
 
-    chooseSkyBox("SaintLazarusChurch");
-
-    m_prefiltered_env_map = new GLTextureCube(256);
     emit readyGL();
 }
 
 void GLWidget::paintGL()
 {
+
+    GLCHK( glViewport(0, 0, width(), height()) );
     // setting the camera viewpoint
     viewMatrix = camera.updateCamera();
 
@@ -383,9 +410,22 @@ void GLWidget::paintGL()
     GLCHK( program->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
     GLCHK( program->setUniformValue("gui_bHeight"           , bToggleHeightView) );
     GLCHK( program->setUniformValue("gui_bNormal"           , bToggleNormalView) );
+    GLCHK( program->setUniformValue("gui_bRoughness"        , bToggleRoughnessView) );
+    GLCHK( program->setUniformValue("gui_bMetallic"         , bToggleMetallicView) );
     GLCHK( program->setUniformValue("gui_shading_type"      , shadingType) );
+    GLCHK( program->setUniformValue("gui_shading_model"     , shadingModel) );
     GLCHK( program->setUniformValue("gui_SpecularIntensity" , specularIntensity) );
     GLCHK( program->setUniformValue("gui_DiffuseIntensity"  , diffuseIntensity) );
+    GLCHK( program->setUniformValue("gui_LightPower"        , lightPower) );
+    GLCHK( program->setUniformValue("gui_LightRadius"       , lightRadius) );
+
+    // number of mipmaps
+    GLCHK( program->setUniformValue("num_mipmaps"   , m_env_map->numMipmaps ) );
+    // 3D settings
+    GLCHK( program->setUniformValue("gui_bUseCullFace"   , performanceSettings.bUseCullFace) );
+    GLCHK( program->setUniformValue("gui_bUseSimplePBR"  , performanceSettings.bUseSimplePBR) );
+    GLCHK( program->setUniformValue("gui_noTessSub"      , performanceSettings.noTessSubdivision) );
+    GLCHK( program->setUniformValue("gui_noPBRRays"      , performanceSettings.noPBRRays) );
 
     if( fboIdPtrs[0] != NULL){
 
@@ -422,7 +462,7 @@ void GLWidget::bakeEnviromentalMaps(){
     // ---------------------------------------------------------
     env_program->bind();
     m_prefiltered_env_map->bindFBO();
-    glViewport(0,0,256,256);
+    glViewport(0,0,512,512);
 
     objectMatrix.setToIdentity();
     objectMatrix.scale(1.0);
@@ -449,6 +489,7 @@ void GLWidget::bakeEnviromentalMaps(){
 void GLWidget::resizeGL(int width, int height)
 {
     ratio = float(width)/height;
+
     GLCHK( glViewport(0, 0, width, height) );
 }
 
@@ -463,6 +504,8 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     }
 
     updateGL();
+
+
 }
 void GLWidget::mouseReleaseEvent(QMouseEvent *event){
     setCursor(Qt::PointingHandCursor);
@@ -511,11 +554,14 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         camera.rotateView(dx/1.0,dy/1.0);
     } else if (event->buttons() & Qt::RightButton) {
         camera.position +=QVector3D(dx/500.0,dy/500.0,0)*camera.radius;
-        //camera.position += camera.side_direction*0.001*dx;//
-        //camera.position += QVector3D(0,dy/500.0,0)*camera.radius;
     } else if (event->buttons() & Qt::MiddleButton) {
+
         lightPosition += QVector4D(0.05*dx,-0.05*dy,-0,0);
-        lightDirection.rotateView(dx/1.0,dy/1.0);
+        if(lightPosition.x() > +10.0) lightPosition.setX(+10.0);
+        if(lightPosition.x() < -10.0) lightPosition.setX(-10.0);
+        if(lightPosition.y() > +10.0) lightPosition.setY(+10.0);
+        if(lightPosition.y() < -10.0) lightPosition.setY(-10.0);
+        lightDirection.rotateView(-2*dx/1.0,2*dy/1.0);
     }
     lastPos = event->pos();
     updateGL();
@@ -621,7 +667,7 @@ void GLWidget::chooseMeshFile(const QString &fileName){
 }
 
 
-void GLWidget::chooseSkyBox(QString cubeMapName){
+void GLWidget::chooseSkyBox(QString cubeMapName,bool bFirstTime){
     QStringList list;
     makeCurrent();
     list << "Core/2D/skyboxes/" + cubeMapName + "/posx.jpg" << "Core/2D/skyboxes/" + cubeMapName  + "/negx.jpg" << "Core/2D/skyboxes/" + cubeMapName + "/posy.jpg"
@@ -637,7 +683,15 @@ void GLWidget::chooseSkyBox(QString cubeMapName){
     if(m_env_map->failed()){
         qWarning() << "Cannot load cube map: check if images listed above exist.";
     }
-    updateGL();
-
+    // skip this when loading first cube map
+    if(!bFirstTime)updateGL();
+    else qDebug() << "Skipping glWidget repainting during first Env. maps. load.";
 }
+
+void GLWidget::updatePerformanceSettings(Performance3DSettings settings){
+    qDebug() << "Changing 3D settings";
+    performanceSettings = settings;
+    updateGL();
+}
+
 

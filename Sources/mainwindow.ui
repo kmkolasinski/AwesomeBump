@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1094</width>
+    <width>1670</width>
     <height>745</height>
    </rect>
   </property>
@@ -50,7 +50,7 @@
         <enum>QTabWidget::East</enum>
        </property>
        <property name="currentIndex">
-       <number>7</number>
+        <number>7</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideMiddle</enum>
@@ -85,8 +85,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>349</width>
+              <height>612</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -138,8 +138,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>349</width>
+              <height>612</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -191,8 +191,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>349</width>
+              <height>612</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -244,8 +244,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>349</width>
+              <height>612</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -297,8 +297,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>349</width>
+              <height>612</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -323,64 +323,64 @@
          </item>
         </layout>
        </widget>
-      <widget class="QWidget" name="tabRoughnessImage">
-       <attribute name="title">
-        <string>Roughness</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_23">
-        <item>
-         <widget class="QScrollArea" name="scrollArea_8">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_7">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>356</width>
-             <height>620</height>
-            </rect>
+       <widget class="QWidget" name="tabRoughnessImage">
+        <attribute name="title">
+         <string>Roughness</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_23">
+         <item>
+          <widget class="QScrollArea" name="scrollArea_8">
+           <property name="widgetResizable">
+            <bool>true</bool>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_25">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayoutRoughnessImage"/>
-            </item>
-           </layout>
+           <widget class="QWidget" name="scrollAreaWidgetContents_7">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>347</width>
+              <height>610</height>
+             </rect>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_25">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayoutRoughnessImage"/>
+             </item>
+            </layout>
+           </widget>
           </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tabMetallicImage">
-       <attribute name="title">
-        <string>Metallic</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_24">
-        <item>
-         <widget class="QScrollArea" name="scrollArea_9">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents_9">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>356</width>
-             <height>620</height>
-            </rect>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabMetallicImage">
+        <attribute name="title">
+         <string>Metallic</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_24">
+         <item>
+          <widget class="QScrollArea" name="scrollArea_9">
+           <property name="widgetResizable">
+            <bool>true</bool>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_27">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayoutMetallicImage"/>
-            </item>
-           </layout>
+           <widget class="QWidget" name="scrollAreaWidgetContents_9">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>347</width>
+              <height>610</height>
+             </rect>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_27">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayoutMetallicImage"/>
+             </item>
+            </layout>
+           </widget>
           </widget>
-         </widget>
-        </item>
-       </layout>
-      </widget>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tabOutput">
         <attribute name="title">
          <string>Output</string>
@@ -406,10 +406,10 @@
            <widget class="QWidget" name="scrollAreaWidgetContents">
             <property name="geometry">
              <rect>
-              <x>28</x>
+              <x>15</x>
               <y>0</y>
               <width>300</width>
-              <height>574</height>
+              <height>600</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -760,13 +760,20 @@
                 </item>
                 <item>
                  <layout class="QGridLayout" name="gridLayout_4">
-                 <item row="1" column="5">
-                  <widget class="QCheckBox" name="checkBoxSaveRoughness">
-                   <property name="text">
-                    <string>R</string>
-                   </property>
-                  </widget>
-                 </item>
+                  <item row="1" column="5">
+                   <widget class="QCheckBox" name="checkBoxSaveRoughness">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="content.qrc">
+                      <normaloff>:/resources/roughness.png</normaloff>:/resources/roughness.png</iconset>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="1" column="1">
                    <widget class="QPushButton" name="pushButtonSaveAll">
                     <property name="statusTip">
@@ -926,13 +933,20 @@
                     </property>
                    </spacer>
                   </item>
-                 <item row="1" column="6">
-                  <widget class="QCheckBox" name="checkBoxSaveMetallic">
-                   <property name="text">
-                    <string>M</string>
-                   </property>
-                  </widget>
-                 </item>
+                  <item row="1" column="6">
+                   <widget class="QCheckBox" name="checkBoxSaveMetallic">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="content.qrc">
+                      <normaloff>:/resources/metalic.png</normaloff>:/resources/metalic.png</iconset>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
                  </layout>
                 </item>
                 <item>
@@ -983,23 +997,63 @@
                   <layout class="QVBoxLayout" name="verticalLayout_3">
                    <item>
                     <layout class="QGridLayout" name="gridLayout_5">
-                    <item row="0" column="6">
-                     <widget class="QLabel" name="label_27">
-                      <property name="text">
-                       <string>M</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="5">
-                     <widget class="QLineEdit" name="lineEditPostfixRoughness"/>
-                    </item>
-                    <item row="1" column="4">
-                     <widget class="QLabel" name="label_23">
-                      <property name="text">
-                       <string>R</string>
-                      </property>
-                     </widget>
-                    </item>
+                     <item row="0" column="6">
+                      <widget class="QLabel" name="label_27">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>32</width>
+                         <height>32</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="pixmap">
+                        <pixmap resource="content.qrc">:/resources/showMetallic.png</pixmap>
+                       </property>
+                       <property name="scaledContents">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="5">
+                      <widget class="QLineEdit" name="lineEditPostfixRoughness">
+                       <property name="text">
+                        <string>_r</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="4">
+                      <widget class="QLabel" name="label_23">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>32</width>
+                         <height>32</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="pixmap">
+                        <pixmap resource="content.qrc">:/resources/showRoughness.png</pixmap>
+                       </property>
+                       <property name="scaledContents">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
                      <item row="0" column="4">
                       <widget class="QLabel" name="label_12">
                        <property name="maximumSize">
@@ -1160,9 +1214,13 @@
                        </property>
                       </widget>
                      </item>
-                    <item row="0" column="7">
-                     <widget class="QLineEdit" name="lineEditPostfixMetallic"/>
-                    </item>
+                     <item row="0" column="7">
+                      <widget class="QLineEdit" name="lineEditPostfixMetallic">
+                       <property name="text">
+                        <string>_m</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </item>
                    <item>
@@ -1265,8 +1323,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>253</width>
-              <height>369</height>
+              <width>352</width>
+              <height>594</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_15">
@@ -1595,43 +1653,28 @@
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout3DImage">
+         <property name="spacing">
+          <number>3</number>
+         </property>
          <item>
-          <widget class="QWidget" name="widget" native="true">
+          <widget class="QPushButton" name="pushButton3DSettings">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>40</height>
-            </size>
+           <property name="text">
+            <string>3D settings</string>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_16">
-            <item>
-             <widget class="QPushButton" name="pushButton3DSettings">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>3D settings</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
           </widget>
          </item>
          <item>
@@ -1651,16 +1694,51 @@
            <property name="maximumSize">
             <size>
              <width>11000</width>
-             <height>300</height>
+             <height>250</height>
             </size>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_17">
             <item>
              <layout class="QGridLayout" name="gridLayout_8">
-              <item row="1" column="8">
+              <item row="1" column="10">
+               <widget class="QPushButton" name="pushButtonToggleRoughness">
+                <property name="statusTip">
+                 <string>Toggle roughness mapping</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Enable roughness mapping</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="content.qrc">
+                  <normaloff>:/resources/roughness.png</normaloff>:/resources/roughness.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="9">
                <widget class="QPushButton" name="pushButtonToggleOcclusion">
                 <property name="statusTip">
                  <string>Toggle occlusion</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Enable ambient occlusion texture</string>
                 </property>
                 <property name="text">
                  <string/>
@@ -1671,8 +1749,8 @@
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>32</width>
-                  <height>26</height>
+                  <width>20</width>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="checkable">
@@ -1701,7 +1779,7 @@
                 <property name="iconSize">
                  <size>
                   <width>32</width>
-                  <height>26</height>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="flat">
@@ -1709,10 +1787,13 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="4">
+              <item row="1" column="5">
                <widget class="QPushButton" name="pushButtonToggleHeight">
                 <property name="statusTip">
-                 <string>Toggle height</string>
+                 <string>Toggle height/displacement</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Enable displacement</string>
                 </property>
                 <property name="text">
                  <string/>
@@ -1723,37 +1804,8 @@
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>32</width>
-                  <height>26</height>
-                 </size>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-                <property name="flat">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QPushButton" name="pushButtonToggleDiffuse">
-                <property name="statusTip">
-                 <string>Toggle diffuse</string>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="icon">
-                 <iconset resource="content.qrc">
-                  <normaloff>:/resources/diffuse.png</normaloff>:/resources/diffuse.png</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>32</width>
-                  <height>26</height>
+                  <width>20</width>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="checkable">
@@ -1768,21 +1820,24 @@
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QPushButton" name="pushButtonToggleNormal">
+               <widget class="QPushButton" name="pushButtonToggleDiffuse">
                 <property name="statusTip">
-                 <string>Toggle normal</string>
+                 <string>Toggle diffuse</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Enable diffuse color</string>
                 </property>
                 <property name="text">
                  <string/>
                 </property>
                 <property name="icon">
                  <iconset resource="content.qrc">
-                  <normaloff>:/resources/normal.png</normaloff>:/resources/normal.png</iconset>
+                  <normaloff>:/resources/diffuse.png</normaloff>:/resources/diffuse.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>32</width>
-                  <height>26</height>
+                  <width>20</width>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="checkable">
@@ -1797,21 +1852,24 @@
                </widget>
               </item>
               <item row="1" column="3">
-               <widget class="QPushButton" name="pushButtonToggleSpecular">
+               <widget class="QPushButton" name="pushButtonToggleNormal">
                 <property name="statusTip">
-                 <string>Toggle specular</string>
+                 <string>Toggle normal</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Enable normal mapping</string>
                 </property>
                 <property name="text">
                  <string/>
                 </property>
                 <property name="icon">
                  <iconset resource="content.qrc">
-                  <normaloff>:/resources/specular.png</normaloff>:/resources/specular.png</iconset>
+                  <normaloff>:/resources/normal.png</normaloff>:/resources/normal.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>32</width>
-                  <height>26</height>
+                  <width>20</width>
+                  <height>20</height>
                  </size>
                 </property>
                 <property name="checkable">
@@ -1825,7 +1883,252 @@
                 </property>
                </widget>
               </item>
+              <item row="1" column="4">
+               <widget class="QPushButton" name="pushButtonToggleSpecular">
+                <property name="statusTip">
+                 <string>Toggle specular</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Enable specular reflection texture</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="content.qrc">
+                  <normaloff>:/resources/specular.png</normaloff>:/resources/specular.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="11">
+               <widget class="QPushButton" name="pushButtonToggleMetallic">
+                <property name="statusTip">
+                 <string>Toggle metallic texture</string>
+                </property>
+                <property name="whatsThis">
+                 <string>Enable metallic texture</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="content.qrc">
+                  <normaloff>:/resources/metalic.png</normaloff>:/resources/metalic.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>60</height>
+               </size>
+              </property>
+              <property name="title">
+               <string>Graphics settings</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_26">
+               <property name="spacing">
+                <number>2</number>
+               </property>
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
+               <item>
+                <layout class="QGridLayout" name="gridLayout_14">
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="checkBoxPerformanceCullFace">
+                   <property name="whatsThis">
+                    <string>Enable/disable cull facing during tessellation. </string>
+                   </property>
+                   <property name="text">
+                    <string>Cull faces</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QCheckBox" name="checkBoxPerformanceSimplePBR">
+                   <property name="whatsThis">
+                    <string>Enable simple PBR model lightning. Uses mipmaps instead of light rays integration.</string>
+                   </property>
+                   <property name="text">
+                    <string>Simple PBR</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QLabel" name="label_32">
+                   <property name="text">
+                    <string>No. tess. sub.</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="4">
+                  <widget class="QComboBox" name="comboBoxPerformanceNoTessSub">
+                   <property name="whatsThis">
+                    <string>Choose maximal number of tessellation subdivisions.</string>
+                   </property>
+                   <property name="currentIndex">
+                    <number>3</number>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>8</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>16</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>24</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>32</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>48</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>64</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="Line" name="line">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="6">
+                  <widget class="QLabel" name="label_33">
+                   <property name="text">
+                    <string>No. rays</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="7">
+                  <widget class="QComboBox" name="comboBoxPerformanceNoRays">
+                   <property name="whatsThis">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When &lt;span style=&quot; font-weight:600;&quot;&gt;Simple PBR&lt;/span&gt; model is disabled, it defines number of rays used to solve scattering equation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="currentIndex">
+                    <number>2</number>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>5</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>10</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>15</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>20</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>30</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>50</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="0" column="5">
+                  <widget class="Line" name="line_2">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout">
@@ -1940,7 +2243,7 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="1">
+              <item row="1" column="5">
                <widget class="QSlider" name="horizontalSliderUVScale">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1971,7 +2274,7 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="2">
+              <item row="1" column="6">
                <widget class="QDoubleSpinBox" name="doubleSpinBoxUVScale">
                 <property name="readOnly">
                  <bool>true</bool>
@@ -1984,14 +2287,14 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
+              <item row="1" column="4">
                <widget class="QLabel" name="label_2">
                 <property name="text">
                  <string>UV scale</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="0">
+              <item row="5" column="4">
                <widget class="QLabel" name="label_11">
                 <property name="text">
                  <string>Specular</string>
@@ -2039,11 +2342,11 @@
                  <enum>QAbstractSpinBox::NoButtons</enum>
                 </property>
                 <property name="value">
-              <double>1.000000000000000</double>
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>
-              <item row="6" column="1">
+              <item row="5" column="5">
                <widget class="QSlider" name="horizontalSliderSpecularI">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -2061,14 +2364,14 @@
                  <number>100</number>
                 </property>
                 <property name="value">
-              <number>50</number>
+                 <number>50</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
-              <item row="6" column="2">
+              <item row="5" column="6">
                <widget class="QDoubleSpinBox" name="doubleSpinBoxSpecularI">
                 <property name="readOnly">
                  <bool>true</bool>
@@ -2077,18 +2380,18 @@
                  <enum>QAbstractSpinBox::NoButtons</enum>
                 </property>
                 <property name="value">
-              <double>1.000000000000000</double>
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
+              <item row="3" column="4">
                <widget class="QLabel" name="label_4">
                 <property name="text">
                  <string>UV Y offset</string>
                 </property>
                </widget>
               </item>
-              <item row="4" column="1">
+              <item row="3" column="5">
                <widget class="QSlider" name="horizontalSliderUVYOffset">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -2119,7 +2422,7 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="2">
+              <item row="3" column="6">
                <widget class="QDoubleSpinBox" name="doubleSpinBoxUVYOffset">
                 <property name="readOnly">
                  <bool>true</bool>
@@ -2138,12 +2441,133 @@
                 </property>
                </widget>
               </item>
+              <item row="1" column="3">
+               <widget class="Line" name="line_3">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="Line" name="line_4">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="3">
+               <widget class="Line" name="line_5">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="label_34">
+                <property name="text">
+                 <string>Light power</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QSlider" name="horizontalSliderLightPower">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximum">
+                 <number>500</number>
+                </property>
+                <property name="value">
+                 <number>100</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2">
+               <widget class="QDoubleSpinBox" name="doubleSpinBoxLightPower">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::NoButtons</enum>
+                </property>
+                <property name="maximum">
+                 <double>1000.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="4">
+               <widget class="QLabel" name="label_35">
+                <property name="text">
+                 <string>Light radius</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="5">
+               <widget class="QSlider" name="horizontalSliderLightRadius">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximum">
+                 <number>100</number>
+                </property>
+                <property name="value">
+                 <number>10</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="6">
+               <widget class="QDoubleSpinBox" name="doubleSpinBoxLightRadius">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::NoButtons</enum>
+                </property>
+                <property name="maximum">
+                 <double>500.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.010000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.100000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="3">
+               <widget class="Line" name="line_6">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="1" column="1">
                <widget class="QComboBox" name="comboBoxShadingType">
+                <property name="statusTip">
+                 <string>Choose displacement model</string>
+                </property>
                 <item>
                  <property name="text">
                   <string>Refief Mapping</string>
@@ -2161,8 +2585,11 @@
                 </item>
                </widget>
               </item>
-              <item>
+              <item row="1" column="3">
                <widget class="QComboBox" name="comboBoxChooseOBJModel">
+                <property name="statusTip">
+                 <string>Choose model</string>
+                </property>
                 <item>
                  <property name="text">
                   <string>Cube</string>
@@ -2220,19 +2647,38 @@
                 </item>
                </widget>
               </item>
-              <item>
+              <item row="1" column="0">
+               <widget class="QComboBox" name="comboBoxShadingModel">
+                <property name="statusTip">
+                 <string>Toggle shading model</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>PBR</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Bump mapping</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="1" column="4">
                <widget class="QPushButton" name="pushButtonLoadMesh">
+                <property name="statusTip">
+                 <string>Load OBJ model from file</string>
+                </property>
                 <property name="text">
                  <string>Load OBJ mesh</string>
                 </property>
                </widget>
               </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
+              <item row="1" column="2">
                <widget class="QComboBox" name="comboBoxSkyBox">
+                <property name="statusTip">
+                 <string>Choose enviromental map</string>
+                </property>
                 <item>
                  <property name="text">
                   <string>LancellottiChapel</string>
@@ -2270,6 +2716,34 @@
                 </item>
                </widget>
               </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_28">
+                <property name="text">
+                 <string>Shading</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLabel" name="label_29">
+                <property name="text">
+                 <string>Shader</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="label_30">
+                <property name="text">
+                 <string>Env. map.</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QLabel" name="label_31">
+                <property name="text">
+                 <string>Mesh</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -2277,7 +2751,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout2DImage">
          <item>
           <widget class="QPushButton" name="pushButtonProjectManager">
@@ -2301,8 +2775,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1094</width>
-     <height>21</height>
+     <width>1670</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2346,12 +2820,14 @@
    <addaction name="actionShowSpecularImage"/>
    <addaction name="actionShowHeightImage"/>
    <addaction name="actionShowOcclusiontImage"/>
+   <addaction name="actionShowRoughnessImage"/>
+   <addaction name="actionShowMetallicImage"/>
    <addaction name="actionShowSettingsImage"/>
    <addaction name="actionFitToScreen"/>
   </widget>
   <widget class="QToolBar" name="toolBar_2">
    <property name="windowTitle">
-    <string>toolBar_2</string>
+    <string>UV toolbar</string>
    </property>
    <property name="movable">
     <bool>false</bool>
@@ -2536,6 +3012,30 @@
     <string>Remap the UV mapping in X and Y direction in order to correct the perspective transformation</string>
    </property>
   </action>
+  <action name="actionShowRoughnessImage">
+   <property name="icon">
+    <iconset resource="content.qrc">
+     <normaloff>:/resources/showRoughness.png</normaloff>:/resources/showRoughness.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show roughness</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+6</string>
+   </property>
+  </action>
+  <action name="actionShowMetallicImage">
+   <property name="icon">
+    <iconset resource="content.qrc">
+     <normaloff>:/resources/showMetallic.png</normaloff>:/resources/showMetallic.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show metallic</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+7</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="content.qrc"/>
@@ -2564,12 +3064,28 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>720</x>
-     <y>223</y>
+     <x>900</x>
+     <y>200</y>
     </hint>
     <hint type="destinationlabel">
      <x>640</x>
      <y>543</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxPerformanceSimplePBR</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>comboBoxPerformanceNoRays</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>633</x>
+     <y>421</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1074</x>
+     <y>423</y>
     </hint>
    </hints>
   </connection>

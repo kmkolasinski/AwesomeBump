@@ -8,18 +8,11 @@ uniform mat4 ProjectionMatrix;
 uniform mat4 ModelMatrix;
 uniform mat3 NormalMatrix;
 
-in vec3 vPosition[3];
-in vec3 vTexcoord[3];
-in vec3 vNormal[3];
-in vec3 vTangent[3];
-in vec3 vBitangent[3];
 
 
-out vec3 texcoord;
 out vec3 WSNormal;
 out vec3 WSTangent;
 out vec3 WSBitangent;
-out vec3 WSPosition;
 
 int findices[36] = int[](0, 1, 2, 2,3,0,
 						 4, 5, 6, 6,7,4,

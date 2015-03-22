@@ -25,6 +25,7 @@ public slots:
     void removeSetting(FormSettingsField* field); // destroys also files
     void reloadSettings(FormSettingsField* field);
     void saveSettings();
+
 signals:
     void reloadConfigFile(); // force main window to read config.ini again
     void forceSaveCurrentConfig(); // current configs will be save to config.ini file

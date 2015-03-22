@@ -12,7 +12,7 @@ FormSettingsField::FormSettingsField(QString _name,QString _description,QWidget 
     emit emitSaveSettings();
     name         = _name;
     description  = _description;
-    settingsPath = "configs/"+QString::number(settingsGlobalID)+"_"+name+".ini";
+    settingsPath = "Configs/"+QString::number(settingsGlobalID)+"_"+name+".ini";
     settingsGlobalID++;
     ui->textEditDescription->setText(description);
     ui->lineEditName->setText(name);

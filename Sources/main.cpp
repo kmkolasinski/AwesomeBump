@@ -40,8 +40,11 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QGLFormat>
 #include <QtDebug>
 #include "mainwindow.h"
+
+#include "glimageeditor.h"
 
 // Redirect qDebug() to file log.txt file.
 void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -75,6 +78,38 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
    textStream << txt << endl;
 }
 
+bool checkOpenGL(){
+
+    QGLWidget *glWidget = new QGLWidget;
+
+    QGLContext* glContext = (QGLContext *) glWidget->context();
+    GLCHK( glContext->makeCurrent() );
+
+    qDebug() << "Running the " + QString(AWESOME_BUMP_VERSION);
+    qDebug() << "Checking OpenGL version...";
+    qDebug() << "Widget OpenGL: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() ;
+    qDebug() << "Context valid: " << glContext->isValid() ;
+    qDebug() << "OpenGL information: " ;
+    qDebug() << "VENDOR: "       << (const char*)glGetString(GL_VENDOR) ;
+    qDebug() << "RENDERER: "     << (const char*)glGetString(GL_RENDERER) ;
+    qDebug() << "VERSION: "      << (const char*)glGetString(GL_VERSION) ;
+    qDebug() << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
+
+    float version = glContext->format().majorVersion() + 0.1 * glContext->format().minorVersion();
+
+    delete glWidget;
+
+    qDebug() << "Version:" << version;
+    // check openGL version
+    if( version < 4.0 )
+    {
+       qDebug() << "Error: AwesomeBump does not support openGL versions lower than 4.0 :(" ;
+       return false;
+    }
+    return true;
+
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -90,6 +125,10 @@ int main(int argc, char *argv[])
     QString guiStyle = settings.value("gui_style","DefaultAwesomeStyle").toString();
     app.setStyle(QStyleFactory::create( guiStyle ));
 
+    QFont font;
+    font.setFamily(font.defaultFamily());
+    font.setPixelSize(10);
+    app.setFont(font);
 
     // removing old log file
     QFile::remove("log.txt");
@@ -97,18 +136,36 @@ int main(int argc, char *argv[])
 
     qInstallMessageHandler(customMessageHandler);
     qDebug() << "Starting application:";
-    MainWindow window;
-    window.setWindowTitle("Awesome Bump");
 
-    window.resize(window.sizeHint());
-    int desktopArea = QApplication::desktop()->width() *
-                     QApplication::desktop()->height();
-    int widgetArea = window.width() * window.height();
-    if (((float)widgetArea / (float)desktopArea) < 0.75f)
-        window.show();
-    else
-        window.showMaximized();
+    QMessageBox msgBox;
+    if(!checkOpenGL()){
+
+        msgBox.setText("Fatal Error!");
+        msgBox.setInformativeText("Sorry but it seems that your graphics card does not support openGL 4.0.\n"
+                                  "Program will not run :(\n"
+                                  "See log.txt file for more info.");
+        msgBox.setStandardButtons(QMessageBox::Close);
+        msgBox.show();
+
+        return app.exec();
+    }else{
 
 
-    return app.exec();
+        MainWindow window;
+        window.setWindowTitle("AwesomeBump v3.0 (2015)");
+        window.resize(window.sizeHint());
+        int desktopArea = QApplication::desktop()->width() *
+                         QApplication::desktop()->height();
+        int widgetArea = window.width() * window.height();
+        if (((float)widgetArea / (float)desktopArea) < 0.75f)
+            window.show();
+        else
+            window.showMaximized();
+
+        return app.exec();
+
+    }
+
+
+
 }

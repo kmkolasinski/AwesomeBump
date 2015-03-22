@@ -87,10 +87,11 @@ public slots:
     void selectUVManipulationMethod(UVManipulationMethods method);
     void updateCornersWeights(float w1, float w2, float w3, float w4);
     void selectSeamlessMode(SeamlessMode mode);
+    void toggleColorPicking(bool toggle);
 signals:
     void rendered();
     void readyGL();
-
+    void colorPicked(QVector4D color);
 //! [2]
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -105,17 +106,17 @@ protected:
     void resizeGL(int width, int height);
 
     void applyGaussFilter(QGLFramebufferObject* sourceFBO, QGLFramebufferObject *auxFBO,
-                          QGLFramebufferObject* outputFBO, int no_iter);
+                          QGLFramebufferObject* outputFBO, int no_iter, float w =0);
     void applyMaskedGaussFilter(QGLFramebufferObject* sourceFBO,
                                 QGLFramebufferObject* maskFBO,
-                                QGLFramebufferObject *auxFBO,
+                                QGLFramebufferObject *auxFBO, QGLFramebufferObject *aux2FBO,
                                 QGLFramebufferObject* outputFBO);
 
     void applyInverseColorFilter(QGLFramebufferObject* inputFBO,
                                  QGLFramebufferObject* outputFBO);
 
-    void applyAOCancellationFilter(QGLFramebufferObject* inputFBO,
-                                   QGLFramebufferObject* aoMaskFBO,
+    void applyRemoveShadingFilter(QGLFramebufferObject* inputFBO,
+                                   QGLFramebufferObject* aoMaskFBO, QGLFramebufferObject *refFBO,
                                    QGLFramebufferObject* outputFBO);
 
     void applyNormalFilter(  QGLFramebufferObject* inputFBO,
@@ -197,6 +198,13 @@ protected:
                                         QGLFramebufferObject *heightFBO,
                                         QGLFramebufferObject* outputFBO);
 
+    void applyRoughnessFilter(QGLFramebufferObject* inputFBO,
+                              QGLFramebufferObject *auxFBO,
+                              QGLFramebufferObject* outputFBO);
+
+    void applyRoughnessColorFilter(QGLFramebufferObject* inputFBO,
+                                   QGLFramebufferObject* outputFBO);
+
     void copyFBO(QGLFramebufferObject* src,QGLFramebufferObject* dst);
 
 //! [3]
@@ -238,6 +246,7 @@ private:
     int gui_perspective_mode; // choose proper interpolation method
     int gui_seamless_mode; // if 0 standard blending, if 1 mirror mode
 
+    bool bToggleColorPicking;
     // uv manipulations method
     UVManipulationMethods uvManilupationMethod;
 };

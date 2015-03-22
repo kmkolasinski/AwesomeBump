@@ -46,5 +46,9 @@
         <file>resources/skybox.vert.glsl</file>
         <file>resources/logo_M.png</file>
         <file>resources/logo_R.png</file>
+        <file>resources/showMetallic.png</file>
+        <file>resources/roughness.png</file>
+        <file>resources/metalic.png</file>
+        <file>resources/showRoughness.png</file>
     </qresource>
 </RCC>

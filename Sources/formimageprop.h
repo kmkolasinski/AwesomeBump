@@ -34,17 +34,22 @@ public:
 
     QString getImageName();
 
-    void hideHNGroupBox();
-    void hideNHGroupBox();
+
+    void hideHeightInputGroup();
     void hideBMGroupBox();
     void hideSpecularGroupBox();
     void hideNormalStepBar();
-    void hideSSAOBar();
+    void hideOcclusionInputGroup();
     void hideHeightProcessingBox();
     void hideSelectiveBlurBox();
     void hideGrayScaleControl();
     void setSpecularControlChecked();
     void reloadSettings();
+    // hide input groups
+    void hideNormalInputGroup();
+    void hideSpecularInputGroup();
+    void hideRoughnessInputGroup();
+
 
     ~FormImageProp();
 public slots:
@@ -61,10 +66,16 @@ public slots:
     void applyHeightToNormalConversion();
     void applyNormalToHeightConversion();
     void applyBaseConversionConversion();    
-    void toggleHNPreviewMode();
-    void toggleAttachToNormal(bool toggle);
+    void applyHeightNormalToOcclusionConversion();
+
 
     void showHeightCalculatorDialog();
+
+    void toggleColorPicking(bool toggle);
+    void togglePreviewSelectiveBlurMask(bool toggle);
+    void colorPicked(QVector4D);
+    void cancelColorPicking();
+
 
 signals:
     void reloadSettingsFromConfigFile(TextureTypes type);
@@ -73,8 +84,9 @@ signals:
     void conversionHeightToNormalApplied();
     void conversionNormalToHeightApplied();
     void conversionBaseConversionApplied();
+    void conversionHeightNormalToOcclusionApplied();
     void recalculateOcclusion();
-    void repaintNormalTexture();
+    void toggleColorPickingApplied(bool toggle);
 
 protected:
     void dropEvent(QDropEvent *event);

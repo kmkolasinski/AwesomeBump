@@ -75,10 +75,14 @@ public slots:
     void toggleOcclusionView(bool);
     void toggleNormalView(bool);
     void toggleHeightView(bool);
+    void toggleRoughnessView(bool);
+    void toggleMetallicView(bool);
     void selectShadingType(int);
+    void selectShadingModel(int i);
 
     void setSpecularIntensity(double);
     void setDiffuseIntensity(double);
+    void setLightParameters(float,float);
     void setUVScaleOffset(double x,double y);
 
     void cleanup();
@@ -90,10 +94,14 @@ public slots:
     void chooseMeshFile(const QString &fileName);
 
     // pbr functions
-    void chooseSkyBox(QString cubeMapName);
+    void chooseSkyBox(QString cubeMapName, bool bFirstTime = false);
+    void updatePerformanceSettings(Performance3DSettings settings);
+
+
 signals:
     void renderGL();
     void readyGL();
+
 
 protected:
     void initializeGL();
@@ -128,13 +136,19 @@ private:
     QVector2D uvOffset;
     float specularIntensity;
     float diffuseIntensity;
+    float lightPower ;
+    float lightRadius;
     bool bToggleDiffuseView;
     bool bToggleSpecularView;
     bool bToggleOcclusionView;
     bool bToggleNormalView;
     bool bToggleHeightView;
+    bool bToggleRoughnessView;
+    bool bToggleMetallicView;
 
     ShadingType shadingType;
+    ShadingModel shadingModel;
+    Performance3DSettings performanceSettings;
 
     // 3D view parameters
     QMatrix4x4 projectionMatrix;
@@ -159,6 +173,8 @@ private:
     GLTextureCube* m_env_map; // orginal cube map
     GLTextureCube* m_prefiltered_env_map; // filtered lambertian cube map
     bool bDiffuseMapBaked; // prevent program from calculating diffuse env. map many times
+
+
 
 public:
     static QDir* recentMeshDir;
