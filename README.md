@@ -15,6 +15,10 @@ Cube maps textures were taken from Humus page [link](http://www.humus.name/index
 
 Project Webpage: http://awesomebump.besaba.com/
 
+### Download binaries from [here](https://github.com/kmkolasinski/AwesomeBump/releases) (.zip or tar.gz files). 
+
+
+
 INSTALLATION:
 ============
 ## Since version 3.0 
