@@ -41,9 +41,9 @@ New in version 3.0
 ===========
 1) Added error Logger
 
-2) Remove lightning with new AO cancelation feature added.
+2) Remove lightning with new AO cancellation feature added.
 
-3) Rouhness and metallic textures are now supported (PBR shading in action). Additionally new tool to manipulate these textures are available.
+3) Rouhness and metallic textures are now supported (PBR shading in action). Additionally new tools (noise filter and color picker) to manipulate these textures are available.
 
 4) Color Hue slider added.
 
@@ -51,7 +51,7 @@ New in version 3.0
 
 6) Selective blur feature (height texture only) is now available.
 
-7) And other important changes.
+7) And other important changes...
 
 8) Thanks to David for new cool models :)
 
