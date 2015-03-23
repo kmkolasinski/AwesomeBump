@@ -427,8 +427,8 @@ void main( void )
     // PBR calculations
     vec3  materialColour = fvBaseColor.rgb;
     vec4  aoColour       = fvSSAOColor;
-    float roughness      = fvRoughness.r;
-    vec3  metallicColour = fvMetallic.rgb;
+    float roughness      = clamp(fvRoughness.r,0,1);
+    vec3  metallicColour = clamp(fvMetallic.rgb,vec3(0),vec3(1));
 
     if(!gui_bRoughness) roughness      = 0.0;
     if(!gui_bMetallic)  metallicColour = vec3(0.5);

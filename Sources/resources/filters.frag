@@ -863,7 +863,8 @@ subroutine(filterModeType) vec4 mode_roughness_color_filter(){
         angle           = clamp((1-distance(colorA,maskColor)/sqrt(3))*amp + offset,0.0,1.0);
 
     }
-    return vec4(abs(float(gui_roughness_invert_mask)-angle)+gui_roughness_color_global_offset) ;
+    float value = abs(float(gui_roughness_invert_mask)-angle)+gui_roughness_color_global_offset;
+    return vec4(clamp(value,0,1)) ;
 }
 
 
