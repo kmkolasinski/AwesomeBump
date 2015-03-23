@@ -11,8 +11,19 @@ If you want to fix or improve something please fork my repo and send me the pull
 
 AB is using tinyobjloader for loading the OBJ files: https://github.com/syoyo/tinyobjloader
 
+Cube maps textures were taken from Humus page [link](http://www.humus.name/index.php?page=Textures) 
+
+Project Webpage: http://awesomebump.besaba.com/
+
 INSTALLATION:
 ============
+## Since version 3.0 
+Steps are almost the same as for earlier versions.
+See the [pdf ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) for instructions.
+
+
+## For versions older than 3.0.
+
 0. Video tutorial: https://www.youtube.com/watch?v=R-WgHserrS0
 1. In order to build AwesomeBump you will need to have qt-sdk installed: http://www.qt.io/download/ 
 2. Download the sourcecode of AB from github and unzip it. Run Qt then open a new project using the AwesomeBump.pro file (located in AB source code folder.). 
@@ -20,7 +31,7 @@ INSTALLATION:
 4. I hope you will like it :)
 
 
-Project Webpage: http://awesomebump.besaba.com/
+
 
 New in version 3.0
 ===========
