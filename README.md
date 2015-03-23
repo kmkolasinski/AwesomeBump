@@ -1,5 +1,5 @@
 
-
+![alt tag](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/githubimage2.jpg)
 AwesomeBump  3.0
 ===========
 
