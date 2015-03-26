@@ -26,8 +26,24 @@ Steps are almost the same as for earlier versions.
 See the [pdf ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) for instructions.
 
 ## Command-line instructions:
-0. Open terminal
-1. Add Qt 5.4 to the PATH variable:
+a) Open terminal
+b) Add Qt 5.4 to the PATH variable (example command):
+   export PATH=/usr/local/Qt-5.4.1/bin:$PATH
+Note that your path to the Qt 5.4 bin folder may be different. You can use following command to check where is your Qt-5.4 installation located:
+   locate qt | grep Qt-5 
+This will list you all files with name Qt-5. 
+c) Unzip the source code:
+   unzip AwesomeBump.zip
+d) Navigate to Sources directory:
+   cd AwesomeBump/Sources
+e) Compile program:
+   qmake
+   make
+f) copy AwesomeBump file to bin directory.
+   cp AwesomeBump ../Bin/
+g) Run program:
+   cd ../Bin
+   ./AwesomeBump
 
 ## For versions older than 3.0.
 
