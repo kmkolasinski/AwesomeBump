@@ -25,25 +25,7 @@ INSTALLATION:
 Steps are almost the same as for earlier versions.
 See the [pdf ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) for instructions.
 
-## Command-line instructions:
-a) Open terminal
-b) Add Qt 5.4 to the PATH variable (example command):
-   export PATH=/usr/local/Qt-5.4.1/bin:$PATH
-Note that your path to the Qt 5.4 bin folder may be different. You can use following command to check where is your Qt-5.4 installation located:
-   locate qt | grep Qt-5 
-This will list you all files with name Qt-5. 
-c) Unzip the source code:
-   unzip AwesomeBump.zip
-d) Navigate to Sources directory:
-   cd AwesomeBump/Sources
-e) Compile program:
-   qmake
-   make
-f) copy AwesomeBump file to bin directory.
-   cp AwesomeBump ../Bin/
-g) Run program:
-   cd ../Bin
-   ./AwesomeBump
+
 
 ## For versions older than 3.0.
 
@@ -53,7 +35,43 @@ g) Run program:
 3. Setup the build path and run path (in project build settings panel) and compile the project (remember that your graphics card has to support at least openGL 4.0). Compilation step will take some time. Run the program. In case of problems see the log.txt file.
 4. I hope you will like it :)
 
+## Command-line instructions:
+a) Open terminal
 
+b) Add Qt 5.4 to the PATH variable (example command):
+
+   export PATH=/usr/local/Qt-5.4.1/bin:$PATH
+   
+Note that your path to the Qt 5.4 bin folder may be different. You can use following command to check where is your Qt-5.4 installation located:
+
+   locate qt | grep Qt-5 
+   
+This will list you all files with name Qt-5. 
+
+c) Unzip the source code:
+
+   unzip AwesomeBump.zip
+   
+d) Navigate to Sources directory:
+
+   cd AwesomeBump/Sources
+   
+e) Compile program:
+
+   qmake
+   
+   make
+   
+f) copy AwesomeBump file to bin directory.
+
+   cp AwesomeBump ../Bin/
+   
+g) Run program:
+
+   cd ../Bin
+   
+   ./AwesomeBump
+   
 
 
 New in version 3.0
