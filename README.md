@@ -25,6 +25,9 @@ INSTALLATION:
 Steps are almost the same as for earlier versions.
 See the [pdf ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) for instructions.
 
+## Command-line instructions:
+0. Open terminal
+1. Add Qt 5.4 to the PATH variable:
 
 ## For versions older than 3.0.
 
