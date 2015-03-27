@@ -580,14 +580,14 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     lastPos = event->pos();
     // mouse looping in 3D view window
     if(bMouseDragged){
-
-        if(event->x() > width()){
-            lastPos.setX(0);
+        qDebug() << "Before:" <<  lastPos;
+        if(event->x() > width()-10){
+            lastPos.setX(10);
         }
-        if(event->x() < 0){
-            lastPos.setX(width());
+        if(event->x() < 10){
+            lastPos.setX(width()-10);
         }
-
+        qDebug() << lastPos;
         QCursor c = cursor();
         c.setPos(mapToGlobal(lastPos));
         setCursor(c);

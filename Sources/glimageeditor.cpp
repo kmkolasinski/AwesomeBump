@@ -2197,17 +2197,17 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
 
     // mouse looping in 2D view window
     if (event->buttons() & Qt::RightButton || event->buttons() & Qt::LeftButton ){
-        if(event->x() > width()){
-            lastCursorPos.setX(0);
+        if(event->x() > width()-10){
+            lastCursorPos.setX(10);
         }
-        if(event->x() < 0){
-            lastCursorPos.setX(width());
+        if(event->x() < 10){
+            lastCursorPos.setX(width()-10);
         }
-        if(event->y() > height()){
-            lastCursorPos.setY(0);
+        if(event->y() > height()-10){
+            lastCursorPos.setY(10);
         }
-        if(event->y() < 0){
-            lastCursorPos.setY(height());
+        if(event->y() < 10){
+            lastCursorPos.setY(height()-10);
         }
 
         QCursor c = cursor();
