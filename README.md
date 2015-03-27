@@ -74,7 +74,7 @@ g) Run program:
    
 
 
-New in version 3.0
+New in version 3.0 + update 3.0.1 (27.03.15)
 ===========
 1) Added error Logger
 
@@ -91,6 +91,8 @@ New in version 3.0
 7) And other important changes...
 
 8) Thanks to David for new cool models :)
+
+9) Update 3.0.1: Improved seamless alhorithms, improved GUI, mouse loop added
 
 New in version 2.1
 ===========
