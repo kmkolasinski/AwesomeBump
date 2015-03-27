@@ -11,19 +11,20 @@ uniform mat3 NormalMatrix;
 
 
 out vec3 WSNormal;
-out vec3 WSTangent;
-out vec3 WSBitangent;
+
 
 int findices[36] = int[](0, 1, 2, 2,3,0,
-						 4, 5, 6, 6,7,4,
-						 4, 0, 1, 1,5,4,
-						 2, 6, 7, 7,3,2,
-						 1, 5, 6, 6,2,1,
-						 0, 4, 7, 7,3,0);
+                         4, 5, 6, 6,7,4,
+                         4, 0, 1, 1,5,4,
+                         2, 6, 7, 7,3,2,
+                         1, 5, 6, 6,2,1,
+                         0, 4, 7, 7,3,0);
 						 
-int sindices[6] = int[](0, 1, 2, 2,3,0);
+int sindices[6] = int[](0,1,2,2,3,0);
+int layers[6]   = int[](4,5,2,3,1,0);
 
-int layers[6] = int[](4,5,2,3,1,0);
+
+
 
 void main()
 {
@@ -51,19 +52,24 @@ void main()
 		for(int v = 0; v < 3 ; v++){
 			int id = 6*f + 3*t + v;
 			int sid = 3*t + v;
-			WSTangent   = vec3(0,1,0);
-			
+
 			WSNormal    =-normalize(positions[findices[id]]);
 			// lazy empirical rotations corrections
-			if(f==0) WSNormal = normalize(vec3(-WSNormal.x,WSNormal.y, WSNormal.z));  // fixing rotations
-			if(f==2) WSNormal = normalize(vec3( WSNormal.z,WSNormal.y,-WSNormal.x)); // fixing rotations
-			if(f==3) WSNormal = normalize(vec3(-WSNormal.z,WSNormal.y,-WSNormal.x)); // fixing rotations
-			if(f==4) WSNormal = normalize(vec3( WSNormal.x,WSNormal.y,-WSNormal.z)); // fixing rotations
-			
-			WSBitangent = normalize(cross(WSTangent,WSNormal));
-			WSTangent   = cross(WSNormal,WSBitangent);
-			vec2 pos 	= sign(screen_positions[sindices[sid]]).st;
-			gl_Position =  vec4(pos,0,1);
+                        if(f==0){
+                            WSNormal = normalize(vec3(-WSNormal.x,WSNormal.y, WSNormal.z)); // fixing rotations
+                        }
+                        if(f==2){
+                            WSNormal = normalize(vec3( WSNormal.z,WSNormal.y,-WSNormal.x)); // fixing rotations
+                        }
+                        if(f==3){
+                            WSNormal  = normalize(vec3(-WSNormal.z,WSNormal.y,-WSNormal.x)); // fixing rotations
+                        }
+                        if(f==4){
+                            WSNormal = normalize(vec3( WSNormal.x,WSNormal.y,-WSNormal.z)); // fixing rotations
+                         }
+
+                        vec2 pos    = sign(screen_positions[sindices[sid]]).st;
+                        gl_Position = vec4(pos,0,1);
 			EmitVertex();
 		}//vertex
 		EndPrimitive(); 

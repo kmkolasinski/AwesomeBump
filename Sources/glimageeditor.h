@@ -104,7 +104,7 @@ protected:
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
-
+public:
     void applyGaussFilter(QGLFramebufferObject* sourceFBO, QGLFramebufferObject *auxFBO,
                           QGLFramebufferObject* outputFBO, int no_iter, float w =0);
     void applyMaskedGaussFilter(QGLFramebufferObject* sourceFBO,
@@ -121,6 +121,8 @@ protected:
 
     void applyNormalFilter(  QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject* outputFBO);
+
+    void applyNormalFilter(QGLFramebufferObject* inputFBO);
 
     void applyColorHueFilter(  QGLFramebufferObject* inputFBO,
                                QGLFramebufferObject* outputFBO);
@@ -140,6 +142,9 @@ protected:
                              QGLFramebufferObject* outputFBO);
     void applySeamlessFilter(QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject* outputFBO);
+    void applySeamlessLinearFilter(QGLFramebufferObject* inputFBO,
+                             QGLFramebufferObject* outputFBO);
+
     void applyDGaussiansFilter(QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject *auxFBO,
                              QGLFramebufferObject* outputFBO, bool bUseSelectiveBlur = false);

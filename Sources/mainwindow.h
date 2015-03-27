@@ -114,6 +114,7 @@ public slots:
     void selectSeamlessMode(int mode);
     void randomizeAngles();// in random mode
     void resetRandomPatches();
+    void selectContrastInputImage(int mode);
 
 private:
     // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"

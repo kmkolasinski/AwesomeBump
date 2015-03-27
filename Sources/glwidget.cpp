@@ -71,6 +71,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     setCursor(Qt::PointingHandCursor);
     lightCursor = QCursor(QPixmap(":/resources/lightCursor.png"));
 
+    glImagePtr = (GLImage*)shareWidget;
 }
 
 GLWidget::~GLWidget()
@@ -120,6 +121,10 @@ void GLWidget::setUVScale(int scale){
 void GLWidget::setUVScaleOffset(double x,double y){
     uvOffset = QVector2D(x,y);
     updateGL();
+}
+
+void GLWidget::setCameraMouseSensitivity(int value){
+    camera.setMouseSensitivity(value);
 }
 
 void GLWidget::toggleDiffuseView(bool enable){
@@ -321,13 +326,18 @@ void GLWidget::initializeGL()
     env_mesh    = new Mesh("Core/3D/","sky_cube_env.obj");
 
     m_prefiltered_env_map = new GLTextureCube(512);
-    chooseSkyBox("SaintLazarusChurch",true);
+
 
     emit readyGL();
 }
 
 void GLWidget::paintGL()
 {
+
+    // ---------------------------------------------------------
+    // Drawing env
+    // ---------------------------------------------------------
+    bakeEnviromentalMaps();
 
     GLCHK( glViewport(0, 0, width(), height()) );
     // setting the camera viewpoint
@@ -342,6 +352,8 @@ void GLWidget::paintGL()
     // ---------------------------------------------------------
     // Drawing skybox
     // ---------------------------------------------------------
+
+
     skybox_program->bind();
 
     objectMatrix.setToIdentity();
@@ -365,10 +377,8 @@ void GLWidget::paintGL()
     GLCHK( skybox_mesh->drawMesh(true) );
 
 
-    // ---------------------------------------------------------
-    // Drawing env
-    // ---------------------------------------------------------
-    bakeEnviromentalMaps();
+
+
 
     // ---------------------------------------------------------
     // Drawing model
@@ -490,6 +500,7 @@ void GLWidget::resizeGL(int width, int height)
 {
     ratio = float(width)/height;
 
+
     GLCHK( glViewport(0, 0, width, height) );
 }
 
@@ -547,7 +558,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
     int dx = event->x() - lastPos.x();
     int dy = event->y() - lastPos.y();
-
+    bool bMouseDragged = true;
     if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton)) {
 
     }else if (event->buttons() & Qt::LeftButton) {
@@ -562,8 +573,27 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         if(lightPosition.y() > +10.0) lightPosition.setY(+10.0);
         if(lightPosition.y() < -10.0) lightPosition.setY(-10.0);
         lightDirection.rotateView(-2*dx/1.0,2*dy/1.0);
+    }else{
+        bMouseDragged = false;
     }
+
     lastPos = event->pos();
+    // mouse looping in 3D view window
+    if(bMouseDragged){
+
+        if(event->x() > width()){
+            lastPos.setX(0);
+        }
+        if(event->x() < 0){
+            lastPos.setX(width());
+        }
+
+        QCursor c = cursor();
+        c.setPos(mapToGlobal(lastPos));
+        setCursor(c);
+    }
+
+
     updateGL();
 }
 //! [10]

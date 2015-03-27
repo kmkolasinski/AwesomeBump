@@ -21,7 +21,7 @@
     #define AB_LOG_ALT "log.txt"
 #endif
 
-#define AWESOME_BUMP_VERSION "AwesomeBump v3.0"
+#define AWESOME_BUMP_VERSION "AwesomeBump v3.0.1 Beta"
 
 using namespace std;
 
@@ -444,6 +444,12 @@ public:
     static float seamlessSimpleModeRadius;
     static int seamlessMirroModeType; // values: 2 - x repear, 1 - y  repeat, 0 - xy  repeat
     static RandomTilingMode seamlessRandomTiling;
+    static float seamlessContrastStrenght;
+    static float seamlessContrastPower;
+    static int seamlessSimpleModeDirection;
+    static SourceImageType seamlessContrastInputType;
+    static bool bSeamlessTranslationsFirst;
+
      FBOImageProporties(){
 
         ref_fbo      = NULL;
@@ -547,6 +553,7 @@ public:
         selectiveBlurNoIters            = 1;
 
         seamlessMode   = SEAMLESS_NONE;
+
      }
     void init(QImage& image){
         qDebug() << Q_FUNC_INFO;

@@ -6,25 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>330</width>
-    <height>3246</height>
+    <width>301</width>
+    <height>2449</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Maximum" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>330</width>
+    <width>250</width>
     <height>0</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>330</width>
+    <width>500</width>
     <height>16777215</height>
    </size>
   </property>
@@ -38,6 +38,18 @@
    <bool>true</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_7">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -188,6 +200,12 @@
        <layout class="QGridLayout" name="gridLayout_17">
         <item row="0" column="0">
          <widget class="QLabel" name="label_84">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
            <string>Input image</string>
           </property>
@@ -195,6 +213,12 @@
         </item>
         <item row="0" column="1">
          <widget class="QComboBox" name="comboBoxNormalInputImage">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose the input image for further processing. &lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning:&lt;/span&gt; When &lt;span style=&quot; font-weight:600;&quot;&gt;current&lt;/span&gt; image is selected and UV transformation are applied then output normal image may not by transformed properly. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -222,6 +246,12 @@
       </item>
       <item>
        <widget class="QGroupBox" name="groupBoxHN">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="title">
          <string>Change depth</string>
         </property>
@@ -268,6 +298,12 @@
            </item>
            <item row="0" column="1">
             <widget class="QSlider" name="horizontalSliderConversionHNDepth">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It changes the depth of the calculated normal map in pixels unit.&lt;/p&gt;&lt;p&gt;For example: lets assume that you have picture of wall of size 1x1 m&lt;span style=&quot; vertical-align:super;&quot;&gt;2 &lt;/span&gt; in real world with bricks pattern and your image has size 1024x1024 pixels. Then you want to generate normals for texture which depth is 3cm = 0.03 m. So the depth in pixels is 0.03*1024 = 30.72 ~ 31 pixels. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>

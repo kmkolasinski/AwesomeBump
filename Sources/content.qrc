@@ -32,7 +32,6 @@
         <file>resources/translateUV.png</file>
         <file>resources/grabCorners.png</file>
         <file>resources/scaleXYUV.png</file>
-        <file>resources/filters.frag</file>
         <file>resources/filters.vert</file>
         <file>resources/trash.png</file>
         <file>resources/text.png</file>
@@ -50,5 +49,6 @@
         <file>resources/roughness.png</file>
         <file>resources/metalic.png</file>
         <file>resources/showRoughness.png</file>
+        <file>resources/filters.frag</file>
     </qresource>
 </RCC>

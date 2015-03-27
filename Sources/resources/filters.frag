@@ -354,29 +354,50 @@ float sobel_edge_detection(){
 
     #undef UPDATE_SOBEL_VALUES
 }
+uniform float gui_seamless_contrast_strenght;
+uniform float gui_seamless_contrast_power;
+subroutine(filterModeType) vec4 mode_seamless_linear_filter(){
+
+    vec2 tc   = v2QuadCoords.st;
+    float x   = tc.x;
+    float y   = tc.y;
+    float rad = make_seamless_radius/2;
+    float pwr = gui_seamless_contrast_power*10;
+    float cst = (gui_seamless_contrast_strenght)*50;
+    // simple seamless - GIMP like behaviour
+    if(gui_seamless_mode == 0){
+        vec2 offset = -sign(x-0.5)*vec2(0.5,0);
+        vec4 colorA = texture( layerA, tc);
+        vec4 colorB = texture( layerA, vec2(tc.x,tc.y) + offset);//*vec4(1,1,0.4,1);
+        vec4 hA = texture( layerB, tc);
+        vec4 hB = texture( layerB, vec2(tc.x,tc.y) + offset);
+        float omega     =  1 - smoothstep(0.0,rad,tc.x) + smoothstep(1.0-rad,1.0,tc.x);
+        float bomega    = clamp(omega + omega*pow(length(hA.xyz-hB.xyz)/sqrt(2.0),pwr)*cst,0,1);
+        return mix(colorA,colorB,bomega);
+    }else{
+        vec2 offset = -sign(y-0.5)*vec2(0.0,0.5);
+        vec4 colorA = texture( layerA, tc);
+        vec4 colorB = texture( layerA, vec2(tc.x,tc.y) + offset);//*vec4(1,1,0.4,1);
+        vec4 hA = texture( layerB, tc);
+        vec4 hB = texture( layerB, vec2(tc.x,tc.y) + offset);
+        float omega     =  1 - smoothstep(0.0,rad,tc.y) + smoothstep(1.0-rad,1.0,tc.y);
+        float bomega    = clamp(omega + omega*pow(length(hA.xyz-hB.xyz)/sqrt(2.0),pwr)*cst,0,1);
+        return mix(colorA,colorB,bomega);
+    }
+
+}
 
 subroutine(filterModeType) vec4 mode_seamless_filter(){
-		
+
+
     vec2 tc = v2QuadCoords.st;
     float x = tc.x;
     float y = tc.y;
-    // simple seamless - GIMP like behaviour
-    if(gui_seamless_mode == 1){
 
-        vec2 r = tc  - 0.502;
-        vec2 rdir    = 0.5*vec2(sign(r.x),sign(r.y));
-        float rl       = 2*length(r);
-        float scale  = 1.0;
-        float alpha = min(scale,pow(rl,(1+20*make_seamless_radius)))/scale;
+    float pwr = gui_seamless_contrast_power*10;
+    float cst = (gui_seamless_contrast_strenght)*50;
 
-        vec4 colorA = texture( layerA, tc);
-        vec4 colorB = texture( layerA, tc + rdir);
-        float sq = abs(pow(2*abs(x-0.5),1+50*make_seamless_radius)) + abs(pow(2*abs(y-0.5),1+50*make_seamless_radius));
-
-        return mix(colorA,colorB,alpha*clamp(sq,0,1));
-
-    // mirror mode
-    }else if(gui_seamless_mode == 2){
+    if(gui_seamless_mode == 2){
         // XY - mirror image
         if(gui_seamless_mirror_type == 0){
             vec4 color = texture( layerA, 2*abs(tc - 0.5));
@@ -414,8 +435,11 @@ subroutine(filterModeType) vec4 mode_seamless_filter(){
     }else {
 
         vec4 color         = vec4(0.0);
+        //color = texture(layerA,tc);
         highp float weight = 0;
+        vec4 hA = texture( layerB, tc);
         // loop over all atoms
+        float total_diff = 0;
         for(int i = 0 ; i < 9 ; i++){
             highp int ii = (i/3)%2;
             highp int jj = i%2;
@@ -428,11 +452,19 @@ subroutine(filterModeType) vec4 mode_seamless_filter(){
             highp float dist     = distance(tc,atom_pos);
             highp float alpha    = 1-smoothstep(gui_seamless_random_inner_radius,gui_seamless_random_outer_radius,dist);
 
+            vec4 hB = texture( layerB, rot_mat*(tc - atom_pos)+0.5);
+            float diff  = cst*pow(length(hA.xyz-hB.xyz)/sqrt(3.0),pwr+0.0001);
+            total_diff += diff;
+            alpha                = clamp(alpha + alpha * diff,0,1);
             weight              += alpha;
+            vec4 ncolor = texture( layerA, rot_mat*(tc - atom_pos)+0.5);
+            //color                = mix(color,ncolor,alpha);
             color               += texture( layerA, rot_mat*(tc - atom_pos)+0.5)* alpha;
         }
+        //return color;
         return color/weight;
     }
+
  }
  
 // ----------------------------------------------------------------

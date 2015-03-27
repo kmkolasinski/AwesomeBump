@@ -121,3 +121,7 @@ void AwesomeCamera::mouseWheelMove(int direction){
     radius+=mouse_sens*0.0025f*direction;
     if(radius < 0.3) radius = 0.3;
 }
+
+void AwesomeCamera::setMouseSensitivity(int value){
+    mouse_sens = value / 100.0;
+}

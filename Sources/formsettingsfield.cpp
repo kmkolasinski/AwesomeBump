@@ -89,7 +89,10 @@ void FormSettingsField::saveSettings(){
     settings.setValue("settings_description",description);
     settings.setValue("settings_path",settingsPath);
 
-
+    QPalette p(palette());
+    p.setColor(QPalette::Background,QColor(200,200,200) );
+    setAutoFillBackground(true);
+    setPalette(p);
 }
 void FormSettingsField::loadSettings(){
     QFile::remove("config.ini");

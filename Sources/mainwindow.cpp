@@ -288,10 +288,28 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonResetTransform            ,SIGNAL(released()),this,SLOT(resetTransform()));
     connect(ui->comboBoxPerspectiveTransformMethod  ,SIGNAL(activated(int)),glImage,SLOT(selectPerspectiveTransformMethod(int)));
     connect(ui->comboBoxSeamlessMode                ,SIGNAL(activated(int)),this,SLOT(selectSeamlessMode(int)));
+    connect(ui->comboBoxSeamlessContrastInputImage  ,SIGNAL(activated(int)),this,SLOT(selectContrastInputImage(int)));
 
     // uv seamless algorithms
+    connect(ui->checkBoxUVTranslationsFirst,SIGNAL(clicked()),this,SLOT(updateSliders()));
+
     connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(sliderReleased()),this,SLOT(updateSliders()));
     connect(ui->horizontalSliderMakeSeamlessRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+
+    connect(ui->horizontalSliderSeamlessContrastStrenght,SIGNAL(sliderReleased()),this,SLOT(updateSliders()));
+    connect(ui->horizontalSliderSeamlessContrastStrenght,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+
+    connect(ui->horizontalSliderSeamlessContrastPower,SIGNAL(sliderReleased()),this,SLOT(updateSliders()));
+    connect(ui->horizontalSliderSeamlessContrastPower,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
+
+    QButtonGroup *groupSimpleDirectionMode = new QButtonGroup( this );
+    groupSimpleDirectionMode->addButton( ui->radioButtonSeamlessSimpleDirXY);
+    groupSimpleDirectionMode->addButton( ui->radioButtonSeamlessSimpleDirX);
+    groupSimpleDirectionMode->addButton( ui->radioButtonSeamlessSimpleDirY);
+    connect(ui->radioButtonSeamlessSimpleDirXY ,SIGNAL(released()),this,SLOT(updateSliders()));
+    connect(ui->radioButtonSeamlessSimpleDirX ,SIGNAL(released()),this,SLOT(updateSliders()));
+    connect(ui->radioButtonSeamlessSimpleDirY,SIGNAL(released()),this,SLOT(updateSliders()));
+
     QButtonGroup *groupMirroMode = new QButtonGroup( this );
     groupMirroMode->addButton( ui->radioButtonMirrorModeX);
     groupMirroMode->addButton( ui->radioButtonMirrorModeY);
@@ -336,6 +354,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionTranslateUV,SIGNAL(triggered()),this,SLOT(setUVManipulationMethod()));
     connect(ui->actionGrabCorners,SIGNAL(triggered()),this,SLOT(setUVManipulationMethod()));
     connect(ui->actionScaleXY    ,SIGNAL(triggered()),this,SLOT(setUVManipulationMethod()));
+
+    // other settings:
+    connect(ui->spinBoxMouseSensitivity    ,SIGNAL(valueChanged(int)),glWidget,SLOT(setCameraMouseSensitivity(int)));
 
 #ifdef Q_OS_MAC
     if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
@@ -394,6 +415,23 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QAction *action = ui->toolBar->toggleViewAction();
     ui->menubar->addAction(action);
+
+    // ------------------------------------------------------- //
+    //               Loading cub maps folders
+    // ------------------------------------------------------- //
+    qDebug() << "Loading cubemaps folders:";
+    QDir currentDir("Core/2D/skyboxes");
+    currentDir.setFilter(QDir::Dirs);
+    QStringList entries = currentDir.entryList();
+    for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ){
+        QString dirname=*entry;
+        if(dirname != tr(".") && dirname != tr("..")){
+            qDebug() << "Enviromental map:" << dirname;
+            ui->comboBoxSkyBox->addItem(dirname);
+        }
+    }// end of for
+    // setting cube map for glWidget
+    glWidget->chooseSkyBox(ui->comboBoxSkyBox->currentText(),true);
 
 }
 
@@ -1019,15 +1057,16 @@ void MainWindow::selectSeamlessMode(int mode){
     ui->groupBoxSimpleSeamlessMode->hide();
     ui->groupBoxMirrorMode->hide();
     ui->groupBoxRandomPatchesMode->hide();
+    ui->groupBoxUVContrastSettings->setDisabled(false);
     switch(mode){
     case(SEAMLESS_NONE):
-
         break;
     case(SEAMLESS_SIMPLE):
         ui->groupBoxSimpleSeamlessMode->show();
         break;
     case(SEAMLESS_MIRROR):
         ui->groupBoxMirrorMode->show();
+        ui->groupBoxUVContrastSettings->setDisabled(true);
         break;
     case(SEAMLESS_RANDOM):
         ui->groupBoxRandomPatchesMode->show();
@@ -1036,6 +1075,29 @@ void MainWindow::selectSeamlessMode(int mode){
         break;
     }
     glImage->selectSeamlessMode((SeamlessMode)mode);
+
+    replotAllImages();
+}
+
+void MainWindow::selectContrastInputImage(int mode){
+
+
+    switch(mode){
+    case(0):
+        FBOImageProporties::seamlessContrastInputType = INPUT_FROM_HEIGHT_INPUT;
+        break;
+    case(1):
+        FBOImageProporties::seamlessContrastInputType = INPUT_FROM_DIFFUSE_INPUT;
+        break;
+    case(2):
+        FBOImageProporties::seamlessContrastInputType = INPUT_FROM_NORMAL_INPUT;
+        break;
+    case(3):
+        FBOImageProporties::seamlessContrastInputType = INPUT_FROM_OCCLUSION_INPUT;
+        break;
+    default:
+        break;
+    }
     replotAllImages();
 }
 
@@ -1076,6 +1138,12 @@ void MainWindow::updateSpinBoxes(int){
 
     ui->doubleSpinBoxLightPower->setValue(ui->horizontalSliderLightPower->value()/100.0);
     ui->doubleSpinBoxLightRadius->setValue(ui->horizontalSliderLightRadius->value()/100.0);
+
+    //seamless strenght
+    ui->doubleSpinBoxSeamlessContrastStrenght->setValue(ui->horizontalSliderSeamlessContrastStrenght->value()/100.0);
+    ui->doubleSpinBoxSeamlessContrastPower->setValue(ui->horizontalSliderSeamlessContrastPower->value()/100.0);
+
+
     glWidget->setLightParameters(ui->doubleSpinBoxLightPower->value(),ui->doubleSpinBoxLightRadius->value());
     glWidget->setUVScaleOffset(ui->doubleSpinBoxUVXOffset->value(),ui->doubleSpinBoxUVYOffset->value());
 }
@@ -1160,15 +1228,24 @@ void MainWindow::convertFromHNtoOcc(){
 void MainWindow::updateSliders(){
     updateSpinBoxes(0);
     FBOImageProporties::seamlessSimpleModeRadius          = ui->doubleSpinBoxMakeSeamless->value();
+    FBOImageProporties::seamlessContrastStrenght          = ui->doubleSpinBoxSeamlessContrastStrenght->value();
+    FBOImageProporties::seamlessContrastPower             = ui->doubleSpinBoxSeamlessContrastPower->value();
+
     FBOImageProporties::seamlessRandomTiling.common_phase = ui->doubleSpinBoxRandomPatchesAngle->value()/180.0*3.1415926;
     FBOImageProporties::seamlessRandomTiling.inner_radius = ui->doubleSpinBoxRandomPatchesInnerRadius->value();
     FBOImageProporties::seamlessRandomTiling.outer_radius = ui->doubleSpinBoxRandomPatchesOuterRadius->value();
 
+
+    FBOImageProporties::bSeamlessTranslationsFirst = ui->checkBoxUVTranslationsFirst->isChecked();
     // choosing the proper mirror mode
     if(ui->radioButtonMirrorModeXY->isChecked()) FBOImageProporties::seamlessMirroModeType = 0;
     if(ui->radioButtonMirrorModeX ->isChecked()) FBOImageProporties::seamlessMirroModeType = 1;
     if(ui->radioButtonMirrorModeY ->isChecked()) FBOImageProporties::seamlessMirroModeType = 2;
 
+    // choosing the proper simple mode direction
+    if(ui->radioButtonSeamlessSimpleDirXY->isChecked()) FBOImageProporties::seamlessSimpleModeDirection = 0;
+    if(ui->radioButtonSeamlessSimpleDirX ->isChecked()) FBOImageProporties::seamlessSimpleModeDirection = 1;
+    if(ui->radioButtonSeamlessSimpleDirY ->isChecked()) FBOImageProporties::seamlessSimpleModeDirection = 2;
 
     glImage ->repaint();
     glWidget->repaint();
@@ -1479,9 +1556,21 @@ void MainWindow::saveSettings(){
     settings.setValue("uv_tiling_random_inner_radius",ui->horizontalSliderRandomPatchesInnerRadius->value());
     settings.setValue("uv_tiling_random_outer_radius",ui->horizontalSliderRandomPatchesOuterRadius->value());
     settings.setValue("uv_tiling_random_rotate",ui->horizontalSliderRandomPatchesRotate->value());
+    // UV contrast etc
+    settings.setValue("uv_translations_first",ui->checkBoxUVTranslationsFirst->isChecked());
+    settings.setValue("uv_contrast_strength",ui->doubleSpinBoxSeamlessContrastStrenght->value());
+    settings.setValue("uv_contrast_power",ui->doubleSpinBoxSeamlessContrastPower->value());
+    settings.setValue("uv_contrast_input_image",ui->comboBoxSeamlessContrastInputImage->currentIndex());
+    settings.setValue("uv_tiling_simple_dir_xy",ui->radioButtonSeamlessSimpleDirXY->isChecked());
+    settings.setValue("uv_tiling_simple_dir_x",ui->radioButtonSeamlessSimpleDirX->isChecked());
+    settings.setValue("uv_tiling_simple_dir_y",ui->radioButtonSeamlessSimpleDirY->isChecked());
 
 
+
+    // other parameters
     settings.setValue("use_texture_interpolation",ui->checkBoxUseLinearTextureInterpolation->isChecked());
+    settings.setValue("mouse_sensitivity",ui->spinBoxMouseSensitivity->value());
+
 
     saveImageSettings("d",diffuseImageProp);
     saveImageSettings("n",normalImageProp);
@@ -1547,7 +1636,18 @@ void MainWindow::loadSettings(){
     ui->horizontalSliderRandomPatchesOuterRadius->setValue(settings.value("uv_tiling_random_outer_radius",50).toInt());
     ui->horizontalSliderRandomPatchesRotate->setValue(settings.value("uv_tiling_random_rotate",50).toInt());
 
+    ui->radioButtonSeamlessSimpleDirXY->setChecked(settings.value("uv_tiling_simple_dir_xy",true).toBool());
+    ui->radioButtonSeamlessSimpleDirX->setChecked(settings.value("uv_tiling_simple_dir_x",false).toBool());
+    ui->radioButtonSeamlessSimpleDirY->setChecked(settings.value("uv_tiling_simple_dir_y",false).toBool());
 
+    ui->checkBoxUVTranslationsFirst->setChecked(settings.value("uv_translations_first",true).toBool());
+    ui->horizontalSliderSeamlessContrastStrenght->setValue(settings.value("uv_contrast_strength",0.0).toFloat()*100);
+    ui->horizontalSliderSeamlessContrastPower->setValue(settings.value("uv_contrast_power",0.0).toFloat()*100);
+
+    ui->comboBoxSeamlessContrastInputImage->setCurrentIndex(settings.value("uv_contrast_input_image",0).toInt());
+
+    // other settings
+    ui->spinBoxMouseSensitivity->setValue(settings.value("mouse_sensitivity",50).toInt());
 
     loadImageSettings("d",diffuseImageProp);
     loadImageSettings("n",normalImageProp);

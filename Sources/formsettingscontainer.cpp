@@ -76,5 +76,8 @@ void FormSettingsContainer::reloadSettings(FormSettingsField* field){
     emit reloadConfigFile();
 }
 void FormSettingsContainer::saveSettings(){
+    for(int i = 0 ; i < settingsList.size() ; i++){
+        settingsList[i]->resetBackGroundColor();
+    }
     emit forceSaveCurrentConfig();
 }

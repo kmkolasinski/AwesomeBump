@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 
 
         MainWindow window;
-        window.setWindowTitle("AwesomeBump v3.0 (2015)");
+        window.setWindowTitle(AWESOME_BUMP_VERSION);
         window.resize(window.sizeHint());
         int desktopArea = QApplication::desktop()->width() *
                          QApplication::desktop()->height();

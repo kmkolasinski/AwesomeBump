@@ -118,6 +118,7 @@ void GLImage::initializeGL()
     qDebug() << "Loading filters (vertex shader)";
     QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     fshader->compileSourceFile(":/resources/filters.frag");
+    //FBOImageProporties::seamlessMode = SEAMLESS_SIMPLE;
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
     else qDebug() << "done";
 
@@ -146,6 +147,8 @@ void GLImage::initializeGL()
     GLCHK( subroutines["mode_invert_filter"]               = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_invert_filter") );
     GLCHK( subroutines["mode_gauss_filter"]                = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_gauss_filter") );
     GLCHK( subroutines["mode_seamless_filter"]             = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_seamless_filter") );
+    GLCHK( subroutines["mode_seamless_linear_filter"]      = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_seamless_linear_filter") );
+
     GLCHK( subroutines["mode_dgaussians_filter"]           = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_dgaussians_filter") );
     GLCHK( subroutines["mode_constrast_filter"]            = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_constrast_filter") );
     GLCHK( subroutines["mode_small_details_filter"]        = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_small_details_filter") );
@@ -323,19 +326,29 @@ void GLImage::render(){
                     // change for a moment the texture type to performe transformations
                     GLCHK( program->setUniformValue("gui_image_type", HEIGHT_TEXTURE) );
                     copyFBO(targetImageHeight->ref_fbo,activeFBO);
-                    applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is saved to activeFBO
 
+                    if(FBOImageProporties::bSeamlessTranslationsFirst){
+                      applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is save to activeFBO
+                    }
                     // Making seamless...
                     switch(FBOImageProporties::seamlessMode){
                         case(SEAMLESS_SIMPLE):
+                            applySeamlessLinearFilter(activeFBO,activeAuxFBO); //  the output is save to activeFBO
+                            break;
                         case(SEAMLESS_MIRROR):
                         case(SEAMLESS_RANDOM):
                             applySeamlessFilter(activeFBO,activeAuxFBO);
+                            copyFBO(activeAuxFBO,activeFBO);
                         break;
                         case(SEAMLESS_NONE):
                         default: break;
                     }
+                    if(!FBOImageProporties::bSeamlessTranslationsFirst){
+                      applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is save to activeFBO
+                    }
 
+
+                    copyFBO(activeFBO,activeAuxFBO);
                     applyHeightToNormal(activeAuxFBO,activeFBO);
                     GLCHK( program->setUniformValue("gui_image_type", activeImage->imageType) );
                     bTransformUVs = false;
@@ -496,11 +509,14 @@ void GLImage::render(){
 
     if(conversionType == CONVERT_NONE && bTransformUVs){
 
-        applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is save to activeFBO
-
+        if(FBOImageProporties::bSeamlessTranslationsFirst){
+          applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is save to activeFBO
+        }
         // Making seamless...
         switch(FBOImageProporties::seamlessMode){
             case(SEAMLESS_SIMPLE):
+                applySeamlessLinearFilter(activeFBO,activeAuxFBO); //  the output is save to activeFBO
+                break;
             case(SEAMLESS_MIRROR):
             case(SEAMLESS_RANDOM):
                 applySeamlessFilter(activeFBO,activeAuxFBO);
@@ -508,6 +524,9 @@ void GLImage::render(){
             break;
             case(SEAMLESS_NONE):
             default: break;
+        }
+        if(!FBOImageProporties::bSeamlessTranslationsFirst){
+          applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is save to activeFBO
         }
     }
     // skip all processing
@@ -933,6 +952,22 @@ void GLImage::applyNormalFilter(QGLFramebufferObject* inputFBO,
     outputFBO->bindDefault();
 }
 
+void GLImage::applyNormalFilter(QGLFramebufferObject* inputFBO){
+
+    GLCHK( program->bind() );
+    GLCHK( program->setUniformValue("gui_image_type", activeImage->imageType) );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( program->setUniformValue("gui_clear_alpha"  , (int)0) );
+
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( program->release() );
+
+}
+
 void GLImage::applyColorHueFilter(  QGLFramebufferObject* inputFBO,
                            QGLFramebufferObject* outputFBO){
 
@@ -965,7 +1000,7 @@ void GLImage::applyPerspectiveTransformFilter(  QGLFramebufferObject* inputFBO,
     GLCHK( program->setUniformValue("uv_scaling_mode", 0) );
     GLCHK( program->setUniformValue("gui_perspective_mode"  , gui_perspective_mode) );
 
-
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
 
@@ -974,6 +1009,7 @@ void GLImage::applyPerspectiveTransformFilter(  QGLFramebufferObject* inputFBO,
     GLCHK( program->setUniformValue("uv_scaling_mode", 1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, outputFBO->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
     inputFBO->bindDefault();
 
 
@@ -1143,13 +1179,117 @@ void GLImage::applyOverlayFilter(QGLFramebufferObject* layerAFBO,
 
 }
 
+void GLImage::applySeamlessLinearFilter(QGLFramebufferObject* inputFBO,
+                                       QGLFramebufferObject* outputFBO){
+
+    switch(FBOImageProporties::seamlessContrastInputType){
+        default:
+        case(INPUT_FROM_HEIGHT_INPUT):
+            copyFBO(targetImageHeight->ref_fbo,activeImage->aux2_fbo);
+            break;
+        case(INPUT_FROM_DIFFUSE_INPUT):
+            copyFBO(targetImageDiffuse->ref_fbo,activeImage->aux2_fbo);
+            break;
+    };
+
+    // when translations are applied first one has to translate
+    // alse the contrast mask image
+    if(FBOImageProporties::bSeamlessTranslationsFirst){
+      applyPerspectiveTransformFilter(activeImage->aux2_fbo,outputFBO);// the output is save to activeaux2FBO
+    }
+
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, activeImage->aux2_fbo->texture()) );
+
+
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_seamless_linear_filter"]) );
+
+
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( program->setUniformValue("make_seamless_radius"           , FBOImageProporties::seamlessSimpleModeRadius) );
+    GLCHK( program->setUniformValue("gui_seamless_contrast_strenght" , FBOImageProporties::seamlessContrastStrenght) );
+    GLCHK( program->setUniformValue("gui_seamless_contrast_power"    , FBOImageProporties::seamlessContrastPower) );
+
+
+
+
+
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    switch(FBOImageProporties::seamlessSimpleModeDirection){
+        default:
+        case(0)://XY
+        GLCHK( program->setUniformValue("gui_seamless_mode"         , (int)0) ); // horizontal filtering
+        GLCHK( outputFBO->bind() );
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+
+        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+
+        GLCHK( inputFBO->bind() );
+        GLCHK( program->setUniformValue("gui_seamless_mode"         , (int)1) ); // vertical filtering
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, outputFBO->texture()) );
+        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+        break;
+        case(1)://X
+        GLCHK( program->setUniformValue("gui_seamless_mode"         , (int)0) ); // horizontal filtering
+
+        GLCHK( outputFBO->bind() );
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+        inputFBO->bindDefault();
+        copyFBO(outputFBO,inputFBO);
+        break;
+        case(2)://Y
+        GLCHK( outputFBO->bind() );
+        GLCHK( program->setUniformValue("gui_seamless_mode"         , (int)1) ); // vertical filtering
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+        copyFBO(outputFBO,inputFBO);
+        break;
+
+    }
+
+    inputFBO->bindDefault();
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+}
+
 void GLImage::applySeamlessFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* outputFBO){
 
+
+
+
+
+
+
+    switch(FBOImageProporties::seamlessContrastInputType){
+        default:
+        case(INPUT_FROM_HEIGHT_INPUT):
+            copyFBO(targetImageHeight->ref_fbo,activeImage->aux2_fbo);
+            break;
+        case(INPUT_FROM_DIFFUSE_INPUT):
+            copyFBO(targetImageDiffuse->ref_fbo,activeImage->aux2_fbo);
+            break;
+    };
+
+    // when translations are applied first one has to translate
+    // alse the contrast mask image
+    if(FBOImageProporties::bSeamlessTranslationsFirst){
+      applyPerspectiveTransformFilter(activeImage->aux2_fbo,outputFBO);// the output is save to activeaux2FBO
+    }
+
+
     GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_seamless_filter"]) );
+
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( program->setUniformValue("make_seamless_radius"      , FBOImageProporties::seamlessSimpleModeRadius) );
+    GLCHK( program->setUniformValue("gui_seamless_contrast_strenght" , FBOImageProporties::seamlessContrastStrenght) );
+    GLCHK( program->setUniformValue("gui_seamless_contrast_power"    , FBOImageProporties::seamlessContrastPower) );
     GLCHK( program->setUniformValue("gui_seamless_mode"         , (int)FBOImageProporties::seamlessMode) );
     GLCHK( program->setUniformValue("gui_seamless_mirror_type"  , FBOImageProporties::seamlessMirroModeType) );
 
@@ -1162,12 +1302,21 @@ void GLImage::applySeamlessFilter(QGLFramebufferObject* inputFBO,
     GLCHK( program->setUniformValue("gui_seamless_random_outer_radius" , FBOImageProporties::seamlessRandomTiling.outer_radius) );
 
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+
+
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, activeImage->aux2_fbo->texture()) );
+
+
     GLCHK( outputFBO->bind() );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
 
     outputFBO->bindDefault();
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
 }
+
 
 void GLImage::applyDGaussiansFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* auxFBO,
@@ -2044,6 +2193,26 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
         xTranslation += dx*(float(orthographicProjWidth)/width());
         yTranslation -= dy*(float(orthographicProjHeight)/height());
         setCursor(Qt::ClosedHandCursor);
+    }
+
+    // mouse looping in 2D view window
+    if (event->buttons() & Qt::RightButton || event->buttons() & Qt::LeftButton ){
+        if(event->x() > width()){
+            lastCursorPos.setX(0);
+        }
+        if(event->x() < 0){
+            lastCursorPos.setX(width());
+        }
+        if(event->y() > height()){
+            lastCursorPos.setY(0);
+        }
+        if(event->y() < 0){
+            lastCursorPos.setY(height());
+        }
+
+        QCursor c = cursor();
+        c.setPos(mapToGlobal(lastCursorPos));
+        setCursor(c);
     }
 
 

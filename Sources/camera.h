@@ -54,6 +54,7 @@ public:
     QVector3D get_world_direction(){ return QVector3D(direction.x(),-direction.z(),direction.y()); }
     QVector3D get_world_up(){ return QVector3D(updown_direction.x(),-updown_direction.z(),updown_direction.y()); }
 
+    void setMouseSensitivity(int value);
 
 public:
     QMatrix4x4      rotM;

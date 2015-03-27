@@ -49,6 +49,7 @@
 #include "camera.h"
 #include "utils/Mesh.hpp"
 #include "utils/qglbuffers.h"
+#include "glimageeditor.h"
 #include <QOpenGLFunctions_4_0_Core>
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
@@ -84,7 +85,7 @@ public slots:
     void setDiffuseIntensity(double);
     void setLightParameters(float,float);
     void setUVScaleOffset(double x,double y);
-
+    void setCameraMouseSensitivity(int value);
     void cleanup();
 
     // mesh loading functions
@@ -112,6 +113,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
+
 
 private:
 
@@ -174,7 +176,9 @@ private:
     GLTextureCube* m_prefiltered_env_map; // filtered lambertian cube map
     bool bDiffuseMapBaked; // prevent program from calculating diffuse env. map many times
 
-
+    GLImage* glImagePtr;
+    QGLFramebufferObject* colorFBOA;
+    QGLFramebufferObject* colorFBOB;
 
 public:
     static QDir* recentMeshDir;

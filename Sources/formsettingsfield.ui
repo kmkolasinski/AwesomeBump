@@ -73,6 +73,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
+       <property name="toolTip">
+        <string>Hide/show description</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -98,6 +101,9 @@
          <pointsize>6</pointsize>
         </font>
        </property>
+       <property name="toolTip">
+        <string>Click here to save current settings</string>
+       </property>
        <property name="statusTip">
         <string>Save project</string>
        </property>
@@ -120,6 +126,9 @@
          <width>50</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Load saved settings from file</string>
        </property>
        <property name="statusTip">
         <string>Reload Project</string>
@@ -156,6 +165,9 @@
          <width>50</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Delete settings file</string>
        </property>
        <property name="statusTip">
         <string>Delete project</string>
