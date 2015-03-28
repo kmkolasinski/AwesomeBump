@@ -54,4 +54,7 @@ FORMS += \
 ICON = resources/icon.icns
 INCLUDEPATH += include
 
+DISTFILES += \
+    resources/quad.obj
+
 

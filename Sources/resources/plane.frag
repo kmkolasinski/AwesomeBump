@@ -56,7 +56,9 @@ in vec3 TSHalfVector;
 
 in mat3 TBN;
 // output color
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
+layout(location = 1) out vec4 FragNormal;
+layout(location = 2) out vec4 FragGlowColor;
 
 
 // global variables
@@ -411,7 +413,7 @@ void main( void )
     vec3 snormal      = iTBN*normalize(vec3(ts_normal.x,ts_normal.y,5*ts_normal.z));
     vec3 surfaceNormal= normalize(snormal); // approximated normal in world space
 
-
+    vec4 finalColor = vec4(0);
 
     if(gui_shading_model == 1){
     // apply standarnd normal mapping
@@ -421,52 +423,60 @@ void main( void )
         fvBaseColor.rgb =  diffuse;
         vec4 bumpMapShadingColor = (bump_mapping(0,texcoords)+bump_mapping(1,texcoords))/2;
         FragColor = bumpMapShadingColor;
+        finalColor = FragColor ;
 
     }else{ // in case of PBR model
 
-    // PBR calculations
-    vec3  materialColour = fvBaseColor.rgb;
-    vec4  aoColour       = fvSSAOColor;
-    float roughness      = clamp(fvRoughness.r,0,1);
-    vec3  metallicColour = clamp(fvMetallic.rgb,vec3(0),vec3(1));
+        // PBR calculations
+        vec3  materialColour = fvBaseColor.rgb;
+        vec4  aoColour       = fvSSAOColor;
+        float roughness      = clamp(fvRoughness.r,0,1);
+        vec3  metallicColour = clamp(fvMetallic.rgb,vec3(0),vec3(1));
 
-    if(!gui_bRoughness) roughness      = 0.0;
-    if(!gui_bMetallic)  metallicColour = vec3(0.5);
+        if(!gui_bRoughness) roughness      = 0.0;
+        if(!gui_bMetallic)  metallicColour = vec3(0.5);
 
-    vec3 F0 = vec3(metallicColour);
-    vec3 kS = vec3(0);
+        vec3 F0 = vec3(metallicColour);
+        vec3 kS = vec3(0);
 
-    vec4 specular = vec4(0);
+        vec4 specular = vec4(0);
 
-    // in case of simple calculation use mipmaps instead integration
-    if(gui_bUseSimplePBR)
-    {
-        specular =     PBR_Specular_SIMPLE(roughness,
-                                   F0,kS,
-                                   texEnvMap,
-                                   WSPosition,
-                                   surfaceNormal,texcoords);
-    }else{
-         specular =    PBR_Specular(roughness,
-                                    F0,kS,
-                                    texEnvMap,
-                                    WSPosition,
-                                    surfaceNormal,texcoords);
+        // in case of simple calculation use mipmaps instead integration
+        if(gui_bUseSimplePBR)
+        {
+            specular =     PBR_Specular_SIMPLE(roughness,
+                                       F0,kS,
+                                       texEnvMap,
+                                       WSPosition,
+                                       surfaceNormal,texcoords);
+        }else{
+             specular =    PBR_Specular(roughness,
+                                        F0,kS,
+                                        texEnvMap,
+                                        WSPosition,
+                                        surfaceNormal,texcoords);
+        }
+
+        vec3 kD = (1 - kS) ;
+        if(!gui_bSpecular) fvSpecularColor = vec4(1.0);
+        // Calculate the diffuse contribution
+        float NdotL = max(dot(surfaceNormal,normalizedLightDirection),0.0);
+
+        vec3 irradiance = texture(texDiffuseEnvMap, normalize(surfaceNormal)).rgb + vec3(NdotL * gui_LightPower * 0.2);
+        vec3 diffuse    = materialColour * irradiance ;
+
+        FragColor  =  gui_DiffuseIntensity  * vec4(kD * diffuse,1) * aoColour
+                   +  gui_SpecularIntensity * fvSpecularColor*  vec4(materialColour,1) * ( specular ) ;
+
+        finalColor = FragColor ;
     }
 
-    vec3 kD = (1 - kS) ;
-    if(!gui_bSpecular) fvSpecularColor = vec4(1.0);
-    // Calculate the diffuse contribution
-    float NdotL = max(dot(surfaceNormal,normalizedLightDirection),0.0);
+    FragNormal    = vec4(surfaceNormal,1);
+    //FragGlowColor = FragColor;
 
-    vec3 irradiance = texture(texDiffuseEnvMap, normalize(surfaceNormal)).rgb + vec3(NdotL * gui_LightPower * 0.2);
-    vec3 diffuse    = materialColour * irradiance ;
-
-    FragColor  =  gui_DiffuseIntensity  * vec4(kD * diffuse,1) * aoColour
-               +  gui_SpecularIntensity * fvSpecularColor*  vec4(materialColour,1) * ( specular ) ;
-
-
-    }
-
-
+    float bloomLevel = 0.5;
+    float level      = dot(finalColor.rgb,finalColor.rgb)/3;
+    FragGlowColor = vec4(0);
+    if(level > bloomLevel )FragGlowColor = finalColor;
+   // FragGlowColor    = finalColor*smoothstep(bloomLevel,bloomLevel+0.1,level);
 }

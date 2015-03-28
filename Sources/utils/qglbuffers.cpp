@@ -326,42 +326,59 @@ int GLTextureCube::textureCalcLevels(GLenum target)
 //============================================================================//
 
 GLFrameBufferObject::GLFrameBufferObject(int width, int height)
-    : m_fbo(0)
-    , m_depthBuffer(0)
-    , m_width(width)
+    : m_width(width)
     , m_height(height)
     , m_failed(false)
 {
+    initializeOpenGLFunctions();
 
-    // TODO: share depth buffers of same size
-    glGenFramebuffers(1, &m_fbo);
-    //glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-    glGenRenderbuffers(1, &m_depthBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, m_depthBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, m_width, m_height);
-    //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBuffer);
-    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+/*
+
+    glGenTextures(1, &depth_texture);
+    glBindTexture(GL_TEXTURE_2D, depth_texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+    //NULL means reserve texture memory, but texels are undefined
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    */
+
+
+    fbo = NULL;
+    attachments.clear();
+    QGLFramebufferObjectFormat format;
+    format.setInternalTextureFormat(GL_RGBA16F);
+    format.setTextureTarget(GL_TEXTURE_2D);
+    format.setMipmap(true);
+    format.setAttachment(QGLFramebufferObject::Depth);
+    fbo = new QGLFramebufferObject(width,height,format);
+    glBindTexture(GL_TEXTURE_2D, fbo->texture());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 GLFrameBufferObject::~GLFrameBufferObject()
 {
-
-    glDeleteFramebuffers(1, &m_fbo);
-    glDeleteRenderbuffers(1, &m_depthBuffer);
-}
-
-void GLFrameBufferObject::setAsRenderTarget(bool state)
-{
-
-    if (state) {
-        glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-        glPushAttrib(GL_VIEWPORT_BIT);
-        glViewport(0, 0, m_width, m_height);
-    } else {
-        glPopAttrib();
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    fbo->release();
+    for(unsigned int i = 0;i< attachments.size();i++){
+        glDeleteTextures(1,&attachments[i]);
     }
+
+    attachments.erase(attachments.begin(),attachments.end());
+
+    delete fbo;
 }
+
 
 bool GLFrameBufferObject::isComplete()
 {
@@ -369,3 +386,48 @@ bool GLFrameBufferObject::isComplete()
 
     return GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER);
 }
+void GLFrameBufferObject::bind(){
+    fbo->bind();
+}
+void GLFrameBufferObject::bindDefault(){
+    fbo->bindDefault();
+}
+
+bool GLFrameBufferObject::addTexture(GLenum COLOR_ATTACHMENTn){
+
+
+    GLuint tex[1];
+    GLCHK(glGenTextures(1, &tex[0]));
+    glBindTexture(GL_TEXTURE_2D, tex[0]);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, fbo->width(), fbo->height(), 0,GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    if(!glIsTexture(tex[0])){
+        qDebug() << "Error: Cannot create additional texture. Process stopped." << endl;
+        return false;
+    }
+    GLCHK(fbo->bind());
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, COLOR_ATTACHMENTn,GL_TEXTURE_2D, tex[0], 0);
+
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if(status != GL_FRAMEBUFFER_COMPLETE){
+        qDebug() << "Cannot add new texture to current FBO! FBO is incomplete.";
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        return false;
+    }
+    // switch back to window-system-provided framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    attachments.push_back(tex[0]);
+    return true;
+}
+
+const GLuint& GLFrameBufferObject::getAttachedTexture(GLuint index){
+    return attachments[index];
+}
+

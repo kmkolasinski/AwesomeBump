@@ -5,8 +5,8 @@
 #include <QImage>
 #include <cstdio>
 #include <iostream>
-
 #include "qopenglerrorcheck.h"
+#include <QOpenGLFunctions_4_0_Core>
 
 #define TAB_SETTINGS 7
 #define TAB_TILING   8
@@ -279,7 +279,7 @@ struct Performance3DSettings{
 };
 
 // Wrapper for FBO initialization.
-class FBOImages{
+class FBOImages {
 public:
     static void create(QGLFramebufferObject *&fbo,int width,int height){
         if(fbo !=NULL ){
@@ -316,7 +316,9 @@ public:
         }
     }
     static void resize(QGLFramebufferObject *&src,int width, int height){
-        if( width  == src->width() &&
+        if(src == NULL){
+            GLCHK(FBOImages::create(src ,width,height));
+        }else if( width  == src->width() &&
             height == src->height() ){}else{
             GLCHK(FBOImages::create(src ,width,height));
         }

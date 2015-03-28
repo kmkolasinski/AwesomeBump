@@ -76,12 +76,15 @@ public:
     virtual ~GLFrameBufferObject();
     bool isComplete();
     virtual bool failed() const {return m_failed;}
+    void bind();
+    void bindDefault();
+    bool addTexture(GLenum COLOR_ATTACHMENTn);
+    const GLuint& getAttachedTexture(GLuint index);
+    QGLFramebufferObject *fbo;
 protected:
-    void setAsRenderTarget(bool state = true);
-    GLuint m_fbo;
-    GLuint m_depthBuffer;
     int m_width, m_height;
-    bool m_failed;
+    bool m_failed;    
+    QVector<GLuint> attachments;
 };
 
 class GLTexture2D : public GLTexture

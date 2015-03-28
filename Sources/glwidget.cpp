@@ -72,6 +72,15 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     lightCursor = QCursor(QPixmap(":/resources/lightCursor.png"));
 
     glImagePtr = (GLImage*)shareWidget;
+    // Post processing variables:
+    colorFBO = NULL;
+    outputFBO= NULL;
+    auxFBO   = NULL;
+    for(int i = 0; i < 4; i++){
+       glowInputColor[i] = NULL;
+       glowOutputColor[i] = NULL;
+    }
+
 }
 
 GLWidget::~GLWidget()
@@ -82,14 +91,16 @@ GLWidget::~GLWidget()
 void GLWidget::cleanup()
 {   
     makeCurrent();
-
+    deleteFBOs();
 
     delete program;
     delete skybox_program;
     delete env_program;
+    delete filters_program;
     delete mesh;
     delete skybox_mesh;
     delete env_mesh;
+    delete quad_mesh;
     delete m_env_map;
     delete m_prefiltered_env_map;
 
@@ -237,6 +248,9 @@ void GLWidget::initializeGL()
     program->addShader(tcshader);
     program->addShader(teshader);
     program->addShader(gshader);
+    program->bindAttributeLocation("FragColor",0);
+    program->bindAttributeLocation("FragNormal",1);
+    program->bindAttributeLocation("FragGlowColor",2);
     GLCHK(program->link());
 
     GLCHK(program->bind());
@@ -275,7 +289,9 @@ void GLWidget::initializeGL()
     skybox_program = new QOpenGLShaderProgram(this);
     skybox_program->addShader(vshader);
     skybox_program->addShader(fshader);
-
+    skybox_program->bindAttributeLocation("FragColor",0);
+    skybox_program->bindAttributeLocation("FragNormal",1);
+    skybox_program->bindAttributeLocation("FragGlowColor",2);
     GLCHK(skybox_program->link());
     GLCHK(skybox_program->bind());
     skybox_program->setUniformValue("texEnv" , 0);
@@ -314,6 +330,49 @@ void GLWidget::initializeGL()
     delete gshader;
 
 
+    // -------------------------------------------------
+    // Loading post processing filters
+    // -------------------------------------------------
+
+    qDebug() << "Loading post-processing shader (vertex shader)";
+    vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
+    vshader->compileSourceFile("../Sources/resources/filters_3d.vert");
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    else qDebug() << "done";
+
+
+    qDebug() << "Loading post-processing shader (fragment shader)";
+    fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
+    fshader->compileSourceFile("../Sources/resources/filters_3d.frag");
+    if (!fshader->log().isEmpty()) qDebug() << fshader->log();
+    else qDebug() << "done";
+
+    filters_program = new QOpenGLShaderProgram(this);
+    filters_program->addShader(vshader);
+    filters_program->addShader(fshader);
+    filters_program->bindAttributeLocation("positionIn", 0);
+    GLCHK( filters_program->link() );
+
+    GLCHK( filters_program->bind() );
+    GLCHK( filters_program->setUniformValue("layerA" , 0) );
+    GLCHK( filters_program->setUniformValue("layerB" , 1) );
+    GLCHK( filters_program->setUniformValue("layerC" , 2) );
+    GLCHK( filters_program->setUniformValue("layerD" , 3) );
+    GLCHK( filters_program->setUniformValue("layerE" , 4) );
+    GLCHK( filters_program->setUniformValue("layerF" , 5) );
+    GLCHK( filters_program->setUniformValue("layerG" , 6) );
+
+    GLCHK( subroutines["mode_normal_filter"]  = glGetSubroutineIndex(filters_program->programId(),GL_FRAGMENT_SHADER,"mode_normal_filter") );
+    GLCHK( subroutines["mode_gauss_filter"]   = glGetSubroutineIndex(filters_program->programId(),GL_FRAGMENT_SHADER,"mode_gauss_filter") );
+    GLCHK( subroutines["mode_bloom_filter"]   = glGetSubroutineIndex(filters_program->programId(),GL_FRAGMENT_SHADER,"mode_bloom_filter") );
+
+    GLCHK( filters_program->release());
+    delete vshader;
+    delete fshader;
+
+
+
+
     camera.position.setZ( -0 );
     camera.toggleFreeCamera(false);
 
@@ -324,15 +383,17 @@ void GLWidget::initializeGL()
     mesh        = new Mesh("Core/3D/","Cube.obj");
     skybox_mesh = new Mesh("Core/3D/","sky_cube.obj");
     env_mesh    = new Mesh("Core/3D/","sky_cube_env.obj");
+    quad_mesh   = new Mesh("Core/3D/","quad.obj");
 
     m_prefiltered_env_map = new GLTextureCube(512);
 
-
+    resizeFBOs();
     emit readyGL();
 }
 
 void GLWidget::paintGL()
 {
+
 
     // ---------------------------------------------------------
     // Drawing env
@@ -343,12 +404,17 @@ void GLWidget::paintGL()
     // setting the camera viewpoint
     viewMatrix = camera.updateCamera();
 
-
+    colorFBO->bind();
     GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
     GLCHK( glDisable(GL_CULL_FACE) );
     projectionMatrix.setToIdentity();
     projectionMatrix.perspective(zoom,ratio,0.1,350.0);
 
+
+
+    // set to which FBO result will be drawn
+    GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers(3,  attachments);
     // ---------------------------------------------------------
     // Drawing skybox
     // ---------------------------------------------------------
@@ -384,7 +450,7 @@ void GLWidget::paintGL()
     // Drawing model
     // ---------------------------------------------------------
     GLCHK( glEnable(GL_CULL_FACE) );
-    GLCHK( glEnable(GL_DEPTH_TEST) );
+    GLCHK( glEnable(GL_DEPTH_TEST) );            
     GLCHK( glCullFace(GL_FRONT) );
     GLCHK( program->bind() );
 
@@ -457,9 +523,22 @@ void GLWidget::paintGL()
         glActiveTexture(GL_TEXTURE0);
     }
 
+    // return to standard settings
+    GLCHK( glDisable(GL_CULL_FACE) );  
+    GLCHK( glDisable(GL_DEPTH_TEST) );
+
+    // set to which FBO result will be drawn
+    GLuint attachments2[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1,  attachments2);
+
+    colorFBO->bindDefault();
+
+    //applyGaussFilter(colorFBO->getAttachedTexture(1),glowInputColor[3]->fbo,glowOutputColor[3]->fbo);
+
+    applyGlowFilter(outputFBO->fbo);
+    applyNormalFilter(outputFBO->fbo->texture());
 
 
-    GLCHK( glDisable(GL_CULL_FACE) );
     emit renderGL();
 
 }
@@ -499,7 +578,7 @@ void GLWidget::bakeEnviromentalMaps(){
 void GLWidget::resizeGL(int width, int height)
 {
     ratio = float(width)/height;
-
+    resizeFBOs();
 
     GLCHK( glViewport(0, 0, width, height) );
 }
@@ -579,15 +658,13 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
     lastPos = event->pos();
     // mouse looping in 3D view window
-    if(bMouseDragged){
-        qDebug() << "Before:" <<  lastPos;
+    if(bMouseDragged){        
         if(event->x() > width()-10){
             lastPos.setX(10);
         }
         if(event->x() < 10){
             lastPos.setX(width()-10);
-        }
-        qDebug() << lastPos;
+        }        
         QCursor c = cursor();
         c.setPos(mapToGlobal(lastPos));
         setCursor(c);
@@ -725,3 +802,123 @@ void GLWidget::updatePerformanceSettings(Performance3DSettings settings){
 }
 
 
+// ------------------------------------------------------------------------------- //
+//                          POST PROCESSING TOOLS
+// ------------------------------------------------------------------------------- //
+void GLWidget::resizeFBOs(){
+
+    if(colorFBO != NULL) delete colorFBO;
+    colorFBO = new GLFrameBufferObject(width(),height());
+    colorFBO->addTexture(GL_COLOR_ATTACHMENT1);
+    colorFBO->addTexture(GL_COLOR_ATTACHMENT2);
+
+    if(outputFBO != NULL) delete outputFBO;
+    outputFBO = new GLFrameBufferObject(width(),height());
+
+    if(auxFBO != NULL) delete auxFBO;
+    auxFBO = new GLFrameBufferObject(width(),height());
+
+    for(int i = 0; i < 4 ; i++){
+
+        if(glowInputColor[i]  != NULL) delete glowInputColor[i];
+        if(glowOutputColor[i] != NULL) delete glowOutputColor[i];
+        glowInputColor[i]  = new GLFrameBufferObject(width()/pow(2.0,i+1),height()/pow(2.0,i+1));
+        glowOutputColor[i] = new GLFrameBufferObject(width()/pow(2.0,i+1),height()/pow(2.0,i+1));
+    }
+
+}
+void GLWidget::deleteFBOs(){
+    colorFBO->bindDefault();
+    delete colorFBO;
+    delete outputFBO;
+    delete auxFBO;
+    for(int i = 0; i < 4 ; i++){
+        if(glowInputColor[i]  != NULL) delete glowInputColor[i];
+        if(glowOutputColor[i] != NULL) delete glowOutputColor[i];
+    }
+}
+
+void GLWidget::applyNormalFilter(GLuint input_tex){
+
+    GLCHK( filters_program->bind() );
+    GLCHK( glViewport(0,0,width(),height()) );
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
+    GLCHK( filters_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( filters_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
+    quad_mesh->drawMesh(true);
+    GLCHK( filters_program->release() );
+}
+
+void GLWidget::applyGaussFilter(  GLuint input_tex,
+                                  QGLFramebufferObject* auxFBO,
+                                  QGLFramebufferObject* outputFBO){
+
+
+
+    GLCHK( filters_program->bind() );
+    auxFBO->bind();
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_gauss_filter"]) );
+    GLCHK( filters_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( filters_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( filters_program->setUniformValue("gui_gauss_w"       , (float)5.0 ));
+    GLCHK( filters_program->setUniformValue("gui_gauss_radius"  , (float)5.0 ));
+    GLCHK( filters_program->setUniformValue("gui_gauss_mode"    , 0 ));
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
+    quad_mesh->drawMesh(true);
+
+
+    outputFBO->bind();
+        GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+        GLCHK( filters_program->setUniformValue("gui_gauss_mode"    , 1 ));
+        GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO->texture()) );
+        quad_mesh->drawMesh(true);
+    outputFBO->bindDefault();
+
+    GLCHK( filters_program->release() );
+
+}
+
+void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
+
+
+    applyGaussFilter(colorFBO->getAttachedTexture(1),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
+    applyGaussFilter(glowOutputColor[0]->fbo->texture(),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
+
+
+    applyGaussFilter(glowOutputColor[0]->fbo->texture(),glowInputColor[1]->fbo,glowOutputColor[1]->fbo);
+    applyGaussFilter(glowOutputColor[1]->fbo->texture(),glowInputColor[1]->fbo,glowOutputColor[1]->fbo);
+
+    applyGaussFilter(glowOutputColor[1]->fbo->texture(),glowInputColor[2]->fbo,glowOutputColor[2]->fbo);
+    applyGaussFilter(glowOutputColor[2]->fbo->texture(),glowInputColor[2]->fbo,glowOutputColor[2]->fbo);
+
+    applyGaussFilter(glowOutputColor[2]->fbo->texture(),glowInputColor[3]->fbo,glowOutputColor[3]->fbo);
+
+    GLCHK( filters_program->bind() );
+    outputFBO->bind();
+        GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+        GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_bloom_filter"]) );
+        GLCHK( filters_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+        GLCHK( filters_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, colorFBO->fbo->texture()) );
+        GLCHK( glActiveTexture(GL_TEXTURE1) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[0]->fbo->texture()) );
+        GLCHK( glActiveTexture(GL_TEXTURE2) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[1]->fbo->texture()) );
+        GLCHK( glActiveTexture(GL_TEXTURE3) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[2]->fbo->texture()) );
+        GLCHK( glActiveTexture(GL_TEXTURE4) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[3]->fbo->texture()) );
+        quad_mesh->drawMesh(true);
+
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    outputFBO->bindDefault();
+
+    GLCHK( filters_program->release() );
+
+
+}

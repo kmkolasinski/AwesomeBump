@@ -129,6 +129,7 @@ private:
     QOpenGLShaderProgram *program;    
     QOpenGLShaderProgram *skybox_program;
     QOpenGLShaderProgram *env_program;
+
     QGLFramebufferObject**  fboIdPtrs[7];
 
 
@@ -171,15 +172,33 @@ private:
 
     Mesh* mesh; // displayed 3d mesh
     Mesh* skybox_mesh; // sky box cube
-    Mesh* env_mesh; // one trinagle used for calculation of prefiltered env. map
-    GLTextureCube* m_env_map; // orginal cube map
+    Mesh* env_mesh;                       // one trinagle used for calculation of prefiltered env. map
+
+    GLTextureCube* m_env_map;             // orginal cube map
     GLTextureCube* m_prefiltered_env_map; // filtered lambertian cube map
-    bool bDiffuseMapBaked; // prevent program from calculating diffuse env. map many times
+    bool bDiffuseMapBaked;                // prevent program from calculating diffuse env. map many times
 
     GLImage* glImagePtr;
-    QGLFramebufferObject* colorFBOA;
-    QGLFramebufferObject* colorFBOB;
 
+    // Post-processing variables
+    std::map<std::string,GLuint> subroutines;
+    Mesh* quad_mesh;                      // quad mesh used for post processing
+    QOpenGLShaderProgram *filters_program;// all post processing functions
+    GLFrameBufferObject* colorFBO;
+    GLFrameBufferObject* outputFBO;
+    GLFrameBufferObject* auxFBO;
+    // glow FBOs
+    GLFrameBufferObject* glowInputColor[4];
+    GLFrameBufferObject* glowOutputColor[4];
+
+protected:
+    void resizeFBOs();
+    void deleteFBOs();
+    void applyNormalFilter(GLuint input_tex);
+    void applyGaussFilter(GLuint input_tex,
+                          QGLFramebufferObject* auxFBO,
+                          QGLFramebufferObject* outputFBO);
+    void applyGlowFilter(QGLFramebufferObject* outputFBO);
 public:
     static QDir* recentMeshDir;
 };
