@@ -1,6 +1,6 @@
 
 ![alt tag](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/githubimage2.jpg)
-AwesomeBump  3.0
+AwesomeBump  3.0.2
 ===========
 
 AwesomeBump is a free and open source program written using Qt library designed to generate normal, height, specular or ambient occlusion textures from a single image. Since the image processing is done in 99% on GPU the program runs very fast and all the parameters can be changed in real time. AB was made to be a new alternative to known gimp plugin called Insane Bump or commercial tool: Crazy Bump. Since 3.0 AB supports the PBR lightning model (roughness and metallic textures were introduced).
@@ -74,7 +74,7 @@ g) Run program:
    
 
 
-New in version 3.0 + update 3.0.1 (27.03.15)
+New in version 3.0 + update 3.0.2 (29.03.15)
 ===========
 1) Added error Logger
 
@@ -93,6 +93,8 @@ New in version 3.0 + update 3.0.1 (27.03.15)
 8) Thanks to David for new cool models :)
 
 9) Update 3.0.1: Improved seamless alhorithms, improved GUI, mouse loop added
+
+10) Update 3.0.2: Added bloom effect
 
 New in version 2.1
 ===========
