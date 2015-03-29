@@ -115,9 +115,14 @@ public:
     void applyInverseColorFilter(QGLFramebufferObject* inputFBO,
                                  QGLFramebufferObject* outputFBO);
 
+
     void applyRemoveShadingFilter(QGLFramebufferObject* inputFBO,
                                    QGLFramebufferObject* aoMaskFBO, QGLFramebufferObject *refFBO,
                                    QGLFramebufferObject* outputFBO);
+
+    void applyRemoveLowFreqFilter(QGLFramebufferObject* inputFBO,
+                                  QGLFramebufferObject* auxFBO,
+                                  QGLFramebufferObject* outputFBO);
 
     void applyNormalFilter(  QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject* outputFBO);
@@ -218,6 +223,9 @@ private:
 
     QOpenGLShaderProgram *program;
     FBOImageProporties* activeImage;
+    QGLFramebufferObject* averageColorFBO; // small FBO used for calculation of average color
+    QGLFramebufferObject* samplerFBO1; // FBO with size 1024x1024
+    QGLFramebufferObject* samplerFBO2; // FBO with size 1024x1024 used for different processing
 
     std::map<std::string,GLuint> subroutines;
 

@@ -1359,6 +1359,8 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_bRoughnessSurfaceEnable"          ,image->getImageProporties()->bRoughnessSurfaceEnable);
 
     settings.setValue("t_"+abbr+"_aoCancellation"                   ,image->getImageProporties()->aoCancellation);
+    settings.setValue("t_"+abbr+"_removeShadingLFBlending"          ,image->getImageProporties()->removeShadingLFBlending);
+    settings.setValue("t_"+abbr+"_removeShadingLFRadius"            ,image->getImageProporties()->removeShadingLFRadius);
     settings.setValue("t_"+abbr+"_colorHue"                         ,image->getImageProporties()->colorHue);
 
     settings.setValue("t_"+abbr+"_bRoughnessEnableColorPicking"     ,image->getImageProporties()->bRoughnessEnableColorPicking);
@@ -1440,6 +1442,8 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->ssaoIntensity                      = settings.value("t_"+abbr+"_ssaoIntensity",1.0).toFloat();
 
     image->getImageProporties()->aoCancellation                     = settings.value("t_"+abbr+"_aoCancellation",0.0).toFloat();
+    image->getImageProporties()->removeShadingLFBlending            = settings.value("t_"+abbr+"_removeShadingLFBlending",0.0).toFloat();
+    image->getImageProporties()->removeShadingLFRadius              = settings.value("t_"+abbr+"_removeShadingLFRadius",0.0).toFloat();
     image->getImageProporties()->colorHue                           = settings.value("t_"+abbr+"_colorHue",0.0).toFloat();
 
     image->getImageProporties()->selectiveBlurType                  = (SelectiveBlurType)settings.value("t_"+abbr+"_selectiveBlurType",0).toInt();

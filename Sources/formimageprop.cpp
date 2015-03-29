@@ -29,6 +29,10 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     // standard enchancement
     connect(ui->horizontalSliderRemoveShadingGaussIter,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderAOCancelation         ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderRemoveShadingLFBlending,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderRemoveShadingLFRadius,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+
+
 
     connect(ui->horizontalSliderBlurNoPasses          ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderSmallDetails          ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
@@ -477,7 +481,10 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
     imageProp.specularBrightness= ui->doubleSpinBoxSpecularBrightness->value();
 
     imageProp.noRemoveShadingGaussIter = ui->horizontalSliderRemoveShadingGaussIter->value();
-    imageProp.aoCancellation            = ui->horizontalSliderAOCancelation->value()/100.0;
+    imageProp.aoCancellation           = ui->horizontalSliderAOCancelation->value()/100.0;
+
+    imageProp.removeShadingLFBlending = ui->horizontalSliderRemoveShadingLFBlending->value()/100.0;
+    imageProp.removeShadingLFRadius   = ui->horizontalSliderRemoveShadingLFRadius->value();
 
     imageProp.noBlurPasses      = ui->horizontalSliderBlurNoPasses ->value();
     imageProp.smallDetails      = ui->horizontalSliderSmallDetails ->value()/100.0;
@@ -816,7 +823,12 @@ void FormImageProp::reloadSettings(){
 
 
     ui->horizontalSliderAOCancelation   ->setValue(imageProp.aoCancellation*100);
+
+    ui->horizontalSliderRemoveShadingLFBlending ->setValue(imageProp.removeShadingLFBlending*100);
+    ui->horizontalSliderRemoveShadingLFRadius   ->setValue(imageProp.removeShadingLFRadius);
+
     ui->horizontalSliderColorHue        ->setValue(imageProp.colorHue*180);
+
 
     ui->horizontalSliderSelectiveBlurBlending->setValue(imageProp.selectiveBlurBlending*100);
     ui->horizontalSliderSelectiveBlurMaskRadius->setValue(imageProp.selectiveBlurMaskRadius);

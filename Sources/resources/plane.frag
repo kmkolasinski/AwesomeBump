@@ -478,5 +478,6 @@ void main( void )
     float level      = dot(finalColor.rgb,finalColor.rgb)/3;
     FragGlowColor = vec4(0);
     if(level > bloomLevel )FragGlowColor = finalColor;
-   // FragGlowColor    = finalColor*smoothstep(bloomLevel,bloomLevel+0.1,level);
+
+    //FragColor = fvBaseColor;
 }

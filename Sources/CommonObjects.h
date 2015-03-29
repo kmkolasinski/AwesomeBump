@@ -357,6 +357,9 @@ public:
     // Specular settings
     int  noRemoveShadingGaussIter;
     float aoCancellation;
+    float removeShadingLFBlending;
+    float removeShadingLFRadius;
+
     int  noBlurPasses;
     bool bSpeclarControl;
     int  specularRadius;
@@ -470,6 +473,9 @@ public:
         bRemoveShading = false;
         noRemoveShadingGaussIter = 10;
         aoCancellation   = 0.0;
+
+        removeShadingLFBlending = 0.0;
+        removeShadingLFRadius   = 0.0;
 
         bSpeclarControl    = false;
         colorHue           = 0;

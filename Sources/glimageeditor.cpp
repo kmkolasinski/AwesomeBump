@@ -76,7 +76,10 @@ GLImage::~GLImage()
 void GLImage::cleanup()
 {
   makeCurrent();
-  
+  averageColorFBO->bindDefault();
+  delete averageColorFBO;
+  delete samplerFBO1;
+  delete samplerFBO2;
   glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]);
   delete program;
 
@@ -169,6 +172,16 @@ void GLImage::initializeGL()
     GLCHK( subroutines["mode_height_processing_filter"]    = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_height_processing_filter" ) );
     GLCHK( subroutines["mode_roughness_filter"]            = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_roughness_filter" ) );
     GLCHK( subroutines["mode_roughness_color_filter"]      = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_roughness_color_filter" ) );
+    GLCHK( subroutines["mode_remove_low_freq_filter"]      = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_remove_low_freq_filter" ) );
+
+    averageColorFBO = NULL;
+    samplerFBO1     = NULL;
+    samplerFBO2     = NULL;
+    FBOImages::create(averageColorFBO,256,256);
+    FBOImages::create(samplerFBO1,1024,1024);
+    FBOImages::create(samplerFBO2,1024,1024);
+
+
 
     emit readyGL();
 }
@@ -620,15 +633,26 @@ void GLImage::render(){
 
     // Removing shading...
     if(activeImage->bRemoveShading){
+
+
+        applyRemoveLowFreqFilter(activeFBO,activeAuxFBO,activeAux2FBO);
+        copyFBO(activeAux2FBO,activeFBO);
+
+
         applyGaussFilter(activeFBO,activeAux2FBO,activeAuxFBO,1);
         applyInverseColorFilter(activeAuxFBO,activeAux2FBO);
         copyFBO(activeAux2FBO,activeAuxFBO);
         applyOverlayFilter(activeFBO,activeAuxFBO,activeAux2FBO);
 
+
+
+
+
         applyRemoveShadingFilter(activeAux2FBO,
                                 targetImageOcclusion->fbo,
                                 activeFBO,
                                 activeAuxFBO);
+
 
         copyFBO(activeAuxFBO,activeFBO);
     }
@@ -1053,7 +1077,7 @@ void GLImage::applyGaussFilter(QGLFramebufferObject* sourceFBO,
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
 
-    GLCHK( glViewport(0,0,sourceFBO->width(),sourceFBO->height()) );
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
     GLCHK( program->setUniformValue("gauss_mode",1) );
 
     GLCHK( auxFBO->bind() );
@@ -1154,6 +1178,66 @@ void GLImage::applyRemoveShadingFilter(QGLFramebufferObject* inputFBO,
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
     GLCHK( outputFBO->bindDefault() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
+}
+
+void GLImage::applyRemoveLowFreqFilter(QGLFramebufferObject* inputFBO,
+                                       QGLFramebufferObject* auxFBO,
+                                       QGLFramebufferObject* outputFBO){
+
+    applyGaussFilter(inputFBO,samplerFBO1,samplerFBO2,activeImage->removeShadingLFRadius*2);
+
+    // calculating the average color on CPU
+    applyNormalFilter(inputFBO,averageColorFBO); // copy large file to smaller FBO (save time!)
+
+
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, averageColorFBO->texture()) );
+
+    GLint textureWidth, textureHeight;
+    GLCHK( glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH , &textureWidth ) );
+    GLCHK( glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &textureHeight) );
+
+    float* img = new float[textureWidth*textureHeight*4];
+
+    GLCHK( glGetTexImage(	GL_TEXTURE_2D,0,GL_RGBA,GL_FLOAT,img) );
+
+    float ave_color[3] = {0,0,0};
+    for(int i = 0 ; i < textureWidth*textureHeight ; i++){
+        for(int c = 0 ; c < 3 ; c++){
+             ave_color[c] += img[4*i+c];
+        }
+    }
+    // normalization sum
+    ave_color[0] /= (textureWidth*textureHeight);
+    ave_color[1] /= (textureWidth*textureHeight);
+    ave_color[2] /= (textureWidth*textureHeight);
+
+    qDebug() << "Average Color:";
+    qDebug() << "Color = (" << ave_color[0] << "," << ave_color[1] << "," << ave_color[2] << ")"  ;
+    delete[] img;
+
+    QVector3D aveColor = QVector3D(ave_color[0],ave_color[1],ave_color[2]);
+
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_remove_low_freq_filter"]) );
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( program->setUniformValue("average_color"  , aveColor ) );
+    GLCHK( program->setUniformValue("gui_remove_shading_lf_blending"  , activeImage->removeShadingLFBlending ) );
+
+    GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, samplerFBO2->texture()) );
+    GLCHK( glActiveTexture(GL_TEXTURE2) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, averageColorFBO->texture()) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    outputFBO->bindDefault();
+
+
 }
 
 void GLImage::applyOverlayFilter(QGLFramebufferObject* layerAFBO,

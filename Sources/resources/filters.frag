@@ -215,6 +215,20 @@ subroutine(filterModeType) vec4 mode_ao_cancellation_filter(){
 
     return (colorA + (1-colorB)*gui_ao_cancellation)/(1 + (1-colorB.a)*gui_ao_cancellation);
 }
+
+// ----------------------------------------------------------------
+//
+// ----------------------------------------------------------------
+uniform vec3 average_color;
+uniform float gui_remove_shading_lf_blending;
+subroutine(filterModeType) vec4 mode_remove_low_freq_filter(){
+    vec4 colorA   = texture( layerA, v2QuadCoords.xy);
+    vec4 blured   = texture( layerB, v2QuadCoords.xy);
+    vec4 finalColor = colorA + (vec4(average_color,1) - blured);
+
+    return mix(colorA,finalColor,gui_remove_shading_lf_blending);
+ }
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
