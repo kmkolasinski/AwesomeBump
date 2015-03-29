@@ -50,5 +50,7 @@
         <file>resources/metalic.png</file>
         <file>resources/showRoughness.png</file>
         <file>resources/filters.frag</file>
+        <file>resources/filters_3d.frag</file>
+        <file>resources/filters_3d.vert</file>
     </qresource>
 </RCC>

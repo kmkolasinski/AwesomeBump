@@ -21,7 +21,7 @@
     #define AB_LOG_ALT "log.txt"
 #endif
 
-#define AWESOME_BUMP_VERSION "AwesomeBump v3.0.1 Beta"
+#define AWESOME_BUMP_VERSION "AwesomeBump v3.0.2 "
 
 using namespace std;
 
@@ -270,11 +270,13 @@ struct Performance3DSettings{
   bool bUseSimplePBR;
   int  noTessSubdivision;
   int  noPBRRays;
+  bool bBloomEffect;
   Performance3DSettings(){
         bUseCullFace  = false;
         bUseSimplePBR = false;
         noTessSubdivision = 16;
         noPBRRays         = 15;
+        bBloomEffect      = true;
   }
 };
 

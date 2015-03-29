@@ -237,6 +237,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->comboBoxPerformanceNoTessSub  ,SIGNAL(activated(int)),this,SLOT(updatePerformanceSettings(int)));
     connect(ui->checkBoxPerformanceCullFace   ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
     connect(ui->checkBoxPerformanceSimplePBR  ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
+    connect(ui->checkBoxBloomEffect           ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
 
 
 
@@ -1155,6 +1156,7 @@ void MainWindow::updatePerformanceSettings(){
     settings.bUseSimplePBR      = ui->checkBoxPerformanceSimplePBR->isChecked();
     settings.noPBRRays          = ui->comboBoxPerformanceNoRays->currentText().toInt();
     settings.noTessSubdivision  = ui->comboBoxPerformanceNoTessSub->currentText().toInt();
+    settings.bBloomEffect       = ui->checkBoxBloomEffect->isChecked();
     glWidget->updatePerformanceSettings(settings);
 }
 void MainWindow::updatePerformanceSettings(int indeks){
@@ -1522,6 +1524,13 @@ void MainWindow::saveSettings(){
     QSettings settings(QString(AB_INI), QSettings::IniFormat);
     settings.setValue("d_win_w",this->width());
     settings.setValue("d_win_h",this->height());
+
+    settings.setValue("tab_win_w",ui->tabWidget->width());
+    settings.setValue("tab_win_h",ui->tabWidget->height());
+    settings.setValue("tab_3d_settings_win_w",ui->widget3DSettings->width());
+    settings.setValue("tab_3d_settings_win_h",ui->widget3DSettings->height());
+
+
     settings.setValue("recent_dir",recentDir.absolutePath());
     settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
 
@@ -1571,6 +1580,13 @@ void MainWindow::saveSettings(){
     settings.setValue("use_texture_interpolation",ui->checkBoxUseLinearTextureInterpolation->isChecked());
     settings.setValue("mouse_sensitivity",ui->spinBoxMouseSensitivity->value());
 
+    // 3D settings:
+    settings.setValue("bUseCullFace",ui->checkBoxPerformanceCullFace->isChecked());
+    settings.setValue("bUseSimplePBR",ui->checkBoxPerformanceSimplePBR->isChecked());
+    settings.setValue("noPBRRays",ui->comboBoxPerformanceNoRays->currentIndex());
+    settings.setValue("noTessSubdivision",ui->comboBoxPerformanceNoTessSub->currentIndex());
+    settings.setValue("bBloomEffect",ui->checkBoxBloomEffect->isChecked());
+
 
     saveImageSettings("d",diffuseImageProp);
     saveImageSettings("n",normalImageProp);
@@ -1595,6 +1611,11 @@ void MainWindow::loadSettings(){
 
     if(bFirstTime){
         this->resize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
+        ui->tabWidget->resize(settings.value("tab_win_w",300).toInt(),
+                              settings.value("tab_win_h",600).toInt());
+        ui->widget3DSettings->resize(settings.value("tab_3d_settings_win_w",400).toInt(),
+                                     settings.value("tab_3d_settings_win_h",230).toInt());
+
     }
 
     PostfixNames::diffuseName   = settings.value("d_postfix","_d").toString();
@@ -1649,6 +1670,17 @@ void MainWindow::loadSettings(){
     // other settings
     ui->spinBoxMouseSensitivity->setValue(settings.value("mouse_sensitivity",50).toInt());
 
+    // 3D settings:
+    ui->checkBoxPerformanceCullFace ->setChecked(settings.value("bUseCullFace",false).toBool());
+    ui->checkBoxPerformanceSimplePBR->setChecked(settings.value("bUseSimplePBR",false).toBool());
+    ui->checkBoxBloomEffect         ->setChecked(settings.value("bBloomEffect",false).toBool());
+    ui->comboBoxPerformanceNoRays   ->setCurrentIndex(settings.value("noPBRRays",0).toInt());
+    ui->comboBoxPerformanceNoTessSub->setCurrentIndex(settings.value("noTessSubdivision",0).toInt());
+
+
+
+
+
     loadImageSettings("d",diffuseImageProp);
     loadImageSettings("n",normalImageProp);
     loadImageSettings("s",specularImageProp);
@@ -1670,10 +1702,10 @@ void MainWindow::about()
 {
     QMessageBox::about(this, tr(AWESOME_BUMP_VERSION),
                        tr("AwesomeBump is an open source program designed to generate normal, "
-                          "height, specular or ambient occlusion etc. textures from a single image. "
+                          "height, specular or ambient occlusion, roughness and metallic textures from a single image. "
                           "Since the image processing is done in 99% on GPU  the program runs very fast "
-                          "and all the parameters can be changed in real time.\n"
-                          "Program written by: Krzysztof Kolasinski (Copyright 2015)"));
+                          "and all the parameters can be changed in real time.\n \n"
+                          "Program written by: \n Krzysztof Kolasinski (Copyright 2015)\n"));
 }
 
 void MainWindow::aboutQt()

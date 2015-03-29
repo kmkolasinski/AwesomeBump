@@ -191,6 +191,7 @@ private:
     GLFrameBufferObject* glowInputColor[4];
     GLFrameBufferObject* glowOutputColor[4];
 
+
 protected:
     void resizeFBOs();
     void deleteFBOs();

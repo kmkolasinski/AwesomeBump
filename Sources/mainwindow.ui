@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1285</width>
+    <width>1363</width>
     <height>766</height>
    </rect>
   </property>
@@ -62,7 +62,7 @@
         <enum>QTabWidget::East</enum>
        </property>
        <property name="currentIndex">
-        <number>8</number>
+        <number>7</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideMiddle</enum>
@@ -115,8 +115,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>371</width>
-              <height>657</height>
+              <width>355</width>
+              <height>647</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -189,8 +189,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>371</width>
-              <height>657</height>
+              <width>355</width>
+              <height>647</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -266,8 +266,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>371</width>
-              <height>657</height>
+              <width>355</width>
+              <height>647</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -337,8 +337,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>371</width>
-              <height>657</height>
+              <width>355</width>
+              <height>647</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -408,8 +408,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>371</width>
-              <height>657</height>
+              <width>355</width>
+              <height>647</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -476,8 +476,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>371</width>
-              <height>657</height>
+              <width>355</width>
+              <height>647</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -550,8 +550,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>371</width>
-              <height>657</height>
+              <width>355</width>
+              <height>647</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -648,8 +648,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>371</width>
-              <height>619</height>
+              <width>376</width>
+              <height>677</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -1933,8 +1933,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>371</width>
-              <height>657</height>
+              <width>357</width>
+              <height>631</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -3038,6 +3038,16 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="0" column="8">
+                  <widget class="QCheckBox" name="checkBoxBloomEffect">
+                   <property name="text">
+                    <string>Glow</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </item>
               </layout>
@@ -3674,7 +3684,7 @@
                  </sizepolicy>
                 </property>
                 <property name="toolTip">
-                 <string>Choose enviromental map</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose enviromental map.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note: &lt;/span&gt;You can &lt;span style=&quot; font-weight:600;&quot;&gt;add&lt;/span&gt; your own env. maps to this list. Just copy folder with your images to the &lt;span style=&quot; font-weight:600;&quot;&gt;Core/2D/skyboxes&lt;/span&gt; folder. Make sure you have same names for each face like other cubemaps already present there.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="statusTip">
                  <string>Choose enviromental map</string>
@@ -3764,8 +3774,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1285</width>
-     <height>21</height>
+     <width>1363</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

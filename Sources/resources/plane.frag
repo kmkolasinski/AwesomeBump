@@ -466,7 +466,7 @@ void main( void )
         vec3 diffuse    = materialColour * irradiance ;
 
         FragColor  =  gui_DiffuseIntensity  * vec4(kD * diffuse,1) * aoColour
-                   +  gui_SpecularIntensity * fvSpecularColor*  vec4(materialColour,1) * ( specular ) ;
+                   +  gui_SpecularIntensity * fvSpecularColor * ( specular ) ;
 
         finalColor = FragColor ;
     }

@@ -336,14 +336,14 @@ void GLWidget::initializeGL()
 
     qDebug() << "Loading post-processing shader (vertex shader)";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile("../Sources/resources/filters_3d.vert");
+    vshader->compileSourceFile(":/resources/filters_3d.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
 
     qDebug() << "Loading post-processing shader (fragment shader)";
     fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-    fshader->compileSourceFile("../Sources/resources/filters_3d.frag");
+    fshader->compileSourceFile(":/resources/filters_3d.frag");
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
     else qDebug() << "done";
 
@@ -533,10 +533,20 @@ void GLWidget::paintGL()
 
     colorFBO->bindDefault();
 
-    //applyGaussFilter(colorFBO->getAttachedTexture(1),glowInputColor[3]->fbo,glowOutputColor[3]->fbo);
+    // -----------------------------------------------------------
+    // Post processing:
+    // 1. Bloom (can be disabled/enabled by gui)
+    // -----------------------------------------------------------
 
-    applyGlowFilter(outputFBO->fbo);
-    applyNormalFilter(outputFBO->fbo->texture());
+    // enable of disable bloom effect
+    if(performanceSettings.bBloomEffect){
+        applyGlowFilter(outputFBO->fbo);
+        applyNormalFilter(outputFBO->fbo->texture());
+    }else{
+        applyNormalFilter(colorFBO->fbo->texture());
+    }// end of if bloom effect
+
+
 
 
     emit renderGL();
@@ -664,14 +674,24 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         }
         if(event->x() < 10){
             lastPos.setX(width()-10);
-        }        
+        }
+
+        if(event->y() > height()-10){
+            lastPos.setY(10);
+        }
+        if(event->y() < 10){
+            lastPos.setY(height()-10);
+        }
+
         QCursor c = cursor();
         c.setPos(mapToGlobal(lastPos));
         setCursor(c);
+
+        updateGL();
     }
 
 
-    updateGL();
+
 }
 //! [10]
 
@@ -800,6 +820,7 @@ void GLWidget::updatePerformanceSettings(Performance3DSettings settings){
     performanceSettings = settings;
     updateGL();
 }
+
 
 
 // ------------------------------------------------------------------------------- //
