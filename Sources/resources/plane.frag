@@ -306,7 +306,7 @@ vec4 PBR_Specular(float roughness,
 
 
          // Accumulate the radiance
-         float light = max(dot(normalizedLightDirection,lp),0.0);
+         float light = max(dot(normalizedLightDirection,lp),0.0);         
          light       = 1-exp(-pow((5*gui_LightRadius*light),4));
 
          vec3 color = texture( texEnvMap, lp ).rgb + gui_LightPower * light;
@@ -466,7 +466,7 @@ void main( void )
         vec3 diffuse    = materialColour * irradiance ;
 
         FragColor  =  gui_DiffuseIntensity  * vec4(kD * diffuse,1) * aoColour
-                   +  gui_SpecularIntensity * fvSpecularColor * ( specular ) ;
+                   +  gui_SpecularIntensity * fvSpecularColor * vec4(materialColour,1) * ( specular ) ;
 
         finalColor = FragColor ;
     }
