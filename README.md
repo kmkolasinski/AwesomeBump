@@ -36,42 +36,19 @@ See the [pdf ](https://github.com/kmkolasinski/AwesomeBump/releases/download/Bui
 4. I hope you will like it :)
 
 ## Command-line instructions:
-a) Open terminal
 
-b) Add Qt 5.4 to the PATH variable (example command):
+1.) Open terminal and unzip or untar downloaded source code.
 
-   export PATH=/usr/local/Qt-5.4.1/bin:$PATH
-   
-Note that your path to the Qt 5.4 bin folder may be different. You can use following command to check where is your Qt-5.4 installation located:
+2.) Enter to created folder
 
-   locate qt | grep Qt-5 
-   
-This will list you all files with name Qt-5. 
+3.) Open linuxBuildScript.sh file and set the propper Qt5 path. Save and close.
 
-c) Unzip the source code:
+4.) Run script with command: sh linuxBuildScript.sh
 
-   unzip AwesomeBump.zip
-   
-d) Navigate to Sources directory:
+5.) If everything gone well AB should start after compilation process. See Bin/ folder. There should be an AwesomeBump file now.
 
-   cd AwesomeBump/Sources
-   
-e) Compile program:
 
-   qmake
-   
-   make
-   
-f) copy AwesomeBump file to bin directory.
 
-   cp AwesomeBump ../Bin/
-   
-g) Run program:
-
-   cd ../Bin
-   
-   ./AwesomeBump
-   
 
 
 New in version 3.0 + update 3.0.2 (29.03.15)
