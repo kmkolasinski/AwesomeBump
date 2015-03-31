@@ -147,6 +147,7 @@ private:
     QAction *aboutQtAction;
     QAction *aboutAction;
     QAction *logAction; // show logger
+    QLabel  *statusLabel;
     DialogLogger* logger;
     QSettings defaults;
 

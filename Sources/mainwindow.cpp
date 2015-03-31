@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     FormImageProp::recentDir    = &recentDir;
     GLWidget::recentMeshDir     = &recentMeshDir;
 
+    statusLabel = new QLabel("Memory left:");
+
     QGLFormat glFormat(QGL::SampleBuffers);
 
 #ifdef Q_OS_MAC
@@ -142,6 +144,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // ------------------------------------------------------
     ui->setupUi(this);
     ui->widget3DSettings->hide();
+    ui->statusbar->addWidget(statusLabel);
 
     // Settings container
     settingsContainer = new FormSettingsContainer;
@@ -447,6 +450,7 @@ MainWindow::~MainWindow()
     delete occlusionImageProp;
     delete roughnessImageProp;
     delete metallicImageProp;
+    delete statusLabel;
     delete glImage;
     delete glWidget;
     delete ui;
@@ -516,6 +520,27 @@ void MainWindow::replotAllImages(){
 
     glImage->setActiveImage(lastActive);
     glWidget->update();
+
+    // ploting the memory usage after each replot
+    #define GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX   0x9048
+    #define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
+    GLint total_mem_kb = 0;
+    glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
+                  &total_mem_kb);
+
+    GLint cur_avail_mem_kb = 0;
+    glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX,
+                  &cur_avail_mem_kb);
+
+
+    GLint mem_usage = total_mem_kb - cur_avail_mem_kb;
+    QString menu_text = QString(" Memory usage:")+QString::number(float(mem_usage/1024.0f))+QString("[MB]")
+                      + QString(" Memory left:") +QString::number(float(cur_avail_mem_kb/1024.0f))+QString("[MB]")
+                      + QString(" Total memory:")+QString::number(float(total_mem_kb/1024.0f))+QString("[MB]");
+
+
+    statusLabel->setText(menu_text);
+
 }
 
 
@@ -878,8 +903,9 @@ void MainWindow::updateMetallicImage(){
 }
 
 void MainWindow::updateImageInformation(){
-    ui->labelCurrentImageWidth ->setNum(diffuseImageProp->getImageProporties()->ref_fbo->width());
-    ui->labelCurrentImageHeight->setNum(diffuseImageProp->getImageProporties()->ref_fbo->height());
+
+    ui->labelCurrentImageWidth ->setNum(diffuseImageProp->getImageProporties()->fbo->width());
+    ui->labelCurrentImageHeight->setNum(diffuseImageProp->getImageProporties()->fbo->height());
 }
 
 void MainWindow::initializeGL(){  

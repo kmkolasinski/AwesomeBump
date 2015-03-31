@@ -265,7 +265,8 @@ struct RandomTilingMode{
 };
 
 
-struct Performance3DSettings{
+class Performance3DSettings{
+public:
   bool bUseCullFace;
   bool bUseSimplePBR;
   int  noTessSubdivision;
@@ -312,7 +313,9 @@ public:
         qDebug() << "FBOImages::creating new FBO(" << width << "," << height << ") with id=" << fbo->texture() ;
     }
     static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref){
-        if( ref->width()  == src->width() &&
+        if(src == NULL){
+            GLCHK(FBOImages::create(src ,ref->width(),ref->height()));
+        }else if( ref->width()  == src->width() &&
             ref->height() == src->height() ){}else{
             GLCHK(FBOImages::create(src ,ref->width(),ref->height()));
         }
@@ -333,10 +336,10 @@ public:
 // Main object. Contains information about Image and the post process parameters
 class FBOImageProporties{
 public:
-    QGLFramebufferObject *ref_fbo ; // reference image
+    //QGLFramebufferObject *ref_fbo ; // reference image
     QGLFramebufferObject *fbo     ; // output image
-    QGLFramebufferObject *aux_fbo ; // aux image (used in post processing)
-    QGLFramebufferObject *aux2_fbo; // the same
+    //QGLFramebufferObject *aux_fbo ; // aux image (used in post processing)
+    //QGLFramebufferObject *aux2_fbo; // the same
 
     GLuint scr_tex_id;       // Id of texture loaded from image, from loaded file
     int scr_tex_width;       // width of the image loaded from file.
@@ -459,10 +462,10 @@ public:
 
      FBOImageProporties(){
 
-        ref_fbo      = NULL;
+        //ref_fbo      = NULL;
         fbo          = NULL;
-        aux_fbo      = NULL;
-        aux2_fbo     = NULL;
+        //aux_fbo      = NULL;
+        //aux2_fbo     = NULL;
         glWidget_ptr = NULL;
         bFirstDraw   = true;
         bGrayScale   = false;
@@ -575,10 +578,10 @@ public:
         scr_tex_height = image.height();
         bFirstDraw    = true;
 
-        GLCHK(FBOImages::create(ref_fbo ,image.width(),image.height()));
+        //GLCHK(FBOImages::create(ref_fbo ,image.width(),image.height()));
         GLCHK(FBOImages::create(fbo     ,image.width(),image.height()));
-        GLCHK(FBOImages::create(aux_fbo ,image.width(),image.height()));
-        GLCHK(FBOImages::create(aux2_fbo,image.width(),image.height()));
+       // GLCHK(FBOImages::create(aux_fbo ,image.width(),image.height()));
+       // GLCHK(FBOImages::create(aux2_fbo,image.width(),image.height()));
 
     }
 
@@ -591,10 +594,12 @@ public:
     }
 
     void resizeFBO(int width, int height){
-        GLCHK(FBOImages::resize(ref_fbo ,width,height));
+        //GLCHK(FBOImages::resize(ref_fbo ,width,height));
         GLCHK(FBOImages::resize(fbo     ,width,height));
-        GLCHK(FBOImages::resize(aux_fbo ,width,height));
-        GLCHK(FBOImages::resize(aux2_fbo,width,height));
+       // GLCHK(FBOImages::resize(aux_fbo ,width,height));
+       // GLCHK(FBOImages::resize(aux2_fbo,width,height));
+        double memUsage = width * height * 4 * 16 / (1024.0*1024.0*8);
+        qDebug() << "Resized image memory usage:" << memUsage << "[MB]";
         bFirstDraw = true;
     }
 
@@ -613,10 +618,10 @@ public:
         glWidget_ptr->makeCurrent();
         if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
         glWidget_ptr = NULL;
-        if(ref_fbo    != NULL ) delete ref_fbo;
+       // if(ref_fbo    != NULL ) delete ref_fbo;
         if(fbo        != NULL ) delete fbo;
-        if(aux_fbo    != NULL ) delete aux_fbo;
-        if(aux2_fbo   != NULL ) delete aux2_fbo;
+       // if(aux_fbo    != NULL ) delete aux_fbo;
+       // if(aux2_fbo   != NULL ) delete aux2_fbo;
 
     }
 };

@@ -80,6 +80,10 @@ void GLImage::cleanup()
   delete averageColorFBO;
   delete samplerFBO1;
   delete samplerFBO2;
+  delete auxFBO1;
+  delete auxFBO2;
+  delete auxFBO3;
+  delete auxFBO4;
   glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]);
   delete program;
 
@@ -181,6 +185,10 @@ void GLImage::initializeGL()
     FBOImages::create(samplerFBO1,1024,1024);
     FBOImages::create(samplerFBO2,1024,1024);
 
+    auxFBO1 = NULL;
+    auxFBO2 = NULL;
+    auxFBO3 = NULL;
+    auxFBO4 = NULL;
 
 
     emit readyGL();
@@ -199,8 +207,10 @@ void GLImage::render(){
     if (!activeImage) return;
   
     // do not clear the background during rendering process
-    if(!bShadowRender)
+    if(!bShadowRender){
         GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+    }
+
     GLCHK( glDisable(GL_CULL_FACE) );
     GLCHK( glDisable(GL_DEPTH_TEST) );
 
@@ -211,8 +221,12 @@ void GLImage::render(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
 
     QGLFramebufferObject* activeFBO     = activeImage->fbo;
-    QGLFramebufferObject* activeAuxFBO  = activeImage->aux_fbo;
-    QGLFramebufferObject* activeAux2FBO = activeImage->aux2_fbo;
+    // create or resize when image was changed
+    FBOImages::resize(auxFBO1,activeFBO);
+    FBOImages::resize(auxFBO2,activeFBO);
+    FBOImages::resize(auxFBO3,activeFBO);
+    FBOImages::resize(auxFBO4,activeFBO);
+
 
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
     bool bSkipStandardProcessing = false;
@@ -221,68 +235,22 @@ void GLImage::render(){
     // resizing the FBOs in case of convertion procedure
     switch(conversionType){
         case(CONVERT_FROM_H_TO_N):
-        /*
-        if(activeImage->imageType == NORMAL_TEXTURE){
-            FBOImages::resize(targetImageNormal->ref_fbo  ,activeImage->ref_fbo);
-            FBOImages::resize(targetImageNormal->fbo      ,activeImage->ref_fbo);
-            FBOImages::resize(targetImageNormal->aux_fbo  ,activeImage->ref_fbo);
-            FBOImages::resize(targetImageNormal->aux2_fbo ,activeImage->ref_fbo);
-            activeFBO     = targetImageNormal->fbo;
-            activeAuxFBO  = targetImageNormal->aux_fbo;
-            activeAux2FBO = targetImageNormal->aux2_fbo;
-        }
-        */
+
         break;
         case(CONVERT_FROM_N_TO_H):
-        /*
-        FBOImages::resize(targetImageHeight->ref_fbo  ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageHeight->fbo      ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageHeight->aux_fbo  ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageHeight->aux2_fbo ,activeImage->ref_fbo);
-        activeFBO     = targetImageHeight->fbo;
-        activeAuxFBO  = targetImageHeight->aux_fbo;
-        activeAux2FBO = targetImageHeight->aux2_fbo;
-        */
+
         break;
         case(CONVERT_FROM_D_TO_O):
-        /*
-        FBOImages::resize(targetImageHeight->ref_fbo     ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageHeight->fbo         ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageHeight->aux_fbo     ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageHeight->aux2_fbo    ,activeImage->ref_fbo);
 
-        FBOImages::resize(targetImageNormal->ref_fbo     ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageNormal->fbo         ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageNormal->aux_fbo     ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageNormal->aux2_fbo    ,activeImage->ref_fbo);
-
-        FBOImages::resize(targetImageSpecular->ref_fbo   ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageSpecular->fbo       ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageSpecular->aux_fbo   ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageSpecular->aux2_fbo  ,activeImage->ref_fbo);
-
-        FBOImages::resize(targetImageOcclusion->ref_fbo  ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageOcclusion->fbo      ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageOcclusion->aux_fbo  ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageOcclusion->aux2_fbo ,activeImage->ref_fbo);
-
-        FBOImages::resize(targetImageRoughness->ref_fbo  ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageRoughness->fbo      ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageRoughness->aux_fbo  ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageRoughness->aux2_fbo ,activeImage->ref_fbo);
-
-        FBOImages::resize(targetImageMetallic->ref_fbo  ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageMetallic->fbo      ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageMetallic->aux_fbo  ,activeImage->ref_fbo);
-        FBOImages::resize(targetImageMetallic->aux2_fbo ,activeImage->ref_fbo);
-        */
         break;
         case(CONVERT_RESIZE): // apply resize textures
             activeImage->resizeFBO(resize_width,resize_height);
             // pointers were changed in resize function
-            activeFBO     = activeImage->fbo;
-            activeAuxFBO  = activeImage->aux_fbo;
-            activeAux2FBO = activeImage->aux2_fbo;
+            activeFBO  = activeImage->fbo;
+            FBOImages::resize(auxFBO1,activeFBO);
+            FBOImages::resize(auxFBO2,activeFBO);
+            FBOImages::resize(auxFBO3,activeFBO);
+            FBOImages::resize(auxFBO4,activeFBO);
             bSkipStandardProcessing = true;
         break;
         default:
@@ -302,6 +270,7 @@ void GLImage::render(){
         activeImage->bFirstDraw = false;
         // Updating ref FBO...
 
+        /* // no more ref FBO
         activeImage->ref_fbo->bind();
             glViewport(0,0,activeImage->ref_fbo->width(),activeImage->ref_fbo->height());
             program->setUniformValue("quad_scale", QVector2D(1.0,1.0));
@@ -311,12 +280,23 @@ void GLImage::render(){
             glBindTexture(GL_TEXTURE_2D, activeImage->scr_tex_id);
             glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0);
         activeImage->ref_fbo->bindDefault();
+        */
     }
 
+
     // First copy of reference Image to Active
-    copyFBO(activeImage->ref_fbo,activeFBO);
+    activeImage->fbo->bind();
+        glViewport(0,0,activeImage->fbo->width(),activeImage->fbo->height());
+        program->setUniformValue("quad_scale", QVector2D(1.0,1.0));
+        program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0));
+        glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, activeImage->scr_tex_id);
+        glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0);
+    activeImage->fbo->bindDefault();
 
 
+    // in some cases the output image will be taken from other sources
     switch(activeImage->imageType){
         // ----------------------------------------------------
         //
@@ -338,35 +318,38 @@ void GLImage::render(){
                     // perspective transformation treats differently normal texture
                     // change for a moment the texture type to performe transformations
                     GLCHK( program->setUniformValue("gui_image_type", HEIGHT_TEXTURE) );
-                    copyFBO(targetImageHeight->ref_fbo,activeFBO);
+
+                    //copyFBO(targetImageHeight->ref_fbo,activeFBO);
+                    copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
 
                     if(FBOImageProporties::bSeamlessTranslationsFirst){
-                      applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is save to activeFBO
+                      applyPerspectiveTransformFilter(activeFBO,auxFBO1);// the output is save to activeFBO
                     }
                     // Making seamless...
                     switch(FBOImageProporties::seamlessMode){
                         case(SEAMLESS_SIMPLE):
-                            applySeamlessLinearFilter(activeFBO,activeAuxFBO); //  the output is save to activeFBO
+                            applySeamlessLinearFilter(activeFBO,auxFBO1); //  the output is save to activeFBO
                             break;
                         case(SEAMLESS_MIRROR):
                         case(SEAMLESS_RANDOM):
-                            applySeamlessFilter(activeFBO,activeAuxFBO);
-                            copyFBO(activeAuxFBO,activeFBO);
+                            applySeamlessFilter(activeFBO,auxFBO1);
+                            copyFBO(auxFBO1,activeFBO);
                         break;
                         case(SEAMLESS_NONE):
                         default: break;
                     }
                     if(!FBOImageProporties::bSeamlessTranslationsFirst){
-                      applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is save to activeFBO
+                      applyPerspectiveTransformFilter(activeFBO,auxFBO1);// the output is save to activeFBO
                     }
 
 
-                    copyFBO(activeFBO,activeAuxFBO);
-                    applyHeightToNormal(activeAuxFBO,activeFBO);
+                    copyFBO(activeFBO,auxFBO1);
+                    applyHeightToNormal(auxFBO1,activeFBO);
                     GLCHK( program->setUniformValue("gui_image_type", activeImage->imageType) );
                     bTransformUVs = false;
                 }else{
-                    applyHeightToNormal(targetImageHeight->ref_fbo,activeFBO);
+                    //applyHeightToNormal(targetImageHeight->ref_fbo,activeFBO);
+                    copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
                 }
 
 
@@ -390,15 +373,16 @@ void GLImage::render(){
                 // do nothing
                 break;
             case(INPUT_FROM_HEIGHT_INPUT):
-                copyFBO(targetImageHeight->ref_fbo,activeFBO);
+                //copyFBO(targetImageHeight->ref_fbo,activeFBO);
+                copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
                 //bTransformUVs = false;
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 copyFBO(targetImageHeight->fbo,activeFBO);
                 bTransformUVs = false;
                 break;
-            case(INPUT_FROM_DIFFUSE_INPUT):
-                copyFBO(targetImageDiffuse->ref_fbo,activeFBO);
+            case(INPUT_FROM_DIFFUSE_INPUT):                
+                copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);
                 //bTransformUVs = false;
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
@@ -420,8 +404,8 @@ void GLImage::render(){
                 if(conversionType == CONVERT_FROM_HN_TO_OC){
                     // Ambient occlusion is calculated from normal and height map, so
                     // some part of processing is skiped
-                    applyCombineNormalHeightFilter(targetImageNormal->fbo,targetImageHeight->fbo,activeAuxFBO);
-                    applyOcclusionFilter(activeAuxFBO,activeFBO);
+                    applyCombineNormalHeightFilter(targetImageNormal->fbo,targetImageHeight->fbo,auxFBO1);
+                    applyOcclusionFilter(auxFBO1,activeFBO);
                     bSkipStandardProcessing =  true;
                     bTransformUVs = false;
                 }
@@ -430,13 +414,15 @@ void GLImage::render(){
             case(INPUT_FROM_HI_NI):
                 // Ambient occlusion is calculated from normal and height map, so
                 // some part of processing is skiped
-                applyCombineNormalHeightFilter(targetImageNormal->ref_fbo,targetImageHeight->ref_fbo,activeAuxFBO);
-                applyOcclusionFilter(activeAuxFBO,activeFBO);
+                copyTex2FBO(targetImageNormal->scr_tex_id,auxFBO2);
+                copyTex2FBO(targetImageHeight->scr_tex_id,auxFBO3);
+                applyCombineNormalHeightFilter(auxFBO2,auxFBO3,auxFBO1);
+                applyOcclusionFilter(auxFBO1,activeFBO);
 
                 break;     
             case(INPUT_FROM_HO_NO):
-                applyCombineNormalHeightFilter(targetImageNormal->fbo,targetImageHeight->fbo,activeAuxFBO);
-                applyOcclusionFilter(activeAuxFBO,activeFBO);
+                applyCombineNormalHeightFilter(targetImageNormal->fbo,targetImageHeight->fbo,auxFBO1);
+                applyOcclusionFilter(auxFBO1,activeFBO);
                 bTransformUVs = false;
                 break;
             default: break;
@@ -447,11 +433,11 @@ void GLImage::render(){
         // ----------------------------------------------------
         case(HEIGHT_TEXTURE):{
         if(conversionType == CONVERT_FROM_N_TO_H){
-            applyNormalToHeight(activeImage,targetImageNormal->fbo,activeFBO,activeAuxFBO);
-            applyCPUNormalizationFilter(activeAuxFBO,activeFBO);
-            applyGaussFilter(activeFBO,activeAuxFBO,activeAux2FBO,1,0.1); // small blur
-            copyFBO(activeAux2FBO,activeFBO);
-            copyFBO(activeFBO,targetImageHeight->ref_fbo);
+            applyNormalToHeight(activeImage,targetImageNormal->fbo,activeFBO,auxFBO1);
+            applyCPUNormalizationFilter(auxFBO1,activeFBO);
+            applyGaussFilter(activeFBO,auxFBO1,auxFBO2,1,0.1); // small blur
+            copyFBO(auxFBO2,activeFBO);
+            targetImageHeight->updateSrcTexId(activeFBO);
             bTransformUVs = false;
         }
         // ----------------------------------------------------
@@ -465,24 +451,22 @@ void GLImage::render(){
             case(INPUT_FROM_ROUGHNESS_INPUT):
                 // do nothing
                 break;
-            case(INPUT_FROM_HEIGHT_INPUT):
-                copyFBO(targetImageHeight->ref_fbo,activeFBO);
+            case(INPUT_FROM_HEIGHT_INPUT):                
+                copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 copyFBO(targetImageHeight->fbo,activeFBO);
                 bTransformUVs = false;
                 break;
             case(INPUT_FROM_DIFFUSE_INPUT):
-                copyFBO(targetImageDiffuse->ref_fbo,activeFBO);
+                //copyFBO(targetImageDiffuse->ref_fbo,activeFBO);
+                copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
                 copyFBO(targetImageDiffuse->fbo,activeFBO);
                 bTransformUVs = false;
                 break;
             default: break;
-
-
-
         }
 
         break;
@@ -494,15 +478,15 @@ void GLImage::render(){
             case(INPUT_FROM_METALLIC_INPUT):
                 // do nothing
                 break;
-            case(INPUT_FROM_HEIGHT_INPUT):
-                copyFBO(targetImageHeight->ref_fbo,activeFBO);
+            case(INPUT_FROM_HEIGHT_INPUT):                
+                copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 copyFBO(targetImageHeight->fbo,activeFBO);
                 bTransformUVs = false;
                 break;
-            case(INPUT_FROM_DIFFUSE_INPUT):
-                copyFBO(targetImageDiffuse->ref_fbo,activeFBO);
+            case(INPUT_FROM_DIFFUSE_INPUT):                
+                copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
                 copyFBO(targetImageDiffuse->fbo,activeFBO);
@@ -516,37 +500,37 @@ void GLImage::render(){
     };
 
 
-
-
     // Transform UVs in some cases
-
     if(conversionType == CONVERT_NONE && bTransformUVs){
 
         if(FBOImageProporties::bSeamlessTranslationsFirst){
-          applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is save to activeFBO
+          applyPerspectiveTransformFilter(activeFBO,auxFBO1);// the output is save to activeFBO
         }
         // Making seamless...
         switch(FBOImageProporties::seamlessMode){
             case(SEAMLESS_SIMPLE):
-                applySeamlessLinearFilter(activeFBO,activeAuxFBO); //  the output is save to activeFBO
+                applySeamlessLinearFilter(activeFBO,auxFBO1); //  the output is save to activeFBO
                 break;
             case(SEAMLESS_MIRROR):
             case(SEAMLESS_RANDOM):
-                applySeamlessFilter(activeFBO,activeAuxFBO);
-                copyFBO(activeAuxFBO,activeFBO);
+                applySeamlessFilter(activeFBO,auxFBO1);
+                copyFBO(auxFBO1,activeFBO);
             break;
             case(SEAMLESS_NONE):
             default: break;
         }
         if(!FBOImageProporties::bSeamlessTranslationsFirst){
-          applyPerspectiveTransformFilter(activeFBO,activeAuxFBO);// the output is save to activeFBO
+          applyPerspectiveTransformFilter(activeFBO,auxFBO1);// the output is save to activeFBO
         }
     }
-    // skip all processing
+
+
+    // skip all processing        
     if(!bSkipStandardProcessing){
 
+
     // begin standart pipe-line (for each image)
-    applyInvertComponentsFilter(activeFBO,activeAuxFBO);
+    applyInvertComponentsFilter(activeFBO,auxFBO1);
 
 
     if(activeImage->imageType != HEIGHT_TEXTURE &&
@@ -555,8 +539,8 @@ void GLImage::render(){
        activeImage->imageType != ROUGHNESS_TEXTURE){
 
         // hue manipulation
-        applyColorHueFilter(activeAuxFBO,activeFBO);
-        copyFBO(activeFBO,activeAuxFBO);
+        applyColorHueFilter(auxFBO1,activeFBO);
+        copyFBO(activeFBO,auxFBO1);
     }
 
     // In case when color picking is enabled disable
@@ -566,12 +550,14 @@ void GLImage::render(){
             activeImage->imageType == ROUGHNESS_TEXTURE ||
             activeImage->imageType == OCCLUSION_TEXTURE ||
             activeImage->imageType == HEIGHT_TEXTURE ){
-        applyGrayScaleFilter(activeAuxFBO,activeFBO);
+        applyGrayScaleFilter(auxFBO1,activeFBO);
     }else{
-        copyFBO(activeAuxFBO,activeFBO);
+        copyFBO(auxFBO1,activeFBO);
     }
 
-    }else copyFBO(activeAuxFBO,activeFBO);
+    }else copyFBO(auxFBO1,activeFBO);
+
+
 
 
     // both metallic and roughness are almost the same
@@ -579,16 +565,16 @@ void GLImage::render(){
     if( (activeImage->imageType == ROUGHNESS_TEXTURE ||  activeImage->imageType == METALLIC_TEXTURE )
         && activeImage->bRoughnessSurfaceEnable ){
         // processing surface
-        applyRoughnessFilter(activeFBO,activeAux2FBO,activeAuxFBO);
-        copyFBO(activeAuxFBO,activeFBO);
+        applyRoughnessFilter(activeFBO,auxFBO2,auxFBO1);
+        copyFBO(auxFBO1,activeFBO);
     }
 
 
 
     // specular manipulation
     if(activeImage->bSpeclarControl && activeImage->imageType != HEIGHT_TEXTURE){
-        applyDGaussiansFilter(activeFBO,activeAux2FBO,activeAuxFBO);
-        applyContrastFilter(activeAuxFBO,activeFBO);
+        applyDGaussiansFilter(activeFBO,auxFBO2,auxFBO1);
+        applyContrastFilter(auxFBO1,activeFBO);
     }
 
 
@@ -600,16 +586,16 @@ void GLImage::render(){
         // mask input image
         switch(activeImage->selectiveBlurMaskInputImageType){
             case(INPUT_FROM_HEIGHT_OUTPUT):
-                copyFBO(activeFBO,targetImageSpecular->aux2_fbo);
+                copyFBO(activeFBO,auxFBO3);
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
-                copyFBO(targetImageDiffuse->fbo,targetImageSpecular->aux2_fbo);
+                copyFBO(targetImageDiffuse->fbo,auxFBO3);
                 break;
             case(INPUT_FROM_ROUGHNESS_OUTPUT):
-                copyFBO(targetImageRoughness->fbo,targetImageSpecular->aux2_fbo);
+                copyFBO(targetImageRoughness->fbo,auxFBO3);
                 break;
             case(INPUT_FROM_METALLIC_OUTPUT):
-                copyFBO(targetImageMetallic->fbo,targetImageSpecular->aux2_fbo);
+                copyFBO(targetImageMetallic->fbo,auxFBO3);
                 break;
             default:
             break;
@@ -617,73 +603,77 @@ void GLImage::render(){
         // apply filter for mask
         switch(activeImage->selectiveBlurType){
         case(SELECTIVE_BLUR_DIFFERENCE_OF_GAUSSIANS):
-            applyDGaussiansFilter(targetImageSpecular->aux2_fbo,activeAux2FBO,activeAuxFBO,true);
-            applyContrastFilter(activeAuxFBO,targetImageSpecular->aux_fbo,true);
+            applyDGaussiansFilter(auxFBO3,auxFBO2,auxFBO1,true);
+            applyContrastFilter(auxFBO1,auxFBO4,true);
             break;
         case(SELECTIVE_BLUR_LEVELS):
-            applyHeightProcessingFilter(targetImageSpecular->aux2_fbo,targetImageSpecular->aux_fbo,true);
+            applyHeightProcessingFilter(auxFBO3,auxFBO4,true);
             break;
         };
 
-        // blur image according to mask: targetImageSpecular->aux_fbo
-        applyMaskedGaussFilter(activeFBO,targetImageSpecular->aux_fbo,targetImageSpecular->aux2_fbo,activeAux2FBO,activeAuxFBO);
-        copyFBO(activeAuxFBO,activeFBO);
+        // blur image according to mask: tauxFBO4
+        applyMaskedGaussFilter(activeFBO,auxFBO4,auxFBO3,auxFBO2,auxFBO1);
+        copyFBO(auxFBO1,activeFBO);
 
     } // end of selective blur
+
+
+
 
     // Removing shading...
     if(activeImage->bRemoveShading){
 
 
-        applyRemoveLowFreqFilter(activeFBO,activeAuxFBO,activeAux2FBO);
-        copyFBO(activeAux2FBO,activeFBO);
+        applyRemoveLowFreqFilter(activeFBO,auxFBO1,auxFBO2);
+        copyFBO(auxFBO2,activeFBO);
 
 
-        applyGaussFilter(activeFBO,activeAux2FBO,activeAuxFBO,1);
-        applyInverseColorFilter(activeAuxFBO,activeAux2FBO);
-        copyFBO(activeAux2FBO,activeAuxFBO);
-        applyOverlayFilter(activeFBO,activeAuxFBO,activeAux2FBO);
+        applyGaussFilter(activeFBO,auxFBO2,auxFBO1,1);
+        applyInverseColorFilter(auxFBO1,auxFBO2);
+        copyFBO(auxFBO2,auxFBO1);
+        applyOverlayFilter(activeFBO,auxFBO1,auxFBO2);
 
 
-
-
-
-        applyRemoveShadingFilter(activeAux2FBO,
+        applyRemoveShadingFilter(auxFBO2,
                                 targetImageOcclusion->fbo,
                                 activeFBO,
-                                activeAuxFBO);
+                                auxFBO1);
 
 
-        copyFBO(activeAuxFBO,activeFBO);
+        copyFBO(auxFBO1,activeFBO);
     }
+
+
+
+
 
     if(activeImage->noBlurPasses > 0){
         for(int i = 0 ; i < activeImage->noBlurPasses ; i++ ){
-            applyGaussFilter(activeFBO,activeAux2FBO,activeAuxFBO,1);
-            applyOverlayFilter(activeFBO,activeAuxFBO,activeAux2FBO);
-            copyFBO(activeAux2FBO,activeFBO);
+            applyGaussFilter(activeFBO,auxFBO2,auxFBO1,1);
+            applyOverlayFilter(activeFBO,auxFBO1,auxFBO2);
+            copyFBO(auxFBO2,activeFBO);
         }
     }
 
     if( activeImage->smallDetails  > 0.0){
-        applySmallDetailsFilter(activeFBO,activeAux2FBO,activeAuxFBO);
-        copyFBO(activeAuxFBO,activeFBO);
+        applySmallDetailsFilter(activeFBO,auxFBO2,auxFBO1);
+        copyFBO(auxFBO1,activeFBO);
     }
 
 
     if( activeImage->mediumDetails > 0.0){
-        applyMediumDetailsFilter(activeFBO,activeAux2FBO,activeAuxFBO);
-        copyFBO(activeAuxFBO,activeFBO);
+        applyMediumDetailsFilter(activeFBO,auxFBO2,auxFBO1);
+        copyFBO(auxFBO1,activeFBO);
     }
 
     if(activeImage->sharpenBlurAmount != 0){
-        applySharpenBlurFilter(activeFBO,activeAux2FBO,activeAuxFBO);
-        copyFBO(activeAuxFBO,activeFBO);
+        applySharpenBlurFilter(activeFBO,auxFBO2,auxFBO1);
+        copyFBO(auxFBO1,activeFBO);
     }
 
     if(activeImage->imageType != NORMAL_TEXTURE){
-        applyHeightProcessingFilter(activeFBO,activeAuxFBO);
-        copyFBO(activeAuxFBO,activeFBO);
+        applyHeightProcessingFilter(activeFBO,auxFBO1);
+        copyFBO(auxFBO1,activeFBO);
     }
 
     // -------------------------------------------------------- //
@@ -692,67 +682,55 @@ void GLImage::render(){
     if(activeImage->imageType == ROUGHNESS_TEXTURE ||
        activeImage->imageType == METALLIC_TEXTURE){
         if(activeImage->bRoughnessEnableColorPicking && !activeImage->bRoughnessColorPickingToggled){
-            applyRoughnessColorFilter(activeFBO,activeAuxFBO);
-            copyFBO(activeAuxFBO,activeFBO);
+            applyRoughnessColorFilter(activeFBO,auxFBO1);
+            copyFBO(auxFBO1,activeFBO);
         }
     }
     // -------------------------------------------------------- //
     // height processing pipeline
     // -------------------------------------------------------- //
-    if(activeImage->imageType == HEIGHT_TEXTURE){
-        // processing
 
-        //applyCPUNormalizationFilter(activeAuxFBO,activeFBO);
-        // conversion step
-        if(activeImage->bConversionHN){
-        //applyHeightToNormal(activeFBO,activeAuxFBO);
-        //copyFBO(activeAuxFBO,targetImageNormal->fbo);
-        }
-    }
     // -------------------------------------------------------- //
     // normal processing pipeline
     // -------------------------------------------------------- //
     if(activeImage->imageType == NORMAL_TEXTURE){
 
-        applyNormalsStepFilter(activeFBO,activeAuxFBO);
-        copyFBO(activeAuxFBO,activeFBO);
+        applyNormalsStepFilter(activeFBO,auxFBO1);
+        copyFBO(auxFBO1,activeFBO);
 
-        /*
-        // conversion
-        if(activeImage->bConversionNH){
-            applyNormalToHeight(activeImage,activeFBO,activeAux2FBO,activeAuxFBO);
-            applyCPUNormalizationFilter(activeAuxFBO,activeFBO);
-        }
-        */
     }
     // -------------------------------------------------------- //
     // diffuse processing pipeline
     // -------------------------------------------------------- //
     if(activeImage->imageType == DIFFUSE_TEXTURE && activeImage->bConversionBaseMap){
-        applyBaseMapConversion(activeFBO,activeAux2FBO,activeAuxFBO);
+        applyBaseMapConversion(activeFBO,auxFBO2,auxFBO1);
 
         if(conversionType == CONVERT_FROM_D_TO_O){
-            applyNormalToHeight(targetImageHeight,activeAuxFBO,activeFBO,activeAux2FBO);
-            applyCPUNormalizationFilter(activeAux2FBO,activeFBO);
+            applyNormalToHeight(targetImageHeight,auxFBO1,activeFBO,auxFBO2);
+            applyCPUNormalizationFilter(auxFBO2,activeFBO);
         }
 
-        copyFBO(activeFBO,activeAux2FBO);
-        copyFBO(activeAuxFBO,activeFBO);
+        copyFBO(activeFBO,auxFBO2);
+        copyFBO(auxFBO1,activeFBO);
 
 
     }
 
+
+
     }// end of skip standard processing
+
+
 
     // copying the conversion results to proper textures
     switch(conversionType){
         case(CONVERT_FROM_H_TO_N):
         if(activeImage->imageType == NORMAL_TEXTURE){
-            copyFBO(activeFBO,targetImageNormal->ref_fbo);
-            copyFBO(activeFBO,targetImageNormal->fbo);
+            //copyFBO(activeFBO,targetImageNormal->ref_fbo);
 
+            copyFBO(activeFBO,targetImageNormal->fbo);
             program->setUniformValue("gui_clear_alpha",1);
-            applyNormalFilter(targetImageNormal->ref_fbo,activeFBO);
+            applyNormalFilter(targetImageNormal->fbo,activeFBO);
             program->setUniformValue("gui_clear_alpha",0);
             targetImageNormal->updateSrcTexId(activeFBO);
         }
@@ -761,51 +739,55 @@ void GLImage::render(){
         case(CONVERT_FROM_N_TO_H):
             if(activeImage->imageType == HEIGHT_TEXTURE){
                 qDebug() << "Changing reference image of height";
-                //copyFBO(activeFBO,targetImageHeight->ref_fbo);
-                targetImageHeight->updateSrcTexId(targetImageHeight->ref_fbo);
+                //targetImageHeight->updateSrcTexId(targetImageHeight->ref_fbo);
             }
         break;
         case(CONVERT_FROM_D_TO_O):        
-        copyFBO(activeFBO,targetImageNormal->fbo);
-        copyFBO(activeFBO,targetImageNormal->ref_fbo);
+            copyFBO(activeFBO,targetImageNormal->fbo);
+            //copyFBO(activeFBO,targetImageNormal->ref_fbo);
 
-        program->setUniformValue("gui_clear_alpha",1);
-        applyNormalFilter(targetImageNormal->ref_fbo,activeFBO);
-        program->setUniformValue("gui_clear_alpha",0);
-        targetImageNormal->updateSrcTexId(activeFBO);
+            program->setUniformValue("gui_clear_alpha",1);
+            applyNormalFilter(targetImageNormal->fbo,activeFBO);
+            program->setUniformValue("gui_clear_alpha",0);
+            targetImageNormal->updateSrcTexId(activeFBO);
 
-        copyFBO(activeAux2FBO,targetImageHeight->ref_fbo);
-        copyFBO(activeAux2FBO,targetImageHeight->fbo);
-        targetImageHeight->updateSrcTexId(activeAux2FBO);
+            //copyFBO(auxFBO2,targetImageHeight->ref_fbo);
+            copyFBO(auxFBO2,targetImageHeight->fbo);
+            targetImageHeight->updateSrcTexId(auxFBO2);
 
+            copyTex2FBO(targetImageNormal->scr_tex_id,auxFBO2);
+            copyTex2FBO(targetImageHeight->scr_tex_id,auxFBO3);
+            applyCombineNormalHeightFilter(auxFBO2,auxFBO3,auxFBO1);
+            applyOcclusionFilter(auxFBO1,targetImageOcclusion->fbo);
 
-        applyCombineNormalHeightFilter(targetImageNormal->ref_fbo,targetImageHeight->ref_fbo,activeAuxFBO);
-        applyOcclusionFilter(activeAuxFBO,targetImageOcclusion->ref_fbo);
-        copyFBO(targetImageOcclusion->ref_fbo,targetImageOcclusion->fbo);
-        //copyFBO(targetImageHeight->fbo,targetImageOcclusion->ref_fbo);
-        targetImageOcclusion->updateSrcTexId(targetImageOcclusion->ref_fbo);
+            //copyFBO(targetImageOcclusion->ref_fbo,targetImageOcclusion->fbo);
+            //copyFBO(targetImageHeight->fbo,targetImageOcclusion->ref_fbo);
+            targetImageOcclusion->updateSrcTexId(targetImageOcclusion->fbo);
 
-        copyFBO(activeImage->ref_fbo,targetImageSpecular->ref_fbo);
-        copyFBO(activeImage->ref_fbo,targetImageSpecular->fbo);
-        targetImageSpecular->updateSrcTexId(activeImage->ref_fbo);
+            //copyFBO(activeImage->ref_fbo,targetImageSpecular->ref_fbo);
+            //copyFBO(activeImage->ref_fbo,targetImageSpecular->fbo);
+            copyTex2FBO(activeImage->scr_tex_id,targetImageSpecular->fbo);
+            targetImageSpecular->updateSrcTexId(targetImageSpecular->fbo);
 
-        copyFBO(activeImage->ref_fbo,targetImageRoughness->ref_fbo);
-        copyFBO(activeImage->ref_fbo,targetImageRoughness->fbo);
-        targetImageRoughness->updateSrcTexId(activeImage->ref_fbo);
+           // copyFBO(activeImage->ref_fbo,targetImageRoughness->ref_fbo);
+            //copyFBO(activeImage->ref_fbo,targetImageRoughness->fbo);
+            copyTex2FBO(activeImage->scr_tex_id,targetImageRoughness->fbo);
+            targetImageRoughness->updateSrcTexId(targetImageRoughness->fbo);
 
-        copyFBO(activeImage->ref_fbo,targetImageMetallic->ref_fbo);
-        copyFBO(activeImage->ref_fbo,targetImageMetallic->fbo);
-        targetImageMetallic->updateSrcTexId(activeImage->ref_fbo);
+            //copyFBO(activeImage->ref_fbo,targetImageMetallic->ref_fbo);
+            //copyFBO(activeImage->ref_fbo,targetImageMetallic->fbo);
+            copyTex2FBO(activeImage->scr_tex_id,targetImageMetallic->fbo);
+            targetImageMetallic->updateSrcTexId(targetImageMetallic->fbo);
 
         break;
         case(CONVERT_FROM_HN_TO_OC):
-        copyFBO(activeFBO,targetImageOcclusion->ref_fbo);
-        copyFBO(activeFBO,targetImageOcclusion->fbo);
+            //copyFBO(activeFBO,targetImageOcclusion->ref_fbo);
+            copyFBO(activeFBO,targetImageOcclusion->fbo);
 
-        program->setUniformValue("gui_clear_alpha",1);
-        applyNormalFilter(targetImageOcclusion->ref_fbo,activeFBO);
-        program->setUniformValue("gui_clear_alpha",0);
-        targetImageOcclusion->updateSrcTexId(activeFBO);
+            program->setUniformValue("gui_clear_alpha",1);
+            applyNormalFilter(targetImageOcclusion->fbo,activeFBO);
+            program->setUniformValue("gui_clear_alpha",0);
+            targetImageOcclusion->updateSrcTexId(activeFBO);
 
         break;
 
@@ -814,22 +796,18 @@ void GLImage::render(){
     }
 
 
+
     activeFBO = activeImage->fbo;
     GLCHK( program->setUniformValue("gui_clear_alpha",1) );
-    applyNormalFilter(activeFBO,activeAuxFBO);
+    applyNormalFilter(activeFBO,auxFBO1);
     GLCHK( program->setUniformValue("gui_clear_alpha",0) );
-    copyFBO(activeAuxFBO,activeFBO);
+    copyFBO(auxFBO1,activeFBO);
 
     //qDebug() << PostfixNames::getTextureName(activeImage->imageType) << " output";
 
     }// end of skip processing
 
-    /*
-    // In case of preview mode show the other texture
-    if(activeImage->bConversionHN){
-        activeFBO = targetImageNormal->fbo;
-    }
-    */
+
 
     if(!bShadowRender){
         // Displaying new image
@@ -1269,21 +1247,23 @@ void GLImage::applySeamlessLinearFilter(QGLFramebufferObject* inputFBO,
     switch(FBOImageProporties::seamlessContrastInputType){
         default:
         case(INPUT_FROM_HEIGHT_INPUT):
-            copyFBO(targetImageHeight->ref_fbo,activeImage->aux2_fbo);
+            //copyFBO(targetImageHeight->ref_fbo,activeImage->aux2_fbo);
+            copyTex2FBO(targetImageHeight->scr_tex_id,auxFBO1);
             break;
         case(INPUT_FROM_DIFFUSE_INPUT):
-            copyFBO(targetImageDiffuse->ref_fbo,activeImage->aux2_fbo);
+            //copyFBO(targetImageDiffuse->ref_fbo,activeImage->aux2_fbo);
+            copyTex2FBO(targetImageDiffuse->scr_tex_id,auxFBO1);
             break;
     };
 
     // when translations are applied first one has to translate
     // alse the contrast mask image
     if(FBOImageProporties::bSeamlessTranslationsFirst){
-      applyPerspectiveTransformFilter(activeImage->aux2_fbo,outputFBO);// the output is save to activeaux2FBO
+        applyPerspectiveTransformFilter(auxFBO1,outputFBO);// the output is save to auxFBO2
     }
 
     GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, activeImage->aux2_fbo->texture()) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO1->texture()) );
 
 
     GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_seamless_linear_filter"]) );
@@ -1352,18 +1332,18 @@ void GLImage::applySeamlessFilter(QGLFramebufferObject* inputFBO,
 
     switch(FBOImageProporties::seamlessContrastInputType){
         default:
-        case(INPUT_FROM_HEIGHT_INPUT):
-            copyFBO(targetImageHeight->ref_fbo,activeImage->aux2_fbo);
+        case(INPUT_FROM_HEIGHT_INPUT):            
+            copyTex2FBO(targetImageHeight->scr_tex_id,auxFBO1);
             break;
-        case(INPUT_FROM_DIFFUSE_INPUT):
-            copyFBO(targetImageDiffuse->ref_fbo,activeImage->aux2_fbo);
+        case(INPUT_FROM_DIFFUSE_INPUT):            
+            copyTex2FBO(targetImageDiffuse->scr_tex_id,auxFBO1);
             break;
     };
 
     // when translations are applied first one has to translate
     // alse the contrast mask image
     if(FBOImageProporties::bSeamlessTranslationsFirst){
-      applyPerspectiveTransformFilter(activeImage->aux2_fbo,outputFBO);// the output is save to activeaux2FBO
+      applyPerspectiveTransformFilter(auxFBO1,outputFBO);// the output is save to auxFBO2
     }
 
 
@@ -1389,7 +1369,7 @@ void GLImage::applySeamlessFilter(QGLFramebufferObject* inputFBO,
 
 
     GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, activeImage->aux2_fbo->texture()) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO1->texture()) );
 
 
     GLCHK( outputFBO->bind() );
@@ -2061,6 +2041,19 @@ void GLImage::applyRoughnessColorFilter(QGLFramebufferObject* inputFBO,
 
 void GLImage::copyFBO(QGLFramebufferObject* src,QGLFramebufferObject* dst){
     src->blitFramebuffer(dst,QRect(QPoint(0,0),src->size()),src,QRect(QPoint(0,0),dst->size()));
+}
+
+void GLImage::copyTex2FBO(GLuint src_tex_id,QGLFramebufferObject* dst){
+    GLCHK( dst->bind() );
+    GLCHK( glViewport(0,0,dst->width(),dst->height()) );
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( program->setUniformValue("gui_clear_alpha", 1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, src_tex_id) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( program->setUniformValue("gui_clear_alpha", 0) );
+    dst->bindDefault();
 }
 
 void GLImage::makeScreenQuad()

@@ -43,7 +43,7 @@
 #include <QGLFormat>
 #include <QtDebug>
 #include "mainwindow.h"
-
+#include "CommonObjects.h"
 #include "glimageeditor.h"
 
 // Redirect qDebug() to file log.txt file.

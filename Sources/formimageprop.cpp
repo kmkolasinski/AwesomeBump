@@ -616,7 +616,8 @@ void FormImageProp::applyHeightNormalToOcclusionConversion(){
 
 void FormImageProp::showHeightCalculatorDialog(){
 
-     heightCalculator->setImageSize(imageProp.ref_fbo->width(),imageProp.ref_fbo->height());
+     //heightCalculator->setImageSize(imageProp.ref_fbo->width(),imageProp.ref_fbo->height());
+     heightCalculator->setImageSize(imageProp.fbo->width(),imageProp.fbo->height());
      unsigned int result = heightCalculator->exec();
      if(result == QDialog::Accepted){
         ui->horizontalSliderConversionHNDepth->setValue(heightCalculator->getDepthInPixels()*5);

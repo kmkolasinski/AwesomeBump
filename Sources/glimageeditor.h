@@ -216,6 +216,7 @@ public:
                                    QGLFramebufferObject* outputFBO);
 
     void copyFBO(QGLFramebufferObject* src,QGLFramebufferObject* dst);
+    void copyTex2FBO(GLuint src_tex_id,QGLFramebufferObject* dst);
 
 //! [3]
 private:
@@ -226,6 +227,11 @@ private:
     QGLFramebufferObject* averageColorFBO; // small FBO used for calculation of average color
     QGLFramebufferObject* samplerFBO1; // FBO with size 1024x1024
     QGLFramebufferObject* samplerFBO2; // FBO with size 1024x1024 used for different processing
+    // FBOs used in image processing
+    QGLFramebufferObject* auxFBO1;
+    QGLFramebufferObject* auxFBO2;
+    QGLFramebufferObject* auxFBO3;
+    QGLFramebufferObject* auxFBO4;
 
     std::map<std::string,GLuint> subroutines;
 
