@@ -221,11 +221,7 @@ void GLImage::render(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
 
     QGLFramebufferObject* activeFBO     = activeImage->fbo;
-    // create or resize when image was changed
-    FBOImages::resize(auxFBO1,activeFBO);
-    FBOImages::resize(auxFBO2,activeFBO);
-    FBOImages::resize(auxFBO3,activeFBO);
-    FBOImages::resize(auxFBO4,activeFBO);
+
 
 
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
@@ -247,15 +243,19 @@ void GLImage::render(){
             activeImage->resizeFBO(resize_width,resize_height);
             // pointers were changed in resize function
             activeFBO  = activeImage->fbo;
-            FBOImages::resize(auxFBO1,activeFBO);
-            FBOImages::resize(auxFBO2,activeFBO);
-            FBOImages::resize(auxFBO3,activeFBO);
-            FBOImages::resize(auxFBO4,activeFBO);
+
             bSkipStandardProcessing = true;
         break;
         default:
         break;
     }
+
+
+    // create or resize when image was changed
+    FBOImages::resize(auxFBO1,activeFBO->width(),activeFBO->height());
+    FBOImages::resize(auxFBO2,activeFBO->width(),activeFBO->height());
+    FBOImages::resize(auxFBO3,activeFBO->width(),activeFBO->height());
+    FBOImages::resize(auxFBO4,activeFBO->width(),activeFBO->height());
 
     GLCHK( program->bind() );
     GLCHK( program->setUniformValue("gui_image_type", activeImage->imageType) );
@@ -844,8 +844,8 @@ void GLImage::resizeFBO(int width, int height){
      conversionType = CONVERT_RESIZE;
      resize_width   = width;
      resize_height  = height;
-     updateGL();
-     conversionType = CONVERT_NONE;
+     //updateGL();
+     //conversionType = CONVERT_NONE;
 }
 
 void GLImage::resetView(){

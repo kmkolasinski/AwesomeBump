@@ -21,7 +21,7 @@
     #define AB_LOG_ALT "log.txt"
 #endif
 
-#define AWESOME_BUMP_VERSION "AwesomeBump v3.0.2 "
+#define AWESOME_BUMP_VERSION "AwesomeBump v3.0.3 "
 
 using namespace std;
 

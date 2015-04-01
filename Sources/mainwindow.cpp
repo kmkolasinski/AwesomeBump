@@ -1015,8 +1015,9 @@ void MainWindow::applyResizeImage(){
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
-        updateImage(i);
         glImage->resizeFBO(width,height);
+        updateImage(i);
+
     }
     glImage->enableShadowRender(false);
     glImage->setActiveImage(lastActive);
@@ -1034,8 +1035,8 @@ void MainWindow::applyResizeImage(int width, int height){
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
-        updateImage(i);
         glImage->resizeFBO(width,height);
+        updateImage(i);
     }
     glImage->enableShadowRender(false);
     glImage->setActiveImage(lastActive);
@@ -1067,8 +1068,8 @@ void MainWindow::applyScaleImage(){
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
-        updateImage(i);
         glImage->resizeFBO(width,height);
+        updateImage(i);
     }
     glImage->enableShadowRender(false);
     glImage->setActiveImage(lastActive);
