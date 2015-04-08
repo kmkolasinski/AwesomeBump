@@ -57,11 +57,11 @@ uniform vec2 corner2;
 uniform vec2 corner3;
 uniform vec2 corner4;
 
-const mat3 sobel_kernel  = mat3(
-                        -1.0, 0.0, +1.0,
-                        -2.0, 0.0, +2.0,
-                        -1.0, 0.0, +1.0
-                                );
+mat3 sobel_kernel  = mat3(
+                    -1.0, 0.0, +1.0,
+                    -2.0, 0.0, +2.0,
+                    -1.0, 0.0, +1.0
+                            );
 
 // ----------------------------------------------------------------
 //
