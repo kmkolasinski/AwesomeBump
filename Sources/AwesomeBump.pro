@@ -17,7 +17,8 @@ HEADERS       = glwidget.h \
     formsettingsfield.h \
     formsettingscontainer.h \
     utils/qglbuffers.h \
-    dialoglogger.h
+    dialoglogger.h \
+    glwidgetbase.h
 
 SOURCES       = glwidget.cpp \
                 main.cpp \
@@ -32,7 +33,8 @@ SOURCES       = glwidget.cpp \
     formsettingsfield.cpp \
     formsettingscontainer.cpp \
     utils/qglbuffers.cpp \
-    dialoglogger.cpp
+    dialoglogger.cpp \
+    glwidgetbase.cpp
 
 
 # install

@@ -42,9 +42,10 @@
 ****************************************************************************/
 
 #include <QWidget>
-#include <QGLWidget>
 #include <QtOpenGL>
 #include <QOpenGLFunctions_4_0_Core>
+
+#include "glwidgetbase.h"
 
 #include <math.h>
 #include <map>
@@ -54,7 +55,7 @@ QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 
 
 //! [0]
-class GLImage : public QGLWidget , protected QOpenGLFunctions_4_0_Core
+class GLImage : public GLWidgetBase , protected QOpenGLFunctions_4_0_Core
 {
     Q_OBJECT
 
@@ -96,7 +97,7 @@ signals:
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void relativeMouseMoveEvent(int dx, int dy, bool *wrapMouse, Qt::MouseButtons buttons);
     void wheelEvent(QWheelEvent *event);
     void updateMousePosition();
     void showEvent(QShowEvent* event);
@@ -241,7 +242,6 @@ private:
     bool bSkipProcessing;   // draw quad but skip all the processing step (using during mouse interaction)
     float windowRatio;      // window width-height ratio
     float fboRatio;         // active fbo width-height ratio
-    QPoint lastCursorPos;
 
     // Image resize
     int resize_width;

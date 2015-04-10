@@ -42,7 +42,7 @@
 
 
 GLImage::GLImage(QWidget *parent)
-    : QGLWidget(QGLFormat::defaultFormat(), parent)
+    : GLWidgetBase(QGLFormat::defaultFormat(), parent)
 
 {
     bShadowRender         = false;
@@ -65,7 +65,6 @@ GLImage::GLImage(QWidget *parent)
     cornerCursors[1] = QCursor(QPixmap(":/resources/corner2.png"));
     cornerCursors[2] = QCursor(QPixmap(":/resources/corner3.png"));
     cornerCursors[3] = QCursor(QPixmap(":/resources/corner4.png"));
-    setMouseTracking(true);
 }
 
 GLImage::~GLImage()
@@ -2154,9 +2153,9 @@ void GLImage::wheelEvent(QWheelEvent *event){
     updateGL();
 }
 
-void GLImage::mouseMoveEvent(QMouseEvent *event)
+void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, Qt::MouseButtons buttons)
 {
-    if(activeImage->imageType == OCCLUSION_TEXTURE && event->buttons() & Qt::LeftButton){
+    if(activeImage->imageType == OCCLUSION_TEXTURE && buttons & Qt::LeftButton){
         QMessageBox msgBox;
         msgBox.setText("Warning!");
         msgBox.setInformativeText("Sorry, but you cannot modify UV's mapping of occlusion texture. Try Diffuse or height texture.");
@@ -2164,7 +2163,7 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
         msgBox.exec();
         return;
     }
-    if(activeImage->imageType == NORMAL_TEXTURE && (event->buttons() & Qt::LeftButton)){
+    if(activeImage->imageType == NORMAL_TEXTURE && (buttons & Qt::LeftButton)){
         QMessageBox msgBox;
         msgBox.setText("Warning!");
         msgBox.setInformativeText("Sorry, but you cannot modify UV's mapping of normal texture. Try Diffuse or height texture.");
@@ -2172,7 +2171,7 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
         msgBox.exec();
         return;
     }
-    if(activeImage->imageType == METALLIC_TEXTURE && (event->buttons() & Qt::LeftButton)){
+    if(activeImage->imageType == METALLIC_TEXTURE && (buttons & Qt::LeftButton)){
         QMessageBox msgBox;
         msgBox.setText("Warning!");
         msgBox.setInformativeText("Sorry, but you cannot modify UV's mapping of metallic texture. Try Diffuse or height texture.");
@@ -2181,7 +2180,7 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
-    if(activeImage->imageType == ROUGHNESS_TEXTURE && (event->buttons() & Qt::LeftButton)){
+    if(activeImage->imageType == ROUGHNESS_TEXTURE && (buttons & Qt::LeftButton)){
         QMessageBox msgBox;
         msgBox.setText("Warning!");
         msgBox.setInformativeText("Sorry, but you cannot modify UV's mapping of roughness texture. Try Diffuse or height texture.");
@@ -2189,7 +2188,7 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
         msgBox.exec();
         return;
     }
-    if(activeImage->imageType == SPECULAR_TEXTURE && (event->buttons() & Qt::LeftButton)){
+    if(activeImage->imageType == SPECULAR_TEXTURE && (buttons & Qt::LeftButton)){
         QMessageBox msgBox;
         msgBox.setText("Warning!");
         msgBox.setInformativeText("Sorry, but you cannot modify UV's mapping of specular texture. Try Diffuse or height texture.");
@@ -2197,10 +2196,6 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
         msgBox.exec();
         return;
     }
-
-    int dx = event->x() - lastCursorPos.x();
-    int dy = event->y() - lastCursorPos.y();
-    lastCursorPos = event->pos();
 
     QVector2D defCorners[4];//default position of corners
     defCorners[0] = QVector2D(0,0) ;
@@ -2213,7 +2208,7 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
     switch(uvManilupationMethod){
         // translate UV coordinates
         case(UV_TRANSLATE):
-            if(event->buttons() & Qt::LeftButton){ // drag image
+            if(buttons & Qt::LeftButton){ // drag image
                 setCursor(Qt::SizeAllCursor);
                 // move all corners
                 QVector2D averagePos(0.0,0.0);
@@ -2236,7 +2231,7 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
                 }
             }
             }// end if dragging
-            if(event->buttons() & Qt::LeftButton){
+            if(buttons & Qt::LeftButton){
             // calculate distance from corners
             if(draggingCorner == -1){
             for(int i = 0; i < 4 ; i++){
@@ -2252,7 +2247,7 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
         break;
         case(UV_SCALE_XY):
             setCursor(Qt::OpenHandCursor);
-            if(event->buttons() & Qt::LeftButton){ // drag image
+            if(buttons & Qt::LeftButton){ // drag image
                 setCursor(Qt::SizeAllCursor);
                 QVector2D dmouse = QVector2D(-dx*(float(orthographicProjWidth)/width()),dy*(float(orthographicProjHeight)/height()));
                 cornerWeights.setX(cornerWeights.x()-dmouse.x());
@@ -2266,31 +2261,14 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
 
 
 
-    if (event->buttons() & Qt::RightButton){
+    if (buttons & Qt::RightButton){
         xTranslation += dx*(float(orthographicProjWidth)/width());
         yTranslation -= dy*(float(orthographicProjHeight)/height());
         setCursor(Qt::ClosedHandCursor);
     }
 
     // mouse looping in 2D view window
-    if (event->buttons() & Qt::RightButton || event->buttons() & Qt::LeftButton ){
-        if(event->x() > width()-10){
-            lastCursorPos.setX(10);
-        }
-        if(event->x() < 10){
-            lastCursorPos.setX(width()-10);
-        }
-        if(event->y() > height()-10){
-            lastCursorPos.setY(10);
-        }
-        if(event->y() < 10){
-            lastCursorPos.setY(height()-10);
-        }
-
-        QCursor c = cursor();
-        c.setPos(mapToGlobal(lastCursorPos));
-        setCursor(c);
-    }
+    *wrapMouse = (buttons & Qt::RightButton || buttons & Qt::LeftButton );
 
 
     updateMousePosition();
@@ -2302,8 +2280,8 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
 }
 void GLImage::mousePressEvent(QMouseEvent *event)
 {
+    GLWidgetBase::mousePressEvent(event);
 
-    lastCursorPos = event->pos();
     bSkipProcessing = true;
     draggingCorner = -1;
     // change cursor
