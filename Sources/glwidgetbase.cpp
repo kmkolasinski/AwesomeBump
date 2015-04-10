@@ -4,7 +4,8 @@
 
 GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget * shareWidget)
     : QGLWidget(format, parent, shareWidget),
-      updateIsQueued(false)
+      updateIsQueued(false),
+      eventLoopStarted(false)
 {
     connect(this, &GLWidgetBase::updateGLLater, this, &GLWidgetBase::updateGLNow, Qt::QueuedConnection);
 }
@@ -30,6 +31,13 @@ void GLWidgetBase::updateGL()
         updateIsQueued = true;
         updateGLLater();
     }
+
+    // Workaround: When the viewport gets drawn for the first time, the rendering
+    // has to be done multiple times for the end result to look correct.
+    // This workaround passes every drawcall, until mouse events are received for
+    // the first time.
+    if(!eventLoopStarted)
+        updateGLNow();
 }
 
 void GLWidgetBase::mousePressEvent(QMouseEvent *event)
@@ -71,4 +79,6 @@ void GLWidgetBase::mouseMoveEvent(QMouseEvent *event)
 
         updateGL();
     }
+
+    eventLoopStarted = true;
 }

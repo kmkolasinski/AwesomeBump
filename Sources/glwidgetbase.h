@@ -32,6 +32,7 @@ private slots:
 private:
     QPoint lastCursorPos;
     bool updateIsQueued;
+    bool eventLoopStarted;
 };
 
 #endif // GLWIDGETBASE_H
