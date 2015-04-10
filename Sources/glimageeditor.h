@@ -97,7 +97,7 @@ signals:
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-    void relativeMouseMoveEvent(int dx, int dy, bool *wrapMouse, QMouseEvent *event);
+    void relativeMouseMoveEvent(int dx, int dy, bool *wrapMouse, Qt::MouseButtons buttons);
     void wheelEvent(QWheelEvent *event);
     void updateMousePosition();
     void showEvent(QShowEvent* event);

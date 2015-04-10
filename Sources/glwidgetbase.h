@@ -22,17 +22,26 @@ public:
 
 signals:
     void updateGLLater();
+    void handleAccumulatedMouseMovementLater();
 
 protected:
-    virtual void relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, QMouseEvent* Event) = 0;
+    virtual void relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, Qt::MouseButtons buttons) = 0;
 
 private slots:
     void updateGLNow();
+    void handleAccumulatedMouseMovement();
 
 private:
+    void handleMovement();
+
     QPoint lastCursorPos;
     bool updateIsQueued;
+    bool mouseUpdateIsQueued;
+    bool blockMouseMovement;
     bool eventLoopStarted;
+
+    int dx, dy;
+    Qt::MouseButtons buttons;
 };
 
 #endif // GLWIDGETBASE_H

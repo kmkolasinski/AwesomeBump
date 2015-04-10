@@ -642,15 +642,15 @@ int GLWidget::glhUnProjectf(float& winx, float& winy, float& winz,
       return 1;
   }
 
-void GLWidget::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, QMouseEvent *event)
+void GLWidget::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, Qt::MouseButtons buttons)
 {
-    if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton)) {
+    if ((buttons & Qt::LeftButton) && (buttons & Qt::RightButton)) {
 
-    }else if (event->buttons() & Qt::LeftButton) {
+    }else if (buttons & Qt::LeftButton) {
         camera.rotateView(dx/1.0,dy/1.0);
-    } else if (event->buttons() & Qt::RightButton) {
+    } else if (buttons & Qt::RightButton) {
         camera.position +=QVector3D(dx/500.0,dy/500.0,0)*camera.radius;
-    } else if (event->buttons() & Qt::MiddleButton) {
+    } else if (buttons & Qt::MiddleButton) {
 
         lightPosition += QVector4D(0.05*dx,-0.05*dy,-0,0);
         if(lightPosition.x() > +10.0) lightPosition.setX(+10.0);

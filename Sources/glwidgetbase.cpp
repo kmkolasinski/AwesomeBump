@@ -5,9 +5,14 @@
 GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget * shareWidget)
     : QGLWidget(format, parent, shareWidget),
       updateIsQueued(false),
-      eventLoopStarted(false)
+      mouseUpdateIsQueued(false),
+      eventLoopStarted(false),
+      dx(0),
+      dy(0),
+      buttons(0)
 {
     connect(this, &GLWidgetBase::updateGLLater, this, &GLWidgetBase::updateGLNow, Qt::QueuedConnection);
+    connect(this, &GLWidgetBase::handleAccumulatedMouseMovementLater, this, &GLWidgetBase::handleAccumulatedMouseMovement, Qt::QueuedConnection);
     setMouseTracking(true);
 }
 
@@ -44,39 +49,94 @@ void GLWidgetBase::updateGL()
 void GLWidgetBase::mousePressEvent(QMouseEvent *event)
 {
     lastCursorPos = event->pos();
+
+    // reset the mouse handling state with, to avoid a bad state
+    blockMouseMovement = false;
+    mouseUpdateIsQueued = false;
 }
 
 void GLWidgetBase::mouseMoveEvent(QMouseEvent *event)
 {
-    int dx = event->x() - lastCursorPos.x();
-    int dy = event->y() - lastCursorPos.y();
+    if(blockMouseMovement)
+    {
+        // If the mouse was wrapped manually, ignore all mouse events until
+        // the event caused by wrapping itself appears to avoid flickering.
+        if(event->pos() != lastCursorPos)
+            return;
+        blockMouseMovement = false;
+    }
+
+    // Accumulate the mouse events
+    dx += event->x() - lastCursorPos.x();
+    dy += event->y() - lastCursorPos.y();
+    buttons |= event->buttons();
+
+    lastCursorPos = event->pos();
+
+    // Don't handle mouse movements directly, instead accumulate all queued mouse
+    // movements and execute all at once.
+    handleMovement();
+}
+
+void GLWidgetBase::handleMovement()
+{
+    // mouseUpdateIsQueued is used to make sure to only handle the accumulated
+    // mouse events once.
+    if(mouseUpdateIsQueued == false)
+    {
+        mouseUpdateIsQueued = true;
+
+        // Queue handling teh accumulated mouse events at a later point in time
+        handleAccumulatedMouseMovementLater();
+    }
+}
+
+void GLWidgetBase::handleAccumulatedMouseMovement()
+{
+    // As we are handling all queued mouse events, we can accumulate new events
+    // from now on
+    mouseUpdateIsQueued = false;
+
     bool wrapMouse = true;
 
-    relativeMouseMoveEvent(dx, dy, &wrapMouse, event);
+    relativeMouseMoveEvent(dx, dy, &wrapMouse, buttons);
 
-#ifndef Q_OS_LINUX
-    lastCursorPos = event->pos();
-#endif
-    // mouse looping in view window
+    dx = 0;
+    dy = 0;
+    buttons = 0;
 
     if(wrapMouse){
-        if(event->x() > width()-10){
+
+        bool changed = false;
+
+        if(lastCursorPos.x() > width()-10){
             lastCursorPos.setX(10);
+            changed = true;
         }
-        if(event->x() < 10){
+        if(lastCursorPos.x() < 10){
             lastCursorPos.setX(width()-10);
+            changed = true;
         }
 
-        if(event->y() > height()-10){
+        if(lastCursorPos.y() > height()-10){
             lastCursorPos.setY(10);
+            changed = true;
         }
-        if(event->y() < 10){
+        if(lastCursorPos.y() < 10){
             lastCursorPos.setY(height()-10);
+            changed = true;
         }
 
-        QCursor c = cursor();
-        c.setPos(mapToGlobal(lastCursorPos));
-        setCursor(c);
+        if(changed)
+        {
+            QCursor c = cursor();
+            c.setPos(mapToGlobal(lastCursorPos));
+            setCursor(c);
+
+            // There will be mouse events, which were queued before the mouse
+            // cursor was set. We have to ignore that events to avoid flickering.
+            blockMouseMovement = true;
+        }
 
         updateGL();
     }
