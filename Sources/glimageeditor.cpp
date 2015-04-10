@@ -2154,7 +2154,7 @@ void GLImage::wheelEvent(QWheelEvent *event){
     updateGL();
 }
 
-void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, QMouseEvent *event)
+void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, QMouseEvent *event)
 {
     if(activeImage->imageType == OCCLUSION_TEXTURE && event->buttons() & Qt::LeftButton){
         QMessageBox msgBox;
@@ -2269,7 +2269,7 @@ void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, QMouse
     }
 
     // mouse looping in 2D view window
-    *bMouseDragged = (event->buttons() & Qt::RightButton || event->buttons() & Qt::LeftButton );
+    *wrapMouse = (event->buttons() & Qt::RightButton || event->buttons() & Qt::LeftButton );
 
 
     updateMousePosition();

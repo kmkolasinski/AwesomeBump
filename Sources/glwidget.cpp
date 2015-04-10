@@ -643,7 +643,7 @@ int GLWidget::glhUnProjectf(float& winx, float& winy, float& winz,
       return 1;
   }
 
-void GLWidget::relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, QMouseEvent *event)
+void GLWidget::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, QMouseEvent *event)
 {
     if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton)) {
 
@@ -660,7 +660,7 @@ void GLWidget::relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, QMous
         if(lightPosition.y() < -10.0) lightPosition.setY(-10.0);
         lightDirection.rotateView(-2*dx/1.0,2*dy/1.0);
     }else{
-        *bMouseDragged = false;
+        *wrapMouse = false;
     }
 }
 //! [10]

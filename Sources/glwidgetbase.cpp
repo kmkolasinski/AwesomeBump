@@ -42,14 +42,14 @@ void GLWidgetBase::mouseMoveEvent(QMouseEvent *event)
 {
     int dx = event->x() - lastCursorPos.x();
     int dy = event->y() - lastCursorPos.y();
-    bool bMouseDragged = true;
+    bool wrapMouse = true;
 
-    relativeMouseMoveEvent(dx, dy, &bMouseDragged, event);
+    relativeMouseMoveEvent(dx, dy, &wrapMouse, event);
 
     lastCursorPos = event->pos();
     // mouse looping in view window
 
-    if(bMouseDragged){
+    if(wrapMouse){
         if(event->x() > width()-10){
             lastCursorPos.setX(10);
         }
