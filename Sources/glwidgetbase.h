@@ -27,8 +27,10 @@ signals:
 protected:
     virtual void relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, Qt::MouseButtons buttons) = 0;
 
-private slots:
+public slots:
     void updateGLNow();
+
+private slots:
     void handleAccumulatedMouseMovement();
 
 private:
