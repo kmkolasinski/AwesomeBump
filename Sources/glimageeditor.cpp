@@ -42,7 +42,7 @@
 
 
 GLImage::GLImage(QWidget *parent)
-    : QGLWidget(QGLFormat::defaultFormat(), parent)
+    : GLWidgetBase(QGLFormat::defaultFormat(), parent)
 
 {
     bShadowRender         = false;

@@ -42,9 +42,10 @@
 ****************************************************************************/
 
 #include <QWidget>
-#include <QGLWidget>
 #include <QtOpenGL>
 #include <QOpenGLFunctions_4_0_Core>
+
+#include "glwidgetbase.h"
 
 #include <math.h>
 #include <map>
@@ -54,7 +55,7 @@ QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 
 
 //! [0]
-class GLImage : public QGLWidget , protected QOpenGLFunctions_4_0_Core
+class GLImage : public GLWidgetBase , protected QOpenGLFunctions_4_0_Core
 {
     Q_OBJECT
 

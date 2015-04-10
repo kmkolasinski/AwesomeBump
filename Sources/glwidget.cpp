@@ -45,7 +45,7 @@
 QDir* GLWidget::recentMeshDir = NULL;
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
-    : QGLWidget(QGLFormat::defaultFormat(), parent, shareWidget)
+    : GLWidgetBase(QGLFormat::defaultFormat(), parent, shareWidget)
 {
     zoom                    = 60;
     lightPosition           = QVector4D(0,0,5.0,1);

@@ -49,13 +49,14 @@
 #include "camera.h"
 #include "utils/Mesh.hpp"
 #include "utils/qglbuffers.h"
+#include "glwidgetbase.h"
 #include "glimageeditor.h"
 #include <QOpenGLFunctions_4_0_Core>
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 
 
-class GLWidget : public QGLWidget , protected QOpenGLFunctions_4_0_Core
+class GLWidget : public GLWidgetBase , protected QOpenGLFunctions_4_0_Core
 {
     Q_OBJECT
 
