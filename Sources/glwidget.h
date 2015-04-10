@@ -49,13 +49,14 @@
 #include "camera.h"
 #include "utils/Mesh.hpp"
 #include "utils/qglbuffers.h"
+#include "glwidgetbase.h"
 #include "glimageeditor.h"
 #include <QOpenGLFunctions_4_0_Core>
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 
 
-class GLWidget : public QGLWidget , protected QOpenGLFunctions_4_0_Core
+class GLWidget : public GLWidgetBase , protected QOpenGLFunctions_4_0_Core
 {
     Q_OBJECT
 
@@ -111,7 +112,7 @@ protected:
     
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void relativeMouseMoveEvent(int dx, int dy, bool *wrapMouse, Qt::MouseButtons buttons);
     void wheelEvent(QWheelEvent *event);
 
 
@@ -164,7 +165,6 @@ private:
     QVector4D cursorPositionOnPlane;
     float ratio;
     float zoom;
-    QPoint lastPos;    
     AwesomeCamera camera;   // light used for standard phong shading
     AwesomeCamera lightDirection;//second light - use camera class to rotate light
     QCursor lightCursor;

@@ -45,7 +45,7 @@
 QDir* GLWidget::recentMeshDir = NULL;
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
-    : QGLWidget(QGLFormat::defaultFormat(), parent, shareWidget)
+    : GLWidgetBase(QGLFormat::defaultFormat(), parent, shareWidget)
 {
     zoom                    = 60;
     lightPosition           = QVector4D(0,0,5.0,1);
@@ -67,7 +67,6 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     lightRadius             = 0.1;
     m_env_map               = NULL;
 
-    setMouseTracking(true);
     setCursor(Qt::PointingHandCursor);
     lightCursor = QCursor(QPixmap(":/resources/lightCursor.png"));
 
@@ -595,7 +594,8 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    lastPos = event->pos();
+    GLWidgetBase::mousePressEvent(event);
+
     setCursor(Qt::ClosedHandCursor);
     if (event->buttons() & Qt::RightButton) {
         setCursor(Qt::SizeAllCursor);
@@ -642,19 +642,15 @@ int GLWidget::glhUnProjectf(float& winx, float& winy, float& winz,
       return 1;
   }
 
-void GLWidget::mouseMoveEvent(QMouseEvent *event)
+void GLWidget::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, Qt::MouseButtons buttons)
 {
+    if ((buttons & Qt::LeftButton) && (buttons & Qt::RightButton)) {
 
-    int dx = event->x() - lastPos.x();
-    int dy = event->y() - lastPos.y();
-    bool bMouseDragged = true;
-    if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton)) {
-
-    }else if (event->buttons() & Qt::LeftButton) {
+    }else if (buttons & Qt::LeftButton) {
         camera.rotateView(dx/1.0,dy/1.0);
-    } else if (event->buttons() & Qt::RightButton) {
+    } else if (buttons & Qt::RightButton) {
         camera.position +=QVector3D(dx/500.0,dy/500.0,0)*camera.radius;
-    } else if (event->buttons() & Qt::MiddleButton) {
+    } else if (buttons & Qt::MiddleButton) {
 
         lightPosition += QVector4D(0.05*dx,-0.05*dy,-0,0);
         if(lightPosition.x() > +10.0) lightPosition.setX(+10.0);
@@ -663,35 +659,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         if(lightPosition.y() < -10.0) lightPosition.setY(-10.0);
         lightDirection.rotateView(-2*dx/1.0,2*dy/1.0);
     }else{
-        bMouseDragged = false;
+        *wrapMouse = false;
     }
-
-    lastPos = event->pos();
-    // mouse looping in 3D view window
-    if(bMouseDragged){        
-        if(event->x() > width()-10){
-            lastPos.setX(10);
-        }
-        if(event->x() < 10){
-            lastPos.setX(width()-10);
-        }
-
-        if(event->y() > height()-10){
-            lastPos.setY(10);
-        }
-        if(event->y() < 10){
-            lastPos.setY(height()-10);
-        }
-
-        QCursor c = cursor();
-        c.setPos(mapToGlobal(lastPos));
-        setCursor(c);
-
-        updateGL();
-    }
-
-
-
 }
 //! [10]
 
