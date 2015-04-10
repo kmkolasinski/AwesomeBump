@@ -7,7 +7,6 @@ GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget *
       updateIsQueued(false)
 {
     connect(this, &GLWidgetBase::updateGLLater, this, &GLWidgetBase::updateGLNow, Qt::QueuedConnection);
-    startTimer(0, Qt::VeryCoarseTimer);
 }
 
 GLWidgetBase::~GLWidgetBase()
