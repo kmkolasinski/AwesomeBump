@@ -67,7 +67,6 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     lightRadius             = 0.1;
     m_env_map               = NULL;
 
-    setMouseTracking(true);
     setCursor(Qt::PointingHandCursor);
     lightCursor = QCursor(QPixmap(":/resources/lightCursor.png"));
 

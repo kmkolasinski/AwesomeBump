@@ -65,7 +65,6 @@ GLImage::GLImage(QWidget *parent)
     cornerCursors[1] = QCursor(QPixmap(":/resources/corner2.png"));
     cornerCursors[2] = QCursor(QPixmap(":/resources/corner3.png"));
     cornerCursors[3] = QCursor(QPixmap(":/resources/corner4.png"));
-    setMouseTracking(true);
 }
 
 GLImage::~GLImage()

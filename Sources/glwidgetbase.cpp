@@ -8,6 +8,7 @@ GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget *
       eventLoopStarted(false)
 {
     connect(this, &GLWidgetBase::updateGLLater, this, &GLWidgetBase::updateGLNow, Qt::QueuedConnection);
+    setMouseTracking(true);
 }
 
 GLWidgetBase::~GLWidgetBase()
