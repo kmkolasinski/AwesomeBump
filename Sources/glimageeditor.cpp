@@ -2154,7 +2154,7 @@ void GLImage::wheelEvent(QWheelEvent *event){
     updateGL();
 }
 
-void GLImage::mouseMoveEvent(QMouseEvent *event)
+void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, QMouseEvent *event)
 {
     if(activeImage->imageType == OCCLUSION_TEXTURE && event->buttons() & Qt::LeftButton){
         QMessageBox msgBox;
@@ -2197,10 +2197,6 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
         msgBox.exec();
         return;
     }
-
-    int dx = event->x() - lastCursorPos.x();
-    int dy = event->y() - lastCursorPos.y();
-    lastCursorPos = event->pos();
 
     QVector2D defCorners[4];//default position of corners
     defCorners[0] = QVector2D(0,0) ;
@@ -2273,24 +2269,7 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
     }
 
     // mouse looping in 2D view window
-    if (event->buttons() & Qt::RightButton || event->buttons() & Qt::LeftButton ){
-        if(event->x() > width()-10){
-            lastCursorPos.setX(10);
-        }
-        if(event->x() < 10){
-            lastCursorPos.setX(width()-10);
-        }
-        if(event->y() > height()-10){
-            lastCursorPos.setY(10);
-        }
-        if(event->y() < 10){
-            lastCursorPos.setY(height()-10);
-        }
-
-        QCursor c = cursor();
-        c.setPos(mapToGlobal(lastCursorPos));
-        setCursor(c);
-    }
+    *bMouseDragged = (event->buttons() & Qt::RightButton || event->buttons() & Qt::LeftButton );
 
 
     updateMousePosition();
@@ -2302,8 +2281,8 @@ void GLImage::mouseMoveEvent(QMouseEvent *event)
 }
 void GLImage::mousePressEvent(QMouseEvent *event)
 {
+    GLWidgetBase::mousePressEvent(event);
 
-    lastCursorPos = event->pos();
     bSkipProcessing = true;
     draggingCorner = -1;
     // change cursor

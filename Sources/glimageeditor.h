@@ -97,7 +97,7 @@ signals:
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void relativeMouseMoveEvent(int dx, int dy, bool *bMouseDragged, QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
     void updateMousePosition();
     void showEvent(QShowEvent* event);
@@ -242,7 +242,6 @@ private:
     bool bSkipProcessing;   // draw quad but skip all the processing step (using during mouse interaction)
     float windowRatio;      // window width-height ratio
     float fboRatio;         // active fbo width-height ratio
-    QPoint lastCursorPos;
 
     // Image resize
     int resize_width;

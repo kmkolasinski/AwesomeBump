@@ -17,13 +17,20 @@ public:
     // makes sure, to do it only once until updateGLNow was called.
     void updateGL() Q_DECL_FINAL Q_DECL_OVERRIDE;
 
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_FINAL Q_DECL_OVERRIDE;
+
 signals:
     void updateGLLater();
+
+protected:
+    virtual void relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, QMouseEvent* Event) = 0;
 
 private slots:
     void updateGLNow();
 
 private:
+    QPoint lastCursorPos;
     bool updateIsQueued;
 };
 

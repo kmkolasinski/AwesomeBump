@@ -595,7 +595,8 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    lastPos = event->pos();
+    GLWidgetBase::mousePressEvent(event);
+
     setCursor(Qt::ClosedHandCursor);
     if (event->buttons() & Qt::RightButton) {
         setCursor(Qt::SizeAllCursor);
@@ -642,12 +643,8 @@ int GLWidget::glhUnProjectf(float& winx, float& winy, float& winz,
       return 1;
   }
 
-void GLWidget::mouseMoveEvent(QMouseEvent *event)
+void GLWidget::relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, QMouseEvent *event)
 {
-
-    int dx = event->x() - lastPos.x();
-    int dy = event->y() - lastPos.y();
-    bool bMouseDragged = true;
     if ((event->buttons() & Qt::LeftButton) && (event->buttons() & Qt::RightButton)) {
 
     }else if (event->buttons() & Qt::LeftButton) {
@@ -663,35 +660,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         if(lightPosition.y() < -10.0) lightPosition.setY(-10.0);
         lightDirection.rotateView(-2*dx/1.0,2*dy/1.0);
     }else{
-        bMouseDragged = false;
+        *bMouseDragged = false;
     }
-
-    lastPos = event->pos();
-    // mouse looping in 3D view window
-    if(bMouseDragged){        
-        if(event->x() > width()-10){
-            lastPos.setX(10);
-        }
-        if(event->x() < 10){
-            lastPos.setX(width()-10);
-        }
-
-        if(event->y() > height()-10){
-            lastPos.setY(10);
-        }
-        if(event->y() < 10){
-            lastPos.setY(height()-10);
-        }
-
-        QCursor c = cursor();
-        c.setPos(mapToGlobal(lastPos));
-        setCursor(c);
-
-        updateGL();
-    }
-
-
-
 }
 //! [10]
 
