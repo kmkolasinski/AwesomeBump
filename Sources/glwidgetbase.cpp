@@ -45,7 +45,9 @@ void GLWidgetBase::mouseMoveEvent(QMouseEvent *event)
 
     relativeMouseMoveEvent(dx, dy, &wrapMouse, event);
 
+#ifndef Q_OS_LINUX
     lastCursorPos = event->pos();
+#endif
     // mouse looping in view window
 
     if(wrapMouse){
