@@ -869,7 +869,7 @@ void GLImage::resizeGL(int width, int height)
 
 void GLImage::setActiveImage(FBOImageProporties* ptr){
         activeImage = ptr;
-        updateGL();
+        updateGLNow();
 }
 void GLImage::enableShadowRender(bool enable){
         bShadowRender = enable;
