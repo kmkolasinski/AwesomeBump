@@ -197,7 +197,8 @@ public:
                               QGLFramebufferObject *auxFBO,
                              QGLFramebufferObject* outputFBO);
 
-    void applyOcclusionFilter(QGLFramebufferObject* inputFBO,
+    void applyOcclusionFilter(GLuint height_tex,
+                              GLuint normal_tex,
                               QGLFramebufferObject* outputFBO);
 
     void applyHeightProcessingFilter( QGLFramebufferObject* inputFBO,
@@ -266,6 +267,7 @@ private:
     int gui_seamless_mode; // if 0 standard blending, if 1 mirror mode
 
     bool bToggleColorPicking;
+
     // uv manipulations method
     UVManipulationMethods uvManilupationMethod;
 };

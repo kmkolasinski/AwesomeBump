@@ -284,13 +284,13 @@ public:
 // Wrapper for FBO initialization.
 class FBOImages {
 public:
-    static void create(QGLFramebufferObject *&fbo,int width,int height){
+    static void create(QGLFramebufferObject *&fbo,int width,int height,GLuint internal_format = GL_RGB16F){
         if(fbo !=NULL ){
             fbo->release();
             delete fbo;
         }
         QGLFramebufferObjectFormat format;
-        format.setInternalTextureFormat(GL_RGBA16F);
+        format.setInternalTextureFormat(internal_format);
         format.setTextureTarget(GL_TEXTURE_2D);
         format.setMipmap(true);
         fbo = new QGLFramebufferObject(width,height,format);
@@ -312,20 +312,20 @@ public:
         GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
         qDebug() << "FBOImages::creating new FBO(" << width << "," << height << ") with id=" << fbo->texture() ;
     }
-    static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref){
+    static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref,GLuint internal_format = GL_RGB16F){
         if(src == NULL){
-            GLCHK(FBOImages::create(src ,ref->width(),ref->height()));
+            GLCHK(FBOImages::create(src ,ref->width(),ref->height(),internal_format));
         }else if( ref->width()  == src->width() &&
             ref->height() == src->height() ){}else{
-            GLCHK(FBOImages::create(src ,ref->width(),ref->height()));
+            GLCHK(FBOImages::create(src ,ref->width(),ref->height(),internal_format));
         }
     }
-    static void resize(QGLFramebufferObject *&src,int width, int height){
+    static void resize(QGLFramebufferObject *&src,int width, int height,GLuint internal_format = GL_RGB16F){
         if(src == NULL){
-            GLCHK(FBOImages::create(src ,width,height));
+            GLCHK(FBOImages::create(src ,width,height,internal_format));
         }else if( width  == src->width() &&
             height == src->height() ){}else{
-            GLCHK(FBOImages::create(src ,width,height));
+            GLCHK(FBOImages::create(src ,width,height,internal_format));
         }
     }
 public:
@@ -578,10 +578,18 @@ public:
         scr_tex_height = image.height();
         bFirstDraw    = true;
 
-        //GLCHK(FBOImages::create(ref_fbo ,image.width(),image.height()));
+        /*
+        switch(imageType){
+           case(HEIGHT_TEXTURE):
+           case(OCCLUSION_TEXTURE):
+                GLCHK(FBOImages::create(fbo     ,image.width(),image.height(),GL_R16F));
+                break;
+           default:
+                GLCHK(FBOImages::create(fbo     ,image.width(),image.height()));
+                break;
+        }
+        */
         GLCHK(FBOImages::create(fbo     ,image.width(),image.height()));
-       // GLCHK(FBOImages::create(aux_fbo ,image.width(),image.height()));
-       // GLCHK(FBOImages::create(aux2_fbo,image.width(),image.height()));
 
     }
 

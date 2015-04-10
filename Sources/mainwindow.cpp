@@ -1231,6 +1231,7 @@ void MainWindow::convertFromBase(){
     roughnessImageProp->setImageName(diffuseImageProp->getImageName());
     metallicImageProp ->setImageName(diffuseImageProp->getImageName());
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
+    glImage->updateGL();
     replotAllImages();
     qDebug() << "Conversion from Base to others applied";
 }

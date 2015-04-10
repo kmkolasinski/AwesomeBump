@@ -630,19 +630,17 @@ subroutine(filterModeType) vec4 mode_normal_to_height(){
 	vec3 off  = scale*vec3(vec2(-1,1)*dxy,0);
 	vec2 tex_coord = v2QuadCoords.st;
 
-
-	
-	float hxp  = texture(layerA,tex_coord + off.yz).x;
+        float hxp  = texture(layerA,tex_coord + off.yz).x;
         float hxm  = texture(layerA,tex_coord + off.xz).x;
-	float hyp  = texture(layerA,tex_coord + off.zy).x;
+        float hyp  = texture(layerA,tex_coord + off.zy).x;
         float hym  = texture(layerA,tex_coord + off.zx).x;
-	
+
         float nxp  = 2*(texture(layerB,tex_coord + off.yz ).x-0.5);
-	float nxm  = 2*(texture(layerB,tex_coord + off.xz ).x-0.5);
-	
+        float nxm  = 2*(texture(layerB,tex_coord + off.xz ).x-0.5);
+
         float nyp  = 2*(texture(layerB,tex_coord + off.zy ).y-0.5);
-	float nym  = 2*(texture(layerB,tex_coord + off.zx ).y-0.5);
-	
+        float nym  = 2*(texture(layerB,tex_coord + off.zx ).y-0.5);
+
         float h = (nxp-nxm+nyp-nym)/8.0*scale + (hxp + hxm + hyp + hym)/4.0;
         //h =   h / (1.0 + abs(nxp-nxm+nyp-nym)/8.0*scale);
 
@@ -655,18 +653,19 @@ subroutine(filterModeType) vec4 mode_normal_to_height(){
 // ----------------------------------------------------------------
 subroutine(filterModeType) vec4 mode_height_to_normal(){
 
+
     const vec2 size = vec2(1.0,0.0);
     const ivec3 off = ivec3(-1,0,1);
     vec2 tex_coord =  v2QuadCoords.st;
 
     vec4 hc   = texture(layerA, tex_coord);
-    float s11 = hc.x;    
-    float s21 = textureOffset(layerA, tex_coord, off.zy).x;    
-    float s12 = textureOffset(layerA, tex_coord, off.yz).x;
-    vec3 va   = normalize(vec3(size.xy,gui_hn_conversion_depth*(s21-s11)));
-    vec3 vb   = normalize(vec3(size.yx,gui_hn_conversion_depth*(s12-s11)));
-    vec3 bump = normalize( cross(va,vb) );
-    return vec4(clamp(bump*0.5 + 0.5,vec3(0),vec3(1)),1);
+    highp float s11 = hc.x;
+    highp float s21 = textureOffset(layerA, tex_coord, off.zy).x;
+    highp float s12 = textureOffset(layerA, tex_coord, off.yz).x;
+    highp vec3 va   = normalize(vec3(size.xy,gui_hn_conversion_depth*(s21-s11)));
+    highp vec3 vb   = normalize(vec3(size.yx,gui_hn_conversion_depth*(s12-s11)));
+    highp vec3 bump = normalize( cross(va,vb) );
+    highp  return vec4(clamp(bump*0.5 + 0.5,vec3(0),vec3(1)),1);
 }
 
 
@@ -749,11 +748,11 @@ float g_scale 			  = 5*gui_ssao_depth; // dlugosc promienia prubkujacego
 float g_bias 			  = 0.05*gui_ssao_bias; //  controls the width of the occlusion cone considered by the occludee.
 // Pobieranie pozycji teksla w ukladzie oka
 vec3 getPosition(vec2 uv){
-	return vec3(uv,-g_bias*texture(layerA,uv).w);//texture(positionFBO,uv).xyz;
+        return vec3(uv,-g_bias*texture(layerA,uv).r);
 }
 // Pobieranie normalnej
 vec3 getNormal(vec2 uv){
-	return normalize(texture(layerA, uv).xyz-0.5);
+        return normalize(texture(layerB, uv).xyz-0.5);
 }
 
 float doAmbientOcclusion(in vec2 tcoord,in vec2 uv, in vec3 p, in vec3 cnorm){
@@ -770,7 +769,9 @@ subroutine(filterModeType) vec4 mode_occlusion_filter(){
 				ao += doAmbientOcclusion(v2QuadCoords,vec2(i,j)*dxy*g_scale, p, n);
 	}}
 	ao /= (2*gui_ssao_no_iters+1.0)*(2*gui_ssao_no_iters+1.0);	
-	return vec4(clamp(1-ao,0,1));	
+
+        return vec4(clamp(1-ao,0,1));
+        //return vec4(clamp(texture(layerC, v2QuadCoords),0,1));
 }
 
 subroutine(filterModeType) vec4 mode_combine_normal_height_filter(){

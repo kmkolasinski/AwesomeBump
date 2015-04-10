@@ -352,7 +352,7 @@ GLFrameBufferObject::GLFrameBufferObject(int width, int height)
     fbo = NULL;
     attachments.clear();
     QGLFramebufferObjectFormat format;
-    format.setInternalTextureFormat(GL_RGBA16F);
+    format.setInternalTextureFormat(GL_RGB16F);
     format.setTextureTarget(GL_TEXTURE_2D);
     format.setMipmap(true);
     format.setAttachment(QGLFramebufferObject::Depth);
