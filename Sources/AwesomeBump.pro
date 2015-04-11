@@ -18,7 +18,8 @@ HEADERS       = glwidget.h \
     formsettingscontainer.h \
     utils/qglbuffers.h \
     dialoglogger.h \
-    glwidgetbase.h
+    glwidgetbase.h \
+    formbasemapconversionlevels.h
 
 SOURCES       = glwidget.cpp \
                 main.cpp \
@@ -34,7 +35,8 @@ SOURCES       = glwidget.cpp \
     formsettingscontainer.cpp \
     utils/qglbuffers.cpp \
     dialoglogger.cpp \
-    glwidgetbase.cpp
+    glwidgetbase.cpp \
+    formbasemapconversionlevels.cpp
 
 
 # install
@@ -51,7 +53,8 @@ FORMS += \
     dialogheightcalculator.ui \
     formsettingsfield.ui \
     formsettingscontainer.ui \
-    dialoglogger.ui
+    dialoglogger.ui \
+    formbasemapconversionlevels.ui
 
 ICON = resources/icon.icns
 INCLUDEPATH += include

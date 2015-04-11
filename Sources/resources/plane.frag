@@ -309,7 +309,7 @@ vec4 PBR_Specular(float roughness,
          float light = max(dot(normalizedLightDirection,lp),0.0);         
          light       = 1-exp(-pow((5*gui_LightRadius*light),4));
 
-         vec3 color = texture( texEnvMap, lp ).rgb + gui_LightPower * light;
+         vec3 color = texture( texEnvMap, lp ).rgb * exp(-0.1*gui_LightPower) + gui_LightPower * light *0.4;
 
          radiance +=  color  * geometry * fresnel / denominator;// * sinT;
 
@@ -374,7 +374,7 @@ vec4 PBR_Specular_SIMPLE(float roughness,
     float light = max(dot(normalizedLightDirection,lp),0.0);
     light       = 1-exp(-pow((5*gui_LightRadius*light),4));
     // Accumulate the radiance
-    vec3 color = texture( texEnvMap, lp , roughness *  no_mipmap ).rgb + gui_LightPower * light;
+    vec3 color = texture( texEnvMap, lp , roughness *  no_mipmap ).rgb * exp(-0.1*gui_LightPower) + gui_LightPower * light *0.4;
 
     radiance =  color  * geometry * fresnel / denominator;// * sinT;
 
@@ -462,7 +462,7 @@ void main( void )
         // Calculate the diffuse contribution
         float NdotL = max(dot(surfaceNormal,normalizedLightDirection),0.0);
 
-        vec3 irradiance = texture(texDiffuseEnvMap, normalize(surfaceNormal)).rgb + vec3(NdotL * gui_LightPower * 0.2);
+        vec3 irradiance = texture(texDiffuseEnvMap, normalize(surfaceNormal)).rgb * exp(-0.1*gui_LightPower) + vec3(NdotL * gui_LightPower *0.4);
         vec3 diffuse    = materialColour * irradiance ;
 
         FragColor  =  gui_DiffuseIntensity  * vec4(kD * diffuse,1) * aoColour

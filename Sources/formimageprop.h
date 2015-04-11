@@ -12,7 +12,7 @@
 
 #include "CommonObjects.h"
 #include "dialogheightcalculator.h"
-
+#include "formbasemapconversionlevels.h"
 
 
 namespace Ui {
@@ -101,7 +101,7 @@ private:
     QString imageName;
     FBOImageProporties imageProp;
     DialogHeightCalculator *heightCalculator; // height calculator tool
-
+    FormBaseMapConversionLevels* baseMapConvLevels[4]; // for levels of mipmaps
 public:
     static QDir* recentDir;
 };

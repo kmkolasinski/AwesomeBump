@@ -175,13 +175,21 @@ public:
     void applyNormalsStepFilter(QGLFramebufferObject* inputFBO,
                                 QGLFramebufferObject* outputFBO);
     void applySobelToNormalFilter(QGLFramebufferObject* inputFBO,
+                                  QGLFramebufferObject* outputFBO, BaseMapConvLevelProperties &convProp);
+
+    void applyNormalExpansionFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* outputFBO);
 
-    void applySelectiveGaussFilter(QGLFramebufferObject* inputFBO,
-                                  QGLFramebufferObject* outputFBO);
+    void applyMixNormalLevels(GLuint level0,
+                              GLuint level1,
+                              GLuint level2,
+                              GLuint level3,
+                              QGLFramebufferObject* outputFBO);
 
     void applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* outputFBO);
+
+
 
     void applyHeightToNormal(QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject* outputFBO);
@@ -193,10 +201,10 @@ public:
 
     void applyBaseMapConversion(QGLFramebufferObject* baseMapFBO,
                                 QGLFramebufferObject *auxFBO,
-                                QGLFramebufferObject* outputFBO);
+                                QGLFramebufferObject* outputFBO, BaseMapConvLevelProperties &convProp);
     void applyPreSmoothFilter(QGLFramebufferObject* inputFBO,
                               QGLFramebufferObject *auxFBO,
-                             QGLFramebufferObject* outputFBO);
+                             QGLFramebufferObject* outputFBO, BaseMapConvLevelProperties &convProp);
 
     void applyOcclusionFilter(GLuint height_tex,
                               GLuint normal_tex,
@@ -234,6 +242,11 @@ private:
     QGLFramebufferObject* auxFBO2;
     QGLFramebufferObject* auxFBO3;
     QGLFramebufferObject* auxFBO4;
+
+    QGLFramebufferObject* auxFBO1BMLevels[3]; // 2 times smaller. 4 and 8
+    QGLFramebufferObject* auxFBO2BMLevels[3]; //
+    QGLFramebufferObject* auxFBO0BMLevels[3]; //
+
 
     std::map<std::string,GLuint> subroutines;
 

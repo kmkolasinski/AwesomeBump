@@ -1349,37 +1349,45 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_conversionNHItersVerySmall"       ,image->getImageProporties()->conversionNHItersVerySmall);
     settings.setValue("t_"+abbr+"_conversionNHItersSmall"           ,image->getImageProporties()->conversionNHItersSmall);
     settings.setValue("t_"+abbr+"_bConversionBaseMap"               ,image->getImageProporties()->bConversionBaseMap);
-    settings.setValue("t_"+abbr+"_conversionBaseMapAmplitude"       ,image->getImageProporties()->conversionBaseMapAmplitude);
-    settings.setValue("t_"+abbr+"_conversionBaseMapFlatness"        ,image->getImageProporties()->conversionBaseMapFlatness);
-    settings.setValue("t_"+abbr+"_conversionBaseMapNoIters"         ,image->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_"+abbr+"_conversionBaseMapNoIters"         ,image->getImageProporties()->conversionBaseMapNoIters);
-    settings.setValue("t_"+abbr+"_conversionBaseMapFilterRadius"    ,image->getImageProporties()->conversionBaseMapFilterRadius);
-    settings.setValue("t_"+abbr+"_conversionBaseMapMixNormals"      ,image->getImageProporties()->conversionBaseMapMixNormals);
-    settings.setValue("t_"+abbr+"_conversionBaseMapPreSmoothRadius" ,image->getImageProporties()->conversionBaseMapPreSmoothRadius);
-    settings.setValue("t_"+abbr+"_conversionBaseMapBlending"        ,image->getImageProporties()->conversionBaseMapBlending);
-    settings.setValue("t_"+abbr+"_ssaoNoIters"                      ,image->getImageProporties()->ssaoNoIters);
-    settings.setValue("t_"+abbr+"_ssaoBias"                         ,image->getImageProporties()->ssaoBias);
-    settings.setValue("t_"+abbr+"_ssaoDepth"                        ,image->getImageProporties()->ssaoDepth);
-    settings.setValue("t_"+abbr+"_ssaoIntensity"                    ,image->getImageProporties()->ssaoIntensity);
+    if(image->getImageProporties()->imageType == DIFFUSE_TEXTURE){
+        for(int i = 0; i < 4 ; i++){
+        QString level = "_Level"+QString::number(i);
+        settings.setValue("t_"+abbr+"_conversionBaseMapAmplitude"      +level ,image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapAmplitude);
+        settings.setValue("t_"+abbr+"_conversionBaseMapFlatness"       +level ,image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapFlatness);
+        settings.setValue("t_"+abbr+"_conversionBaseMapNoIters"        +level ,image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapNoIters);
+        settings.setValue("t_"+abbr+"_conversionBaseMapNoIters"        +level ,image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapNoIters);
+        settings.setValue("t_"+abbr+"_conversionBaseMapFilterRadius"   +level ,image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapFilterRadius);
+        settings.setValue("t_"+abbr+"_conversionBaseMapMixNormals"     +level ,image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapMixNormals);
+        settings.setValue("t_"+abbr+"_conversionBaseMapPreSmoothRadius"+level ,image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapPreSmoothRadius);
+        settings.setValue("t_"+abbr+"_conversionBaseMapBlending"       +level ,image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapBlending);
+        settings.setValue("t_"+abbr+"conversionBaseMapWeight"          +level ,image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapWeight);
+        }
+    }
+    if(image->getImageProporties()->imageType == OCCLUSION_TEXTURE){
+        settings.setValue("t_"+abbr+"_ssaoNoIters"                      ,image->getImageProporties()->ssaoNoIters);
+        settings.setValue("t_"+abbr+"_ssaoBias"                         ,image->getImageProporties()->ssaoBias);
+        settings.setValue("t_"+abbr+"_ssaoDepth"                        ,image->getImageProporties()->ssaoDepth);
+        settings.setValue("t_"+abbr+"_ssaoIntensity"                    ,image->getImageProporties()->ssaoIntensity);
+    }
+    if(image->getImageProporties()->imageType == HEIGHT_TEXTURE){
+        settings.setValue("t_"+abbr+"_selectiveBlurType"                ,image->getImageProporties()->selectiveBlurType);
+        settings.setValue("t_"+abbr+"_bSelectiveBlurPreviewMask"        ,image->getImageProporties()->bSelectiveBlurPreviewMask);
+        settings.setValue("t_"+abbr+"_bSelectiveBlurInvertMask"         ,image->getImageProporties()->bSelectiveBlurInvertMask);
+        settings.setValue("t_"+abbr+"_bSelectiveBlurEnable"             ,image->getImageProporties()->bSelectiveBlurEnable);
 
-    settings.setValue("t_"+abbr+"_selectiveBlurType"                ,image->getImageProporties()->selectiveBlurType);
-    settings.setValue("t_"+abbr+"_bSelectiveBlurPreviewMask"        ,image->getImageProporties()->bSelectiveBlurPreviewMask);
-    settings.setValue("t_"+abbr+"_bSelectiveBlurInvertMask"         ,image->getImageProporties()->bSelectiveBlurInvertMask);
-    settings.setValue("t_"+abbr+"_bSelectiveBlurEnable"             ,image->getImageProporties()->bSelectiveBlurEnable);
+        settings.setValue("t_"+abbr+"_selectiveBlurBlending"            ,image->getImageProporties()->selectiveBlurBlending);
+        settings.setValue("t_"+abbr+"_selectiveBlurMaskRadius"          ,image->getImageProporties()->selectiveBlurMaskRadius);
+        settings.setValue("t_"+abbr+"_selectiveBlurDOGRadius"           ,image->getImageProporties()->selectiveBlurDOGRadius);
+        settings.setValue("t_"+abbr+"_selectiveBlurDOGConstrast"        ,image->getImageProporties()->selectiveBlurDOGConstrast);
+        settings.setValue("t_"+abbr+"_selectiveBlurDOGAmplifier"        ,image->getImageProporties()->selectiveBlurDOGAmplifier);
+        settings.setValue("t_"+abbr+"_selectiveBlurBlending"            ,image->getImageProporties()->selectiveBlurBlending);
+        settings.setValue("t_"+abbr+"_selectiveBlurDOGOffset"           ,image->getImageProporties()->selectiveBlurDOGOffset);
 
-    settings.setValue("t_"+abbr+"_selectiveBlurBlending"            ,image->getImageProporties()->selectiveBlurBlending);
-    settings.setValue("t_"+abbr+"_selectiveBlurMaskRadius"          ,image->getImageProporties()->selectiveBlurMaskRadius);
-    settings.setValue("t_"+abbr+"_selectiveBlurDOGRadius"           ,image->getImageProporties()->selectiveBlurDOGRadius);
-    settings.setValue("t_"+abbr+"_selectiveBlurDOGConstrast"        ,image->getImageProporties()->selectiveBlurDOGConstrast);
-    settings.setValue("t_"+abbr+"_selectiveBlurDOGAmplifier"        ,image->getImageProporties()->selectiveBlurDOGAmplifier);
-    settings.setValue("t_"+abbr+"_selectiveBlurBlending"            ,image->getImageProporties()->selectiveBlurBlending);
-    settings.setValue("t_"+abbr+"_selectiveBlurDOGOffset"           ,image->getImageProporties()->selectiveBlurDOGOffset);
-
-    settings.setValue("t_"+abbr+"_selectiveBlurMinValue"            ,image->getImageProporties()->selectiveBlurMinValue);
-    settings.setValue("t_"+abbr+"_selectiveBlurMaxValue"            ,image->getImageProporties()->selectiveBlurMaxValue);
-    settings.setValue("t_"+abbr+"_selectiveBlurDetails"             ,image->getImageProporties()->selectiveBlurDetails);
-    settings.setValue("t_"+abbr+"_selectiveBlurOffsetValue"         ,image->getImageProporties()->selectiveBlurOffsetValue);
-
+        settings.setValue("t_"+abbr+"_selectiveBlurMinValue"            ,image->getImageProporties()->selectiveBlurMinValue);
+        settings.setValue("t_"+abbr+"_selectiveBlurMaxValue"            ,image->getImageProporties()->selectiveBlurMaxValue);
+        settings.setValue("t_"+abbr+"_selectiveBlurDetails"             ,image->getImageProporties()->selectiveBlurDetails);
+        settings.setValue("t_"+abbr+"_selectiveBlurOffsetValue"         ,image->getImageProporties()->selectiveBlurOffsetValue);
+    }
     settings.setValue("t_"+abbr+"_inputImageType"                   ,image->getImageProporties()->inputImageType);
     settings.setValue("t_"+abbr+"_roughnessDepth"                   ,image->getImageProporties()->roughnessDepth);
     settings.setValue("t_"+abbr+"_roughnessTreshold"                ,image->getImageProporties()->roughnessTreshold);
@@ -1457,39 +1465,53 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->conversionNHItersVerySmall         = settings.value("t_"+abbr+"_conversionNHItersVerySmall",10).toInt();
 
     //image->getImageProporties()->bConversionBaseMap                 = settings.value("t_"+abbr+"_bConversionBaseMap",false).toBool();
-    image->getImageProporties()->conversionBaseMapAmplitude         = settings.value("t_"+abbr+"_conversionBaseMapAmplitude",-1.0).toFloat();
-    image->getImageProporties()->conversionBaseMapFlatness          = settings.value("t_"+abbr+"_conversionBaseMapFlatness",0.0).toFloat();
-    image->getImageProporties()->conversionBaseMapNoIters           = settings.value("t_"+abbr+"_conversionBaseMapNoIters",2).toInt();
-    image->getImageProporties()->conversionBaseMapFilterRadius      = settings.value("t_"+abbr+"_conversionBaseMapFilterRadius",0).toInt();
-    image->getImageProporties()->conversionBaseMapMixNormals        = settings.value("t_"+abbr+"_conversionBaseMapMixNormals",0.5).toFloat();
-    image->getImageProporties()->conversionBaseMapPreSmoothRadius   = settings.value("t_"+abbr+"_conversionBaseMapPreSmoothRadius",0).toFloat();
-    image->getImageProporties()->conversionBaseMapBlending          = settings.value("t_"+abbr+"_conversionBaseMapBlending",0.5).toFloat();
-    image->getImageProporties()->ssaoNoIters                        = settings.value("t_"+abbr+"_ssaoNoIters",20.0).toFloat();
-    image->getImageProporties()->ssaoBias                           = settings.value("t_"+abbr+"_ssaoBias",-1.5).toFloat();
-    image->getImageProporties()->ssaoDepth                          = settings.value("t_"+abbr+"_ssaoDepth",0.3).toFloat();
-    image->getImageProporties()->ssaoIntensity                      = settings.value("t_"+abbr+"_ssaoIntensity",1.0).toFloat();
 
+    if(image->getImageProporties()->imageType == DIFFUSE_TEXTURE){
+        for(int i = 0; i < 4 ; i++){
+        QString level = "_Level"+QString::number(i);
+
+        image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapAmplitude         = settings.value("t_"+abbr+"_conversionBaseMapAmplitude"+level,-1.0).toFloat();
+        image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapFlatness          = settings.value("t_"+abbr+"_conversionBaseMapFlatness"+level,0.0).toFloat();
+        image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapNoIters           = settings.value("t_"+abbr+"_conversionBaseMapNoIters"+level,2).toInt();
+        image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapFilterRadius      = settings.value("t_"+abbr+"_conversionBaseMapFilterRadius"+level,0).toInt();
+        image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapMixNormals        = settings.value("t_"+abbr+"_conversionBaseMapMixNormals"+level,0.5).toFloat();
+        image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapPreSmoothRadius   = settings.value("t_"+abbr+"_conversionBaseMapPreSmoothRadius"+level,0).toFloat();
+        image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapBlending          = settings.value("t_"+abbr+"_conversionBaseMapBlending"+level,0.5).toFloat();
+        image->getImageProporties()->baseMapConvLevels[i].conversionBaseMapWeight          = settings.value("t_"+abbr+"conversionBaseMapWeight"+level,50.0).toFloat();
+
+        }
+    }
+
+    if(image->getImageProporties()->imageType == OCCLUSION_TEXTURE){
+        image->getImageProporties()->ssaoNoIters                        = settings.value("t_"+abbr+"_ssaoNoIters",20.0).toFloat();
+        image->getImageProporties()->ssaoBias                           = settings.value("t_"+abbr+"_ssaoBias",-1.5).toFloat();
+        image->getImageProporties()->ssaoDepth                          = settings.value("t_"+abbr+"_ssaoDepth",0.3).toFloat();
+        image->getImageProporties()->ssaoIntensity                      = settings.value("t_"+abbr+"_ssaoIntensity",1.0).toFloat();
+    }
     image->getImageProporties()->aoCancellation                     = settings.value("t_"+abbr+"_aoCancellation",0.0).toFloat();
     image->getImageProporties()->removeShadingLFBlending            = settings.value("t_"+abbr+"_removeShadingLFBlending",0.0).toFloat();
     image->getImageProporties()->removeShadingLFRadius              = settings.value("t_"+abbr+"_removeShadingLFRadius",0.0).toFloat();
     image->getImageProporties()->colorHue                           = settings.value("t_"+abbr+"_colorHue",0.0).toFloat();
 
-    image->getImageProporties()->selectiveBlurType                  = (SelectiveBlurType)settings.value("t_"+abbr+"_selectiveBlurType",0).toInt();
-    image->getImageProporties()->bSelectiveBlurPreviewMask          = settings.value("t_"+abbr+"_bSelectiveBlurPreviewMask",false).toBool();
-    image->getImageProporties()->bSelectiveBlurInvertMask           = settings.value("t_"+abbr+"_bSelectiveBlurInvertMask",false).toBool();
-    image->getImageProporties()->bSelectiveBlurEnable               = settings.value("t_"+abbr+"_bSelectiveBlurEnable",false).toBool();
+    if(image->getImageProporties()->imageType == HEIGHT_TEXTURE){
+        image->getImageProporties()->selectiveBlurType                  = (SelectiveBlurType)settings.value("t_"+abbr+"_selectiveBlurType",0).toInt();
+        image->getImageProporties()->bSelectiveBlurPreviewMask          = settings.value("t_"+abbr+"_bSelectiveBlurPreviewMask",false).toBool();
+        image->getImageProporties()->bSelectiveBlurInvertMask           = settings.value("t_"+abbr+"_bSelectiveBlurInvertMask",false).toBool();
+        image->getImageProporties()->bSelectiveBlurEnable               = settings.value("t_"+abbr+"_bSelectiveBlurEnable",false).toBool();
 
-    image->getImageProporties()->selectiveBlurBlending              = settings.value("t_"+abbr+"_selectiveBlurBlending",0.3).toFloat();
-    image->getImageProporties()->selectiveBlurMaskRadius            = settings.value("t_"+abbr+"_selectiveBlurMaskRadius",5).toInt();
-    image->getImageProporties()->selectiveBlurDOGRadius             = settings.value("t_"+abbr+"_selectiveBlurDOGRadius",5).toInt();
-    image->getImageProporties()->selectiveBlurDOGConstrast          = settings.value("t_"+abbr+"_selectiveBlurDOGConstrast",0.0).toFloat();
-    image->getImageProporties()->selectiveBlurDOGAmplifier          = settings.value("t_"+abbr+"_selectiveBlurDOGAmplifier",5.0).toFloat();
-    image->getImageProporties()->selectiveBlurDOGOffset             = settings.value("t_"+abbr+"_selectiveBlurDOGOffset",0.0).toFloat();
+        image->getImageProporties()->selectiveBlurBlending              = settings.value("t_"+abbr+"_selectiveBlurBlending",0.3).toFloat();
+        image->getImageProporties()->selectiveBlurMaskRadius            = settings.value("t_"+abbr+"_selectiveBlurMaskRadius",5).toInt();
+        image->getImageProporties()->selectiveBlurDOGRadius             = settings.value("t_"+abbr+"_selectiveBlurDOGRadius",5).toInt();
+        image->getImageProporties()->selectiveBlurDOGConstrast          = settings.value("t_"+abbr+"_selectiveBlurDOGConstrast",0.0).toFloat();
+        image->getImageProporties()->selectiveBlurDOGAmplifier          = settings.value("t_"+abbr+"_selectiveBlurDOGAmplifier",5.0).toFloat();
+        image->getImageProporties()->selectiveBlurDOGOffset             = settings.value("t_"+abbr+"_selectiveBlurDOGOffset",0.0).toFloat();
 
-    image->getImageProporties()->selectiveBlurMinValue              = settings.value("t_"+abbr+"_selectiveBlurMinValue",0.0).toFloat();
-    image->getImageProporties()->selectiveBlurMaxValue              = settings.value("t_"+abbr+"_selectiveBlurMaxValue",1.0).toFloat();
-    image->getImageProporties()->selectiveBlurDetails               = settings.value("t_"+abbr+"_selectiveBlurDetails",0).toInt();
-    image->getImageProporties()->selectiveBlurOffsetValue           = settings.value("t_"+abbr+"_selectiveBlurOffsetValue",0.0).toFloat();
+        image->getImageProporties()->selectiveBlurMinValue              = settings.value("t_"+abbr+"_selectiveBlurMinValue",0.0).toFloat();
+        image->getImageProporties()->selectiveBlurMaxValue              = settings.value("t_"+abbr+"_selectiveBlurMaxValue",1.0).toFloat();
+        image->getImageProporties()->selectiveBlurDetails               = settings.value("t_"+abbr+"_selectiveBlurDetails",0).toInt();
+        image->getImageProporties()->selectiveBlurOffsetValue           = settings.value("t_"+abbr+"_selectiveBlurOffsetValue",0.0).toFloat();
+    }
+
     image->getImageProporties()->inputImageType                     = (SourceImageType)settings.value("t_"+abbr+"_inputImageType",0).toInt();
     image->getImageProporties()->roughnessDepth                     = settings.value("t_"+abbr+"_roughnessDepth",0.3).toFloat();
     image->getImageProporties()->roughnessTreshold                  = settings.value("t_"+abbr+"_roughnessTreshold",0.0).toFloat();

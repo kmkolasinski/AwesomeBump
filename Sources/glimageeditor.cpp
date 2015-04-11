@@ -84,6 +84,13 @@ void GLImage::cleanup()
   delete auxFBO2;
   delete auxFBO3;
   delete auxFBO4;
+
+  for(int i = 0; i < 3 ; i++){
+      delete auxFBO0BMLevels[i] ;
+      delete auxFBO1BMLevels[i] ;
+      delete auxFBO2BMLevels[i] ;
+  }
+
   glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]);
   delete program;
 
@@ -139,6 +146,7 @@ void GLImage::initializeGL()
     GLCHK( program->setUniformValue("layerA" , 0) );
     GLCHK( program->setUniformValue("layerB" , 1) );
     GLCHK( program->setUniformValue("layerC" , 2) );
+    GLCHK( program->setUniformValue("layerD" , 3) );
 
     delete vshader;
     delete fshader;
@@ -168,6 +176,8 @@ void GLImage::initializeGL()
     GLCHK( subroutines["mode_normal_to_height"]            = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_normal_to_height") );
     GLCHK( subroutines["mode_sobel_filter"]                = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_sobel_filter") );
     GLCHK( subroutines["mode_normal_expansion_filter"]     = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_normal_expansion_filter") );
+    GLCHK( subroutines["mode_mix_normal_levels_filter"]    = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_mix_normal_levels_filter") );
+
     GLCHK( subroutines["mode_normalize_filter"]            = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_normalize_filter") );
     GLCHK( subroutines["mode_smooth_filter"]               = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_smooth_filter") );
     GLCHK( subroutines["mode_occlusion_filter"]            = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_occlusion_filter") );
@@ -189,7 +199,11 @@ void GLImage::initializeGL()
     auxFBO2 = NULL;
     auxFBO3 = NULL;
     auxFBO4 = NULL;
-
+    for(int i = 0; i < 3 ; i++){
+        auxFBO0BMLevels[i] = NULL;
+        auxFBO1BMLevels[i] = NULL;
+        auxFBO2BMLevels[i] = NULL;
+    }
 
     emit readyGL();
 }
@@ -256,6 +270,22 @@ void GLImage::render(){
     FBOImages::resize(auxFBO2,activeFBO->width(),activeFBO->height());
     FBOImages::resize(auxFBO3,activeFBO->width(),activeFBO->height());
     FBOImages::resize(auxFBO4,activeFBO->width(),activeFBO->height());
+
+    if(activeImage->imageType == DIFFUSE_TEXTURE && activeImage->bConversionBaseMap){
+        for(int i = 0; i < 3 ; i++){
+            FBOImages::resize(auxFBO0BMLevels[i],activeFBO->width()/pow(2,i+1),activeFBO->height()/pow(2,i+1));
+            FBOImages::resize(auxFBO1BMLevels[i],activeFBO->width()/pow(2,i+1),activeFBO->height()/pow(2,i+1));
+            FBOImages::resize(auxFBO2BMLevels[i],activeFBO->width()/pow(2,i+1),activeFBO->height()/pow(2,i+1));
+        }
+    }else{
+        int small_w_h = 1;
+        for(int i = 0; i < 3 ; i++){
+            FBOImages::resize(auxFBO0BMLevels[i],small_w_h,small_w_h);
+            FBOImages::resize(auxFBO1BMLevels[i],small_w_h,small_w_h);
+            FBOImages::resize(auxFBO2BMLevels[i],small_w_h,small_w_h);
+        }
+    }
+
 
     GLCHK( program->bind() );
     GLCHK( program->setUniformValue("gui_image_type", activeImage->imageType) );
@@ -410,8 +440,9 @@ void GLImage::render(){
         if(conversionType == CONVERT_FROM_N_TO_H){
             applyNormalToHeight(activeImage,targetImageNormal->fbo,activeFBO,auxFBO1);
             applyCPUNormalizationFilter(auxFBO1,activeFBO);
-            applyGaussFilter(activeFBO,auxFBO1,auxFBO2,1,0.1); // small blur
+            applyGaussFilter(activeFBO,auxFBO1,auxFBO2,1,0.5); // small blur
             copyFBO(auxFBO2,activeFBO);
+
             targetImageHeight->updateSrcTexId(activeFBO);
             bTransformUVs = false;
         }
@@ -616,6 +647,7 @@ void GLImage::render(){
 
 
         copyFBO(auxFBO1,activeFBO);
+
     }
 
 
@@ -678,11 +710,32 @@ void GLImage::render(){
     // diffuse processing pipeline
     // -------------------------------------------------------- //
     if(activeImage->imageType == DIFFUSE_TEXTURE && activeImage->bConversionBaseMap){
-        applyBaseMapConversion(activeFBO,auxFBO2,auxFBO1);
+
+        // create mipmaps
+        copyTex2FBO(activeFBO->texture(),auxFBO0BMLevels[0]);
+        copyTex2FBO(activeFBO->texture(),auxFBO0BMLevels[1]);
+        copyTex2FBO(activeFBO->texture(),auxFBO0BMLevels[2]);
+        // calculate normal for orginal image
+        applyBaseMapConversion(activeFBO,auxFBO2,auxFBO1,activeImage->baseMapConvLevels[0]);
+
+        // calulcate normal for mipmaps
+        for(int i = 0 ; i < 3 ; i++){
+             applyBaseMapConversion(auxFBO0BMLevels[i],auxFBO1BMLevels[i],auxFBO2BMLevels[i],activeImage->baseMapConvLevels[i+1]);
+        }
+
+        // mix normals toghether
+        applyMixNormalLevels(auxFBO1->texture(),
+                           auxFBO2BMLevels[0]->texture(),
+                           auxFBO2BMLevels[1]->texture(),
+                           auxFBO2BMLevels[2]->texture(),
+                           activeFBO);
+
+        copyTex2FBO(activeFBO->texture(),auxFBO1);
 
         if(conversionType == CONVERT_FROM_D_TO_O){
             applyNormalToHeight(targetImageHeight,auxFBO1,activeFBO,auxFBO2);
             applyCPUNormalizationFilter(auxFBO2,activeFBO);
+            //copyFBO(auxFBO2,activeFBO);
         }
 
         copyFBO(activeFBO,auxFBO2);
@@ -1627,12 +1680,12 @@ void GLImage::applyNormalsStepFilter(QGLFramebufferObject* inputFBO,
 
 void GLImage::applyPreSmoothFilter(  QGLFramebufferObject* inputFBO,
                                      QGLFramebufferObject* auxFBO,
-                                     QGLFramebufferObject* outputFBO){
+                                     QGLFramebufferObject* outputFBO,BaseMapConvLevelProperties& convProp){
 
 
     GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_gauss_filter"]) );
-    GLCHK( program->setUniformValue("gui_gauss_radius", int(activeImage->conversionBaseMapPreSmoothRadius)) );
-    GLCHK( program->setUniformValue("gui_gauss_w", float(activeImage->conversionBaseMapPreSmoothRadius)) );
+    GLCHK( program->setUniformValue("gui_gauss_radius", int(convProp.conversionBaseMapPreSmoothRadius)) );
+    GLCHK( program->setUniformValue("gui_gauss_w", float(convProp.conversionBaseMapPreSmoothRadius)) );
 
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
@@ -1655,13 +1708,14 @@ void GLImage::applyPreSmoothFilter(  QGLFramebufferObject* inputFBO,
 }
 
 void GLImage::applySobelToNormalFilter(QGLFramebufferObject* inputFBO,
-                                       QGLFramebufferObject* outputFBO){
+                                       QGLFramebufferObject* outputFBO,
+                                       BaseMapConvLevelProperties& convProp){
 
 
     GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_sobel_filter"]) );
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    GLCHK( program->setUniformValue("gui_basemap_amp", activeImage->conversionBaseMapAmplitude) );
+    GLCHK( program->setUniformValue("gui_basemap_amp", convProp.conversionBaseMapAmplitude) );
 
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );
@@ -1785,9 +1839,91 @@ void GLImage::applyNormalToHeight(FBOImageProporties* image,QGLFramebufferObject
 
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault() );
+
+/*
+    // improve calculations of CPU side
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, outputFBO->texture()) );
+    GLint textureWidth, textureHeight;
+    GLCHK( glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &textureWidth) );
+    GLCHK( glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &textureHeight) );
+
+    float* hmap = new float[textureWidth*textureHeight*3];
+    GLCHK( glGetTexImage(	GL_TEXTURE_2D,0,GL_RGB,GL_FLOAT,hmap) );
+
+    GLCHK( glBindTexture(GL_TEXTURE_2D, normalFBO->texture()) );
+    float* nmap = new float[textureWidth*textureHeight*3];
+    GLCHK( glGetTexImage(	GL_TEXTURE_2D,0,GL_RGB,GL_FLOAT,nmap) );
+
+    int nx = textureWidth;
+    int ny = textureHeight;
+    #define To2D(i,j)( i + nx*(j) )
+
+
+    double * dhmap = new double[nx*ny];
+    for(int i = 0 ; i < nx*ny ; i++){
+        dhmap[i] = hmap[3*i];
+    }
+    double*  normXImage  = new double[nx*ny]; // skladowa x mapy N
+    double*  normYImage  = new double[nx*ny]; // skladowa y mapy N
+
+
+    for( int i = 1 ; i < nx-1 ; i++ ){
+    for( int j = 1 ; j < ny-1 ; j++ ){
+        normXImage[To2D(i,j)]  = abs(sin(j*i/1000.0)); //-(nmap[3*To2D(i+1,j)]-nmap[3*To2D(i-1,j)])/2;
+        normYImage[To2D(i,j)]  = -(nmap[3*To2D(i,j+1)+1]-nmap[3*To2D(i,j-1)+1])/2;
+    }}
+
+    for(int iter = 0 ; iter < 1 ; iter ++){
+
+    for( int i = 0 ; i < nx ; i++ ){
+    for( int j = 0 ; j < ny ; j++ ){
+        double alpha = 0.25*(dhmap[To2D(i+1,j)]+dhmap[To2D(i-1,j)]+dhmap[To2D(i,j+1)]+dhmap[To2D(i,j-1)]);
+        dhmap[To2D(i,j)] = abs(sin(j*i/1000.0));
+    }}
+
+    }
+
+    for(int i = 0 ; i < nx*ny ; i++){
+        hmap[3*i]   = dhmap[i];
+        hmap[3*i+1] = dhmap[i];
+        hmap[3*i+2] = dhmap[i];
+    }
+
+    GLCHK( glBindTexture(GL_TEXTURE_2D, outputFBO->texture()) );
+    //glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_FORMAT, textureWidth, textureHeight, 0, GL_RGB, GL_FLOAT, hmap);
+
+
+
+    delete [] dhmap;
+    delete [] normXImage;
+    delete [] normYImage;
+    delete[] hmap;
+    delete[] nmap;
+*/
+
+/*
+
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normalize_filter"]) );
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+
+    GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    GLCHK( program->setUniformValue("min_color",QVector3D(min[0],min[1],min[2])) );
+    GLCHK( program->setUniformValue("max_color",QVector3D(max[0],max[1],max[2])) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+
+
+    GLCHK( outputFBO->bindDefault() );
+    */
+
+
 }
 
-void GLImage::applySelectiveGaussFilter(QGLFramebufferObject* inputFBO,
+void GLImage::applyNormalExpansionFilter(QGLFramebufferObject* inputFBO,
                               QGLFramebufferObject* outputFBO){
 
 
@@ -1804,6 +1940,40 @@ void GLImage::applySelectiveGaussFilter(QGLFramebufferObject* inputFBO,
 
 }
 
+
+void GLImage::applyMixNormalLevels(GLuint level0,
+                                   GLuint level1,
+                                   GLuint level2,
+                                   GLuint level3,
+                                   QGLFramebufferObject* outputFBO){
+
+
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_mix_normal_levels_filter"]) );
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+
+    GLCHK( program->setUniformValue("gui_base_map_w0"  , activeImage->baseMapConvLevels[0].conversionBaseMapWeight/100.0f ) );
+    GLCHK( program->setUniformValue("gui_base_map_w1"  , activeImage->baseMapConvLevels[1].conversionBaseMapWeight/100.0f ) );
+    GLCHK( program->setUniformValue("gui_base_map_w2"  , activeImage->baseMapConvLevels[2].conversionBaseMapWeight/100.0f ) );
+    GLCHK( program->setUniformValue("gui_base_map_w3"  , activeImage->baseMapConvLevels[3].conversionBaseMapWeight/100.0f ) );
+
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+    GLCHK( outputFBO->bind() );
+
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, level0) );
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, level1) );
+    GLCHK( glActiveTexture(GL_TEXTURE2) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, level2) );
+    GLCHK( glActiveTexture(GL_TEXTURE3) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, level3) );
+
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( outputFBO->bindDefault() );
+}
+
 void GLImage::applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
                                           QGLFramebufferObject* outputFBO){
 
@@ -1813,17 +1983,18 @@ void GLImage::applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
     GLCHK( glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &textureWidth) );
     GLCHK( glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &textureHeight) );
 
-    float* img = new float[textureWidth*textureHeight*4];
+    float* img = new float[textureWidth*textureHeight*3];
 
-    GLCHK( glGetTexImage(	GL_TEXTURE_2D,0,GL_RGBA,GL_FLOAT,img) );
+    GLCHK( glGetTexImage(GL_TEXTURE_2D,0,GL_RGB,GL_FLOAT,img) );
 
     float min[3] = {img[0],img[1],img[2]};
     float max[3] = {img[0],img[1],img[2]};
 
     for(int i = 0 ; i < textureWidth*textureHeight ; i++){
+        //qDebug() << "i=" <<i << "\t" << img[3*i+0] << "\t" << img[3*i+1] << "\t" << img[3*i+2];
         for(int c = 0 ; c < 3 ; c++){
-            if( max[c] < img[4*i+c] ) max[c] = img[4*i+c];
-            if( min[c] > img[4*i+c] ) min[c] = img[4*i+c];
+            if( max[c] < img[3*i+c] ) max[c] = img[3*i+c];
+            if( min[c] > img[3*i+c] ) min[c] = img[3*i+c];
         }
 
     }
@@ -1855,30 +2026,30 @@ void GLImage::applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
 
 void GLImage::applyBaseMapConversion(QGLFramebufferObject* baseMapFBO,
                                      QGLFramebufferObject *auxFBO,
-                                     QGLFramebufferObject* outputFBO){
+                                     QGLFramebufferObject* outputFBO,BaseMapConvLevelProperties& convProp){
 
 
         applyGrayScaleFilter(baseMapFBO,outputFBO);
-        applySobelToNormalFilter(outputFBO,auxFBO);
+        applySobelToNormalFilter(outputFBO,auxFBO,convProp);
         applyInvertComponentsFilter(auxFBO,baseMapFBO);
-        applyPreSmoothFilter(baseMapFBO,auxFBO,outputFBO);
+        applyPreSmoothFilter(baseMapFBO,auxFBO,outputFBO,convProp);
 
         GLCHK( program->setUniformValue("gui_combine_normals" , 0) );
-        GLCHK( program->setUniformValue("gui_filter_radius" , activeImage->conversionBaseMapFilterRadius) );
+        GLCHK( program->setUniformValue("gui_filter_radius" , convProp.conversionBaseMapFilterRadius) );
 
-        for(int i = 0; i < activeImage->conversionBaseMapNoIters ; i ++){
+        for(int i = 0; i < convProp.conversionBaseMapNoIters ; i ++){
             copyFBO(outputFBO,auxFBO);
-            GLCHK( program->setUniformValue("gui_normal_flatting" , activeImage->conversionBaseMapFlatness) );
-            applySelectiveGaussFilter(auxFBO,outputFBO);
+            GLCHK( program->setUniformValue("gui_normal_flatting" , convProp.conversionBaseMapFlatness) );
+            applyNormalExpansionFilter(auxFBO,outputFBO);
         }
 
         GLCHK( program->setUniformValue("gui_combine_normals" , 1) );
-        GLCHK( program->setUniformValue("gui_mix_normals"   , activeImage->conversionBaseMapMixNormals) );
-        GLCHK( program->setUniformValue("gui_blend_normals" , activeImage->conversionBaseMapBlending) );
+        GLCHK( program->setUniformValue("gui_mix_normals"   , convProp.conversionBaseMapMixNormals) );
+        GLCHK( program->setUniformValue("gui_blend_normals" , convProp.conversionBaseMapBlending) );
         copyFBO(outputFBO,auxFBO);
         GLCHK( glActiveTexture(GL_TEXTURE1) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, baseMapFBO->texture()) );
-        applySelectiveGaussFilter(auxFBO,outputFBO);
+        applyNormalExpansionFilter(auxFBO,outputFBO);
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( program->setUniformValue("gui_combine_normals" , 0 ) );
 

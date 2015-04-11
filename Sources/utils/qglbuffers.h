@@ -39,7 +39,7 @@
 #include <QtWidgets>
 #include <QDebug>
 #include "../qopenglerrorcheck.h"
-
+#include "../CommonObjects.h"
 
 #define BUFFER_OFFSET(i) ((char*)0 + (i))
 #define SIZE_OF_MEMBER(cls, member) sizeof(static_cast<cls *>(0)->member)

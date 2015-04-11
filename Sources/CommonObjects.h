@@ -21,7 +21,9 @@
     #define AB_LOG_ALT "log.txt"
 #endif
 
-#define AWESOME_BUMP_VERSION "AwesomeBump v3.0.3 "
+#define AWESOME_BUMP_VERSION "AwesomeBump v3.0.4 "
+
+#define TEXTURE_FORMAT GL_RGB16F
 
 using namespace std;
 
@@ -284,7 +286,7 @@ public:
 // Wrapper for FBO initialization.
 class FBOImages {
 public:
-    static void create(QGLFramebufferObject *&fbo,int width,int height,GLuint internal_format = GL_RGB16F){
+    static void create(QGLFramebufferObject *&fbo,int width,int height,GLuint internal_format = TEXTURE_FORMAT){
         if(fbo !=NULL ){
             fbo->release();
             delete fbo;
@@ -312,7 +314,7 @@ public:
         GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
         qDebug() << "FBOImages::creating new FBO(" << width << "," << height << ") with id=" << fbo->texture() ;
     }
-    static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref,GLuint internal_format = GL_RGB16F){
+    static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref,GLuint internal_format = TEXTURE_FORMAT){
         if(src == NULL){
             GLCHK(FBOImages::create(src ,ref->width(),ref->height(),internal_format));
         }else if( ref->width()  == src->width() &&
@@ -320,7 +322,7 @@ public:
             GLCHK(FBOImages::create(src ,ref->width(),ref->height(),internal_format));
         }
     }
-    static void resize(QGLFramebufferObject *&src,int width, int height,GLuint internal_format = GL_RGB16F){
+    static void resize(QGLFramebufferObject *&src,int width, int height,GLuint internal_format = TEXTURE_FORMAT){
         if(src == NULL){
             GLCHK(FBOImages::create(src ,width,height,internal_format));
         }else if( width  == src->width() &&
@@ -333,13 +335,36 @@ public:
 
 };
 
+
+struct BaseMapConvLevelProperties{
+
+    float conversionBaseMapAmplitude;
+    float conversionBaseMapFlatness;
+    int   conversionBaseMapNoIters;
+    int   conversionBaseMapFilterRadius;
+    float conversionBaseMapMixNormals;
+    float conversionBaseMapPreSmoothRadius;
+    float conversionBaseMapBlending;
+    float conversionBaseMapWeight;
+
+    BaseMapConvLevelProperties(){
+        conversionBaseMapAmplitude      = 0;
+        conversionBaseMapFlatness       = 0.5;
+        conversionBaseMapNoIters        = 0;
+        conversionBaseMapFilterRadius   = 3;
+        conversionBaseMapMixNormals     = 1.0;
+        conversionBaseMapPreSmoothRadius= 0;
+        conversionBaseMapBlending       = 1.0;
+        conversionBaseMapWeight         = 0.0;
+    }
+
+};
+
 // Main object. Contains information about Image and the post process parameters
 class FBOImageProporties{
 public:
-    //QGLFramebufferObject *ref_fbo ; // reference image
+
     QGLFramebufferObject *fbo     ; // output image
-    //QGLFramebufferObject *aux_fbo ; // aux image (used in post processing)
-    //QGLFramebufferObject *aux2_fbo; // the same
 
     GLuint scr_tex_id;       // Id of texture loaded from image, from loaded file
     int scr_tex_width;       // width of the image loaded from file.
@@ -388,13 +413,7 @@ public:
     int  conversionNHItersVerySmall;
     // Base to others settings
     bool bConversionBaseMap;
-    float conversionBaseMapAmplitude;
-    float conversionBaseMapFlatness;
-    int   conversionBaseMapNoIters;
-    int   conversionBaseMapFilterRadius;
-    float conversionBaseMapMixNormals;
-    float conversionBaseMapPreSmoothRadius;
-    float conversionBaseMapBlending;
+    BaseMapConvLevelProperties baseMapConvLevels[4];
 
     // ambient occlusion settings
     int ssaoNoIters;
@@ -507,13 +526,6 @@ public:
         conversionNHItersVerySmall  = 10;
 
         bConversionBaseMap          = false;
-        conversionBaseMapAmplitude  = 0;
-        conversionBaseMapFlatness   = 0.5;
-        conversionBaseMapNoIters        = 0;
-        conversionBaseMapFilterRadius   = 3;
-        conversionBaseMapMixNormals     = 1.0;
-        conversionBaseMapPreSmoothRadius= 0;
-        conversionBaseMapBlending       = 1.0;
 
 
         ssaoNoIters   = 4;
@@ -602,12 +614,10 @@ public:
     }
 
     void resizeFBO(int width, int height){
-        //GLCHK(FBOImages::resize(ref_fbo ,width,height));
+
         GLCHK(FBOImages::resize(fbo     ,width,height));
-       // GLCHK(FBOImages::resize(aux_fbo ,width,height));
-       // GLCHK(FBOImages::resize(aux2_fbo,width,height));
-        double memUsage = width * height * 4 * 16 / (1024.0*1024.0*8);
-        qDebug() << "Resized image memory usage:" << memUsage << "[MB]";
+       // double memUsage = width * height * 4 * 16 / (1024.0*1024.0*8);
+       // qDebug() << "Resized image memory usage:" << memUsage << "[MB]";
         bFirstDraw = true;
     }
 
@@ -626,11 +636,7 @@ public:
         glWidget_ptr->makeCurrent();
         if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
         glWidget_ptr = NULL;
-       // if(ref_fbo    != NULL ) delete ref_fbo;
         if(fbo        != NULL ) delete fbo;
-       // if(aux_fbo    != NULL ) delete aux_fbo;
-       // if(aux2_fbo   != NULL ) delete aux2_fbo;
-
     }
 };
 

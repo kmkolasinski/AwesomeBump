@@ -7,6 +7,7 @@ subroutine uniform filterModeType filterMode;
 uniform sampler2D layerA; // first layer
 uniform sampler2D layerB; // second layer
 uniform sampler2D layerC; // third layer
+uniform sampler2D layerD; // fourth layer
 
 uniform int quad_draw_mode;
 
@@ -728,6 +729,32 @@ subroutine(filterModeType) vec4 mode_normal_expansion_filter(){
     }
 	
 }
+
+// ----------------------------------------------------------------
+//
+// ----------------------------------------------------------------
+// normal mipmaps weights
+uniform float gui_base_map_w0;
+uniform float gui_base_map_w1;
+uniform float gui_base_map_w2;
+uniform float gui_base_map_w3;
+
+subroutine(filterModeType) vec4 mode_mix_normal_levels_filter(){
+    vec3 normalA     = normalize(texture(layerA,v2QuadCoords.xy).rgb - 0.5);
+    vec3 normalB     = normalize(texture(layerB,v2QuadCoords.xy).rgb - 0.5);
+    vec3 normalC     = normalize(texture(layerC,v2QuadCoords.xy).rgb - 0.5);
+    vec3 normalD     = normalize(texture(layerD,v2QuadCoords.xy).rgb - 0.5);
+
+    vec3 finalNormal = vec3(normalA.xy*gui_base_map_w0,normalA.z) +
+                       vec3(normalB.xy*gui_base_map_w1,normalB.z) +
+                       vec3(normalC.xy*gui_base_map_w2,normalC.z) +
+                       vec3(normalD.xy*gui_base_map_w3,normalD.z);
+
+    vec4 finalColor  = vec4(finalNormal+0.5,1);
+
+    return finalColor;
+}
+
 
 // ----------------------------------------------------------------
 //

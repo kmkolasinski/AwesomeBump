@@ -79,13 +79,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 
     // base map convertion
     connect(ui->checkBoxEnableBaseMapToOthers               ,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
-    connect(ui->horizontalSliderBaseMapAmplidute            ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
-    connect(ui->horizontalSliderConversionBaseMapFlatness   ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
-    connect(ui->horizontalSliderBMNoIters                   ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
-    connect(ui->horizontalSliderConversionBMFilterRadius    ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
-    connect(ui->horizontalSliderConversionBaseMapMixing     ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
-    connect(ui->horizontalSliderConversionBMPreSmoothRadius ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
-    connect(ui->horizontalSliderConversionBaseMapBlending   ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+
 
     connect(ui->pushButtonConvertToNormalAndHeight,SIGNAL(released()),this,SLOT(applyBaseConversionConversion()));
 
@@ -185,11 +179,26 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     ui->groupBoxBaseToOthersProcessing->hide();
     ui->groupBoxSpecularProcessing->hide();
 
+    // conversion levels
+    for(int i = 0; i < 4 ; i++){
+        baseMapConvLevels[i] = new FormBaseMapConversionLevels;
+        connect(baseMapConvLevels[i],SIGNAL(slidersChanged()),this,SLOT(updateSlidersOnRelease()));
+    }
+    ui->verticalLayoutBaseMapConvLevel0->addWidget(baseMapConvLevels[0]);
+    ui->verticalLayoutBaseMapConvLevel1->addWidget(baseMapConvLevels[1]);
+    ui->verticalLayoutBaseMapConvLevel2->addWidget(baseMapConvLevels[2]);
+    ui->verticalLayoutBaseMapConvLevel3->addWidget(baseMapConvLevels[3]);
+
+    for(int i = 0; i < 4 ; i++){
+
+        baseMapConvLevels[i]->show();
+    }
 }
 
 FormImageProp::~FormImageProp()
 {
     delete heightCalculator;
+    for(int i = 0; i < 4 ; i++) delete baseMapConvLevels[i];
     delete ui;
 }
 
@@ -505,13 +514,13 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
     imageProp.conversionNHItersSmall    = ui->horizontalSliderNormalToHeightItersSmall->value();
     imageProp.conversionNHItersVerySmall= ui->horizontalSliderNormalToHeightItersVerySmall->value();
 
-    imageProp.conversionBaseMapAmplitude    = ui->horizontalSliderBaseMapAmplidute->value()/100.0;
-    imageProp.conversionBaseMapFlatness     = ui->horizontalSliderConversionBaseMapFlatness->value()/100.0;
-    imageProp.conversionBaseMapNoIters      = ui->horizontalSliderBMNoIters->value();
-    imageProp.conversionBaseMapFilterRadius = ui->horizontalSliderConversionBMFilterRadius->value();
-    imageProp.conversionBaseMapMixNormals   = ui->horizontalSliderConversionBaseMapMixing->value()/200.0;
-    imageProp.conversionBaseMapPreSmoothRadius= ui->horizontalSliderConversionBMPreSmoothRadius->value()/10.0;
-    imageProp.conversionBaseMapBlending     = ui->horizontalSliderConversionBaseMapBlending->value()/100.0;
+    // update conversion levels
+    if(imageProp.imageType == DIFFUSE_TEXTURE){
+        for(int i = 0; i < 4 ; i++){
+            baseMapConvLevels[i]->getSlidersValues(imageProp.baseMapConvLevels[i]);
+        }
+    }
+
 
     imageProp.ssaoNoIters   = ui->horizontalSliderSSAONoIters->value();
     imageProp.ssaoDepth     = ui->horizontalSliderSSAODepth->value()/100.0;
@@ -803,14 +812,12 @@ void FormImageProp::reloadSettings(){
     ui->horizontalSliderNormalToHeightItersVerySmall->setValue(imageProp.conversionNHItersVerySmall);
     ui->horizontalSliderNormalToHeightItersSmall    ->setValue(imageProp.conversionNHItersSmall);
 
-    ui->horizontalSliderBaseMapAmplidute            ->setValue(imageProp.conversionBaseMapAmplitude*100);
-    ui->horizontalSliderConversionBaseMapFlatness   ->setValue(imageProp.conversionBaseMapFlatness*100);
-    ui->horizontalSliderBMNoIters                   ->setValue(imageProp.conversionBaseMapNoIters);
-
-    ui->horizontalSliderConversionBMFilterRadius    ->setValue(imageProp.conversionBaseMapFilterRadius);
-    ui->horizontalSliderConversionBaseMapMixing     ->setValue(imageProp.conversionBaseMapMixNormals*200);
-    ui->horizontalSliderConversionBaseMapBlending   ->setValue(imageProp.conversionBaseMapBlending*100);
-
+    // update conversion levels
+    if(imageProp.imageType == DIFFUSE_TEXTURE){
+        for(int i = 0; i < 4 ; i++){
+            baseMapConvLevels[i]->updateSliders(imageProp.baseMapConvLevels[i]);
+        }
+    }
 
     ui->horizontalSliderSSAONoIters     ->setValue(imageProp.ssaoNoIters);
     ui->horizontalSliderSSAOBias        ->setValue(imageProp.ssaoBias*100);
@@ -963,8 +970,7 @@ void FormImageProp::reloadSettings(){
 
 
     bLoading = false;
-    ui->horizontalSliderConversionBMPreSmoothRadius->setValue(imageProp.conversionBaseMapPreSmoothRadius*10);
-    
+
     // forcing gray scale for specular image
     if(imageProp.imageType == SPECULAR_TEXTURE){
         ui->checkBoxGrayScale->setChecked(true);
