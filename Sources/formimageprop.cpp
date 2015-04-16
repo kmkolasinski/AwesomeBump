@@ -1,9 +1,11 @@
 #include "formimageprop.h"
 #include "ui_formimageprop.h"
-QDir* FormImageProp::recentDir;
+
+
+
 
 FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
-    QWidget(parent),
+    FormImageBase(parent),
     ui(new Ui::FormImageProp)
 {
     ui->setupUi(this);
@@ -161,7 +163,6 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 
 
 
-
     setAcceptDrops(true);
     ui->groupBoxRemoveShading->hide();
     ui->checkBoxRemoveShading->hide();
@@ -193,6 +194,9 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 
         baseMapConvLevels[i]->show();
     }
+    setMouseTracking(true);
+    setFocus();
+    setFocusPolicy(Qt::ClickFocus);
 }
 
 FormImageProp::~FormImageProp()
@@ -203,29 +207,6 @@ FormImageProp::~FormImageProp()
 }
 
 
-
-void FormImageProp::open()
-{
-
-    QStringList picturesLocations;// = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
-    if(recentDir == NULL ) picturesLocations = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
-    else  picturesLocations << recentDir->absolutePath();
-
-
-    QFileDialog dialog(this,
-                       tr("Open File"),
-                       picturesLocations.isEmpty() ? QDir::currentPath() : picturesLocations.first(),
-                       tr("All Images (*.png *.jpg  *.tga *.jpeg *.bmp);;"
-                          "Images (*.png);;"
-                          "Images (*.jpg);;"
-                          "Images (*.tga);;"
-                          "Images (*.jpeg);;"
-                          "Images (*.bmp);;"
-                          "All files (*.*)"));
-    dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-    while (dialog.exec() == QDialog::Accepted && !loadFile(dialog.selectedFiles().first())) {}
-}
 
 bool FormImageProp::loadFile(const QString &fileName)
 {
@@ -259,71 +240,14 @@ bool FormImageProp::loadFile(const QString &fileName)
     return true;
 }
 
-void FormImageProp::save(){
-
-    QStringList picturesLocations;
-    if(recentDir == NULL ) picturesLocations = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
-    else{
-         QFileInfo fileInfo(recentDir->absolutePath());
-         QString fullFileName = fileInfo.absolutePath()+ "/" +
-                                imageName + PostfixNames::getPostfix(imageProp.imageType)
-                                + PostfixNames::outputFormat;
-         picturesLocations << fullFileName;
-         qDebug() << "<FormImageProp>:: Saving to file:" << fullFileName;
-    }
-
-
-    QFileDialog dialog(this,
-                       tr("Save current image to file"),
-                       picturesLocations.isEmpty() ? QDir::currentPath() : picturesLocations.first(),
-                       tr("All images (*.png *.jpg  *.tga *.jpeg *.bmp);;All files (*.*)"));
-    dialog.setDirectory(recentDir->absolutePath());
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-
-
-    while (dialog.exec() == QDialog::Accepted && !saveFile(dialog.selectedFiles().first())) {}
+void FormImageProp::pasteImageFromClipboard(QImage& _image){
+    imageName = "clipboard_image";
+    image     = _image;
+    imageProp.init(image);
+    emit imageLoaded(image.width(),image.height());
 }
 
-bool FormImageProp::saveFile(const QString &fileName){
-    qDebug() << Q_FUNC_INFO << "image:" << fileName;
 
-    QFileInfo fileInfo(fileName);
-    (*recentDir).setPath(fileInfo.absolutePath());
-    image = imageProp.getImage();
-
-    if( PostfixNames::outputFormat.compare(".tga") == 0 || fileInfo.completeSuffix().compare("tga") == 0 ){
-        TargaImage tgaImage;
-        tgaImage.write(image,fileName);
-    }else{
-        image.save(fileName);
-    }
-    return true;
-}
-
-void FormImageProp::saveFileToDir(const QString &dir){
-
-    QString fullFileName = dir + "/" +
-                           imageName + PostfixNames::getPostfix(imageProp.imageType)
-                           + PostfixNames::outputFormat;
-    saveFile(fullFileName);
-}
-
-void FormImageProp::saveImageToDir(const QString &dir,QImage& image){
-
-    QString fullFileName = dir + "/" +
-                           imageName + PostfixNames::getPostfix(imageProp.imageType)
-                           + PostfixNames::outputFormat;
-
-    qDebug() << "<FormImageProp> save image:" << fullFileName;
-    QFileInfo fileInfo(fullFileName);
-    (*recentDir).setPath(fileInfo.absolutePath());
-
-    if( PostfixNames::outputFormat.compare(".tga") == 0){
-        TargaImage tgaImage;
-        tgaImage.write(image,fullFileName);
-    }else
-        image.save(fullFileName);
-}
 
 void FormImageProp::setImage(QImage _image){
     image    = _image;
@@ -332,12 +256,7 @@ void FormImageProp::setImage(QImage _image){
     else
         qDebug() << Q_FUNC_INFO << "Invalid context.";
 }
-void FormImageProp::setImageName(QString name){
-    imageName = name;
-}
-QString FormImageProp::getImageName(){
-    return imageName;
-}
+
 
 void FormImageProp::setSpecularControlChecked(){
     ui->checkBoxSpecularControl->setChecked(true);
@@ -462,7 +381,8 @@ void FormImageProp::updateComboBoxes(int index){
 
 
     // color picker
-    imageProp.colorPickerMethod = (ColorPickerMethod) ui->comboBoxColorPickerMethod->currentIndex();
+    imageProp.colorPickerMethod     = (ColorPickerMethod) ui->comboBoxColorPickerMethod->currentIndex();
+
 
     emit imageChanged();
 }
@@ -736,26 +656,6 @@ void FormImageProp::hideGrayScaleControl(){
     ui->checkBoxGrayScale->hide();
 }
 
-void FormImageProp::dropEvent(QDropEvent *event)
-{
-
-    QList<QUrl> droppedUrls = event->mimeData()->urls();
-    int i = 0;
-    QString localPath = droppedUrls[i].toLocalFile();
-    QFileInfo fileInfo(localPath);
-
-    loadFile(fileInfo.absoluteFilePath());
-
-    event->acceptProposedAction();
-
-}
-
-void FormImageProp::dragEnterEvent(QDragEnterEvent *event)
-{
-    if(event->mimeData()->hasText() || event->mimeData()->hasImage()) {
-        event->acceptProposedAction();
-    }
-}
 
 void FormImageProp::reloadSettings(){
     bLoading = true;
@@ -863,7 +763,10 @@ void FormImageProp::reloadSettings(){
 
     ui->radioButtonRoughnessEnable->setChecked(imageProp.bRoughnessSurfaceEnable);
     ui->radioButtonEnableColorPicking->setChecked(imageProp.bRoughnessEnableColorPicking);
-    if(!imageProp.bRoughnessSurfaceEnable && !imageProp.bRoughnessEnableColorPicking) ui->radioButtonRoughnessNoneEffect->setChecked(true);
+    if(!imageProp.bRoughnessSurfaceEnable && !imageProp.bRoughnessEnableColorPicking){
+        ui->radioButtonRoughnessNoneEffect->setChecked(true);
+        ui->groupBoxGeneral->setEnabled(true);
+    }
     if(imageProp.bRoughnessEnableColorPicking) ui->groupBoxGeneral->setDisabled(true);
 
     imageProp.bRoughnessColorPickingToggled = false;
@@ -877,7 +780,7 @@ void FormImageProp::reloadSettings(){
 
     ui->checkBoxRoughnessColorInvert->setChecked(imageProp.bRoughnessInvertColorMask);
     ui->horizontalSliderRoughnessColorOffset->setValue(imageProp.roughnessColorOffset*100);
-    ui->horizontalSliderRoughnessColorOffset->setValue(imageProp.roughnessColorGlobalOffset*255);
+    ui->horizontalSliderRoughnessColorGlobalOffset->setValue(imageProp.roughnessColorGlobalOffset*255);
 
     ui->horizontalSliderRoughnessColorAmplifier->setValue(imageProp.roughnessColorAmplifier*100);
 
@@ -997,3 +900,5 @@ void FormImageProp::reloadSettings(){
 void FormImageProp::reloadImageSettings(){
     emit reloadSettingsFromConfigFile(imageProp.imageType);
 }
+
+

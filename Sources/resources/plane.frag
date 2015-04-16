@@ -10,6 +10,7 @@ uniform sampler2D texHeight;
 uniform sampler2D texSSAO;
 uniform sampler2D texRoughness;
 uniform sampler2D texMetallic;
+uniform sampler2D texMaterial;
 
 uniform samplerCube texDiffuseEnvMap;  // prefilltered diffuse cube map
 uniform samplerCube texEnvMap;         // full cube map
@@ -27,7 +28,7 @@ uniform float gui_LightRadius;
 
 uniform int gui_noPBRRays;
 uniform bool gui_bUseSimplePBR;
-
+uniform bool gui_bMaterialsPreviewEnabled;
 
 uniform  float gui_depthScale;
 uniform float gui_SpecularIntensity;
@@ -385,6 +386,14 @@ vec4 PBR_Specular_SIMPLE(float roughness,
 
 void main( void )
 {
+
+    if(gui_bMaterialsPreviewEnabled){
+        FragColor     = texture(texMaterial, texcoord.st);
+        FragNormal    = vec4(0);
+        FragGlowColor = vec4(0);
+        return;
+    }
+
     // calculate uv coords based on selected algorithm
     vec2 texcoords = texcoord.st;
     if(gui_shading_type == 0){
@@ -478,6 +487,7 @@ void main( void )
     float level      = dot(finalColor.rgb,finalColor.rgb)/3;
     FragGlowColor = vec4(0);
     if(level > bloomLevel )FragGlowColor = finalColor;
+
 
     //FragColor = fvBaseColor;
 }

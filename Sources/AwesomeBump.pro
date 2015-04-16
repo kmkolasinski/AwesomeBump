@@ -19,7 +19,10 @@ HEADERS       = glwidget.h \
     utils/qglbuffers.h \
     dialoglogger.h \
     glwidgetbase.h \
-    formbasemapconversionlevels.h
+    formbasemapconversionlevels.h \
+    formmaterialindicesmanager.h \
+    dialogshortcuts.h \
+    formimagebase.h
 
 SOURCES       = glwidget.cpp \
                 main.cpp \
@@ -36,7 +39,10 @@ SOURCES       = glwidget.cpp \
     utils/qglbuffers.cpp \
     dialoglogger.cpp \
     glwidgetbase.cpp \
-    formbasemapconversionlevels.cpp
+    formbasemapconversionlevels.cpp \
+    formmaterialindicesmanager.cpp \
+    dialogshortcuts.cpp \
+    formimagebase.cpp
 
 
 # install
@@ -54,7 +60,9 @@ FORMS += \
     formsettingsfield.ui \
     formsettingscontainer.ui \
     dialoglogger.ui \
-    formbasemapconversionlevels.ui
+    formbasemapconversionlevels.ui \
+    formmaterialindicesmanager.ui \
+    dialogshortcuts.ui
 
 ICON = resources/icon.icns
 INCLUDEPATH += include

@@ -9,6 +9,10 @@ int FBOImageProporties::seamlessSimpleModeDirection       = 0; // xy
 SourceImageType FBOImageProporties::seamlessContrastInputType = INPUT_FROM_HEIGHT_INPUT;
 bool FBOImageProporties::bSeamlessTranslationsFirst       = true;
 int FBOImageProporties::seamlessMirroModeType             = 0;
+
+map<QString,int>  FBOImageProporties::materialIndices;
+int FBOImageProporties::currentMaterialIndeks = MATERIALS_DISABLED;
+
 RandomTilingMode FBOImageProporties::seamlessRandomTiling = RandomTilingMode();
 
 

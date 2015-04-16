@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
     app.setFont(font);
 
     // removing old log file
-    QFile::remove("log.txt");
+    QFile::remove(AB_LOG);
 
 
     qInstallMessageHandler(customMessageHandler);

@@ -260,10 +260,13 @@ void GLWidget::initializeGL()
     program->setUniformValue("texSSAO"     , 4);
     program->setUniformValue("texRoughness", 5);
     program->setUniformValue("texMetallic",  6);
+    program->setUniformValue("texMaterial",  7);
 
-    program->setUniformValue("texDiffuseEnvMap", 7);
-    program->setUniformValue("texEnvMap"       , 8);
+    program->setUniformValue("texDiffuseEnvMap", 8);
+    program->setUniformValue("texEnvMap"       , 9);
 
+
+    //GLCHK( subroutines["render_shader"]  = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"render_shader") );
 
     delete vshader;
     delete fshader;
@@ -502,9 +505,13 @@ void GLWidget::paintGL()
     GLCHK( program->setUniformValue("gui_noTessSub"      , performanceSettings.noTessSubdivision) );
     GLCHK( program->setUniformValue("gui_noPBRRays"      , performanceSettings.noPBRRays) );
 
+    // Material preview: M key
+    GLCHK( program->setUniformValue("gui_bMaterialsPreviewEnabled"      , bool(keyPressed == KEY_SHOW_MATERIALS)) );
+
     if( fboIdPtrs[0] != NULL){
 
         int tindeks = 0;
+
         for(tindeks = 0 ; tindeks < MAX_TEXTURES_TYPE ; tindeks++){
             GLCHK( glActiveTexture(GL_TEXTURE0+tindeks) );
             GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[tindeks]))->texture()) );
@@ -532,22 +539,25 @@ void GLWidget::paintGL()
 
     colorFBO->bindDefault();
 
-    // -----------------------------------------------------------
-    // Post processing:
-    // 1. Bloom (can be disabled/enabled by gui)
-    // -----------------------------------------------------------
+    // do post processing if materials are not shown
+    if( keyPressed != KEY_SHOW_MATERIALS ){
+        // -----------------------------------------------------------
+        // Post processing:
+        // 1. Bloom (can be disabled/enabled by gui)
+        // -----------------------------------------------------------
 
-    // enable of disable bloom effect
-    if(performanceSettings.bBloomEffect){
-        applyGlowFilter(outputFBO->fbo);
-        applyNormalFilter(outputFBO->fbo->texture());
-    }else{
+        // enable of disable bloom effect
+        if(performanceSettings.bBloomEffect){
+            applyGlowFilter(outputFBO->fbo);
+            applyNormalFilter(outputFBO->fbo->texture());
+        }else{
+            applyNormalFilter(colorFBO->fbo->texture());
+        }// end of if bloom effect
+
+
+    }else{ // end of if SHOW MATERIAL TEXTURE DISABLED
         applyNormalFilter(colorFBO->fbo->texture());
-    }// end of if bloom effect
-
-
-
-
+    }
     emit renderGL();
 
 }
@@ -601,9 +611,23 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
         setCursor(Qt::SizeAllCursor);
     }else if(event->buttons() & Qt::MiddleButton){
         setCursor(lightCursor);
+
+
     }
 
+
     updateGL();
+    // capture the pixel color if material preview is enabled
+    if((event->buttons() & Qt::LeftButton) && keyPressed == KEY_SHOW_MATERIALS){
+
+        vector< unsigned char > pixels( 1 * 1 * 4 );
+        glReadPixels(event->pos().x(), height()-event->pos().y(), 1, 1,GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
+        QColor color = QColor(pixels[0],pixels[1],pixels[2],pixels[3]);
+
+        qDebug() << "Picked material pixel (" << event->pos().x() << " , " << height()-event->pos().y() << ") with color:" << color;
+        emit materialColorPicked(color);
+
+    }
 
 
 }
@@ -695,6 +719,9 @@ void GLWidget::setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes 
             break;
         case(METALLIC_TEXTURE ):
             fboIdPtrs[6] = pointer;
+            break;
+        case(MATERIAL_TEXTURE ):
+            fboIdPtrs[7] = pointer;
             break;
     }
 }

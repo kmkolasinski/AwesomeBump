@@ -38,6 +38,20 @@ MainWindow::MainWindow(QWidget *parent) :
     roughnessImageProp= new FormImageProp(this,glImage);
     metallicImageProp = new FormImageProp(this,glImage);
 
+
+    materialManager = new FormMaterialIndicesManager(this,glImage);
+
+    // setting pointers to images
+
+    materialManager->imagesPointers[0]  = diffuseImageProp;
+    materialManager->imagesPointers[1]  = normalImageProp;
+    materialManager->imagesPointers[2]  = specularImageProp;
+    materialManager->imagesPointers[3]  = heightImageProp;
+    materialManager->imagesPointers[4]  = occlusionImageProp;
+    materialManager->imagesPointers[5]  = roughnessImageProp;
+    materialManager->imagesPointers[6]  = metallicImageProp;
+
+
     // Setting pointers to 3D view (this pointer are used to bindTextures).
     glWidget->setPointerToTexture(&diffuseImageProp->getImageProporties()  ->fbo,DIFFUSE_TEXTURE);
     glWidget->setPointerToTexture(&normalImageProp->getImageProporties()   ->fbo,NORMAL_TEXTURE);
@@ -47,6 +61,8 @@ MainWindow::MainWindow(QWidget *parent) :
     glWidget->setPointerToTexture(&roughnessImageProp->getImageProporties()->fbo,ROUGHNESS_TEXTURE);
     glWidget->setPointerToTexture(&metallicImageProp->getImageProporties()->fbo,METALLIC_TEXTURE);
 
+    glWidget->setPointerToTexture(&materialManager->getImageProporties()->fbo,MATERIAL_TEXTURE);
+
     // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
     normalImageProp   ->getImageProporties()->imageType = NORMAL_TEXTURE;
@@ -55,6 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp->getImageProporties()->imageType = OCCLUSION_TEXTURE;
     roughnessImageProp->getImageProporties()->imageType = ROUGHNESS_TEXTURE;
     metallicImageProp ->getImageProporties()->imageType = METALLIC_TEXTURE;
+
+    materialManager->getImageProporties()   ->imageType = MATERIAL_TEXTURE;
 
     // disabling some options for each texture
     specularImageProp->setSpecularControlChecked();
@@ -138,6 +156,7 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage ->targetImageDiffuse   = diffuseImageProp  ->getImageProporties();
     glImage ->targetImageRoughness = roughnessImageProp->getImageProporties();
     glImage ->targetImageMetallic  = metallicImageProp ->getImageProporties();
+    glImage ->targetImageMaterial  = materialManager ->getImageProporties();
 
     // ------------------------------------------------------
     //                      GUI setup
@@ -166,6 +185,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutOcclusionImage->addWidget(occlusionImageProp);
     ui->verticalLayoutRoughnessImage->addWidget(roughnessImageProp);
     ui->verticalLayoutMetallicImage ->addWidget(metallicImageProp);
+    ui->verticalLayoutMaterialIndicesImage->addWidget(materialManager);
+
 
     ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
     
@@ -181,6 +202,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(roughnessImageProp,SIGNAL(imageChanged()),this,SLOT(updateRoughnessImage()));
     connect(metallicImageProp,SIGNAL(imageChanged()),this,SLOT(updateMetallicImage()));
 
+    // Material Manager slots
+    connect(materialManager,SIGNAL(materialChanged()),this,SLOT(replotAllImages()));   
+    connect(materialManager,SIGNAL(materialsToggled(bool)),ui->tabTilling,SLOT(setDisabled(bool)));
+    connect(glWidget,SIGNAL(materialColorPicked(QColor)),materialManager,SLOT(chooseMaterialByColor(QColor)));
+
 
     connect(diffuseImageProp  ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
     connect(normalImageProp   ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
@@ -190,6 +216,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(roughnessImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
     connect(metallicImageProp ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
 
+
+    connect(materialManager ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
 
     // image reload settings signal
     connect(diffuseImageProp   ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
@@ -334,7 +362,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->horizontalSliderRandomPatchesOuterRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
 
 
-
+    // apply UVs tranformations
+    connect(ui->pushButtonApplyUVtransformations,SIGNAL(released()),this,SLOT(applyCurrentUVsTransformations()));
 
     ui->groupBoxSimpleSeamlessMode->hide();
     ui->groupBoxMirrorMode->hide();
@@ -361,6 +390,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // other settings:
     connect(ui->spinBoxMouseSensitivity    ,SIGNAL(valueChanged(int)),glWidget,SLOT(setCameraMouseSensitivity(int)));
+    connect(ui->spinBoxFontSize            ,SIGNAL(valueChanged(int)),this,SLOT(changeGUIFontSize(int)));
+    connect(ui->checkBoxToggleMouseLoop    ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleMouseWrap(bool)));
+    connect(ui->checkBoxToggleMouseLoop    ,SIGNAL(toggled(bool)),glImage ,SLOT(toggleMouseWrap(bool)));
+
 
 #ifdef Q_OS_MAC
     if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
@@ -383,6 +416,9 @@ MainWindow::MainWindow(QWidget *parent) :
     roughnessImageProp ->setImage(QImage(QString(":/resources/logo_R.png")));
     metallicImageProp  ->setImage(QImage(QString(":/resources/logo_M.png")));
 
+    materialManager    ->setImage(QImage(QString(":/resources/logo_R.png")));
+
+
     diffuseImageProp   ->setImageName(ui->lineEditOutputName->text());
     normalImageProp    ->setImageName(ui->lineEditOutputName->text());
     heightImageProp    ->setImageName(ui->lineEditOutputName->text());
@@ -399,23 +435,32 @@ MainWindow::MainWindow(QWidget *parent) :
     aboutAction->setToolTip(tr("Show information about AwesomeBump"));
     aboutAction->setMenuRole(QAction::AboutQtRole);
     aboutAction->setMenuRole(QAction::AboutRole);
+
+    shortcutsAction = new QAction(QString("Shortcuts"),this);
+
     aboutQtAction = new QAction(QIcon(":/resources/QtLogo.png"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
 
+
+
     logAction = new QAction("Show log file",this);
-    logger    = new DialogLogger(this);
-    logger->setModal(true);
+    dialogLogger    = new DialogLogger(this);
+    dialogShortcuts = new DialogShortcuts(this);
+    dialogLogger->setModal(true);
+    dialogShortcuts->setModal(true);
 
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
     connect(aboutQtAction, SIGNAL(triggered()), this, SLOT(aboutQt()));
-    connect(logAction, SIGNAL(triggered()), logger, SLOT(showLog()));
+    connect(logAction, SIGNAL(triggered()), dialogLogger, SLOT(showLog()));
+    connect(shortcutsAction, SIGNAL(triggered()), dialogShortcuts, SLOT(show()));
 
 
     QMenu *help = menuBar()->addMenu(tr("&Help"));
     help->addAction(aboutAction);
     help->addAction(aboutQtAction);
     help->addAction(logAction);
+    help->addAction(shortcutsAction);
 
     QAction *action = ui->toolBar->toggleViewAction();
     ui->menubar->addAction(action);
@@ -441,7 +486,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete logger;
+    delete dialogLogger;
+    delete dialogShortcuts;
+    delete materialManager;
     delete settingsContainer;
     delete diffuseImageProp;
     delete normalImageProp;
@@ -450,6 +497,7 @@ MainWindow::~MainWindow()
     delete occlusionImageProp;
     delete roughnessImageProp;
     delete metallicImageProp;
+
     delete statusLabel;
     delete glImage;
     delete glWidget;
@@ -467,7 +515,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     settings.setValue("recent_dir",recentDir.absolutePath());
     settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
     settings.setValue("gui_style",ui->comboBoxGUIStyle->currentText());
-
+    settings.setValue("font_size",ui->spinBoxFontSize->value());
     settingsContainer->close();
     glWidget->close();
     glImage->close();
@@ -515,6 +563,8 @@ void MainWindow::replotAllImages(){
     updateImage(SPECULAR_TEXTURE);
     glImage->update();
 
+    updateImage(MATERIAL_TEXTURE);
+    glImage->update();
 
     glImage->enableShadowRender(false);
 
@@ -986,6 +1036,10 @@ void MainWindow::updateImage(int tType){
             glImage->setActiveImage(metallicImageProp->getImageProporties());
             metallicImageProp->cancelColorPicking();
             break;
+        case(MATERIAL_TEXTURE  ):
+            glImage->setActiveImage(materialManager->getImageProporties());
+            metallicImageProp->cancelColorPicking();
+            break;
         default: // Settings
             return;
     }
@@ -1012,26 +1066,34 @@ void MainWindow::applyResizeImage(){
     int height = ui->comboBoxResizeHeight->currentText().toInt();
     qDebug() << "Image resize applied. Current image size is (" << width << "," << height << ")" ;
 
+    int materiaIndex = FBOImageProporties::currentMaterialIndeks;
+    materialManager->disableMaterials();
+
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
         glImage->resizeFBO(width,height);
         updateImage(i);
-
     }
     glImage->enableShadowRender(false);
     glImage->setActiveImage(lastActive);
     replotAllImages();
     updateImageInformation();
     glWidget->repaint();
+    // replot all material group after image resize
+
+    FBOImageProporties::currentMaterialIndeks = materiaIndex;
+    if(materialManager->isEnabled()){
+       materialManager->toggleMaterials(true);
+    }
 }
 
 void MainWindow::applyResizeImage(int width, int height){
     QCoreApplication::processEvents();
-    //int width  = ui->comboBoxResizeWidth->currentText().toInt();
-    //int height = ui->comboBoxResizeHeight->currentText().toInt();
-    qDebug() << "Image resize applied. Current image size is (" << width << "," << height << ")" ;
 
+    qDebug() << "Image resize applied. Current image size is (" << width << "," << height << ")" ;
+    int materiaIndex = FBOImageProporties::currentMaterialIndeks;
+    materialManager->disableMaterials();
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
@@ -1043,6 +1105,12 @@ void MainWindow::applyResizeImage(int width, int height){
     replotAllImages();
     updateImageInformation();
     glWidget->repaint();
+
+    // replot all material group after image resize
+    FBOImageProporties::currentMaterialIndeks = materiaIndex;
+    if(materialManager->isEnabled()){
+       materialManager->toggleMaterials(true);
+    }
 }
 
 void MainWindow::scaleWidth(double){
@@ -1064,7 +1132,8 @@ void MainWindow::applyScaleImage(){
     int height = diffuseImageProp->getImageProporties()->scr_tex_height*scale_height;
 
     qDebug() << "Image rescale applied. Current image size is (" << width << "," << height << ")" ;
-
+    int materiaIndex = FBOImageProporties::currentMaterialIndeks;
+    materialManager->disableMaterials();
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
@@ -1077,8 +1146,29 @@ void MainWindow::applyScaleImage(){
     updateImageInformation();
     glWidget->repaint();
 
+    // replot all material group after image resize
+    FBOImageProporties::currentMaterialIndeks = materiaIndex;
+    if(materialManager->isEnabled()){
+       materialManager->toggleMaterials(true);
+    }
+
 }
 
+void MainWindow::applyCurrentUVsTransformations(){
+    // get current diffuse image (with applied UVs transformations)
+    QImage diffuseImage = diffuseImageProp->getImageProporties()->getImage();
+    // reset all the transformations
+    ui->comboBoxSeamlessMode->setCurrentIndex(0);
+    selectSeamlessMode(0);
+    resetTransform();
+    // set it as default
+    diffuseImageProp->setImage(diffuseImage);
+    // generate all textures based on new one
+    bool bConvValue = diffuseImageProp->getImageProporties()->bConversionBaseMap;
+    diffuseImageProp->getImageProporties()->bConversionBaseMap = true;
+    convertFromBase();
+    diffuseImageProp->getImageProporties()->bConversionBaseMap = bConvValue;
+}
 
 void MainWindow::selectSeamlessMode(int mode){
     // some gui interaction -> hide and show
@@ -1224,6 +1314,7 @@ void MainWindow::convertFromNtoH(){
 
 
 void MainWindow::convertFromBase(){
+    qDebug() << "Conversion from Base to others started";
     normalImageProp   ->setImageName(diffuseImageProp->getImageName());
     heightImageProp   ->setImageName(diffuseImageProp->getImageName());
     specularImageProp ->setImageName(diffuseImageProp->getImageName());
@@ -1231,7 +1322,7 @@ void MainWindow::convertFromBase(){
     roughnessImageProp->setImageName(diffuseImageProp->getImageName());
     metallicImageProp ->setImageName(diffuseImageProp->getImageName());
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
-    glImage->updateGL();
+    glImage->updateGLNow();
     replotAllImages();
     qDebug() << "Conversion from Base to others applied";
 }
@@ -1390,22 +1481,26 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     }
     settings.setValue("t_"+abbr+"_inputImageType"                   ,image->getImageProporties()->inputImageType);
     settings.setValue("t_"+abbr+"_roughnessDepth"                   ,image->getImageProporties()->roughnessDepth);
-    settings.setValue("t_"+abbr+"_roughnessTreshold"                ,image->getImageProporties()->roughnessTreshold);
-    settings.setValue("t_"+abbr+"_roughnessAmplifier"               ,image->getImageProporties()->roughnessAmplifier);
-    settings.setValue("t_"+abbr+"_bRoughnessSurfaceEnable"          ,image->getImageProporties()->bRoughnessSurfaceEnable);
+
 
     settings.setValue("t_"+abbr+"_aoCancellation"                   ,image->getImageProporties()->aoCancellation);
     settings.setValue("t_"+abbr+"_removeShadingLFBlending"          ,image->getImageProporties()->removeShadingLFBlending);
     settings.setValue("t_"+abbr+"_removeShadingLFRadius"            ,image->getImageProporties()->removeShadingLFRadius);
     settings.setValue("t_"+abbr+"_colorHue"                         ,image->getImageProporties()->colorHue);
 
+
     settings.setValue("t_"+abbr+"_bRoughnessEnableColorPicking"     ,image->getImageProporties()->bRoughnessEnableColorPicking);
     settings.setValue("t_"+abbr+"_bRoughnessColorPickingToggled"    ,image->getImageProporties()->bRoughnessColorPickingToggled);
     settings.setValue("t_"+abbr+"_bRoughnessInvertColorMask"        ,image->getImageProporties()->bRoughnessInvertColorMask);
 
+    settings.setValue("t_"+abbr+"_roughnessTreshold"                ,image->getImageProporties()->roughnessTreshold);
+    settings.setValue("t_"+abbr+"_roughnessAmplifier"               ,image->getImageProporties()->roughnessAmplifier);
+    settings.setValue("t_"+abbr+"_bRoughnessSurfaceEnable"          ,image->getImageProporties()->bRoughnessSurfaceEnable);
+
     settings.setValue("t_"+abbr+"_roughnessColorOffset"             ,image->getImageProporties()->roughnessColorOffset);
     settings.setValue("t_"+abbr+"_roughnessColorGlobalOffset"       ,image->getImageProporties()->roughnessColorGlobalOffset);
     settings.setValue("t_"+abbr+"_roughnessColorAmplifier"          ,image->getImageProporties()->roughnessColorAmplifier);
+
     settings.setValue("t_"+abbr+"_selectiveBlurNoIters"             ,image->getImageProporties()->selectiveBlurNoIters);
     settings.setValue("t_"+abbr+"_selectiveBlurMaskInputImageType"  ,image->getImageProporties()->selectiveBlurMaskInputImageType);
     settings.setValue("t_"+abbr+"_colorPickerMethod"                ,image->getImageProporties()->colorPickerMethod);
@@ -1521,6 +1616,7 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->bRoughnessEnableColorPicking       = settings.value("t_"+abbr+"_bRoughnessEnableColorPicking",false).toBool();
     image->getImageProporties()->bRoughnessColorPickingToggled      = settings.value("t_"+abbr+"_bRoughnessColorPickingToggled",false).toBool();
 
+
     image->getImageProporties()->pickedColor.setX(settings.value("t_"+abbr+"_pickedColorR",0.0).toFloat());
     image->getImageProporties()->pickedColor.setY(settings.value("t_"+abbr+"_pickedColorG",0.0).toFloat());
     image->getImageProporties()->pickedColor.setZ(settings.value("t_"+abbr+"_pickedColorB",0.0).toFloat());
@@ -1530,6 +1626,7 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->roughnessColorOffset           = settings.value("t_"+abbr+"_roughnessColorOffset",0.0).toFloat();
     image->getImageProporties()->roughnessColorGlobalOffset     = settings.value("t_"+abbr+"_roughnessColorGlobalOffset",0.0).toFloat();
     image->getImageProporties()->roughnessColorAmplifier        = settings.value("t_"+abbr+"_roughnessColorAmplifier",1.0).toFloat();
+
     image->getImageProporties()->selectiveBlurMaskInputImageType= (SourceImageType)settings.value("t_"+abbr+"_selectiveBlurMaskInputImageType",0).toInt();
     image->getImageProporties()->selectiveBlurNoIters           = settings.value("t_"+abbr+"_selectiveBlurNoIters",1).toInt();
 
@@ -1629,10 +1726,12 @@ void MainWindow::saveSettings(){
     settings.setValue("uv_tiling_simple_dir_y",ui->radioButtonSeamlessSimpleDirY->isChecked());
 
 
-
     // other parameters
     settings.setValue("use_texture_interpolation",ui->checkBoxUseLinearTextureInterpolation->isChecked());
     settings.setValue("mouse_sensitivity",ui->spinBoxMouseSensitivity->value());
+    settings.setValue("font_size",ui->spinBoxFontSize->value());
+    settings.setValue("mouse_loop",ui->checkBoxToggleMouseLoop->isChecked());
+
 
     // 3D settings:
     settings.setValue("bUseCullFace",ui->checkBoxPerformanceCullFace->isChecked());
@@ -1650,6 +1749,13 @@ void MainWindow::saveSettings(){
     saveImageSettings("r",roughnessImageProp);
     saveImageSettings("m",metallicImageProp);
 
+}
+
+void MainWindow::changeGUIFontSize(int value){
+    QFont font;
+    font.setFamily(font.defaultFamily());
+    font.setPixelSize(value);
+    QApplication::setFont(font);
 }
 
 void MainWindow::setOutputFormat(int index){
@@ -1723,6 +1829,10 @@ void MainWindow::loadSettings(){
 
     // other settings
     ui->spinBoxMouseSensitivity->setValue(settings.value("mouse_sensitivity",50).toInt());
+    ui->spinBoxFontSize->setValue(settings.value("font_size",10).toInt());
+    ui->checkBoxToggleMouseLoop->setChecked(settings.value("mouse_loop",true).toBool());
+
+
 
     // 3D settings:
     ui->checkBoxPerformanceCullFace ->setChecked(settings.value("bUseCullFace",false).toBool());

@@ -103,7 +103,7 @@ public slots:
 signals:
     void renderGL();
     void readyGL();
-
+    void materialColorPicked(QColor); // emit material index color
 
 protected:
     void initializeGL();
@@ -131,7 +131,7 @@ private:
     QOpenGLShaderProgram *skybox_program;
     QOpenGLShaderProgram *env_program;
 
-    QGLFramebufferObject**  fboIdPtrs[7];
+    QGLFramebufferObject**  fboIdPtrs[8];
 
 
     // parameters plane
@@ -190,6 +190,7 @@ private:
     // glow FBOs
     GLFrameBufferObject* glowInputColor[4];
     GLFrameBufferObject* glowOutputColor[4];
+
 
 
 protected:

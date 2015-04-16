@@ -50,6 +50,7 @@
 #include <math.h>
 #include <map>
 #include "CommonObjects.h"
+#include "formmaterialindicesmanager.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
 
@@ -80,6 +81,8 @@ public:
     FBOImageProporties* targetImageOcclusion;
     FBOImageProporties* targetImageRoughness;
     FBOImageProporties* targetImageMetallic;
+
+    FBOImageProporties* targetImageMaterial;
 public slots:
     void resizeFBO(int width, int height);
 

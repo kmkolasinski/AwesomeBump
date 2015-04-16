@@ -2,7 +2,8 @@
 #define GLWIDGETBASE_H
 
 #include <QGLWidget>
-
+#include <QDebug>
+#include "CommonObjects.h"
 class GLWidgetBase : public QGLWidget
 {
     Q_OBJECT
@@ -18,7 +19,11 @@ public:
     void updateGL() Q_DECL_FINAL Q_DECL_OVERRIDE;
 
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+
+
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_FINAL Q_DECL_OVERRIDE;
+    void keyPressEvent(QKeyEvent *event) ;
+    void keyReleaseEvent(QKeyEvent *event) ;
 
 signals:
     void updateGLLater();
@@ -26,9 +31,11 @@ signals:
 
 protected:
     virtual void relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, Qt::MouseButtons buttons) = 0;
+    static bool wrapMouse;
 
 public slots:
     void updateGLNow();
+    void toggleMouseWrap(bool toggle);
 
 private slots:
     void handleAccumulatedMouseMovement();
@@ -44,6 +51,9 @@ private:
 
     int dx, dy;
     Qt::MouseButtons buttons;
+
+protected:
+    Qt::Key keyPressed;
 };
 
 #endif // GLWIDGETBASE_H

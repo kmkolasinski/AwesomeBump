@@ -11,9 +11,10 @@
 #include "glimageeditor.h"
 #include "formimageprop.h"
 #include "formsettingscontainer.h"
+#include "formmaterialindicesmanager.h"
 #include "CommonObjects.h"
 #include "dialoglogger.h"
-
+#include "dialogshortcuts.h"
 
 
 namespace Ui {
@@ -46,6 +47,7 @@ public slots:
     void saveCheckedImages();
     void saveCompressedForm();
     void saveSettings();
+    void changeGUIFontSize(int);
     // loading the application setting from ini file
     void loadSettings();
     // the same but loading configs
@@ -71,7 +73,6 @@ public slots:
     // repaint views after changes
     void updateDiffuseImage();
     void updateNormalImage();
-
     void updateSpecularImage();
     void updateHeightImage();
     void updateOcclusionImage();
@@ -79,7 +80,6 @@ public slots:
     void updateMetallicImage();
     // repaint selected tab
     void updateImage(int tab);
-
     void updateImageInformation();
 
     // image properties
@@ -90,6 +90,7 @@ public slots:
     void applyResizeImage();
     void applyResizeImage(int width, int height);
     void applyScaleImage();
+    void applyCurrentUVsTransformations();// copy current image to diffuse and convert to others
 
     // Setting the global parameters
     void setSpecularIntensity(int);
@@ -141,14 +142,20 @@ private:
     FormImageProp* roughnessImageProp;
     FormImageProp* metallicImageProp;
 
+    // Material manager
+    FormMaterialIndicesManager* materialManager;
+
     // Settings container
     FormSettingsContainer *settingsContainer;
 
     QAction *aboutQtAction;
     QAction *aboutAction;
     QAction *logAction; // show logger
+    QAction *shortcutsAction; // show key shortcuts
+
     QLabel  *statusLabel;
-    DialogLogger* logger;
+    DialogLogger* dialogLogger;
+    DialogShortcuts* dialogShortcuts;
     QSettings defaults;
 
 };

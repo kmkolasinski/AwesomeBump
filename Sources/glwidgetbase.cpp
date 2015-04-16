@@ -2,6 +2,8 @@
 #include <QThread>
 #include <QMouseEvent>
 
+bool GLWidgetBase::wrapMouse = true;
+
 GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget * shareWidget)
     : QGLWidget(format, parent, shareWidget),
       updateIsQueued(false),
@@ -9,11 +11,15 @@ GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget *
       eventLoopStarted(false),
       dx(0),
       dy(0),
-      buttons(0)
+      buttons(0),
+      keyPressed((Qt::Key)0)
 {
     connect(this, &GLWidgetBase::updateGLLater, this, &GLWidgetBase::updateGLNow, Qt::QueuedConnection);
     connect(this, &GLWidgetBase::handleAccumulatedMouseMovementLater, this, &GLWidgetBase::handleAccumulatedMouseMovement, Qt::QueuedConnection);
     setMouseTracking(true);
+    setFocusPolicy(Qt::ClickFocus);
+
+    wrapMouse = true;
 }
 
 GLWidgetBase::~GLWidgetBase()
@@ -53,10 +59,15 @@ void GLWidgetBase::mousePressEvent(QMouseEvent *event)
     // reset the mouse handling state with, to avoid a bad state
     blockMouseMovement = false;
     mouseUpdateIsQueued = false;
+
 }
+
+
+
 
 void GLWidgetBase::mouseMoveEvent(QMouseEvent *event)
 {
+
     if(blockMouseMovement)
     {
         // If the mouse was wrapped manually, ignore all mouse events until
@@ -96,16 +107,15 @@ void GLWidgetBase::handleAccumulatedMouseMovement()
     // As we are handling all queued mouse events, we can accumulate new events
     // from now on
     mouseUpdateIsQueued = false;
+    bool mouseDragged = true;
 
-    bool wrapMouse = true;
-
-    relativeMouseMoveEvent(dx, dy, &wrapMouse, buttons);
+    relativeMouseMoveEvent(dx, dy, &mouseDragged, buttons);
 
     dx = 0;
     dy = 0;
     buttons = 0;
 
-    if(wrapMouse){
+    if(wrapMouse && mouseDragged){
 
         bool changed = false;
 
@@ -138,8 +148,50 @@ void GLWidgetBase::handleAccumulatedMouseMovement()
             blockMouseMovement = true;
         }
 
-        updateGL();
+
     }
+    updateGL();
 
     eventLoopStarted = true;
 }
+
+void GLWidgetBase::toggleMouseWrap(bool toggle){
+    wrapMouse = toggle;
+}
+
+// ----------------------------------------------------------------
+// Key events
+// ----------------------------------------------------------------
+void GLWidgetBase::keyPressEvent(QKeyEvent *event){
+
+
+
+    if (event->type() == QEvent::KeyPress){
+
+        // enable material preview
+        if( event->key() == KEY_SHOW_MATERIALS )
+        {
+               keyPressed = KEY_SHOW_MATERIALS;
+               updateGL();
+        }
+
+    }// end of event type
+
+
+}
+
+void GLWidgetBase::keyReleaseEvent(QKeyEvent *event) {
+
+    if (event->type() == QEvent::KeyRelease){
+
+    if( event->key() == KEY_SHOW_MATERIALS)
+    {
+           keyPressed = (Qt::Key)0;
+           updateGL();
+           event->accept();
+
+    }
+    }// end of key press
+}
+
+

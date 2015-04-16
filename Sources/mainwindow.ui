@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1363</width>
-    <height>766</height>
+    <width>1390</width>
+    <height>755</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -62,7 +62,7 @@
         <enum>QTabWidget::East</enum>
        </property>
        <property name="currentIndex">
-        <number>7</number>
+        <number>9</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideMiddle</enum>
@@ -115,8 +115,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>355</width>
-              <height>647</height>
+              <width>426</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -189,8 +189,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>355</width>
-              <height>647</height>
+              <width>426</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -266,8 +266,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>355</width>
-              <height>647</height>
+              <width>426</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -337,8 +337,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>355</width>
-              <height>647</height>
+              <width>426</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -408,8 +408,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>355</width>
-              <height>647</height>
+              <width>426</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -476,8 +476,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>355</width>
-              <height>647</height>
+              <width>426</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -550,8 +550,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>355</width>
-              <height>647</height>
+              <width>426</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -569,6 +569,65 @@
              </property>
              <item>
               <layout class="QVBoxLayout" name="verticalLayoutMetallicImage"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabMaterialsIndicesImage">
+        <attribute name="title">
+         <string>Materials</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QScrollArea" name="scrollArea_10">
+           <property name="horizontalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents_10">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>417</width>
+              <height>644</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_30">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayoutMaterialIndicesImage"/>
              </item>
             </layout>
            </widget>
@@ -648,8 +707,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>376</width>
-              <height>677</height>
+              <width>409</width>
+              <height>656</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -1805,6 +1864,23 @@
                  </property>
                 </widget>
                </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_41">
+                 <property name="text">
+                  <string>Font size (in pixels)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QSpinBox" name="spinBoxFontSize">
+                 <property name="minimum">
+                  <number>8</number>
+                 </property>
+                 <property name="maximum">
+                  <number>50</number>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </item>
              <item>
@@ -1814,6 +1890,16 @@
                </property>
                <property name="text">
                 <string>Use texture linear interpolation (save and restart)</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkBoxToggleMouseLoop">
+               <property name="text">
+                <string>Toggle mouse loop</string>
                </property>
                <property name="checked">
                 <bool>true</bool>
@@ -1933,8 +2019,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>357</width>
-              <height>631</height>
+              <width>426</width>
+              <height>646</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -2477,6 +2563,19 @@
                  </layout>
                 </item>
                </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonApplyUVtransformations">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use current diffuse texture and regenerate all the textures based on it. It resets all UV transformations.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note: &lt;/span&gt;It is better to work on images when UVs transformation are &lt;span style=&quot; font-weight:600;&quot;&gt;disabled&lt;/span&gt;. Otherwise processing may lead to some &lt;span style=&quot; font-weight:600;&quot;&gt;bugs&lt;/span&gt; in the images generated by AB. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="statusTip">
+                <string/>
+               </property>
+               <property name="text">
+                <string>Apply Current UV transformations</string>
+               </property>
               </widget>
              </item>
              <item>
@@ -3774,8 +3873,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1363</width>
-     <height>25</height>
+     <width>1390</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -10,7 +10,8 @@
 #include <QImageReader>
 #include <QStandardPaths>
 
-#include "CommonObjects.h"
+
+#include "formimagebase.h"
 #include "dialogheightcalculator.h"
 #include "formbasemapconversionlevels.h"
 
@@ -19,20 +20,14 @@ namespace Ui {
 class FormImageProp;
 }
 
-class FormImageProp : public QWidget
+class FormImageProp : public FormImageBase
 {
     Q_OBJECT
 
 public:
     explicit FormImageProp(QMainWindow *parent = 0, QGLWidget* qlW_ptr = 0);
-    void saveFileToDir(const QString &dir);
-    void saveImageToDir(const QString &dir,QImage& image);
     void setImage(QImage image);
-    void setImageName(QString name);
     void setPtrToGLWidget(QGLWidget* ptr){ imageProp.glWidget_ptr = ptr;  }
-    FBOImageProporties* getImageProporties(){return &imageProp;}
-
-    QString getImageName();
 
 
     void hideHeightInputGroup();
@@ -52,9 +47,10 @@ public:
 
 
     ~FormImageProp();
+
 public slots:
-    void open();
-    void save();
+
+
     void reloadImageSettings();
 
     void updateComboBoxes(int index);
@@ -88,22 +84,17 @@ signals:
     void recalculateOcclusion();
     void toggleColorPickingApplied(bool toggle);
 
-protected:
-    void dropEvent(QDropEvent *event);
-    void dragEnterEvent(QDragEnterEvent *event);
+
 private:
     bool loadFile(const QString &fileName);
-    bool saveFile(const QString &fileName);
+    void pasteImageFromClipboard(QImage& _image);
 
     bool bLoading;
     Ui::FormImageProp *ui;
-    QImage image;
-    QString imageName;
-    FBOImageProporties imageProp;
-    DialogHeightCalculator *heightCalculator; // height calculator tool
+    DialogHeightCalculator      *heightCalculator;     // height calculator tool
     FormBaseMapConversionLevels* baseMapConvLevels[4]; // for levels of mipmaps
-public:
-    static QDir* recentDir;
+
+
 };
 
 #endif // FORMIMAGEPROP_H

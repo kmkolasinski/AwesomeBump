@@ -8,6 +8,7 @@ uniform sampler2D layerA; // first layer
 uniform sampler2D layerB; // second layer
 uniform sampler2D layerC; // third layer
 uniform sampler2D layerD; // fourth layer
+uniform sampler2D materialTexture; // texture with material mask
 
 uniform int quad_draw_mode;
 
@@ -69,7 +70,7 @@ mat3 sobel_kernel  = mat3(
 // ----------------------------------------------------------------
 subroutine(filterModeType) vec4 mode_normal_filter(){		
     vec4 c =  texture( layerA, v2QuadCoords.xy);
-    if(gui_clear_alpha == 1) c = vec4(c.xyz,1);
+    //if(gui_clear_alpha == 1) c = vec4(c.xyz,1);
     return c;
 }
 
@@ -508,15 +509,18 @@ subroutine(filterModeType) vec4 mode_dgaussians_filter(){
     vec4 c1 =texture(layerA,v2QuadCoords.xy);
     vec4 c2 =texture(layerB,v2QuadCoords.xy);
     vec4 dc = c1-c2;
+
+
+
     if(gui_mode_dgaussian ==  0){
             return dc;
-    }else{
-    //dc = vec4(1)*dot(dc.rgb,vec3(1))/3;
-    if(gui_specular_amplifier > 0){
-            return 3*gui_specular_amplifier*dc;
-    }else{
-            return 1+dc*gui_specular_amplifier*3;
-    }	}
+    }else{    
+        if(gui_specular_amplifier > 0){
+                return clamp(3*gui_specular_amplifier*dc,vec4(0),vec4(1));
+        }else{
+                return clamp(1+dc*gui_specular_amplifier*3,vec4(0),vec4(1));
+        }
+    }
 }
 
  // ----------------------------------------------------------------
@@ -943,6 +947,27 @@ subroutine(filterModeType) vec4 mode_roughness_color_filter(){
 
 
 out vec4 FragColor;
+uniform int material_id;
+
 void main() {   
-	FragColor   = filterMode();
+
+
+    vec3 materialColor = texture( materialTexture, v2QuadCoords.xy).rgb;
+
+    int materialIndex = int(255*255*255*materialColor.r)+int(255*255*materialColor.g)+int(255*materialColor.b);
+
+    if(material_id >= 0){// if current ID is different than -1
+        if( materialIndex == material_id ){ // compare colors and process only the mask region
+            FragColor   = filterMode();
+        }else{
+            discard;
+        }
+    }else if(material_id == -1){//draw just last image
+        FragColor = texture( layerA, v2QuadCoords.xy);
+    }else{// normal processing (materials disabled)
+        FragColor   = filterMode();
+    }
+
+
+
  }

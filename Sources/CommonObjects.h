@@ -8,8 +8,8 @@
 #include "qopenglerrorcheck.h"
 #include <QOpenGLFunctions_4_0_Core>
 
-#define TAB_SETTINGS 7
-#define TAB_TILING   8
+#define TAB_SETTINGS 8
+#define TAB_TILING   9
 
 #ifdef Q_OS_MAC
 # define AB_INI "AwesomeBump.ini"
@@ -25,6 +25,8 @@
 
 #define TEXTURE_FORMAT GL_RGB16F
 
+#define KEY_SHOW_MATERIALS Qt::Key_S
+
 using namespace std;
 
 enum TextureTypes{
@@ -35,6 +37,7 @@ enum TextureTypes{
     OCCLUSION_TEXTURE,
     ROUGHNESS_TEXTURE,
     METALLIC_TEXTURE,
+    MATERIAL_TEXTURE,
     MAX_TEXTURES_TYPE
 };
 
@@ -111,6 +114,11 @@ enum SourceImageType{
 enum ColorPickerMethod{
     COLOR_PICKER_METHOD_A = 0,
     COLOR_PICKER_METHOD_B ,
+};
+
+enum MaterialIndicesType{
+    MATERIALS_DISABLED = -10,
+    MATERIALS_ENABLED = -1
 };
 
 #define TARGA_HEADER_SIZE    0x12
@@ -202,6 +210,9 @@ public:
                 break;
             case(METALLIC_TEXTURE  ):
                 return "metallic";
+                break;
+            case(MATERIAL_TEXTURE  ):
+                return "material";
                 break;
             default: return "default-diffuse";
         }
@@ -479,6 +490,9 @@ public:
     static SourceImageType seamlessContrastInputType;
     static bool bSeamlessTranslationsFirst;
 
+    static map<QString,int> materialIndices;
+    static int currentMaterialIndeks;
+
      FBOImageProporties(){
 
         //ref_fbo      = NULL;
@@ -580,6 +594,104 @@ public:
         seamlessMode   = SEAMLESS_NONE;
 
      }
+
+     void copySettings(FBOImageProporties &src){
+
+        bFirstDraw   = src.bFirstDraw;
+        bGrayScale   = src.bGrayScale;
+        grayScalePreset = src.grayScalePreset;
+        bInvertR = src.bInvertR;
+        bInvertG = src.bInvertG;
+        bInvertB = src.bInvertB;
+
+
+        bRemoveShading = src.bRemoveShading;
+        noRemoveShadingGaussIter = src.noRemoveShadingGaussIter;
+        aoCancellation   = src.aoCancellation;
+
+        removeShadingLFBlending = src.removeShadingLFBlending;
+        removeShadingLFRadius   = src.removeShadingLFRadius;
+
+        bSpeclarControl    = src. bSpeclarControl;
+        colorHue           = src. colorHue;
+        specularRadius     = src. specularRadius;
+        specularW1         = src. specularW1;
+        specularW2         = src. specularW2;
+        specularContrast   = src. specularContrast;
+        specularAmplifier  = src. specularAmplifier;
+        specularBrightness = src. specularBrightness;
+        noBlurPasses       = src. noBlurPasses;
+        smallDetails       = src. smallDetails;
+        mediumDetails      = src. mediumDetails;
+        detailDepth        = src. detailDepth;
+        sharpenBlurAmount  = src. sharpenBlurAmount;
+        normalsStep        = src. normalsStep;
+
+        conversionHNDepth  = src. conversionHNDepth;
+        bConversionHN      = src. bConversionHN;
+        bConversionNH      = src. bConversionNH;
+
+        conversionNHItersHuge       = src.conversionNHItersHuge;
+        conversionNHItersVeryLarge  = src.conversionNHItersVeryLarge;
+        conversionNHItersLarge      = src.conversionNHItersLarge;
+        conversionNHItersMedium     = src.conversionNHItersMedium;
+        conversionNHItersSmall      = src.conversionNHItersSmall;
+        conversionNHItersVerySmall  = src.conversionNHItersVerySmall;
+        bConversionBaseMap          = src.bConversionBaseMap;
+
+
+        ssaoNoIters   = src.ssaoNoIters;
+        ssaoIntensity = src.ssaoIntensity;
+        ssaoBias      = src.ssaoBias;
+        ssaoDepth     = src.ssaoDepth;
+
+
+        heightMinValue        = src.heightMinValue;
+        heightMaxValue        = src.heightMaxValue;
+        heightAveragingRadius = src.heightAveragingRadius;
+        heightOffsetValue     = src.heightOffsetValue;
+
+        // selective blur variables
+        selectiveBlurType = src.selectiveBlurType;
+        bSelectiveBlurPreviewMask = src.bSelectiveBlurPreviewMask;
+        bSelectiveBlurInvertMask  = src.bSelectiveBlurInvertMask;
+        bSelectiveBlurEnable      = src.bSelectiveBlurEnable;
+        selectiveBlurBlending     = src.selectiveBlurBlending;
+        selectiveBlurMaskRadius   = src.selectiveBlurMaskRadius ;
+        selectiveBlurDOGRadius    = src.selectiveBlurDOGRadius;
+        selectiveBlurDOGConstrast = src.selectiveBlurDOGConstrast;
+        selectiveBlurDOGAmplifier = src.selectiveBlurDOGAmplifier;
+        selectiveBlurDOGOffset    = src.selectiveBlurDOGOffset;
+
+        selectiveBlurMinValue        = src.selectiveBlurMinValue;
+        selectiveBlurMaxValue        = src.selectiveBlurMaxValue;
+        selectiveBlurDetails         = src.selectiveBlurDetails;
+        selectiveBlurOffsetValue     = src.selectiveBlurOffsetValue;
+
+
+        inputImageType = src.inputImageType;
+
+        roughnessDepth          = src.roughnessDepth;
+        roughnessTreshold       = src.roughnessTreshold;
+        roughnessAmplifier      = src.roughnessAmplifier;
+        bRoughnessSurfaceEnable = src.bRoughnessSurfaceEnable;
+
+
+        bRoughnessEnableColorPicking    = src.bRoughnessEnableColorPicking;
+        bRoughnessColorPickingToggled   = src.bRoughnessColorPickingToggled;
+        pickedColor                     = src.pickedColor;
+        colorPickerMethod               = src.colorPickerMethod;
+
+        bRoughnessInvertColorMask       = src.bRoughnessInvertColorMask;
+        roughnessColorOffset            = src.roughnessColorOffset;
+        roughnessColorGlobalOffset      = src.roughnessColorGlobalOffset;
+        roughnessColorAmplifier         = src.roughnessColorAmplifier;
+        selectiveBlurMaskInputImageType = src.selectiveBlurMaskInputImageType;
+        selectiveBlurNoIters            = src.selectiveBlurNoIters;
+
+
+     }
+
     void init(QImage& image){
         qDebug() << Q_FUNC_INFO;
 
@@ -631,12 +743,14 @@ public:
     }
 
     ~FBOImageProporties(){
-        qDebug() << Q_FUNC_INFO;
 
-        glWidget_ptr->makeCurrent();
-        if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
-        glWidget_ptr = NULL;
-        if(fbo        != NULL ) delete fbo;
+        if(glWidget_ptr != NULL){
+            qDebug() << Q_FUNC_INFO;
+            glWidget_ptr->makeCurrent();
+            if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
+            glWidget_ptr = NULL;
+            if(fbo        != NULL ) delete fbo;
+        }
     }
 };
 
