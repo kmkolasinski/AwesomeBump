@@ -819,6 +819,7 @@ uniform float gui_height_proc_min_value;
 uniform float gui_height_proc_max_value;
 uniform int gui_height_proc_ave_radius;
 uniform float gui_height_proc_offset_value;
+uniform bool gui_height_proc_normalization;
 vec4 height_clamp(vec4 inputc, vec4 value,float vmin,float vmax){
     vec4 dmax_ave = vec4(vmax) - value;
     if(dmax_ave.r < 0) inputc.r += dmax_ave.r;
@@ -863,7 +864,12 @@ subroutine(filterModeType) vec4 mode_height_processing_filter(){
     height = height_clamp(height,ave_color,gui_height_proc_min_value,gui_height_proc_max_value);
     vec4 hmin = height_clamp(vec4(0.0),vec4(0.0),gui_height_proc_min_value,gui_height_proc_max_value);
     vec4 hmax = height_clamp(vec4(1.0),vec4(1.0),gui_height_proc_min_value,gui_height_proc_max_value);
-    return clamp(vec4(height-hmin)/(hmax-hmin) + vec4(gui_height_proc_offset_value),vec4(0),vec4(1));
+    if(gui_height_proc_normalization){
+        return clamp(vec4(height-hmin)/(hmax-hmin) + vec4(gui_height_proc_offset_value),vec4(0),vec4(1));
+    }else{
+        return clamp(vec4(height-hmin) + vec4(gui_height_proc_offset_value),vec4(0),vec4(1));
+    }
+
 }
 
 

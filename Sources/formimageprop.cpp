@@ -105,6 +105,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderHeightProcMaxValue,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderHeightAveRadius   ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderHeightOffsetValue ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->checkBoxHeightProcEnableNormalization ,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
 
     connect(ui->horizontalSliderHeightProcMinValue,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
     connect(ui->horizontalSliderHeightProcMaxValue,SIGNAL(sliderMoved(int)),this,SLOT(updateGuiSpinBoxesAndLabes(int)));
@@ -517,6 +518,7 @@ void FormImageProp::updateGuiCheckBoxes(){
     imageProp.bRoughnessEnableColorPicking      = ui->radioButtonEnableColorPicking->isChecked();
     imageProp.bRoughnessInvertColorMask         = ui->checkBoxRoughnessColorInvert->isChecked();
 
+    imageProp.bHeightEnableNormalization        = ui->checkBoxHeightProcEnableNormalization->isChecked();
 
     if(imageProp.bRoughnessEnableColorPicking){
          if(!imageProp.bRoughnessColorPickingToggled)ui->groupBoxGeneral->setDisabled(true);
@@ -698,6 +700,7 @@ void FormImageProp::reloadSettings(){
     ui->horizontalSliderHeightProcMaxValue  ->setValue(imageProp.heightMaxValue*200);
     ui->horizontalSliderHeightProcMinValue  ->setValue(imageProp.heightMinValue*200);
     ui->horizontalSliderHeightOffsetValue   ->setValue(imageProp.heightOffsetValue*100);
+    ui->checkBoxHeightProcEnableNormalization->setChecked(imageProp.bHeightEnableNormalization);
 
     ui->labelHeightProcMinValue             ->setText(QString::number(imageProp.heightMinValue));
     ui->labelHeightProcMaxValue             ->setText(QString::number(imageProp.heightMaxValue));

@@ -60,6 +60,7 @@ in mat3 TBN;
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 FragNormal;
 layout(location = 2) out vec4 FragGlowColor;
+layout(location = 3) out vec4 FragPosition;
 
 
 // global variables
@@ -288,10 +289,10 @@ vec4 PBR_Specular(float roughness,
          vec3 halfVector = normalize(lp + v);
 
 
-         float VdotH = max(dot( halfVector, v ),0);
-         float HdotN = max(dot( halfVector, n ),0);
-         float LdotN = max(dot( lp, n ),0);
-         float LdotH = max(dot( lp, halfVector ),0);
+         float VdotH = max(dot( halfVector, v ),0.01);
+         float HdotN = max(dot( halfVector, n ),0.01);
+         float LdotN = max(dot( lp, n ),0.01);
+         float LdotH = max(dot( lp, halfVector ),0.01);
 
 
          vec3 fresnel   = Fresnel_Schlick( VdotH, F0 );
@@ -356,10 +357,10 @@ vec4 PBR_Specular_SIMPLE(float roughness,
     vec3 halfVector = normalize(lp + v);
 
 
-    float VdotH = max(dot( halfVector, v ),0);
-    float HdotN = max(dot( halfVector, n ),0);
-    float LdotN = max(dot( lp, n ),0);
-    float LdotH = max(dot( lp, halfVector ),0);
+    float VdotH = max(dot( halfVector, v ),0.01);
+    float HdotN = max(dot( halfVector, n ),0.01);
+    float LdotN = max(dot( lp, n ),0.01);
+    float LdotH = max(dot( lp, halfVector ),0.01);
 
 
     vec3 fresnel   = Fresnel_Schlick( VdotH, F0 );
@@ -488,6 +489,6 @@ void main( void )
     FragGlowColor = vec4(0);
     if(level > bloomLevel )FragGlowColor = finalColor;
 
-
+    FragPosition = vec4(ESVertexPosition,1);
     //FragColor = fvBaseColor;
 }

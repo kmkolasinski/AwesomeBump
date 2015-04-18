@@ -64,6 +64,9 @@ FormSettingsField::~FormSettingsField()
     delete ui;
 }
 
+const QString& FormSettingsField::getName(){
+    return name;
+}
 
 void FormSettingsField::deleteSettings(){
     QFile::remove(settingsPath);

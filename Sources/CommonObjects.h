@@ -285,12 +285,14 @@ public:
   int  noTessSubdivision;
   int  noPBRRays;
   bool bBloomEffect;
+  bool bDofEffect;
   Performance3DSettings(){
         bUseCullFace  = false;
         bUseSimplePBR = false;
         noTessSubdivision = 16;
         noPBRRays         = 15;
         bBloomEffect      = true;
+        bDofEffect        = true;
   }
 };
 
@@ -437,6 +439,7 @@ public:
     float heightMaxValue;
     int   heightAveragingRadius;
     float heightOffsetValue;
+    bool  bHeightEnableNormalization;
 
 
     // selective blur variables
@@ -552,6 +555,7 @@ public:
         heightMaxValue        = 1.0;
         heightAveragingRadius = 1;
         heightOffsetValue     = 0.0;
+        bHeightEnableNormalization = true;
 
         // selective blur variables
         selectiveBlurType = SELECTIVE_BLUR_DIFFERENCE_OF_GAUSSIANS;

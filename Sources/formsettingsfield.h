@@ -19,7 +19,7 @@ public:
     FormSettingsField(QString _name,QString _description, QWidget *parent = 0);
     // Load Settings From File
     FormSettingsField(QString _config_name, QWidget *parent = 0);
-
+    const QString& getName();
     ~FormSettingsField();
 public slots:
     void deleteSettings();// remove files
@@ -28,6 +28,7 @@ public slots:
     void dataChanged();
     void nameChanged(QString text);
     void resetBackGroundColor();
+
 
 signals:
     void emitDeleteSettings(FormSettingsField*);

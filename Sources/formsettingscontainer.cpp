@@ -9,6 +9,7 @@ FormSettingsContainer::FormSettingsContainer(QWidget *parent) :
     connect(ui->pushButtonConfirm,SIGNAL(released()),this,SLOT(addNewSettingsField()));
     connect(ui->pushButtonConfirm,SIGNAL(released()),this,SLOT(toggleAdding()));
     connect(ui->pushButtonCancel ,SIGNAL(released()),this,SLOT(toggleAdding()));
+    connect(ui->lineEditFilterPreset,SIGNAL(textEdited(QString)),this,SLOT(filterPresets(QString)));
     ui->groupBoxAddingOptions->hide();
     ui->verticalLayoutSettingsList->setAlignment(Qt::AlignTop);
 
@@ -20,7 +21,7 @@ FormSettingsContainer::FormSettingsContainer(QWidget *parent) :
     QStringList nameFilter("*.ini");
     QDir directory("Configs/");
     QStringList iniFiles = directory.entryList(nameFilter);
-    qDebug() << "Reading the list of available configs settings:" << iniFiles;
+    qDebug() << "Reading the list of available configs settings:";
     // reading configs
     for (int i = 0; i < iniFiles.size(); ++i){
         FormSettingsField* sfield = new FormSettingsField("Configs/"+iniFiles[i],this);
@@ -80,4 +81,16 @@ void FormSettingsContainer::saveSettings(){
         settingsList[i]->resetBackGroundColor();
     }
     emit forceSaveCurrentConfig();
+}
+
+void FormSettingsContainer::filterPresets(QString filter){
+
+    // check if string filter is present in presets names
+    for(int i = 0 ; i < settingsList.size() ; i++){
+        if(settingsList[i]->getName().contains(QRegExp(".*"+filter+".*",Qt::CaseInsensitive))){
+            settingsList[i]->show();
+        }else{
+            settingsList[i]->hide();
+        }
+    }// end of for
 }

@@ -269,6 +269,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->checkBoxPerformanceCullFace   ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
     connect(ui->checkBoxPerformanceSimplePBR  ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
     connect(ui->checkBoxBloomEffect           ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
+    connect(ui->checkBoxDOFEffect             ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
 
 
 
@@ -409,6 +410,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Loading default (initial) textures
     diffuseImageProp   ->setImage(QImage(QString(":/resources/logo_D.png")));
+
     normalImageProp    ->setImage(QImage(QString(":/resources/logo_N.png")));
     specularImageProp  ->setImage(QImage(QString(":/resources/logo_D.png")));
     heightImageProp    ->setImage(QImage(QString(":/resources/logo_H.png")));
@@ -1274,6 +1276,7 @@ void MainWindow::updatePerformanceSettings(){
     settings.noPBRRays          = ui->comboBoxPerformanceNoRays->currentText().toInt();
     settings.noTessSubdivision  = ui->comboBoxPerformanceNoTessSub->currentText().toInt();
     settings.bBloomEffect       = ui->checkBoxBloomEffect->isChecked();
+    settings.bDofEffect         = ui->checkBoxDOFEffect->isChecked();
     glWidget->updatePerformanceSettings(settings);
 }
 void MainWindow::updatePerformanceSettings(int indeks){
@@ -1429,6 +1432,9 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_heightMaxValue"                   ,image->getImageProporties()->heightMaxValue);
     settings.setValue("t_"+abbr+"_heightAveragingRadius"            ,image->getImageProporties()->heightAveragingRadius);
     settings.setValue("t_"+abbr+"_heightOffsetValue"                ,image->getImageProporties()->heightOffsetValue);
+    settings.setValue("t_"+abbr+"_bHeightEnableNormalization"       ,image->getImageProporties()->bHeightEnableNormalization);
+
+
 
     settings.setValue("t_"+abbr+"_conversionHNDepth"                ,image->getImageProporties()->conversionHNDepth);
     settings.setValue("t_"+abbr+"_bConversionHN"                    ,image->getImageProporties()->bConversionHN);
@@ -1546,6 +1552,7 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->heightMinValue                     = settings.value("t_"+abbr+"_heightMinValue",0.0).toFloat();
     image->getImageProporties()->heightMaxValue                     = settings.value("t_"+abbr+"_heightMaxValue",1.0).toFloat();
     image->getImageProporties()->heightOffsetValue                  = settings.value("t_"+abbr+"_heightOffsetValue",0.0).toFloat();
+    image->getImageProporties()->bHeightEnableNormalization         = settings.value("t_"+abbr+"_bHeightEnableNormalization",true).toBool();
 
 
     image->getImageProporties()->conversionHNDepth                  = settings.value("t_"+abbr+"_conversionHNDepth",10.0).toFloat();
@@ -1739,6 +1746,7 @@ void MainWindow::saveSettings(){
     settings.setValue("noPBRRays",ui->comboBoxPerformanceNoRays->currentIndex());
     settings.setValue("noTessSubdivision",ui->comboBoxPerformanceNoTessSub->currentIndex());
     settings.setValue("bBloomEffect",ui->checkBoxBloomEffect->isChecked());
+    settings.setValue("bDofEffect",ui->checkBoxDOFEffect->isChecked());
 
 
     saveImageSettings("d",diffuseImageProp);
@@ -1837,7 +1845,8 @@ void MainWindow::loadSettings(){
     // 3D settings:
     ui->checkBoxPerformanceCullFace ->setChecked(settings.value("bUseCullFace",false).toBool());
     ui->checkBoxPerformanceSimplePBR->setChecked(settings.value("bUseSimplePBR",false).toBool());
-    ui->checkBoxBloomEffect         ->setChecked(settings.value("bBloomEffect",false).toBool());
+    ui->checkBoxBloomEffect         ->setChecked(settings.value("bBloomEffect",true).toBool());
+    ui->checkBoxDOFEffect           ->setChecked(settings.value("bDofEffect",true).toBool());
     ui->comboBoxPerformanceNoRays   ->setCurrentIndex(settings.value("noPBRRays",0).toInt());
     ui->comboBoxPerformanceNoTessSub->setCurrentIndex(settings.value("noTessSubdivision",0).toInt());
 
@@ -1857,9 +1866,11 @@ void MainWindow::loadSettings(){
     QString name = settings.value("settings_name","Default").toString();
     ui->pushButtonProjectManager->setText("Project manager ("+name + ")");
     replotAllImages();
+
     glImage ->repaint();
     glWidget->repaint();
     bFirstTime = false;
+
 }
 
 void MainWindow::about()

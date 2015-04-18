@@ -250,6 +250,7 @@ void GLWidget::initializeGL()
     program->bindAttributeLocation("FragColor",0);
     program->bindAttributeLocation("FragNormal",1);
     program->bindAttributeLocation("FragGlowColor",2);
+    program->bindAttributeLocation("FragPosition",3);
     GLCHK(program->link());
 
     GLCHK(program->bind());
@@ -294,6 +295,7 @@ void GLWidget::initializeGL()
     skybox_program->bindAttributeLocation("FragColor",0);
     skybox_program->bindAttributeLocation("FragNormal",1);
     skybox_program->bindAttributeLocation("FragGlowColor",2);
+    skybox_program->bindAttributeLocation("FragPosition",3);
     GLCHK(skybox_program->link());
     GLCHK(skybox_program->bind());
     skybox_program->setUniformValue("texEnv" , 0);
@@ -367,6 +369,8 @@ void GLWidget::initializeGL()
     GLCHK( subroutines["mode_normal_filter"]  = glGetSubroutineIndex(filters_program->programId(),GL_FRAGMENT_SHADER,"mode_normal_filter") );
     GLCHK( subroutines["mode_gauss_filter"]   = glGetSubroutineIndex(filters_program->programId(),GL_FRAGMENT_SHADER,"mode_gauss_filter") );
     GLCHK( subroutines["mode_bloom_filter"]   = glGetSubroutineIndex(filters_program->programId(),GL_FRAGMENT_SHADER,"mode_bloom_filter") );
+    GLCHK( subroutines["mode_dof_filter"]     = glGetSubroutineIndex(filters_program->programId(),GL_FRAGMENT_SHADER,"mode_dof_filter") );
+
 
     GLCHK( filters_program->release());
     delete vshader;
@@ -407,7 +411,7 @@ void GLWidget::paintGL()
     viewMatrix = camera.updateCamera();
 
     colorFBO->bind();
-    GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+
     GLCHK( glDisable(GL_CULL_FACE) );
     projectionMatrix.setToIdentity();
     projectionMatrix.perspective(zoom,ratio,0.1,350.0);
@@ -415,8 +419,9 @@ void GLWidget::paintGL()
 
 
     // set to which FBO result will be drawn
-    GLuint attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    glDrawBuffers(3,  attachments);
+    GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 , GL_COLOR_ATTACHMENT3 };
+    glDrawBuffers(4,  attachments);
+    GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
     // ---------------------------------------------------------
     // Drawing skybox
     // ---------------------------------------------------------
@@ -539,6 +544,9 @@ void GLWidget::paintGL()
 
     colorFBO->bindDefault();
 
+    GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+
+    GLCHK( filters_program->bind() );
     // do post processing if materials are not shown
     if( keyPressed != KEY_SHOW_MATERIALS ){
         // -----------------------------------------------------------
@@ -548,16 +556,26 @@ void GLWidget::paintGL()
 
         // enable of disable bloom effect
         if(performanceSettings.bBloomEffect){
-            applyGlowFilter(outputFBO->fbo);
-            applyNormalFilter(outputFBO->fbo->texture());
-        }else{
-            applyNormalFilter(colorFBO->fbo->texture());
+             applyGlowFilter(outputFBO->fbo);
+             copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
+            //applyNormalFilter(outputFBO->fbo->texture());
         }// end of if bloom effect
 
+        // -----------------------------------------------------------
+        // Post processing:
+        // 2. DOF (can be disabled/enabled by gui)
+        // -----------------------------------------------------------
+        if(performanceSettings.bDofEffect){
+            applyDofFilter(colorFBO->fbo->texture(),auxFBO->fbo,outputFBO->fbo);
+            copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
+        }
+        applyNormalFilter(colorFBO->fbo->texture());
 
-    }else{ // end of if SHOW MATERIAL TEXTURE DISABLED
+    }else{ // end of if SHOW MATERIALS TEXTURE DISABLED
         applyNormalFilter(colorFBO->fbo->texture());
     }
+
+    GLCHK( filters_program->release() );
     emit renderGL();
 
 }
@@ -828,6 +846,7 @@ void GLWidget::resizeFBOs(){
     colorFBO = new GLFrameBufferObject(width(),height());
     colorFBO->addTexture(GL_COLOR_ATTACHMENT1);
     colorFBO->addTexture(GL_COLOR_ATTACHMENT2);
+    colorFBO->addTexture(GL_COLOR_ATTACHMENT3);
 
     if(outputFBO != NULL) delete outputFBO;
     outputFBO = new GLFrameBufferObject(width(),height());
@@ -857,7 +876,7 @@ void GLWidget::deleteFBOs(){
 
 void GLWidget::applyNormalFilter(GLuint input_tex){
 
-    GLCHK( filters_program->bind() );
+
     GLCHK( glViewport(0,0,width(),height()) );
     GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
     GLCHK( filters_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
@@ -865,28 +884,45 @@ void GLWidget::applyNormalFilter(GLuint input_tex){
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
     quad_mesh->drawMesh(true);
-    GLCHK( filters_program->release() );
+
+}
+
+void GLWidget::copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst){
+
+
+    dst->bind();
+    GLCHK( glViewport(0,0,dst->width(),dst->height()) );
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
+    GLCHK( filters_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( filters_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
+    quad_mesh->drawMesh(true);
+    dst->bindDefault();
+
 }
 
 void GLWidget::applyGaussFilter(  GLuint input_tex,
                                   QGLFramebufferObject* auxFBO,
-                                  QGLFramebufferObject* outputFBO){
+                                  QGLFramebufferObject* outputFBO, float radius){
 
 
 
-    GLCHK( filters_program->bind() );
-    auxFBO->bind();
+
+
     GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
     GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_gauss_filter"]) );
     GLCHK( filters_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filters_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    GLCHK( filters_program->setUniformValue("gui_gauss_w"       , (float)5.0 ));
-    GLCHK( filters_program->setUniformValue("gui_gauss_radius"  , (float)5.0 ));
+    GLCHK( filters_program->setUniformValue("gui_gauss_w"       , (float)radius ));
+    GLCHK( filters_program->setUniformValue("gui_gauss_radius"  , (float)radius ));
     GLCHK( filters_program->setUniformValue("gui_gauss_mode"    , 0 ));
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
-    quad_mesh->drawMesh(true);
 
+    auxFBO->bind();
+    quad_mesh->drawMesh(true);
+    auxFBO->bindDefault();
 
     outputFBO->bind();
         GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
@@ -895,9 +931,38 @@ void GLWidget::applyGaussFilter(  GLuint input_tex,
         quad_mesh->drawMesh(true);
     outputFBO->bindDefault();
 
-    GLCHK( filters_program->release() );
+
 
 }
+
+void GLWidget::applyDofFilter(GLuint input_tex,
+                QGLFramebufferObject* auxFBO,
+                QGLFramebufferObject* outputFBO){
+
+    //applyGaussFilter(input_tex,auxFBO,outputFBO,15.0);
+
+
+
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_dof_filter"]) );
+    GLCHK( filters_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( filters_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, colorFBO->getAttachedTexture(2)) );
+    GLCHK( glActiveTexture(GL_TEXTURE2) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO->texture()) );
+
+    outputFBO->bind();
+        quad_mesh->drawMesh(true);
+    outputFBO->bindDefault();
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+
+
+}
+
+
 
 void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
 
@@ -914,7 +979,7 @@ void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
 
     applyGaussFilter(glowOutputColor[2]->fbo->texture(),glowInputColor[3]->fbo,glowOutputColor[3]->fbo);
 
-    GLCHK( filters_program->bind() );
+
     outputFBO->bind();
         GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
         GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_bloom_filter"]) );
@@ -935,7 +1000,7 @@ void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     outputFBO->bindDefault();
 
-    GLCHK( filters_program->release() );
+
 
 
 }

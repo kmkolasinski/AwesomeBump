@@ -2016,6 +2016,9 @@ void GLImage::applyMixNormalLevels(GLuint level0,
 void GLImage::applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
                                           QGLFramebufferObject* outputFBO){
 
+
+
+
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLint textureWidth, textureHeight;
@@ -2029,14 +2032,46 @@ void GLImage::applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
     float min[3] = {img[0],img[1],img[2]};
     float max[3] = {img[0],img[1],img[2]};
 
-    for(int i = 0 ; i < textureWidth*textureHeight ; i++){
-        //qDebug() << "i=" <<i << "\t" << img[3*i+0] << "\t" << img[3*i+1] << "\t" << img[3*i+2];
-        for(int c = 0 ; c < 3 ; c++){
-            if( max[c] < img[3*i+c] ) max[c] = img[3*i+c];
-            if( min[c] > img[3*i+c] ) min[c] = img[3*i+c];
-        }
+    // if materials are enabled one must calulate height only in the
+    // region of selected material color
+    if(FBOImageProporties::currentMaterialIndeks != MATERIALS_DISABLED){
+        QImage maskImage = targetImageMaterial->getImage();
+        int currentMaterialIndex = FBOImageProporties::currentMaterialIndeks;
+        // number of components
+        int nc = maskImage. byteCount () / (textureWidth*textureHeight) ;
+        bool bFirstTimeChecked = true;
+        unsigned char * data = maskImage.bits();
+        for(int i = 0 ; i < textureWidth*textureHeight ; i++){
+            int materialColor = data[nc*i+0]*255*255 + data[nc*i+1]*255 + data[nc*i+2];
+            if(materialColor == currentMaterialIndex){
+                if(bFirstTimeChecked){
+                    for(int c = 0 ; c < 3 ; c++){
+                        min[c] = img[3*i+c];
+                        max[c] = max[c];
+                    }
+                    bFirstTimeChecked = false;
+                }// end of if first time
 
-    }
+                for(int c = 0 ; c < 3 ; c++){
+                    if( max[c] < img[3*i+c] ) max[c] = img[3*i+c];
+                    if( min[c] > img[3*i+c] ) min[c] = img[3*i+c];
+                }
+            }// end of if material colors are same
+        }// end of loop over image
+
+    }else{// if materials are disabled calculate
+        for(int i = 0 ; i < textureWidth*textureHeight ; i++){
+            for(int c = 0 ; c < 3 ; c++){
+                if( max[c] < img[3*i+c] ) max[c] = img[3*i+c];
+                if( min[c] > img[3*i+c] ) min[c] = img[3*i+c];
+            }
+        }
+    }// end of if materials are enables
+
+    // prevent from singularities
+    for(int k = 0; k < 3 ; k ++)
+    if(qAbs(min[k] - max[k]) < 0.0001) max[k] += 0.1;
+
 
     qDebug() << "Image normalization:";
     qDebug() << "Min color = (" << min[0] << "," << min[1] << "," << min[2] << ")"  ;
@@ -2137,6 +2172,7 @@ void GLImage::applyHeightProcessingFilter(QGLFramebufferObject* inputFBO,
         GLCHK( program->setUniformValue("gui_height_proc_max_value"   ,activeImage->heightMaxValue) );
         GLCHK( program->setUniformValue("gui_height_proc_ave_radius"  ,activeImage->heightAveragingRadius) );
         GLCHK( program->setUniformValue("gui_height_proc_offset_value",activeImage->heightOffsetValue) );
+        GLCHK( program->setUniformValue("gui_height_proc_normalization",activeImage->bHeightEnableNormalization) );
     }
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );

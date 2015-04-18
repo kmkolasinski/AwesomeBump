@@ -197,9 +197,13 @@ protected:
     void resizeFBOs();
     void deleteFBOs();
     void applyNormalFilter(GLuint input_tex);
+    void copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst);
     void applyGaussFilter(GLuint input_tex,
                           QGLFramebufferObject* auxFBO,
-                          QGLFramebufferObject* outputFBO);
+                          QGLFramebufferObject* outputFBO, float radius = 5.0);
+    void applyDofFilter(GLuint input_tex,
+                        QGLFramebufferObject* auxFBO,
+                        QGLFramebufferObject* outputFBO);
     void applyGlowFilter(QGLFramebufferObject* outputFBO);
 public:
     static QDir* recentMeshDir;
