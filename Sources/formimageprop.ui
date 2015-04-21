@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>279</width>
-    <height>2380</height>
+    <height>2511</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -366,6 +366,254 @@
             <string>Recalculate from Normal (output)</string>
            </property>
           </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBoxNormalMixer">
+     <property name="title">
+      <string/>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_25">
+      <property name="spacing">
+       <number>3</number>
+      </property>
+      <property name="leftMargin">
+       <number>2</number>
+      </property>
+      <property name="topMargin">
+       <number>2</number>
+      </property>
+      <property name="rightMargin">
+       <number>2</number>
+      </property>
+      <property name="bottomMargin">
+       <number>2</number>
+      </property>
+      <item>
+       <widget class="QCheckBox" name="checkBoxNormalMixerEnable">
+        <property name="text">
+         <string>Normal mixer</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBoxNormalMixerSettings">
+        <property name="title">
+         <string>Normal mixer settings</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_30">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="labelNormalMixerInfo">
+           <property name="text">
+            <string>No image loaded.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="1" column="3">
+            <widget class="QLabel" name="label_22">
+             <property name="minimumSize">
+              <size>
+               <width>30</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="pushButtonNormalMixerLoadImage">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Load...</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="pushButtonNormalMixerPasteFromCB">
+             <property name="text">
+              <string>Paste from Clipboard</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="label_16">
+             <property name="text">
+              <string>Depth</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QSlider" name="horizontalSliderNormalMixerAngle">
+             <property name="minimum">
+              <number>-180</number>
+             </property>
+             <property name="pageStep">
+              <number>0</number>
+             </property>
+             <property name="value">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="label_27">
+             <property name="text">
+              <string>Angle</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QSlider" name="horizontalSliderNormalMixerScale">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>0</number>
+             </property>
+             <property name="value">
+              <number>10</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QSlider" name="horizontalSliderNormalMixerPosX">
+             <property name="minimum">
+              <number>-100</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="label_23">
+             <property name="text">
+              <string>Scale </string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="label_25">
+             <property name="text">
+              <string>Pos X</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="label_26">
+             <property name="text">
+              <string>Pos Y</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="2">
+            <widget class="QSlider" name="horizontalSliderNormalMixerPosY">
+             <property name="minimum">
+              <number>-100</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="QLabel" name="label_28">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <widget class="QLabel" name="labelNormalMixerScale">
+             <property name="text">
+              <string>1</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="3">
+            <widget class="QLabel" name="label_31">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="3">
+            <widget class="QLabel" name="label_32">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QSlider" name="horizontalSliderNormalMixerDepth">
+             <property name="minimum">
+              <number>-200</number>
+             </property>
+             <property name="maximum">
+              <number>200</number>
+             </property>
+             <property name="pageStep">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -4077,12 +4325,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>1686</y>
+     <x>233</x>
+     <y>1462</y>
     </hint>
     <hint type="destinationlabel">
-     <x>293</x>
-     <y>1686</y>
+     <x>269</x>
+     <y>1462</y>
     </hint>
    </hints>
   </connection>
@@ -4093,12 +4341,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>280</x>
-     <y>1793</y>
+     <x>236</x>
+     <y>1535</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1793</y>
+     <x>272</x>
+     <y>1535</y>
     </hint>
    </hints>
   </connection>
@@ -4109,12 +4357,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>280</x>
-     <y>1828</y>
+     <x>236</x>
+     <y>1558</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1828</y>
+     <x>272</x>
+     <y>1558</y>
     </hint>
    </hints>
   </connection>
@@ -4125,12 +4373,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>280</x>
-     <y>1863</y>
+     <x>236</x>
+     <y>1582</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1863</y>
+     <x>272</x>
+     <y>1582</y>
     </hint>
    </hints>
   </connection>
@@ -4141,12 +4389,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>280</x>
-     <y>1898</y>
+     <x>236</x>
+     <y>1605</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1898</y>
+     <x>272</x>
+     <y>1605</y>
     </hint>
    </hints>
   </connection>
@@ -4157,12 +4405,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>280</x>
-     <y>1933</y>
+     <x>236</x>
+     <y>1629</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1933</y>
+     <x>272</x>
+     <y>1629</y>
     </hint>
    </hints>
   </connection>
@@ -4173,12 +4421,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>1143</y>
+     <x>236</x>
+     <y>1067</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1143</y>
+     <x>272</x>
+     <y>1067</y>
     </hint>
    </hints>
   </connection>
@@ -4189,12 +4437,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>280</x>
-     <y>1968</y>
+     <x>236</x>
+     <y>1653</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1968</y>
+     <x>272</x>
+     <y>1653</y>
     </hint>
    </hints>
   </connection>
@@ -4205,12 +4453,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>1108</y>
+     <x>236</x>
+     <y>1042</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1108</y>
+     <x>272</x>
+     <y>1042</y>
     </hint>
    </hints>
   </connection>
@@ -4221,12 +4469,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>1178</y>
+     <x>236</x>
+     <y>1092</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1178</y>
+     <x>272</x>
+     <y>1092</y>
     </hint>
    </hints>
   </connection>
@@ -4237,12 +4485,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>1213</y>
+     <x>236</x>
+     <y>1117</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1213</y>
+     <x>272</x>
+     <y>1117</y>
     </hint>
    </hints>
   </connection>
@@ -4253,12 +4501,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>1248</y>
+     <x>236</x>
+     <y>1142</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1248</y>
+     <x>272</x>
+     <y>1142</y>
     </hint>
    </hints>
   </connection>
@@ -4269,12 +4517,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>1283</y>
+     <x>236</x>
+     <y>1167</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1283</y>
+     <x>272</x>
+     <y>1167</y>
     </hint>
    </hints>
   </connection>
@@ -4285,12 +4533,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>247</x>
-     <y>2089</y>
+     <x>223</x>
+     <y>1761</y>
     </hint>
     <hint type="destinationlabel">
-     <x>293</x>
-     <y>2089</y>
+     <x>269</x>
+     <y>1761</y>
     </hint>
    </hints>
   </connection>
@@ -4301,12 +4549,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>295</x>
-     <y>1335</y>
+     <x>272</x>
+     <y>1211</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1513</y>
+     <x>272</x>
+     <y>1329</y>
     </hint>
    </hints>
   </connection>
@@ -4317,12 +4565,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>249</x>
-     <y>1431</y>
+     <x>225</x>
+     <y>1282</y>
     </hint>
     <hint type="destinationlabel">
-     <x>285</x>
-     <y>1431</y>
+     <x>261</x>
+     <y>1282</y>
     </hint>
    </hints>
   </connection>
@@ -4333,12 +4581,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>249</x>
-     <y>1466</y>
+     <x>225</x>
+     <y>1300</y>
     </hint>
     <hint type="destinationlabel">
-     <x>285</x>
-     <y>1466</y>
+     <x>261</x>
+     <y>1300</y>
     </hint>
    </hints>
   </connection>
@@ -4349,12 +4597,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>249</x>
-     <y>1501</y>
+     <x>225</x>
+     <y>1318</y>
     </hint>
     <hint type="destinationlabel">
-     <x>285</x>
-     <y>1501</y>
+     <x>261</x>
+     <y>1318</y>
     </hint>
    </hints>
   </connection>
@@ -4365,12 +4613,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>247</x>
-     <y>2124</y>
+     <x>223</x>
+     <y>1786</y>
     </hint>
     <hint type="destinationlabel">
-     <x>293</x>
-     <y>2124</y>
+     <x>269</x>
+     <y>1786</y>
     </hint>
    </hints>
   </connection>
@@ -4381,12 +4629,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>2567</y>
+     <x>203</x>
+     <y>2089</y>
     </hint>
     <hint type="destinationlabel">
-     <x>292</x>
-     <y>2567</y>
+     <x>269</x>
+     <y>2089</y>
     </hint>
    </hints>
   </connection>
@@ -4397,12 +4645,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>2602</y>
+     <x>203</x>
+     <y>2114</y>
     </hint>
     <hint type="destinationlabel">
-     <x>292</x>
-     <y>2602</y>
+     <x>269</x>
+     <y>2114</y>
     </hint>
    </hints>
   </connection>
@@ -4413,12 +4661,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>255</x>
-     <y>2688</y>
+     <x>230</x>
+     <y>2178</y>
     </hint>
     <hint type="destinationlabel">
-     <x>291</x>
-     <y>2688</y>
+     <x>266</x>
+     <y>2178</y>
     </hint>
    </hints>
   </connection>
@@ -4429,12 +4677,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>255</x>
-     <y>2723</y>
+     <x>230</x>
+     <y>2203</y>
     </hint>
     <hint type="destinationlabel">
-     <x>291</x>
-     <y>2723</y>
+     <x>266</x>
+     <y>2203</y>
     </hint>
    </hints>
   </connection>
@@ -4445,12 +4693,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>255</x>
-     <y>2758</y>
+     <x>230</x>
+     <y>2228</y>
     </hint>
     <hint type="destinationlabel">
-     <x>291</x>
-     <y>2758</y>
+     <x>266</x>
+     <y>2228</y>
     </hint>
    </hints>
   </connection>
@@ -4461,12 +4709,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>255</x>
-     <y>2793</y>
+     <x>230</x>
+     <y>2253</y>
     </hint>
     <hint type="destinationlabel">
-     <x>291</x>
-     <y>2793</y>
+     <x>266</x>
+     <y>2253</y>
     </hint>
    </hints>
   </connection>
@@ -4477,12 +4725,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>2848</y>
+     <x>242</x>
+     <y>2295</y>
     </hint>
     <hint type="destinationlabel">
-     <x>291</x>
-     <y>2848</y>
+     <x>266</x>
+     <y>2295</y>
     </hint>
    </hints>
   </connection>
@@ -4493,12 +4741,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>2883</y>
+     <x>242</x>
+     <y>2320</y>
     </hint>
     <hint type="destinationlabel">
-     <x>291</x>
-     <y>2883</y>
+     <x>266</x>
+     <y>2320</y>
     </hint>
    </hints>
   </connection>
@@ -4509,12 +4757,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>2918</y>
+     <x>242</x>
+     <y>2345</y>
     </hint>
     <hint type="destinationlabel">
-     <x>291</x>
-     <y>2918</y>
+     <x>266</x>
+     <y>2345</y>
     </hint>
    </hints>
   </connection>
@@ -4525,12 +4773,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>2953</y>
+     <x>242</x>
+     <y>2370</y>
     </hint>
     <hint type="destinationlabel">
-     <x>291</x>
-     <y>2953</y>
+     <x>266</x>
+     <y>2370</y>
     </hint>
    </hints>
   </connection>
@@ -4541,12 +4789,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>107</x>
-     <y>2451</y>
+     <x>117</x>
+     <y>1996</y>
     </hint>
     <hint type="destinationlabel">
-     <x>85</x>
-     <y>2962</y>
+     <x>90</x>
+     <y>2265</y>
     </hint>
    </hints>
   </connection>
@@ -4557,12 +4805,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>280</x>
-     <y>1758</y>
+     <x>236</x>
+     <y>1511</y>
     </hint>
     <hint type="destinationlabel">
-     <x>295</x>
-     <y>1758</y>
+     <x>272</x>
+     <y>1511</y>
     </hint>
    </hints>
   </connection>
@@ -4573,12 +4821,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>1721</y>
+     <x>233</x>
+     <y>1487</y>
     </hint>
     <hint type="destinationlabel">
-     <x>293</x>
-     <y>1721</y>
+     <x>269</x>
+     <y>1487</y>
     </hint>
    </hints>
   </connection>
@@ -4589,12 +4837,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>120</x>
-     <y>1335</y>
+     <x>107</x>
+     <y>1211</y>
     </hint>
     <hint type="destinationlabel">
-     <x>95</x>
-     <y>1726</y>
+     <x>100</x>
+     <y>1370</y>
     </hint>
    </hints>
   </connection>
@@ -4605,12 +4853,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>254</x>
-     <y>690</y>
+     <x>229</x>
+     <y>730</y>
     </hint>
     <hint type="destinationlabel">
-     <x>290</x>
-     <y>690</y>
+     <x>265</x>
+     <y>730</y>
     </hint>
    </hints>
   </connection>
@@ -4621,12 +4869,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>254</x>
-     <y>725</y>
+     <x>229</x>
+     <y>755</y>
     </hint>
     <hint type="destinationlabel">
-     <x>290</x>
-     <y>725</y>
+     <x>265</x>
+     <y>755</y>
     </hint>
    </hints>
   </connection>
@@ -4637,12 +4885,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>254</x>
-     <y>760</y>
+     <x>229</x>
+     <y>780</y>
     </hint>
     <hint type="destinationlabel">
-     <x>290</x>
-     <y>760</y>
+     <x>265</x>
+     <y>780</y>
     </hint>
    </hints>
   </connection>
@@ -4653,12 +4901,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>254</x>
-     <y>922</y>
+     <x>229</x>
+     <y>912</y>
     </hint>
     <hint type="destinationlabel">
-     <x>290</x>
-     <y>922</y>
+     <x>265</x>
+     <y>912</y>
     </hint>
    </hints>
   </connection>
@@ -4669,12 +4917,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>254</x>
-     <y>957</y>
+     <x>229</x>
+     <y>937</y>
     </hint>
     <hint type="destinationlabel">
-     <x>290</x>
-     <y>957</y>
+     <x>265</x>
+     <y>937</y>
     </hint>
    </hints>
   </connection>
@@ -4685,12 +4933,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>226</x>
-     <y>2637</y>
+     <x>203</x>
+     <y>2139</y>
     </hint>
     <hint type="destinationlabel">
-     <x>292</x>
-     <y>2637</y>
+     <x>269</x>
+     <y>2139</y>
     </hint>
    </hints>
   </connection>
@@ -4701,12 +4949,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>191</x>
-     <y>639</y>
+     <x>180</x>
+     <y>691</y>
     </hint>
     <hint type="destinationlabel">
-     <x>98</x>
-     <y>765</y>
+     <x>116</x>
+     <y>784</y>
     </hint>
    </hints>
   </connection>
@@ -4717,12 +4965,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
-     <y>639</y>
+     <x>268</x>
+     <y>691</y>
     </hint>
     <hint type="destinationlabel">
-     <x>107</x>
-     <y>997</y>
+     <x>116</x>
+     <y>841</y>
     </hint>
    </hints>
   </connection>
@@ -4733,12 +4981,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>109</x>
-     <y>2171</y>
+     <x>125</x>
+     <y>1825</y>
     </hint>
     <hint type="destinationlabel">
-     <x>98</x>
-     <y>2397</y>
+     <x>106</x>
+     <y>1839</y>
     </hint>
    </hints>
   </connection>
@@ -4749,12 +4997,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>98</x>
-     <y>3012</y>
+     <x>108</x>
+     <y>2419</y>
     </hint>
     <hint type="destinationlabel">
-     <x>105</x>
-     <y>3362</y>
+     <x>115</x>
+     <y>2499</y>
     </hint>
    </hints>
   </connection>
@@ -4765,7 +5013,7 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>123</x>
+     <x>92</x>
      <y>887</y>
     </hint>
     <hint type="destinationlabel">
@@ -4781,12 +5029,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>254</x>
-     <y>992</y>
+     <x>229</x>
+     <y>962</y>
     </hint>
     <hint type="destinationlabel">
-     <x>290</x>
-     <y>992</y>
+     <x>265</x>
+     <y>962</y>
     </hint>
    </hints>
   </connection>
@@ -4797,12 +5045,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>244</x>
-     <y>1613</y>
+     <x>219</x>
+     <y>1410</y>
     </hint>
     <hint type="destinationlabel">
-     <x>290</x>
-     <y>1613</y>
+     <x>265</x>
+     <y>1410</y>
     </hint>
    </hints>
   </connection>
@@ -4813,12 +5061,92 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>244</x>
-     <y>1648</y>
+     <x>219</x>
+     <y>1435</y>
     </hint>
     <hint type="destinationlabel">
-     <x>290</x>
-     <y>1648</y>
+     <x>265</x>
+     <y>1435</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderNormalMixerDepth</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_22</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>292</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>271</x>
+     <y>304</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBoxNormalMixerEnable</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBoxNormalMixerSettings</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>85</x>
+     <y>223</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>69</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderNormalMixerAngle</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_28</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>217</x>
+     <y>322</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>250</x>
+     <y>321</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderNormalMixerPosX</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_31</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>217</x>
+     <y>374</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>255</x>
+     <y>368</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderNormalMixerPosY</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_32</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>200</x>
+     <y>395</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>249</x>
+     <y>394</y>
     </hint>
    </hints>
   </connection>

@@ -29,6 +29,7 @@ uniform float gui_LightRadius;
 uniform int gui_noPBRRays;
 uniform bool gui_bUseSimplePBR;
 uniform bool gui_bMaterialsPreviewEnabled;
+uniform bool gui_bShowTriangleEdges;
 
 uniform  float gui_depthScale;
 uniform float gui_SpecularIntensity;
@@ -41,7 +42,7 @@ uniform vec3 lightDirection;
 vec3 Kd = vec3(gui_DiffuseIntensity);
 vec3 Ks = vec3(gui_SpecularIntensity*0.5);
 vec3 Ka = vec3(0.0);
-float alpha =  1 / (gui_LightRadius*0.1 + 0.01);
+float alpha =  1.0 / (gui_LightRadius*0.1 + 0.01);
 
 vec3 LightSource_diffuse  = vec3(1.0);
 vec3 LightSource_ambient  = vec3(1.0);
@@ -68,6 +69,7 @@ vec3  fvESVertexNormal;
 vec4  fvBaseColor;
 vec4  fvSpecularColor;
 vec4  fvSSAOColor;
+float fvGlossiness;
 vec4  fvRoughness;
 vec4  fvMetallic;
 
@@ -80,6 +82,7 @@ vec4 bump_mapping(int lightIndeks,vec2 texcoord){
 
     vec3  fvReflection       = normalize( ( ( 2.0 * fvESVertexNormal ) * fNDotL ) - fvTSLightPosition );
     vec3  fvTSViewDirection  = normalize( TSViewDirection[lightIndeks] );
+
     float fRDotV             = max( 0.0, dot( fvReflection, fvTSViewDirection ) );
 
 
@@ -89,7 +92,9 @@ vec4 bump_mapping(int lightIndeks,vec2 texcoord){
 
     vec3  lightDirection  = normalize( TSLightPosition[lightIndeks] );
 
-    vec4  fvTotalSpecular  = gui_LightPower * vec4(Ks * LightSource_specular,1) * ( pow( fRDotV, alpha ) ) * fvSpecularColor * 3;
+    vec4  fvTotalSpecular  = gui_LightPower * vec4(Ks * LightSource_specular,1) * ( pow( fRDotV, alpha*fvGlossiness ) ) * fvSpecularColor * 3;
+
+
 
     if(!gui_bSpecular) fvTotalSpecular = vec4(0);
 
@@ -385,13 +390,30 @@ vec4 PBR_Specular_SIMPLE(float roughness,
     return vec4(radiance ,1);
 }
 
+// From : http://prideout.net/blog/?p=48
+in vec3 gTriDistance;
+in vec3 gPatchDistance;
+
+
 void main( void )
 {
+
+    // Triangle edges:
+    if(gui_bShowTriangleEdges){
+        if(gui_bMaterialsPreviewEnabled) FragColor = texture(texDiffuse, texcoord.st);
+        else FragColor     = vec4(0);
+        FragColor.a   = 1;
+        FragNormal    = vec4(0);
+        FragGlowColor = vec4(0);
+        FragPosition  = vec4(10);
+        return;
+    }
 
     if(gui_bMaterialsPreviewEnabled){
         FragColor     = texture(texMaterial, texcoord.st);
         FragNormal    = vec4(0);
         FragGlowColor = vec4(0);
+        FragPosition  = vec4(0);
         return;
     }
 
@@ -412,6 +434,7 @@ void main( void )
     fvSSAOColor        = texture( texSSAO, texcoords.xy );
     fvRoughness        = texture( texRoughness, texcoords.xy );
     fvMetallic         = texture( texMetallic, texcoords.xy );
+    fvGlossiness       = clamp(fvRoughness.r,0.0,1.0)*100+1.0;
 
     if(!gui_bDiffuse)  fvBaseColor     = vec4(0.8); // some gray color
     if(!gui_bOcclusion)fvSSAOColor     = vec4(1.0);
@@ -432,6 +455,7 @@ void main( void )
         vec3 diffuse    = fvBaseColor.rgb * irradiance ;
         fvBaseColor.rgb =  diffuse;
         vec4 bumpMapShadingColor = (bump_mapping(0,texcoords)+bump_mapping(1,texcoords))/2;
+        bumpMapShadingColor = bump_mapping(1,texcoords);
         FragColor = bumpMapShadingColor;
         finalColor = FragColor ;
 
@@ -481,8 +505,8 @@ void main( void )
         finalColor = FragColor ;
     }
 
-    FragNormal    = vec4(surfaceNormal,1);
-    //FragGlowColor = FragColor;
+    // Final colors
+    FragNormal    = vec4(WSPosition,1);
 
     float bloomLevel = 0.5;
     float level      = dot(finalColor.rgb,finalColor.rgb)/3;
@@ -490,5 +514,7 @@ void main( void )
     if(level > bloomLevel )FragGlowColor = finalColor;
 
     FragPosition = vec4(ESVertexPosition,1);
-    //FragColor = fvBaseColor;
+
+
+
 }

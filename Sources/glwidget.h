@@ -87,6 +87,7 @@ public slots:
     void setLightParameters(float,float);
     void setUVScaleOffset(double x,double y);
     void setCameraMouseSensitivity(int value);
+    void resetCameraPosition();
     void cleanup();
 
     // mesh loading functions
@@ -114,7 +115,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
     void relativeMouseMoveEvent(int dx, int dy, bool *wrapMouse, Qt::MouseButtons buttons);
     void wheelEvent(QWheelEvent *event);
-
+    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
 
 private:
 
@@ -128,6 +130,7 @@ private:
 
     void bakeEnviromentalMaps(); // calculate prefiltered enviromental map
     QOpenGLShaderProgram *program;    
+    QOpenGLShaderProgram *line_program; // same as "program" but instead of triangles lines are used
     QOpenGLShaderProgram *skybox_program;
     QOpenGLShaderProgram *env_program;
 
@@ -166,8 +169,11 @@ private:
     float ratio;
     float zoom;
     AwesomeCamera camera;   // light used for standard phong shading
+    AwesomeCamera newCamera;// to make smooth linear interpolation between two views
+    double cameraInterpolation;
     AwesomeCamera lightDirection;//second light - use camera class to rotate light
     QCursor lightCursor;
+
 
 
     Mesh* mesh; // displayed 3d mesh

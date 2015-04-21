@@ -144,128 +144,34 @@ changelog:
 
 //uniform variables from external script
 
-float focalDepth = 10.0;  //focal distance value in meters, but you may use autofocus option below
-float focalLength = 25.0; //focal length in mm
-float fstop = 140.0;       //f-stop value
-bool showFocus = false; //show debug focus point and focal range (red = focal point, green = focal range)
+const float focalDepth = 10.0;  //focal distance value in meters, but you may use autofocus option below
+const float focalLength = 25.0; //focal length in mm
+const float fstop = 140.0;       //f-stop value
 
 #define PI 3.14159265
 
 //------------------------------------------
 //user variables
 
-int samples = 4; //samples on the first ring
-int rings   = 10; //ring count
-
-bool manualdof = false; //manual dof calculation
-float ndofstart = 1.0; //near dof blur start
-float ndofdist = 2.0; //near dof blur falloff distance
-float fdofstart = 1.0; //far dof blur start
-float fdofdist = 3.0; //far dof blur falloff distance
-
-float CoC = 0.03;//circle of confusion size in mm (35mm film = 0.03mm)
-
-bool vignetting = false; //use optical lens vignetting?
-float vignout = 1.3; //vignetting outer border
-float vignin = 0.0; //vignetting inner border
-float vignfade =22.0; //f-stops till vignete fades
-
-bool autofocus = true; //use autofocus in shader? disable if you use external focalDepth value
-vec2 focus     = vec2(0.5,0.5); // autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right)
-float maxblur  = 1.0; //clamp value of max blur (0.0 = no blur,1.0 default)
-
-float threshold = 0.25; //highlight threshold;
-float gain      = 1.0; //highlight gain;
-
-float bias   = 0.25; //bokeh edge bias 0.5
-float fringe = 0.7; //bokeh chromatic aberration/fringing
-
-bool noise = false; //use noise instead of pattern for sample dithering
-float namount = 0.0001; //dither amount
-
-bool depthblur = true; //blur the depth buffer?
-float dbsize = 1.25; //depthblursize
-
-/*
-next part is experimental
-not looking good with small sample and ring count
-looks okay starting from samples = 4, rings = 4
-*/
-
-bool pentagon = false; //use pentagon as bokeh shape?
-float feather = 0.4; //pentagon shape feather
-
-//------------------------------------------
+const int samples = 4; //samples on the first ring
+const int rings   = 8; //ring count
 
 
-float penta(vec2 coords) //pentagonal shape
-{
-        float scale = float(rings) - 1.3;
-        vec4  HS0 = vec4( 1.0,         0.0,         0.0,  1.0);
-        vec4  HS1 = vec4( 0.309016994, 0.951056516, 0.0,  1.0);
-        vec4  HS2 = vec4(-0.809016994, 0.587785252, 0.0,  1.0);
-        vec4  HS3 = vec4(-0.809016994,-0.587785252, 0.0,  1.0);
-        vec4  HS4 = vec4( 0.309016994,-0.951056516, 0.0,  1.0);
-        vec4  HS5 = vec4( 0.0        ,0.0         , 1.0,  1.0);
+const float CoC = 0.03;//circle of confusion size in mm (35mm film = 0.03mm)
 
-        vec4  one = vec4( 1.0 );
+const vec2 focus     = vec2(0.5,0.5); // autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right)
+const float maxblur  = 1.0; //clamp value of max blur (0.0 = no blur,1.0 default)
 
-        vec4 P = vec4((coords),vec2(scale, scale));
+const float threshold = 0.25; //highlight threshold;
+const float gain      = 1.0; //highlight gain;
 
-        vec4 dist = vec4(0.0);
-        float inorout = -4.0;
+const float bias   = 0.25; //bokeh edge bias 0.5
+const float fringe = 0.7; //bokeh chromatic aberration/fringing
 
-        dist.x = dot( P, HS0 );
-        dist.y = dot( P, HS1 );
-        dist.z = dot( P, HS2 );
-        dist.w = dot( P, HS3 );
-
-        dist = smoothstep( -feather, feather, dist );
-
-        inorout += dot( dist, one );
-
-        dist.x = dot( P, HS4 );
-        dist.y = HS5.w - abs( P.z );
-
-        dist = smoothstep( -feather, feather, dist );
-        inorout += dist.x;
-
-        return clamp( inorout, 0.0, 1.0 );
-}
-
-vec3 bdepth(vec2 coords) //blurring depth
-{
-        vec3 d = vec3(0.0);
-        float kernel[9];
-        vec2 offset[9];
-
-        vec2 wh = vec2(texel.x, texel.y) * dbsize;
-
-        offset[0] = vec2(-wh.x,-wh.y);
-        offset[1] = vec2( 0.0, -wh.y);
-        offset[2] = vec2( wh.x -wh.y);
-
-        offset[3] = vec2(-wh.x,  0.0);
-        offset[4] = vec2( 0.0,   0.0);
-        offset[5] = vec2( wh.x,  0.0);
-
-        offset[6] = vec2(-wh.x, wh.y);
-        offset[7] = vec2( 0.0,  wh.y);
-        offset[8] = vec2( wh.x, wh.y);
-
-        kernel[0] = 1.0/16.0;   kernel[1] = 2.0/16.0;   kernel[2] = 1.0/16.0;
-        kernel[3] = 2.0/16.0;   kernel[4] = 4.0/16.0;   kernel[5] = 2.0/16.0;
-        kernel[6] = 1.0/16.0;   kernel[7] = 2.0/16.0;   kernel[8] = 1.0/16.0;
+const bool noise = false; //use noise instead of pattern for sample dithering
+const float namount = 0.0001; //dither amount
 
 
-        for( int i=0; i<9; i++ )
-        {
-                vec3 tmp = texture2D(layerB, coords + offset[i]).xyz;
-                d += tmp * kernel[i];
-        }
-
-        return d;
-}
 
 
 vec3 color(vec2 coords,float blur) //processing the sample
@@ -295,29 +201,12 @@ vec2 rand(vec2 coord) //generating noise/pattern texture for dithering
         return vec2(noiseX,noiseY);
 }
 
-vec3 debugFocus(vec3 col, float blur, float depth)
-{
-        float edge = 0.002*depth; //distance based edge smoothing
-        float m = clamp(smoothstep(0.0,edge,blur),0.0,1.0);
-        float e = clamp(smoothstep(1.0-edge,1.0,blur),0.0,1.0);
-
-        col = mix(col,vec3(1.0,0.5,0.0),(1.0-m)*0.6);
-        col = mix(col,vec3(0.0,0.5,1.0),((1.0-e)-(1.0-m))*0.2);
-
-        return col;
-}
 
 float linearize(vec3 position)
 {
         return length(position.xyz);
 }
 
-float vignette()
-{
-        float dist = distance(v2QuadCoords.xy, vec2(0.5,0.5));
-        dist = smoothstep(vignout+(fstop/vignfade), vignin+(fstop/vignfade), dist);
-        return clamp(dist,0.0,1.0);
-}
 
 // ----------------------------------------------------------------
 //                        DOF/BOKEH EFFECT
@@ -326,46 +215,32 @@ float vignette()
 subroutine(filterModeType) vec4 mode_dof_filter(){
         //scene depth calculation
 
-        float depth = linearize(texture2D(layerB,v2QuadCoords.xy).xyz);
 
-        if (depthblur)
-        {
-                depth = linearize(bdepth(v2QuadCoords.xy));
-        }
+        float depth = linearize(texture2D(layerB,v2QuadCoords.xy).xyz);
 
         //focal plane calculation
 
         float fDepth = focalDepth;
 
-        if (autofocus)
-        {
-                fDepth = linearize(texture2D(layerB,focus).xyz);
-        }
+
+        fDepth = linearize(texture2D(layerB,focus).xyz);
+
 
         //dof blur factor calculation
 
         float blur = 0.0;
 
-        if (manualdof)
-        {
-                float a = depth-fDepth; //focal plane
-                float b = (a-fdofstart)/fdofdist; //far DoF
-                float c = (-a-ndofstart)/ndofdist; //near Dof
-                blur = (a>0.0)?b:c;
-        }
 
-        else
-        {
-                float f = focalLength; //focal length in mm
-                float d = fDepth*1000.0; //focal plane in mm
-                float o = depth*1000.0; //depth in mm
+        float f = focalLength; //focal length in mm
+        float d = fDepth*1000.0; //focal plane in mm
+        float o = depth*1000.0; //depth in mm
 
-                float a = (o*f)/(o-f);
-                float b = (d*f)/(d-f);
-                float c = (d-f)/(d*fstop*CoC);
+        float a = (o*f)/(o-f);
+        float b = (d*f)/(d-f);
+        float c = (d-f)/(d*fstop*CoC);
 
-                blur = abs(a-b)*c;
-        }
+        blur = abs(a-b)*c;
+
 
         blur = clamp(blur,0.0,1.0);
 
@@ -382,53 +257,47 @@ subroutine(filterModeType) vec4 mode_dof_filter(){
 
         vec3 col = vec3(0.0);
 
+
         if(blur < 0.05) //some optimization thing
         {
                 col = texture2D(layerA, v2QuadCoords.xy).rgb;
-        }
-
-        else
-        {
+        }else{
                 col = texture2D(layerA, v2QuadCoords.xy).rgb;
                 float s = 1.0;
                 int ringsamples;
 
                 for (int i = 1; i <= rings; i += 1)
                 {
-                        ringsamples = i * samples;
 
+                        ringsamples = i * samples;
+                        float step = PI*2.0 / float(ringsamples);
+                        float rr = i/float(rings);
+                        float mb = mix(1.0,rr,bias);
                         for (int j = 0 ; j < ringsamples ; j += 1)
                         {
-                                float step = PI*2.0 / float(ringsamples);
+
                                 float pw = (cos(float(j)*step)*float(i));
                                 float ph = (sin(float(j)*step)*float(i));
-                                float p = 1.0;
-                                if (pentagon)
-                                {
-                                        p = penta(vec2(pw,ph));
-                                }
-                                col += color(v2QuadCoords.xy + vec2(pw*w,ph*h),blur)*mix(1.0,(float(i))/(float(rings)),bias)*p;
-                                s += 1.0*mix(1.0,(float(i))/(float(rings)),bias)*p;
+
+                                col += color(v2QuadCoords.xy + vec2(pw*w,ph*h),blur)*mb;
+                                s += mb;
                         }
+
                 }
+
+
                 col /= s; //divide by sample count
+
         }
 
-        if (showFocus)
-        {
-                col = debugFocus(col, blur, depth);
-        }
-
-        if (vignetting)
-        {
-                col *= vignette();
-        }
 
         return vec4(col,1);
+
 }
 
 
 out vec4 FragColor;
 void main() {   
-        FragColor   =  filterMode();
+       FragColor   =  filterMode();
+    //FragColor = texture( layerA, v2QuadCoords.xy);
  }

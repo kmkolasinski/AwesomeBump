@@ -1,8 +1,7 @@
-#version 400 core
+//#version 400 core
+//layout(triangle_strip, max_vertices = 3) out;
 
 layout(triangles) in;
-layout(triangle_strip, max_vertices = 3) out;
-
 
 uniform sampler2D texHeight;
 
@@ -24,6 +23,7 @@ in vec3 teNormal[3];
 in vec3 teTangent[3];
 in vec3 teBitangent[3];
 in vec3 teSmoothedNormal[3];
+in vec3 tePatchDistance[3];
 
 out vec3 texcoord;
 out vec3 ESVertexPosition;
@@ -42,6 +42,8 @@ out vec3 WSNormal;
 out vec3 WSTangent;
 out vec3 WSBitangent;
 out vec3 WSPosition;
+out vec3 gPatchDistance;
+out vec3 gTriDistance;
 
 void bump_mapping(vec3 eyeLightDir[2],vec3 eyeVertexDir[2],vec3 halfVector){
 
@@ -106,6 +108,10 @@ void main()
                 WSPosition  = (ModelMatrix * vec4( newPos[i],1)).xyz;
 
                 TBN = transpose(mat3(WSTangent,WSBitangent,WSNormal));
+                // tessellation edges
+                gPatchDistance = tePatchDistance[i];
+                gTriDistance   = vec3((i==0)?1:0, (i==1)?1:0, (i==2)?1:0);
+
 		EmitVertex();
 	}
 

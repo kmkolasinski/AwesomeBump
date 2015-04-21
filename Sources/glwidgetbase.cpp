@@ -18,7 +18,7 @@ GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget *
     connect(this, &GLWidgetBase::handleAccumulatedMouseMovementLater, this, &GLWidgetBase::handleAccumulatedMouseMovement, Qt::QueuedConnection);
     setMouseTracking(true);
     setFocusPolicy(Qt::ClickFocus);
-
+    centerCamCursor = QCursor(QPixmap(":/resources/centerCamCursor.png"));
     wrapMouse = true;
 }
 
@@ -159,6 +159,18 @@ void GLWidgetBase::toggleMouseWrap(bool toggle){
     wrapMouse = toggle;
 }
 
+void GLWidgetBase::toggleChangeCamPosition(bool toggle){
+
+    if(!toggle){
+         setCursor(Qt::PointingHandCursor);
+         keyPressed = (Qt::Key)0;
+    }else{
+         keyPressed = Qt::Key_Shift;
+         setCursor(centerCamCursor);
+    }
+    updateGL();
+}
+
 // ----------------------------------------------------------------
 // Key events
 // ----------------------------------------------------------------
@@ -174,6 +186,18 @@ void GLWidgetBase::keyPressEvent(QKeyEvent *event){
                keyPressed = KEY_SHOW_MATERIALS;
                updateGL();
         }
+        if( event->key() == Qt::Key_Shift )
+        {
+               if(keyPressed == Qt::Key_Shift){
+                    setCursor(Qt::PointingHandCursor);
+                    keyPressed = (Qt::Key)0;
+                    emit changeCamPositionApplied(false);
+               }else{
+                    keyPressed = Qt::Key_Shift;
+                    setCursor(centerCamCursor);
+               }
+               updateGL();
+        }
 
     }// end of event type
 
@@ -183,14 +207,13 @@ void GLWidgetBase::keyPressEvent(QKeyEvent *event){
 void GLWidgetBase::keyReleaseEvent(QKeyEvent *event) {
 
     if (event->type() == QEvent::KeyRelease){
+        if( event->key() == KEY_SHOW_MATERIALS)
+        {
+               keyPressed = (Qt::Key)0;
+               updateGL();
+               event->accept();
 
-    if( event->key() == KEY_SHOW_MATERIALS)
-    {
-           keyPressed = (Qt::Key)0;
-           updateGL();
-           event->accept();
-
-    }
+        }
     }// end of key press
 }
 

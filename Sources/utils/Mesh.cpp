@@ -265,6 +265,7 @@ void Mesh::drawMesh(bool bUseArrays ){
 
     if(bUseArrays){
         GLCHK(glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()));
+
     }else{
         glPatchParameteri(GL_PATCH_VERTICES, 3);       // tell OpenGL that every patch has 16 verts
         GLCHK(glDrawArrays(GL_PATCHES, 0, gl_vertices.size())); // draw a bunch of patches

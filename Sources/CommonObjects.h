@@ -21,7 +21,7 @@
     #define AB_LOG_ALT "log.txt"
 #endif
 
-#define AWESOME_BUMP_VERSION "AwesomeBump v3.0.4 "
+#define AWESOME_BUMP_VERSION "AwesomeBump Pi (2015)"
 
 #define TEXTURE_FORMAT GL_RGB16F
 
@@ -286,13 +286,15 @@ public:
   int  noPBRRays;
   bool bBloomEffect;
   bool bDofEffect;
+  bool bShowTriangleEdges;
   Performance3DSettings(){
         bUseCullFace  = false;
         bUseSimplePBR = false;
-        noTessSubdivision = 16;
-        noPBRRays         = 15;
-        bBloomEffect      = true;
-        bDofEffect        = true;
+        noTessSubdivision  = 16;
+        noPBRRays          = 15;
+        bBloomEffect       = true;
+        bDofEffect         = true;
+        bShowTriangleEdges = false;
   }
 };
 
@@ -380,6 +382,7 @@ public:
     QGLFramebufferObject *fbo     ; // output image
 
     GLuint scr_tex_id;       // Id of texture loaded from image, from loaded file
+    GLuint normalMixerInputTexId; // Used only by normal texture
     int scr_tex_width;       // width of the image loaded from file.
     int scr_tex_height;      // height ...
     QGLWidget* glWidget_ptr; // pointer to GL context
@@ -481,6 +484,15 @@ public:
     int selectiveBlurNoIters;
     float roughnessColorGlobalOffset;
 
+    // normal map mixer
+    bool bNormalMixerEnabled;
+    bool bNormalMixerApplyNormals;
+    float normalMixerDepth;
+    float normalMixerScale;
+    float normalMixerAngle;
+    float normalMixerPosX;
+    float normalMixerPosY;
+
     // global settings seamless parameters
 
     static SeamlessMode seamlessMode;
@@ -496,12 +508,15 @@ public:
     static map<QString,int> materialIndices;
     static int currentMaterialIndeks;
 
+
+
      FBOImageProporties(){
 
         //ref_fbo      = NULL;
         fbo          = NULL;
         //aux_fbo      = NULL;
         //aux2_fbo     = NULL;
+        normalMixerInputTexId = 0;
         glWidget_ptr = NULL;
         bFirstDraw   = true;
         bGrayScale   = false;
@@ -596,6 +611,18 @@ public:
         selectiveBlurNoIters            = 1;
 
         seamlessMode   = SEAMLESS_NONE;
+
+
+
+        // normal map mixer
+        bNormalMixerEnabled      = false;
+        bNormalMixerApplyNormals = false;
+        normalMixerDepth         = 0.0;
+
+        normalMixerScale = 1.0;
+        normalMixerAngle = 0.0;
+        normalMixerPosX  = 0.0;
+        normalMixerPosY  = 0.0;
 
      }
 
@@ -693,6 +720,15 @@ public:
         selectiveBlurMaskInputImageType = src.selectiveBlurMaskInputImageType;
         selectiveBlurNoIters            = src.selectiveBlurNoIters;
 
+        // normal map mixer
+        bNormalMixerEnabled      = src.bNormalMixerEnabled;
+        bNormalMixerApplyNormals = src.bNormalMixerApplyNormals;
+        normalMixerDepth         = src.normalMixerDepth;
+
+        normalMixerScale = src.normalMixerScale;
+        normalMixerAngle = src.normalMixerAngle;
+        normalMixerPosX  = src.normalMixerPosX;
+        normalMixerPosY  = src.normalMixerPosY;
 
      }
 
@@ -751,7 +787,11 @@ public:
         if(glWidget_ptr != NULL){
             qDebug() << Q_FUNC_INFO;
             glWidget_ptr->makeCurrent();
+
+            if(glIsTexture(normalMixerInputTexId)) glWidget_ptr->deleteTexture(normalMixerInputTexId);
             if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
+            normalMixerInputTexId = 0;
+            scr_tex_id = 0;
             glWidget_ptr = NULL;
             if(fbo        != NULL ) delete fbo;
         }

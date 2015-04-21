@@ -44,6 +44,7 @@ public:
     void hideNormalInputGroup();
     void hideSpecularInputGroup();
     void hideRoughnessInputGroup();
+    void showNormalMixerGroup();
 
 
     ~FormImageProp();
@@ -57,6 +58,7 @@ public slots:
     void updateGuiSpinBoxesAndLabes(int);
     void updateSlidersOnRelease();
     void updateGuiCheckBoxes();
+    void updateSlidersNow(int);
 
 
     void applyHeightToNormalConversion();
@@ -72,7 +74,9 @@ public slots:
     void colorPicked(QVector4D);
     void cancelColorPicking();
 
-
+    // normal mixer
+    void openNormalMixerImage();
+    void pasteNormalFromClipBoard();
 signals:
     void reloadSettingsFromConfigFile(TextureTypes type);
     void imageChanged();
@@ -93,6 +97,10 @@ private:
     Ui::FormImageProp *ui;
     DialogHeightCalculator      *heightCalculator;     // height calculator tool
     FormBaseMapConversionLevels* baseMapConvLevels[4]; // for levels of mipmaps
+
+public:
+
+    bool bOpenNormalMapMixer;
 
 
 };

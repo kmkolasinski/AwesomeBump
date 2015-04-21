@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>298</width>
-    <height>300</height>
+    <width>302</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -142,73 +142,118 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="label_19">
        <property name="text">
         <string>Crtl+Return</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="11" column="1">
       <widget class="QLabel" name="label_20">
        <property name="text">
         <string>Restore 2D image position</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="label_21">
        <property name="text">
         <string>S</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="1">
+     <item row="14" column="1">
       <widget class="QLabel" name="label_22">
        <property name="text">
         <string>Show material texture preview</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="label_23">
        <property name="text">
         <string>Ctrl+V</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="12" column="1">
       <widget class="QLabel" name="label_24">
        <property name="text">
         <string>(On Image tab) Paste Image from clipboard</string>
        </property>
       </widget>
      </item>
-     <item row="13" column="0">
+     <item row="15" column="0">
       <widget class="QLabel" name="label_25">
        <property name="text">
         <string>Ctrl+O</string>
        </property>
       </widget>
      </item>
-     <item row="13" column="1">
+     <item row="15" column="1">
       <widget class="QLabel" name="label_26">
        <property name="text">
         <string>(On Image tab) Open image from file</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="label_27">
        <property name="text">
         <string>Ctrl+C</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
+     <item row="13" column="1">
       <widget class="QLabel" name="label_28">
        <property name="text">
         <string>(On Image tab) Copy Image to clipboard</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_29">
+       <property name="text">
+        <string>Alt+W</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLabel" name="label_30">
+       <property name="text">
+        <string>Show Materials tab</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="label_31">
+       <property name="text">
+        <string>Alt+E</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QLabel" name="label_32">
+       <property name="text">
+        <string>Show UV settings tab</string>
+       </property>
+      </widget>
+     </item>
+     <item row="16" column="0">
+      <widget class="QLabel" name="label_33">
+       <property name="text">
+        <string>Shift </string>
+       </property>
+      </widget>
+     </item>
+     <item row="16" column="1">
+      <widget class="QLabel" name="label_34">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;(On 3D Widget) Press Shift button then select point  on the 3D mesh to choose new position of camera.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

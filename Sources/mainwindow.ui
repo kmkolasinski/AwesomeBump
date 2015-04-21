@@ -62,7 +62,7 @@
         <enum>QTabWidget::East</enum>
        </property>
        <property name="currentIndex">
-        <number>9</number>
+        <number>5</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideMiddle</enum>
@@ -115,8 +115,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>398</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -189,8 +189,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>398</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -266,8 +266,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>398</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -337,8 +337,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>398</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -408,8 +408,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>398</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -476,8 +476,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>398</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -550,8 +550,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>398</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -603,8 +603,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>87</width>
-              <height>24</height>
+              <width>389</width>
+              <height>644</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -707,7 +707,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>344</width>
+              <width>381</width>
               <height>656</height>
              </rect>
             </property>
@@ -2019,7 +2019,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>426</width>
+              <width>398</width>
               <height>646</height>
              </rect>
             </property>
@@ -2382,12 +2382,6 @@
                  <number>2</number>
                 </property>
                 <item>
-                 <widget class="QStackedWidget" name="stackedWidget">
-                  <widget class="QWidget" name="page"/>
-                  <widget class="QWidget" name="page_2"/>
-                 </widget>
-                </item>
-                <item>
                  <widget class="QRadioButton" name="radioButtonMirrorModeXY">
                   <property name="text">
                    <string>XY mirror</string>
@@ -2657,9 +2651,64 @@
              </property>
              <property name="iconSize">
               <size>
-               <width>32</width>
+               <width>20</width>
                <height>20</height>
               </size>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonResetCameraPosition">
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Reset Camera position</string>
+             </property>
+             <property name="statusTip">
+              <string>Reset camera position</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/resetCamera.png</normaloff>:/resources/resetCamera.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonChangeCamPosition">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/centerCamCursor.png</normaloff>:/resources/centerCamCursor.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
              <property name="flat">
               <bool>true</bool>
@@ -3160,6 +3209,13 @@
                    </property>
                    <property name="checked">
                     <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="10">
+                  <widget class="QCheckBox" name="checkBoxShowTriangleEdges">
+                   <property name="text">
+                    <string>Triangle edges</string>
                    </property>
                   </widget>
                  </item>
@@ -3936,7 +3992,9 @@
    <addaction name="actionShowOcclusiontImage"/>
    <addaction name="actionShowRoughnessImage"/>
    <addaction name="actionShowMetallicImage"/>
+   <addaction name="actionShowMaterialsImage"/>
    <addaction name="actionShowSettingsImage"/>
+   <addaction name="actionShowUVsTab"/>
    <addaction name="actionFitToScreen"/>
   </widget>
   <widget class="QToolBar" name="toolBar_2">
@@ -4150,6 +4208,36 @@
     <string>Alt+7</string>
    </property>
   </action>
+  <action name="actionShowMaterialsImage">
+   <property name="icon">
+    <iconset resource="content.qrc">
+     <normaloff>:/resources/showMaterials.png</normaloff>:/resources/showMaterials.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Materials</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show materials tab (Alt+W)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+W</string>
+   </property>
+  </action>
+  <action name="actionShowUVsTab">
+   <property name="icon">
+    <iconset resource="content.qrc">
+     <normaloff>:/resources/showUVs.png</normaloff>:/resources/showUVs.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show UVs</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show materials tab (Alt+E)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+E</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="content.qrc"/>
@@ -4178,8 +4266,8 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>900</x>
-     <y>200</y>
+     <x>705</x>
+     <y>292</y>
     </hint>
     <hint type="destinationlabel">
      <x>640</x>
@@ -4194,12 +4282,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>633</x>
-     <y>421</y>
+     <x>680</x>
+     <y>542</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1439</x>
-     <y>423</y>
+     <x>1035</x>
+     <y>544</y>
     </hint>
    </hints>
   </connection>

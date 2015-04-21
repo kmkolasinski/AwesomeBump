@@ -177,6 +177,11 @@ public:
 
     void applyNormalsStepFilter(QGLFramebufferObject* inputFBO,
                                 QGLFramebufferObject* outputFBO);
+
+
+    void applyNormalMixerFilter(QGLFramebufferObject* inputFBO,
+                                QGLFramebufferObject* outputFBO);
+
     void applySobelToNormalFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* outputFBO, BaseMapConvLevelProperties &convProp);
 

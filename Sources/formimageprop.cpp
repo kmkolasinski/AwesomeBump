@@ -10,6 +10,8 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 {
     ui->setupUi(this);
 
+    bOpenNormalMapMixer   = false;
+
     imageProp.glWidget_ptr = qlW_ptr;
     
     connect(ui->pushButtonOpenImage,SIGNAL(released()),this,SLOT(open()));
@@ -162,6 +164,18 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->comboBoxOcclusionInputImage,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
     connect(ui->comboBoxRoughnessInputImage,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
 
+    // normal map mixer
+    connect(ui->pushButtonNormalMixerLoadImage,SIGNAL(released())        ,this,SLOT(openNormalMixerImage()));
+    connect(ui->pushButtonNormalMixerPasteFromCB,SIGNAL(released())        ,this,SLOT(pasteNormalFromClipBoard()));
+
+    connect(ui->checkBoxNormalMixerEnable,SIGNAL(clicked())              ,this,SLOT(updateGuiCheckBoxes()));
+    connect(ui->horizontalSliderNormalMixerDepth,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderNormalMixerAngle,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderNormalMixerScale,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderNormalMixerScale,SIGNAL(valueChanged(int)),this,SLOT(updateSlidersNow(int)));
+    connect(ui->horizontalSliderNormalMixerPosX,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderNormalMixerPosY,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+
 
 
     setAcceptDrops(true);
@@ -192,9 +206,13 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     ui->verticalLayoutBaseMapConvLevel3->addWidget(baseMapConvLevels[3]);
 
     for(int i = 0; i < 4 ; i++){
-
         baseMapConvLevels[i]->show();
     }
+
+    // normal mixer
+    ui->groupBoxNormalMixerSettings->hide();
+    ui->groupBoxNormalMixer->hide();
+
     setMouseTracking(true);
     setFocus();
     setFocusPolicy(Qt::ClickFocus);
@@ -202,6 +220,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 
 FormImageProp::~FormImageProp()
 {
+
     delete heightCalculator;
     for(int i = 0; i < 4 ; i++) delete baseMapConvLevels[i];
     delete ui;
@@ -228,16 +247,26 @@ bool FormImageProp::loadFile(const QString &fileName)
                                  tr("Cannot load %1.").arg(QDir::toNativeSeparators(fileName)));
         return false;
     }
+    if(bOpenNormalMapMixer){
+        qDebug() << "<FormImageProp> Open normal mixer image:" << fileName;
 
-    qDebug() << "<FormImageProp> Open image:" << fileName;
+        imageProp.glWidget_ptr->makeCurrent();
+        if(glIsTexture(imageProp.normalMixerInputTexId)) imageProp.glWidget_ptr->deleteTexture(imageProp.normalMixerInputTexId);
+        imageProp.normalMixerInputTexId = imageProp.glWidget_ptr->bindTexture(_image,GL_TEXTURE_2D);
+        ui->labelNormalMixerInfo->setText("Current image:"+ fileInfo.baseName());
+        emit imageChanged();
 
-    imageName = fileInfo.baseName();
-    (*recentDir).setPath(fileName);
-    image    = _image;
-    imageProp.init(image);
+    }else{
+        qDebug() << "<FormImageProp> Open image:" << fileName;
 
-    //emit imageChanged();
-    emit imageLoaded(image.width(),image.height());
+        imageName = fileInfo.baseName();
+        (*recentDir).setPath(fileName);
+        image    = _image;
+        imageProp.init(image);
+
+        //emit imageChanged();
+        emit imageLoaded(image.width(),image.height());
+    }
     return true;
 }
 
@@ -486,12 +515,26 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
     imageProp.roughnessColorGlobalOffset= ui->horizontalSliderRoughnessColorGlobalOffset->value()/255.0;
 
 
+
+    imageProp.normalMixerDepth    = ui->horizontalSliderNormalMixerDepth->value();
+    imageProp.normalMixerScale    = ui->horizontalSliderNormalMixerScale->value()/10.0;
+    imageProp.normalMixerAngle    = 3.1415926*ui->horizontalSliderNormalMixerAngle->value()/180.0;
+    imageProp.normalMixerPosX     = ui->horizontalSliderNormalMixerPosX->value()/100.0;
+    imageProp.normalMixerPosY     = ui->horizontalSliderNormalMixerPosY->value()/100.0;
+
+    ui->labelNormalMixerScale->setText(QString::number(imageProp.normalMixerScale));
 }
 
 void FormImageProp::updateSlidersOnRelease(){
     if(bLoading == true) return;
     updateGuiSpinBoxesAndLabes(0);
     emit imageChanged();
+}
+
+void FormImageProp::updateSlidersNow(int){
+
+    imageProp.normalMixerScale    = ui->horizontalSliderNormalMixerScale->value()/10.0;
+    ui->labelNormalMixerScale->setText(QString::number(imageProp.normalMixerScale));
 }
 
 void FormImageProp::updateGuiCheckBoxes(){
@@ -519,6 +562,8 @@ void FormImageProp::updateGuiCheckBoxes(){
     imageProp.bRoughnessInvertColorMask         = ui->checkBoxRoughnessColorInvert->isChecked();
 
     imageProp.bHeightEnableNormalization        = ui->checkBoxHeightProcEnableNormalization->isChecked();
+    imageProp.bNormalMixerEnabled               = ui->checkBoxNormalMixerEnable->isChecked();
+
 
     if(imageProp.bRoughnessEnableColorPicking){
          if(!imageProp.bRoughnessColorPickingToggled)ui->groupBoxGeneral->setDisabled(true);
@@ -601,6 +646,32 @@ void FormImageProp::cancelColorPicking(){
 
 }
 
+void FormImageProp::openNormalMixerImage(){
+    bOpenNormalMapMixer = true;
+    open();
+    bOpenNormalMapMixer = false;
+}
+
+void FormImageProp::pasteNormalFromClipBoard(){
+    const QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+
+    if (mimeData->hasImage()) {
+        qDebug() << "<FormImageProp> Normal image :"+
+                    PostfixNames::getTextureName(imageProp.imageType)+
+                    " loaded from clipboard.";
+        QPixmap pixmap = qvariant_cast<QPixmap>(mimeData->imageData());
+        QImage _image = pixmap.toImage();
+
+        imageProp.glWidget_ptr->makeCurrent();
+        if(glIsTexture(imageProp.normalMixerInputTexId)) imageProp.glWidget_ptr->deleteTexture(imageProp.normalMixerInputTexId);
+        imageProp.normalMixerInputTexId = imageProp.glWidget_ptr->bindTexture(_image,GL_TEXTURE_2D);
+        ui->labelNormalMixerInfo->setText("Current image: (clipboard source)");
+        emit imageChanged();
+
+    }
+}
+
 void FormImageProp::togglePreviewSelectiveBlurMask(bool toggle){
     QPalette palette = ui->pushButtonSelectiveBlurPreviewMask->palette();
     palette.setColor(ui->pushButtonSelectiveBlurPreviewMask->backgroundRole(), QColor(255*int(toggle), 255*int(!toggle), 0, 127));
@@ -622,6 +693,10 @@ void FormImageProp::hideSpecularInputGroup(){
 
 void FormImageProp::hideRoughnessInputGroup(){
     ui->groupBoxRoughnessInputImage->hide();
+}
+
+void FormImageProp::showNormalMixerGroup(){
+    ui->groupBoxNormalMixer->show();
 }
 
 void FormImageProp::hideOcclusionInputGroup(){

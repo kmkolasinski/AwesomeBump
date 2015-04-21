@@ -29,7 +29,7 @@ public:
     void toggleFreeCamera(bool free);
     bool isFreeCamera(){return isFree;}
     void mouseWheelMove(int direction);
-
+    void reset();
 
     void moveForward(float speed);  // ruch do przodu - zwykle klawisz W
     void moveBackward(float speed); // ruch do tylu - klawisz S
@@ -57,7 +57,7 @@ public:
     void setMouseSensitivity(int value);
 
 public:
-    QMatrix4x4      rotM;
+    QMatrix3x3      rotM;
     QVector3D	    position;           // pozycja obserwatora
     QVector3D	    direction;          // kierunek patrzenia
     QVector3D	    side_direction;     //kierunek chodzenia na bok

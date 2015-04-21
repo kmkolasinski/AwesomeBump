@@ -67,7 +67,9 @@ public slots:
     void selectOcclusionTab();
     void selectRoughnessTab();
     void selectMetallicTab();
+    void selectMaterialsTab();
     void selectGeneralSettingsTab();
+    void selectUVsTab();
     void fitImage();// resize 2D image
 
     // repaint views after changes
@@ -96,6 +98,7 @@ public slots:
     void setSpecularIntensity(int);
     void setDiffuseIntensity(int);
     void updateSpinBoxes(int);
+    void selectShadingModel(int i);
     // change current performance settings
     void updatePerformanceSettings();
     void updatePerformanceSettings(int);

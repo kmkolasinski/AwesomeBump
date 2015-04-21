@@ -52,5 +52,9 @@
         <file>resources/filters.frag</file>
         <file>resources/filters_3d.frag</file>
         <file>resources/filters_3d.vert</file>
+        <file>resources/showMaterials.png</file>
+        <file>resources/showUVs.png</file>
+        <file>resources/resetCamera.png</file>
+        <file>resources/centerCamCursor.png</file>
     </qresource>
 </RCC>

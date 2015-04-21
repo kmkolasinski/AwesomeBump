@@ -65,7 +65,7 @@ bool FormMaterialIndicesManager::updateMaterials(QImage& image){
     if(colorIndices.size() > 32){
     QMessageBox msgBox;
         msgBox.setText("Error: too much colors!");
-        msgBox.setInformativeText(" Sorry, but this image does not look like a material texture."
+        msgBox.setInformativeText(" Sorry, but this image does not look like a material texture.\n"
                                   " Your image contains more than 32 different colors");
         msgBox.setStandardButtons(QMessageBox::Cancel);
         msgBox.exec();
@@ -259,8 +259,8 @@ void FormMaterialIndicesManager::chooseMaterialByColor(QColor color){
     // if color not found on the list
     if(!bColorFound){
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
-                                 "The picked color was not found in the materials table"
-                                 "make sure you chose the correct color e.g"
+                                 "The picked color was not found in the materials table\n"
+                                 "make sure you chose the correct color e.g\n"
                                  "not the sky box background.");
     }
 }

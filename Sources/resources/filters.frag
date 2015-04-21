@@ -378,8 +378,8 @@ subroutine(filterModeType) vec4 mode_seamless_linear_filter(){
     float x   = tc.x;
     float y   = tc.y;
     float rad = make_seamless_radius/2;
-    float pwr = gui_seamless_contrast_power*10;
-    float cst = (gui_seamless_contrast_strenght)*50;
+    float pwr = gui_seamless_contrast_power*2+0.001;
+    float cst = (gui_seamless_contrast_strenght)*20;
     // simple seamless - GIMP like behaviour
     if(gui_seamless_mode == 0){
         vec2 offset = -sign(x-0.5)*vec2(0.5,0);
@@ -388,7 +388,7 @@ subroutine(filterModeType) vec4 mode_seamless_linear_filter(){
         vec4 hA = texture( layerB, tc);
         vec4 hB = texture( layerB, vec2(tc.x,tc.y) + offset);
         float omega     =  1 - smoothstep(0.0,rad,tc.x) + smoothstep(1.0-rad,1.0,tc.x);
-        float bomega    = clamp(omega + omega*pow(length(hA.xyz-hB.xyz)/sqrt(2.0),pwr)*cst,0,1);
+        float bomega    = clamp(omega + omega*pow(length(hA.xyz-hB.xyz)/sqrt(2.0)*cst,pwr),0,1);
         return mix(colorA,colorB,bomega);
     }else{
         vec2 offset = -sign(y-0.5)*vec2(0.0,0.5);
@@ -397,7 +397,7 @@ subroutine(filterModeType) vec4 mode_seamless_linear_filter(){
         vec4 hA = texture( layerB, tc);
         vec4 hB = texture( layerB, vec2(tc.x,tc.y) + offset);
         float omega     =  1 - smoothstep(0.0,rad,tc.y) + smoothstep(1.0-rad,1.0,tc.y);
-        float bomega    = clamp(omega + omega*pow(length(hA.xyz-hB.xyz)/sqrt(2.0),pwr)*cst,0,1);
+        float bomega    = clamp(omega + omega*pow(length(hA.xyz-hB.xyz)/sqrt(2.0)*cst,pwr),0,1);
         return mix(colorA,colorB,bomega);
     }
 
@@ -410,8 +410,8 @@ subroutine(filterModeType) vec4 mode_seamless_filter(){
     float x = tc.x;
     float y = tc.y;
 
-    float pwr = gui_seamless_contrast_power*10;
-    float cst = (gui_seamless_contrast_strenght)*50;
+    float pwr = gui_seamless_contrast_power*2+0.001;
+    float cst = (gui_seamless_contrast_strenght)*0;
 
     if(gui_seamless_mode == 2){
         // XY - mirror image
@@ -469,7 +469,7 @@ subroutine(filterModeType) vec4 mode_seamless_filter(){
             highp float alpha    = 1-smoothstep(gui_seamless_random_inner_radius,gui_seamless_random_outer_radius,dist);
 
             vec4 hB = texture( layerB, rot_mat*(tc - atom_pos)+0.5);
-            float diff  = cst*pow(length(hA.xyz-hB.xyz)/sqrt(3.0),pwr+0.0001);
+            float diff  = pow(cst*length(hA.xyz-hB.xyz)/sqrt(3.0),pwr+0.0001);
             total_diff += diff;
             alpha                = clamp(alpha + alpha * diff,0,1);
             weight              += alpha;
@@ -619,10 +619,50 @@ subroutine(filterModeType) vec4 mode_normals_step_filter(){
 
         color.xy *= gui_normals_step;//(1+2*gui_normals_step);
 
-
         color.xyz = normalize(color.xyz);
 
 	return color*0.5 +0.5;
+}
+
+// ----------------------------------------------------------------
+//
+// ----------------------------------------------------------------
+uniform float gui_normal_mixer_depth;
+uniform float gui_normal_mixer_angle;
+uniform float gui_normal_mixer_scale;
+uniform float gui_normal_mixer_pos_x;
+uniform float gui_normal_mixer_pos_y;
+
+subroutine(filterModeType) vec4 mode_normal_mixer_filter(){
+
+        vec2 newTexCoords = vec2(v2QuadCoords.xy-0.5) - vec2(gui_normal_mixer_pos_x,gui_normal_mixer_pos_y);
+        // rotate
+        newTexCoords = vec2(newTexCoords.x*cos(gui_normal_mixer_angle)+
+                            newTexCoords.y*sin(gui_normal_mixer_angle),
+                           -newTexCoords.x*sin(gui_normal_mixer_angle)+
+                            newTexCoords.y*cos(gui_normal_mixer_angle));
+        // scale coords
+        newTexCoords = newTexCoords*gui_normal_mixer_scale;
+
+        newTexCoords = newTexCoords + 0.5;
+
+        float ndepth = gui_normal_mixer_depth/50;
+        vec3 normalA = 2*(texture( layerA, v2QuadCoords.xy).xyz - 0.5);
+        vec3 normalB = 2*(texture( layerB, newTexCoords.xy).xyz - 0.5);
+        // rotate normals
+        normalB = vec3(normalB.x*cos(-gui_normal_mixer_angle)+
+                       normalB.y*sin(-gui_normal_mixer_angle),
+                      -normalB.x*sin(-gui_normal_mixer_angle)+
+                       normalB.y*cos(-gui_normal_mixer_angle),
+                       normalB.z);
+
+        vec3 finalNormal = vec3(normalA.xy,normalA.z)+
+                           vec3(normalB.xy*ndepth,0);
+
+        vec4 finalColor  = vec4((finalNormal)*0.5+0.5,1);
+
+
+        return finalColor;
 }
 
 // ----------------------------------------------------------------

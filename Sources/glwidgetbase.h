@@ -28,7 +28,7 @@ public:
 signals:
     void updateGLLater();
     void handleAccumulatedMouseMovementLater();
-
+    void changeCamPositionApplied(bool);
 protected:
     virtual void relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, Qt::MouseButtons buttons) = 0;
     static bool wrapMouse;
@@ -36,6 +36,7 @@ protected:
 public slots:
     void updateGLNow();
     void toggleMouseWrap(bool toggle);
+    void toggleChangeCamPosition(bool toggle);
 
 private slots:
     void handleAccumulatedMouseMovement();
@@ -54,6 +55,7 @@ private:
 
 protected:
     Qt::Key keyPressed;
+    QCursor centerCamCursor;
 };
 
 #endif // GLWIDGETBASE_H

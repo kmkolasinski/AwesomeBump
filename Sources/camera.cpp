@@ -43,8 +43,8 @@ QMatrix4x4& AwesomeCamera::updateCamera(void){
                 updown_direction
                );
     }
-    rotM = unit_mat;
-    return rotM;
+
+    return unit_mat;
 }
 QVector3D AwesomeCamera::get_position(){
     if(isFree){
@@ -98,7 +98,38 @@ void AwesomeCamera::moveDown(float speed){
 
 void AwesomeCamera::rotateView(float z_angle,float x_angle){
 
-    rotM.setToIdentity();
+//    rotM.setToIdentity();
+
+
+    double cosPhi = cos(mouse_sens*(-z_angle)/180*M_PI);
+    double sinPhi = sin(mouse_sens*(-z_angle)/180*M_PI);
+
+
+    direction      = QVector3D(cosPhi*direction.x()+sinPhi*direction.z(),direction.y(),
+                               cosPhi*direction.z()-sinPhi*direction.x());
+
+    QMatrix4x4 rotMat;
+    rotMat.setToIdentity();
+    rotMat.rotate(mouse_sens*(-x_angle),QVector3D::crossProduct(direction,QVector3D(0,1,0)));
+    QVector3D tmpVec = (rotMat*QVector4D(direction)).toVector3D();
+    tmpVec.normalize();
+    double angleTheta = QVector3D::dotProduct(tmpVec,QVector3D(0,1,0));
+    if(qAbs(angleTheta) < 0.9){
+        rotMat.setToIdentity();
+        rotMat.rotate(mouse_sens*(-x_angle)*(1-qAbs(angleTheta)),QVector3D::crossProduct(direction,QVector3D(0,1,0)));
+        QVector3D tmpVec = (rotMat*QVector4D(direction)).toVector3D();
+        tmpVec.normalize();
+        direction = tmpVec;
+    }
+
+    side_direction = QVector3D(cosPhi*side_direction.x()+sinPhi*side_direction.z(),0,
+                               cosPhi*side_direction.z()-sinPhi*side_direction.x());
+
+    updown_direction = QVector3D::crossProduct(direction,side_direction);
+
+
+
+/*
     rot_angles[0] += mouse_sens*(z_angle);//przesuniecie X
     rot_angles[1] -= mouse_sens*(x_angle);//przesuniecie Y
     if(rot_angles[1] > 90) rot_angles[1] = 90;
@@ -109,13 +140,21 @@ void AwesomeCamera::rotateView(float z_angle,float x_angle){
     side_direction = QVector3D(sin((rot_angles[0]+90)/180*M_PI),0,-cos((rot_angles[0]+90)/180*M_PI));
 //    przesuwanie gora dol
     updown_direction = QVector3D::crossProduct(direction,side_direction);
+*/
 
     direction.normalize();
     side_direction.normalize();
     updown_direction.normalize();
+
 }
 
-
+void AwesomeCamera::reset(){
+    radius = 1;
+    position		 = QVector3D(0,0,0);
+    direction        = QVector3D(0,0,1);
+    side_direction   = QVector3D(1,0,0);
+    updown_direction = QVector3D(0,1,0);
+}
 
 void AwesomeCamera::mouseWheelMove(int direction){
     radius+=mouse_sens*0.0025f*direction;

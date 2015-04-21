@@ -12,7 +12,7 @@ layout(location = 3) out vec4 FragPosition;
 void main( void )
 { 
    FragColor  = texture(texEnv, texcoord);
-   FragNormal = vec4(0,0,1,1);
+   FragNormal = vec4(50.0,50.0,50.0,1);
 
    float bloomLevel = 0.8;
    //FragGlowColor = pow(FragColor+0.2,vec4(3.0))-pow(1.1,3)+1;

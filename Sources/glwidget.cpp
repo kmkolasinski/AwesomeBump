@@ -47,6 +47,7 @@ QDir* GLWidget::recentMeshDir = NULL;
 GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     : GLWidgetBase(QGLFormat::defaultFormat(), parent, shareWidget)
 {
+    setAcceptDrops(true);
     zoom                    = 60;
     lightPosition           = QVector4D(0,0,5.0,1);
     depthScale              = 1;
@@ -70,6 +71,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     setCursor(Qt::PointingHandCursor);
     lightCursor = QCursor(QPixmap(":/resources/lightCursor.png"));
 
+
     glImagePtr = (GLImage*)shareWidget;
     // Post processing variables:
     colorFBO = NULL;
@@ -79,6 +81,8 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
        glowInputColor[i] = NULL;
        glowOutputColor[i] = NULL;
     }
+
+    cameraInterpolation = 1.0;
 
 }
 
@@ -93,6 +97,7 @@ void GLWidget::cleanup()
     deleteFBOs();
 
     delete program;
+    delete line_program;
     delete skybox_program;
     delete env_program;
     delete filters_program;
@@ -137,6 +142,16 @@ void GLWidget::setCameraMouseSensitivity(int value){
     camera.setMouseSensitivity(value);
 }
 
+void GLWidget::resetCameraPosition(){
+
+    camera.reset();
+    newCamera.reset();
+    cameraInterpolation = 1.0;
+    emit changeCamPositionApplied(false);
+    updateGL();
+}
+
+
 void GLWidget::toggleDiffuseView(bool enable){
     bToggleDiffuseView = enable;
     updateGL();
@@ -179,6 +194,7 @@ void GLWidget::selectShadingType(int indeks){
 
 void GLWidget::selectShadingModel(int i){
        shadingModel = (ShadingModel) i;
+
        updateGL();
 }
 
@@ -237,7 +253,16 @@ void GLWidget::initializeGL()
 
     qDebug() << "Loading quad (geometry shader)";
     QOpenGLShader *gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
-    gshader->compileSourceFile(":/resources/plane.geom");
+    QFile gFile(":/resources/plane.geom");
+    gFile.open(QFile::ReadOnly);
+    qDebug() << gFile.isOpen() << " File";
+
+    QTextStream in(&gFile);
+    QString preambule = "#version 400 core\n"
+                        "layout(triangle_strip, max_vertices = 3) out;\n" ;
+    QString shaderCode = in.readAll();
+    gshader->compileSourceCode(preambule+shaderCode);
+    //gshader->compileSourceFile(in.readAll());
     if (!gshader->log().isEmpty()) qDebug() << gshader->log();
     else qDebug() << "done";
 
@@ -266,8 +291,37 @@ void GLWidget::initializeGL()
     program->setUniformValue("texDiffuseEnvMap", 8);
     program->setUniformValue("texEnvMap"       , 9);
 
+    // lines shader
+    qDebug() << "Compiling lines program...";
+    preambule = QString("#version 400 core\n")+
+                        "layout(line_strip, max_vertices = 3) out;\n" ;
+    gshader->compileSourceCode(preambule+shaderCode);
 
-    //GLCHK( subroutines["render_shader"]  = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"render_shader") );
+    line_program = new QOpenGLShaderProgram(this);
+    line_program->addShader(vshader);
+    line_program->addShader(fshader);
+    line_program->addShader(tcshader);
+    line_program->addShader(teshader);
+    line_program->addShader(gshader);
+    line_program->bindAttributeLocation("FragColor",0);
+    line_program->bindAttributeLocation("FragNormal",1);
+    line_program->bindAttributeLocation("FragGlowColor",2);
+    line_program->bindAttributeLocation("FragPosition",3);
+    GLCHK(line_program->link());
+
+    GLCHK(line_program->bind());
+    line_program->setUniformValue("texDiffuse"  , 0);
+    line_program->setUniformValue("texNormal"   , 1);
+    line_program->setUniformValue("texSpecular" , 2);
+    line_program->setUniformValue("texHeight"   , 3);
+    line_program->setUniformValue("texSSAO"     , 4);
+    line_program->setUniformValue("texRoughness", 5);
+    line_program->setUniformValue("texMetallic",  6);
+    line_program->setUniformValue("texMaterial",  7);
+
+    line_program->setUniformValue("texDiffuseEnvMap", 8);
+    line_program->setUniformValue("texEnvMap"       , 9);
+
 
     delete vshader;
     delete fshader;
@@ -381,6 +435,7 @@ void GLWidget::initializeGL()
 
     camera.position.setZ( -0 );
     camera.toggleFreeCamera(false);
+    newCamera.toggleFreeCamera(false);
 
     lightDirection.position.setZ(0);
     lightDirection.toggleFreeCamera(false);
@@ -401,12 +456,23 @@ void GLWidget::paintGL()
 {
 
 
+     glReadBuffer(GL_BACK);
     // ---------------------------------------------------------
     // Drawing env
     // ---------------------------------------------------------
     bakeEnviromentalMaps();
-
+    colorFBO->bindDefault();
     GLCHK( glViewport(0, 0, width(), height()) );
+
+    if(cameraInterpolation < 1.0){
+        double w = cameraInterpolation;
+        camera.position = camera.position*(1-w) + newCamera.position * w;
+        cameraInterpolation += 0.01;
+
+    }
+
+
+
     // setting the camera viewpoint
     viewMatrix = camera.updateCamera();
 
@@ -415,6 +481,7 @@ void GLWidget::paintGL()
     GLCHK( glDisable(GL_CULL_FACE) );
     projectionMatrix.setToIdentity();
     projectionMatrix.perspective(zoom,ratio,0.1,350.0);
+
 
 
 
@@ -452,16 +519,24 @@ void GLWidget::paintGL()
 
 
 
-
     // ---------------------------------------------------------
     // Drawing model
     // ---------------------------------------------------------
+    QOpenGLShaderProgram* program_ptrs[2] = {program,line_program};
+
+
     GLCHK( glEnable(GL_CULL_FACE) );
     GLCHK( glEnable(GL_DEPTH_TEST) );            
     GLCHK( glCullFace(GL_FRONT) );
-    GLCHK( program->bind() );
+    glDisable(GL_POLYGON_OFFSET_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    GLCHK( program->setUniformValue("ProjectionMatrix", projectionMatrix) );
+    for(int pindex = 0 ; pindex < 2 ; pindex ++){
+
+    QOpenGLShaderProgram* program_ptr = program_ptrs[pindex];
+    GLCHK( program_ptr->bind() );
+
+    GLCHK( program_ptr->setUniformValue("ProjectionMatrix", projectionMatrix) );
 
     objectMatrix.setToIdentity();
     if( fboIdPtrs[0] != NULL){
@@ -473,45 +548,67 @@ void GLWidget::paintGL()
         objectMatrix.scale(0.5/mesh->radius);
         objectMatrix.translate(-mesh->centre_of_mass);
     }
-    modelViewMatrix = camera.updateCamera()*objectMatrix;
+    modelViewMatrix = viewMatrix*objectMatrix;
     NormalMatrix = modelViewMatrix.normalMatrix();
     float mesh_scale = 0.5/mesh->radius;
 
-    GLCHK( program->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );    
-    GLCHK( program->setUniformValue("NormalMatrix"          , NormalMatrix) );
-    GLCHK( program->setUniformValue("ModelMatrix"           , objectMatrix) );
-    GLCHK( program->setUniformValue("meshScale"             , mesh_scale) );
-    GLCHK( program->setUniformValue("lightPos"              , lightPosition) );
+    GLCHK( program_ptr->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );
+    GLCHK( program_ptr->setUniformValue("NormalMatrix"          , NormalMatrix) );
+    GLCHK( program_ptr->setUniformValue("ModelMatrix"           , objectMatrix) );
+    GLCHK( program_ptr->setUniformValue("meshScale"             , mesh_scale) );
+    GLCHK( program_ptr->setUniformValue("lightPos"              , lightPosition) );
 
-    GLCHK( program->setUniformValue("lightDirection"        , lightDirection.direction) );
-    GLCHK( program->setUniformValue("cameraPos"             , camera.get_position()) );
-    GLCHK( program->setUniformValue("gui_depthScale"        , depthScale) );
-    GLCHK( program->setUniformValue("gui_uvScale"           , uvScale) );
-    GLCHK( program->setUniformValue("gui_uvScaleOffset"     , uvOffset) );
-    GLCHK( program->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
-    GLCHK( program->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
-    GLCHK( program->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
-    GLCHK( program->setUniformValue("gui_bHeight"           , bToggleHeightView) );
-    GLCHK( program->setUniformValue("gui_bNormal"           , bToggleNormalView) );
-    GLCHK( program->setUniformValue("gui_bRoughness"        , bToggleRoughnessView) );
-    GLCHK( program->setUniformValue("gui_bMetallic"         , bToggleMetallicView) );
-    GLCHK( program->setUniformValue("gui_shading_type"      , shadingType) );
-    GLCHK( program->setUniformValue("gui_shading_model"     , shadingModel) );
-    GLCHK( program->setUniformValue("gui_SpecularIntensity" , specularIntensity) );
-    GLCHK( program->setUniformValue("gui_DiffuseIntensity"  , diffuseIntensity) );
-    GLCHK( program->setUniformValue("gui_LightPower"        , lightPower) );
-    GLCHK( program->setUniformValue("gui_LightRadius"       , lightRadius) );
+    GLCHK( program_ptr->setUniformValue("lightDirection"        , lightDirection.direction) );
+    GLCHK( program_ptr->setUniformValue("cameraPos"             , camera.get_position()) );
+    GLCHK( program_ptr->setUniformValue("gui_depthScale"        , depthScale) );
+    GLCHK( program_ptr->setUniformValue("gui_uvScale"           , uvScale) );
+    GLCHK( program_ptr->setUniformValue("gui_uvScaleOffset"     , uvOffset) );
+    GLCHK( program_ptr->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
+    GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
+    GLCHK( program_ptr->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
+    GLCHK( program_ptr->setUniformValue("gui_bHeight"           , bToggleHeightView) );
+    GLCHK( program_ptr->setUniformValue("gui_bNormal"           , bToggleNormalView) );
+    GLCHK( program_ptr->setUniformValue("gui_bRoughness"        , bToggleRoughnessView) );
+    GLCHK( program_ptr->setUniformValue("gui_bMetallic"         , bToggleMetallicView) );
+    GLCHK( program_ptr->setUniformValue("gui_shading_type"      , shadingType) );
+    GLCHK( program_ptr->setUniformValue("gui_shading_model"     , shadingModel) );
+    GLCHK( program_ptr->setUniformValue("gui_SpecularIntensity" , specularIntensity) );
+    GLCHK( program_ptr->setUniformValue("gui_DiffuseIntensity"  , diffuseIntensity) );
+    GLCHK( program_ptr->setUniformValue("gui_LightPower"        , lightPower) );
+    GLCHK( program_ptr->setUniformValue("gui_LightRadius"       , lightRadius) );
 
     // number of mipmaps
-    GLCHK( program->setUniformValue("num_mipmaps"   , m_env_map->numMipmaps ) );
+    GLCHK( program_ptr->setUniformValue("num_mipmaps"   , m_env_map->numMipmaps ) );
     // 3D settings
-    GLCHK( program->setUniformValue("gui_bUseCullFace"   , performanceSettings.bUseCullFace) );
-    GLCHK( program->setUniformValue("gui_bUseSimplePBR"  , performanceSettings.bUseSimplePBR) );
-    GLCHK( program->setUniformValue("gui_noTessSub"      , performanceSettings.noTessSubdivision) );
-    GLCHK( program->setUniformValue("gui_noPBRRays"      , performanceSettings.noPBRRays) );
+    GLCHK( program_ptr->setUniformValue("gui_bUseCullFace"   , performanceSettings.bUseCullFace) );
+    GLCHK( program_ptr->setUniformValue("gui_bUseSimplePBR"  , performanceSettings.bUseSimplePBR) );
+    GLCHK( program_ptr->setUniformValue("gui_noTessSub"      , performanceSettings.noTessSubdivision) );
+    GLCHK( program_ptr->setUniformValue("gui_noPBRRays"      , performanceSettings.noPBRRays) );
 
-    // Material preview: M key
-    GLCHK( program->setUniformValue("gui_bMaterialsPreviewEnabled"      , bool(keyPressed == KEY_SHOW_MATERIALS)) );
+    if(performanceSettings.bShowTriangleEdges && pindex == 0){
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        glEnable( GL_POLYGON_OFFSET_FILL );
+        glPolygonOffset( 1.0f, 1.0f );
+        GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", true) );
+        GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , true) );
+    }else{
+        if(performanceSettings.bShowTriangleEdges){
+            glDisable( GL_POLYGON_OFFSET_FILL );
+            glEnable( GL_POLYGON_OFFSET_LINE );
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glPolygonOffset( -2.0f, -2.0f );
+            glLineWidth(1.0f);
+
+        }
+
+        GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", performanceSettings.bShowTriangleEdges) );
+
+        // Material preview: M key : when triangles are disabled
+        if(!performanceSettings.bShowTriangleEdges)
+            GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , bool(keyPressed == KEY_SHOW_MATERIALS)) );
+    }
+
+
 
     if( fboIdPtrs[0] != NULL){
 
@@ -527,13 +624,17 @@ void GLWidget::paintGL()
 
         tindeks++;
         GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks) );
-        GLCHK(m_env_map->bind());
+        GLCHK( m_env_map->bind());
         GLCHK( mesh->drawMesh() );
 
         // set default active texture
         glActiveTexture(GL_TEXTURE0);
     }
 
+    if(!performanceSettings.bShowTriangleEdges) break;
+    }// end of loop over triangles
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDisable( GL_POLYGON_OFFSET_LINE );
     // return to standard settings
     GLCHK( glDisable(GL_CULL_FACE) );  
     GLCHK( glDisable(GL_DEPTH_TEST) );
@@ -542,11 +643,13 @@ void GLWidget::paintGL()
     GLuint attachments2[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1,  attachments2);
 
+
     colorFBO->bindDefault();
 
     GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 
     GLCHK( filters_program->bind() );
+
     // do post processing if materials are not shown
     if( keyPressed != KEY_SHOW_MATERIALS ){
         // -----------------------------------------------------------
@@ -558,7 +661,7 @@ void GLWidget::paintGL()
         if(performanceSettings.bBloomEffect){
              applyGlowFilter(outputFBO->fbo);
              copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
-            //applyNormalFilter(outputFBO->fbo->texture());
+             //applyNormalFilter(outputFBO->fbo->texture());
         }// end of if bloom effect
 
         // -----------------------------------------------------------
@@ -572,7 +675,7 @@ void GLWidget::paintGL()
         applyNormalFilter(colorFBO->fbo->texture());
 
     }else{ // end of if SHOW MATERIALS TEXTURE DISABLED
-        applyNormalFilter(colorFBO->fbo->texture());
+        GLCHK( applyNormalFilter(colorFBO->fbo->texture()));
     }
 
     GLCHK( filters_program->release() );
@@ -631,6 +734,33 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
         setCursor(lightCursor);
 
 
+    }else if((event->buttons() & Qt::LeftButton) && (keyPressed == Qt::Key_Shift) ){
+
+        colorFBO->bind();
+        glReadBuffer(GL_COLOR_ATTACHMENT1); // NormalFBO actually it contains World Space position
+        vector< float > pixels( 1 * 1 * 4 );
+        glReadPixels(event->pos().x(), height()-event->pos().y(), 1, 1,GL_RGBA, GL_FLOAT, &pixels[0]);
+        QVector3D position = QVector3D(pixels[0],pixels[1],pixels[2]);
+
+        // when clicked on mesh other wise it has to be skybox
+        if(position.length() < 50.0){
+            qDebug() << "Picked position pixel (" << event->pos().x() << " , " << height()-event->pos().y() << ") with position:" << position;
+            colorFBO->bindDefault();
+            QVector3D curr_pos = camera.position - camera.radius * camera.direction;
+            QVector3D new_dir = (position - curr_pos);
+            new_dir.normalize();
+            // update new Camera position
+            cameraInterpolation = 0 ; // reset camera interpolation 'clock'
+            newCamera.position  = position;
+            newCamera.direction = new_dir;
+            newCamera.radius    =-QVector3D::dotProduct(curr_pos - position,new_dir);
+            glReadBuffer(GL_BACK);
+            keyPressed = (Qt::Key)0;
+            newCamera.side_direction = QVector3D(newCamera.direction.z(),0,-newCamera.direction.x());
+            newCamera.rotateView(0,0);
+        }
+        emit changeCamPositionApplied(false);
+
     }
 
 
@@ -639,6 +769,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     if((event->buttons() & Qt::LeftButton) && keyPressed == KEY_SHOW_MATERIALS){
 
         vector< unsigned char > pixels( 1 * 1 * 4 );
+
         glReadPixels(event->pos().x(), height()-event->pos().y(), 1, 1,GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
         QColor color = QColor(pixels[0],pixels[1],pixels[2],pixels[3]);
 
@@ -711,6 +842,28 @@ void GLWidget::wheelEvent(QWheelEvent *event){
     camera.mouseWheelMove((numDegrees));
 
     updateGL();
+}
+
+void GLWidget::dropEvent(QDropEvent *event)
+{
+
+    QList<QUrl> droppedUrls = event->mimeData()->urls();
+    int i = 0;
+    QString localPath = droppedUrls[i].toLocalFile();
+    QFileInfo fileInfo(localPath);
+
+    loadMeshFile(fileInfo.absoluteFilePath(),false);
+
+
+    event->acceptProposedAction();
+
+}
+
+void GLWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if(event->mimeData()->hasText()) {
+        event->acceptProposedAction();
+    }
 }
 
 
@@ -879,11 +1032,14 @@ void GLWidget::applyNormalFilter(GLuint input_tex){
 
     GLCHK( glViewport(0,0,width(),height()) );
     GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
+
     GLCHK( filters_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filters_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
-    quad_mesh->drawMesh(true);
+
+    GLCHK( quad_mesh->drawMesh(true) );
+
 
 }
 

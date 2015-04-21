@@ -105,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
     normalImageProp->hideSelectiveBlurBox();
     normalImageProp->hideHeightInputGroup();
     normalImageProp->hideRoughnessInputGroup();
+    normalImageProp->showNormalMixerGroup();
 
 
     heightImageProp->hideSpecularInputGroup();
@@ -270,10 +271,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->checkBoxPerformanceSimplePBR  ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
     connect(ui->checkBoxBloomEffect           ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
     connect(ui->checkBoxDOFEffect             ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
+    connect(ui->checkBoxShowTriangleEdges     ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
 
 
 
     connect(ui->pushButtonReplotAll           ,SIGNAL(released()),this,SLOT(replotAllImages()));
+    connect(ui->pushButtonResetCameraPosition ,SIGNAL(released()),glWidget,SLOT(resetCameraPosition()));
+    connect(ui->pushButtonChangeCamPosition   ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleChangeCamPosition(bool)));
+    connect(glWidget,SIGNAL(changeCamPositionApplied(bool)),ui->pushButtonChangeCamPosition   ,SLOT(setChecked(bool)));
+
+
+
     connect(ui->pushButtonToggleDiffuse       ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
     connect(ui->pushButtonToggleSpecular      ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleSpecularView(bool)));
     connect(ui->pushButtonToggleOcclusion     ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleOcclusionView(bool)));
@@ -295,7 +303,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonLoadMesh            ,SIGNAL(released()),        glWidget,SLOT(loadMeshFromFile()));
     connect(ui->comboBoxChooseOBJModel        ,SIGNAL(activated(QString)),glWidget,SLOT(chooseMeshFile(QString)));
     connect(ui->comboBoxShadingType           ,SIGNAL(activated(int)),    glWidget,SLOT(selectShadingType(int)));
-    connect(ui->comboBoxShadingModel          ,SIGNAL(activated(int)),    glWidget,SLOT(selectShadingModel(int)));
+    connect(ui->comboBoxShadingModel          ,SIGNAL(activated(int)),    this,SLOT(selectShadingModel(int)));
 
 
     // PBR settings
@@ -312,9 +320,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowOcclusiontImage,SIGNAL(triggered()),this,SLOT(selectOcclusionTab()));
     connect(ui->actionShowRoughnessImage ,SIGNAL(triggered()),this,SLOT(selectRoughnessTab()));
     connect(ui->actionShowMetallicImage  ,SIGNAL(triggered()),this,SLOT(selectMetallicTab()));
-    //connect(ui->actionShowOcclusiontImage,SIGNAL(triggered()),this,SLOT(selectOcclusionTab()));
+    connect(ui->actionShowMaterialsImage ,SIGNAL(triggered()),this,SLOT(selectMaterialsTab()));
+
 
     connect(ui->actionShowSettingsImage ,SIGNAL(triggered()),this,SLOT(selectGeneralSettingsTab()));
+    connect(ui->actionShowUVsTab        ,SIGNAL(triggered()),this,SLOT(selectUVsTab()));
     connect(ui->actionFitToScreen       ,SIGNAL(triggered()),this,SLOT(fitImage()));
 
     // perspective tool
@@ -627,9 +637,18 @@ void MainWindow::selectMetallicTab(){
     updateImage(6);
 }
 
+void MainWindow::selectMaterialsTab(){
+    ui->tabWidget->setCurrentIndex(7);
+    updateImage(7);
+}
+
 void MainWindow::selectGeneralSettingsTab(){
     ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
 }
+void MainWindow::selectUVsTab(){
+    ui->tabWidget->setCurrentIndex(TAB_SETTINGS+1);
+}
+
 
 void MainWindow::fitImage(){
     glImage->resetView();
@@ -1268,6 +1287,12 @@ void MainWindow::updateSpinBoxes(int){
     glWidget->setUVScaleOffset(ui->doubleSpinBoxUVXOffset->value(),ui->doubleSpinBoxUVYOffset->value());
 }
 
+void MainWindow::selectShadingModel(int i){
+      glWidget->selectShadingModel(i);
+      if(i == 0) ui->tabWidget->setTabText(5,"Roughness");
+      if(i == 1) ui->tabWidget->setTabText(5,"Glossiness");
+}
+
 
 void MainWindow::updatePerformanceSettings(){
     Performance3DSettings settings;
@@ -1277,6 +1302,7 @@ void MainWindow::updatePerformanceSettings(){
     settings.noTessSubdivision  = ui->comboBoxPerformanceNoTessSub->currentText().toInt();
     settings.bBloomEffect       = ui->checkBoxBloomEffect->isChecked();
     settings.bDofEffect         = ui->checkBoxDOFEffect->isChecked();
+    settings.bShowTriangleEdges = ui->checkBoxShowTriangleEdges->isChecked();
     glWidget->updatePerformanceSettings(settings);
 }
 void MainWindow::updatePerformanceSettings(int indeks){
@@ -1779,10 +1805,12 @@ void MainWindow::loadSettings(){
 
     if(bFirstTime){
         this->resize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
-        ui->tabWidget->resize(settings.value("tab_win_w",300).toInt(),
+        ui->tabWidget->resize(settings.value("tab_win_w",200).toInt(),
                               settings.value("tab_win_h",600).toInt());
         ui->widget3DSettings->resize(settings.value("tab_3d_settings_win_w",400).toInt(),
                                      settings.value("tab_3d_settings_win_h",230).toInt());
+
+        //ui->tabWidget->resize(150,400);
 
     }
 

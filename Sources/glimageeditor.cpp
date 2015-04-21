@@ -173,6 +173,8 @@ void GLImage::initializeGL()
     GLCHK( subroutines["mode_height_to_normal"]            = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_height_to_normal") );
     GLCHK( subroutines["mode_sharpen_blur"]                = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_sharpen_blur") );
     GLCHK( subroutines["mode_normals_step_filter"]         = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_normals_step_filter") );
+    GLCHK( subroutines["mode_normal_mixer_filter"]         = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_normal_mixer_filter") );
+
     GLCHK( subroutines["mode_invert_components_filter"]    = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_invert_components_filter") );
     GLCHK( subroutines["mode_normal_to_height"]            = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_normal_to_height") );
     GLCHK( subroutines["mode_sobel_filter"]                = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_sobel_filter") );
@@ -725,7 +727,13 @@ void GLImage::render(){
     if(activeImage->imageType == NORMAL_TEXTURE){
 
         applyNormalsStepFilter(activeFBO,auxFBO1);
-        copyFBO(auxFBO1,activeFBO);
+
+        // apply normal mixer filter
+        if(activeImage->bNormalMixerEnabled && activeImage->normalMixerInputTexId != 0){
+            applyNormalMixerFilter(auxFBO1,activeFBO);
+        }else{// otherwise skip
+            copyFBO(auxFBO1,activeFBO);
+        }
 
     }
     // -------------------------------------------------------- //
@@ -1303,7 +1311,7 @@ void GLImage::applySeamlessLinearFilter(QGLFramebufferObject* inputFBO,
     // when translations are applied first one has to translate
     // alse the contrast mask image
     if(FBOImageProporties::bSeamlessTranslationsFirst){
-        applyPerspectiveTransformFilter(auxFBO1,outputFBO);// the output is save to auxFBO2
+        applyPerspectiveTransformFilter(auxFBO1,outputFBO);// the output is save to auxFBO1
     }
 
     GLCHK( glActiveTexture(GL_TEXTURE1) );
@@ -1713,6 +1721,35 @@ void GLImage::applyNormalsStepFilter(QGLFramebufferObject* inputFBO,
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
     GLCHK( outputFBO->bindDefault() );
+
+}
+
+void GLImage::applyNormalMixerFilter(QGLFramebufferObject* inputFBO,
+                                     QGLFramebufferObject* outputFBO){
+
+
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_mixer_filter"]) );
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+
+    GLCHK( program->setUniformValue("gui_normal_mixer_depth", activeImage->normalMixerDepth) );
+    GLCHK( program->setUniformValue("gui_normal_mixer_angle", activeImage->normalMixerAngle) );
+    GLCHK( program->setUniformValue("gui_normal_mixer_scale", activeImage->normalMixerScale) );
+    GLCHK( program->setUniformValue("gui_normal_mixer_pos_x", activeImage->normalMixerPosX) );
+    GLCHK( program->setUniformValue("gui_normal_mixer_pos_y", activeImage->normalMixerPosY) );
+
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    GLCHK( outputFBO->bind() );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, activeImage->normalMixerInputTexId) );
+
+
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( outputFBO->bindDefault() );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
 
 }
 
