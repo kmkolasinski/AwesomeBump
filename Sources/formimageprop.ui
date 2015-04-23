@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>279</width>
-    <height>2511</height>
+    <height>2611</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -127,7 +127,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="4">
+     <item row="0" column="5">
       <widget class="QPushButton" name="pushButtonSaveImage">
        <property name="toolTip">
         <string>Save current image (Ctrl+S)</string>
@@ -165,6 +165,52 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="0" column="4">
+      <widget class="QPushButton" name="pushButtonPasteFromClipboard">
+       <property name="toolTip">
+        <string>Paste from clipboard</string>
+       </property>
+       <property name="statusTip">
+        <string>Paste from clipboard</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="content.qrc">
+         <normaloff>:/resources/pasteFromCB.png</normaloff>:/resources/pasteFromCB.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="pushButtonCopyToClipboard">
+       <property name="toolTip">
+        <string>Copy to clipboard</string>
+       </property>
+       <property name="statusTip">
+        <string>Copy to clipboard</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="content.qrc">
+         <normaloff>:/resources/copyToCB.png</normaloff>:/resources/copyToCB.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

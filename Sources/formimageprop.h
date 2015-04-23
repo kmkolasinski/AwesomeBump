@@ -53,6 +53,8 @@ public slots:
 
 
     void reloadImageSettings();
+    void pasteFromClipboard();
+    void copyToClipboard();
 
     void updateComboBoxes(int index);
     void updateGuiSpinBoxesAndLabes(int);

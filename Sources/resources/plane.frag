@@ -436,6 +436,8 @@ void main( void )
     fvMetallic         = texture( texMetallic, texcoords.xy );
     fvGlossiness       = clamp(fvRoughness.r,0.0,1.0)*100+1.0;
 
+    if(!gui_bRoughness) fvGlossiness      = 1.0;
+
     if(!gui_bDiffuse)  fvBaseColor     = vec4(0.8); // some gray color
     if(!gui_bOcclusion)fvSSAOColor     = vec4(1.0);
     if(!gui_bSpecular) fvSpecularColor = vec4(0);

@@ -56,5 +56,7 @@
         <file>resources/showUVs.png</file>
         <file>resources/resetCamera.png</file>
         <file>resources/centerCamCursor.png</file>
+        <file>resources/copyToCB.png</file>
+        <file>resources/pasteFromCB.png</file>
     </qresource>
 </RCC>

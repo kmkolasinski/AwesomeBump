@@ -32,7 +32,8 @@ public:
 
 public slots:
     void changeMaterial(int index);
-
+    void pasteFromClipboard();
+    void copyToClipboard();
     void toggleMaterials(bool toggle);// enable disable materials
     void chooseMaterialByColor(QColor color);// takes a color then searches for similar in materials table
 signals:

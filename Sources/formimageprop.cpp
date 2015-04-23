@@ -16,6 +16,9 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     
     connect(ui->pushButtonOpenImage,SIGNAL(released()),this,SLOT(open()));
     connect(ui->pushButtonSaveImage,SIGNAL(released()),this,SLOT(save()));
+    connect(ui->pushButtonCopyToClipboard,SIGNAL(released()),this,SLOT(copyToClipboard()));
+    connect(ui->pushButtonPasteFromClipboard,SIGNAL(released()),this,SLOT(pasteFromClipboard()));
+
     connect(ui->pushButtonRestoreSettings,SIGNAL(released()),this,SLOT(reloadImageSettings()));
 
     connect(ui->checkBoxRemoveShading,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
@@ -979,4 +982,29 @@ void FormImageProp::reloadImageSettings(){
     emit reloadSettingsFromConfigFile(imageProp.imageType);
 }
 
+
+void FormImageProp::pasteFromClipboard(){
+    const QClipboard *clipboard = QApplication::clipboard();
+    const QMimeData *mimeData = clipboard->mimeData();
+
+    if (mimeData->hasImage()) {
+        qDebug() << "<FormImageProp> Image :"+
+                    PostfixNames::getTextureName(imageProp.imageType)+
+                    " loaded from clipboard.";
+        QPixmap pixmap = qvariant_cast<QPixmap>(mimeData->imageData());
+        QImage image = pixmap.toImage();
+        pasteImageFromClipboard(image);
+
+    }
+}
+void FormImageProp::copyToClipboard(){
+
+    qDebug() << "<FormImageProp> Image :"+
+                PostfixNames::getTextureName(imageProp.imageType)+
+                " copied to clipboard.";
+
+    QApplication::processEvents();
+    image = imageProp.getImage();
+    QApplication::clipboard()->setImage(image,QClipboard::Clipboard);
+}
 
