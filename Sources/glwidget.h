@@ -187,9 +187,9 @@ private:
     GLImage* glImagePtr;
 
     // Post-processing variables
-    std::map<std::string,GLuint> subroutines;
+    std::map<std::string,QOpenGLShaderProgram*> post_processing_programs; // all post processing functions
     Mesh* quad_mesh;                      // quad mesh used for post processing
-    QOpenGLShaderProgram *filters_program;// all post processing functions
+    QOpenGLShaderProgram *filter_program; // holds pointer to current post-processing program
     GLFrameBufferObject* colorFBO;
     GLFrameBufferObject* outputFBO;
     GLFrameBufferObject* auxFBO;

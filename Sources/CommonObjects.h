@@ -287,6 +287,7 @@ public:
   bool bBloomEffect;
   bool bDofEffect;
   bool bShowTriangleEdges;
+  static float openGLVersion;
   Performance3DSettings(){
         bUseCullFace  = false;
         bUseSimplePBR = false;

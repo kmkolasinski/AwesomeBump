@@ -35,7 +35,8 @@
 #define GLBUFFERS_H
 
 #include <QtOpenGL>
-#include <QOpenGLFunctions_4_0_Core>
+//#include <QOpenGLFunctions_4_0_Core>
+#include <QOpenGLFunctions_3_3_Core>
 #include <QtWidgets>
 #include <QDebug>
 #include "../qopenglerrorcheck.h"
@@ -66,7 +67,7 @@ protected:
     bool m_failed;
 };
 
-class GLFrameBufferObject : public QOpenGLFunctions_4_0_Core
+class GLFrameBufferObject : public QOpenGLFunctions_3_3_Core
 {
 public:
     friend class GLRenderTargetCube;

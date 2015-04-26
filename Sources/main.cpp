@@ -96,7 +96,8 @@ bool checkOpenGL(){
     qDebug() << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
 
     float version = glContext->format().majorVersion() + 0.1 * glContext->format().minorVersion();
-
+    Performance3DSettings::openGLVersion = version;
+    //Performance3DSettings::openGLVersion = 3.3;
     delete glWidget;
 
     qDebug() << "Version:" << version;

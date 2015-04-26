@@ -1,4 +1,4 @@
-#version 400 core
+#version 330 core
 //#extension GL_ARB_texture_query_levels : enable
 
 
@@ -390,9 +390,6 @@ vec4 PBR_Specular_SIMPLE(float roughness,
     return vec4(radiance ,1);
 }
 
-// From : http://prideout.net/blog/?p=48
-in vec3 gTriDistance;
-in vec3 gPatchDistance;
 
 
 void main( void )

@@ -18,9 +18,8 @@ out vec3 teNormal;
 out vec3 teTangent;
 out vec3 teBitangent;
 out vec3 teSmoothedNormal;
-out vec3 tePatchDistance;
 
-vec3 average(vec3 a,vec3 b,vec3 c){
+vec3 average(vec3 c,vec3 b,vec3 a){
 	return gl_TessCoord.x * a + gl_TessCoord.y * b + gl_TessCoord.z * c;
 }
 
@@ -36,6 +35,5 @@ void main()
 
     gl_Position = ProjectionMatrix * ModelViewMatrix * vec4(tePosition, 1);
 
-    tePatchDistance = gl_TessCoord;
 
 }

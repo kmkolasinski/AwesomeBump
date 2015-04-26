@@ -58,5 +58,6 @@
         <file>resources/centerCamCursor.png</file>
         <file>resources/copyToCB.png</file>
         <file>resources/pasteFromCB.png</file>
+        <file>resources/plane_330.vert</file>
     </qresource>
 </RCC>

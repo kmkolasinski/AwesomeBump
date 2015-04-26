@@ -1,6 +1,9 @@
+
+/*
 #version 400 core
 subroutine vec4 filterModeType();
 subroutine uniform filterModeType filterMode;
+*/
 
 uniform sampler2D layerA; // first layer
 uniform sampler2D layerB; // second layer
@@ -16,13 +19,17 @@ vec2 texel = vec2(1.0/width,1.0/height);
 vec2 dxy   = vec2(1.0/max(width,height));
 
 in vec2 v2QuadCoords;
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_normal_filter(){		
-    vec4 c =  texture( layerA, v2QuadCoords.xy);
+#ifdef NORMAL_FILTER
+vec4 filter(){
+    vec4 c = texture( layerA, v2QuadCoords.xy);
     return c;
 }
+#endif
+
 
 // ----------------------------------------------------------------
 //                        GAUSSIAN BLUR
@@ -56,11 +63,14 @@ vec4 gauss_filter_v(sampler2D layer,float w, int radius, float depth){
     }
     return color/totalw;
 }
+
+#ifdef GAUSSIAN_BLUR_FILTER
+
 uniform float gui_gauss_w;
 uniform float gui_gauss_radius;
 uniform int   gui_gauss_mode;
 
-subroutine(filterModeType) vec4 mode_gauss_filter(){
+vec4 filter(){
     float w     = gui_gauss_w;
     float depth = 1.0;
     int radius = int(gui_gauss_radius);
@@ -71,11 +81,11 @@ subroutine(filterModeType) vec4 mode_gauss_filter(){
     }
 }
 
-// ----------------------------------------------------------------
-//                        BLOOM EFFECT
-// ----------------------------------------------------------------
+#endif
 
-subroutine(filterModeType) vec4 mode_bloom_filter(){
+
+#ifdef BLOOM_FILTER
+vec4 filter(){
 
    vec3 color = texture(layerA, v2QuadCoords.st).rgb;
    vec3 b1    = texture(layerB, v2QuadCoords.st).rgb;
@@ -90,6 +100,7 @@ subroutine(filterModeType) vec4 mode_bloom_filter(){
    float attenuateY = 1.0 - 0.8*(1 - smoothstep(0.0,0.4,y) + smoothstep(0.6,1.0,y));
    return vec4(  color + bloom * attenuateX * attenuateY  ,1);
 }
+#endif
 
 
 
@@ -140,9 +151,7 @@ changelog:
 
 */
 
-
-
-//uniform variables from external script
+#ifdef DOF_FILTER
 
 const float focalDepth = 10.0;  //focal distance value in meters, but you may use autofocus option below
 const float focalLength = 25.0; //focal length in mm
@@ -178,9 +187,9 @@ vec3 color(vec2 coords,float blur) //processing the sample
 {
         vec3 col = vec3(0.0);
 
-        col.r = texture2D(layerA,coords + vec2(0.0,1.0)*texel*fringe*blur).r;
-        col.g = texture2D(layerA,coords + vec2(-0.866,-0.5)*texel*fringe*blur).g;
-        col.b = texture2D(layerA,coords + vec2(0.866,-0.5)*texel*fringe*blur).b;
+        col.r = texture(layerA,coords + vec2(0.0,1.0)*texel*fringe*blur).r;
+        col.g = texture(layerA,coords + vec2(-0.866,-0.5)*texel*fringe*blur).g;
+        col.b = texture(layerA,coords + vec2(0.866,-0.5)*texel*fringe*blur).b;
 
         vec3 lumcoeff = vec3(0.299,0.587,0.114);
         float lum = dot(col.rgb, lumcoeff);
@@ -212,18 +221,18 @@ float linearize(vec3 position)
 //                        DOF/BOKEH EFFECT
 // ----------------------------------------------------------------
 
-subroutine(filterModeType) vec4 mode_dof_filter(){
+vec4 filter(){
         //scene depth calculation
 
 
-        float depth = linearize(texture2D(layerB,v2QuadCoords.xy).xyz);
+        float depth = linearize(texture(layerB,v2QuadCoords.xy).xyz);
 
         //focal plane calculation
 
         float fDepth = focalDepth;
 
 
-        fDepth = linearize(texture2D(layerB,focus).xyz);
+        fDepth = linearize(texture(layerB,focus).xyz);
 
 
         //dof blur factor calculation
@@ -260,9 +269,9 @@ subroutine(filterModeType) vec4 mode_dof_filter(){
 
         if(blur < 0.05) //some optimization thing
         {
-                col = texture2D(layerA, v2QuadCoords.xy).rgb;
+                col = texture(layerA, v2QuadCoords.xy).rgb;
         }else{
-                col = texture2D(layerA, v2QuadCoords.xy).rgb;
+                col = texture(layerA, v2QuadCoords.xy).rgb;
                 float s = 1.0;
                 int ringsamples;
 
@@ -295,9 +304,10 @@ subroutine(filterModeType) vec4 mode_dof_filter(){
 
 }
 
+#endif
 
 out vec4 FragColor;
-void main() {   
-       FragColor   =  filterMode();
-    //FragColor = texture( layerA, v2QuadCoords.xy);
- }
+void main() {
+       FragColor   =  filter();
+}
+
