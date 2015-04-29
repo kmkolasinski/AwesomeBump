@@ -1,8 +1,8 @@
-#version 400 core
-
-
+#ifndef USE_OPENGL_330
 subroutine vec4 filterModeType();
 subroutine uniform filterModeType filterMode;
+#endif
+
 
 uniform sampler2D layerA; // first layer
 uniform sampler2D layerB; // second layer
@@ -68,34 +68,71 @@ mat3 sobel_kernel  = mat3(
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_normal_filter(){		
-    vec4 c =  texture( layerA, v2QuadCoords.xy);
-    //if(gui_clear_alpha == 1) c = vec4(c.xyz,1);
+
+#ifndef mode_normal_filter_330
+
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_normal_filter(){
+#else
+vec4 filter(){
+#endif
+    vec4 c =  texture( layerA, v2QuadCoords.xy);    
     return c;
 }
 
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
+
+vec3 rgb2hsv(vec3 c)
+{
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
 uniform float gui_hue; // number from -1:1
+#ifndef mode_color_hue_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_color_hue_filter(){
+#else
+vec4 filter(){
+#endif
 
-subroutine(filterModeType) vec4 mode_color_hue_filter(){
+   vec4 textureColor = texture( layerA, v2QuadCoords.xy);
+   vec3 fragRGB = textureColor.rgb;
+   vec3 fragHSV = rgb2hsv(fragRGB);
+   float h = gui_hue;
+   fragHSV.x += h;
 
-    vec4 old =  texture( layerA, v2QuadCoords.xy);
+   fragHSV.x = mod(fragHSV.x, 1.0);
+   fragHSV.y = mod(fragHSV.y, 1.0);
+   fragHSV.z = mod(fragHSV.z, 1.0);
+   fragRGB = hsv2rgb(fragHSV);
+   return  vec4(hsv2rgb(fragHSV), textureColor.w);
 
-    float cosA = cos(gui_hue*3.14159265f);
-    float sinA = sin(gui_hue*3.14159265f);
-    float rot = 1.f/3.f * (1.0f - cosA) + sqrt(1.f/3.f) * sinA;
-
-    float rx = old.r * (cosA + (1.0f - cosA) / 3.0f) + old.g * rot + old.b * rot;
-    float gx = old.r * rot + old.g * (cosA + 1.f/3.f*(1.0f - cosA)) + old.b * rot;
-    float bx = old.r * rot + old.g * rot + old.b * cosA + 1.f/3.f * (1.0f - cosA);
-
-    return clamp(vec4(rx,gx,bx,1),vec4(0),vec4(1));
 }
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
+
+
 uniform vec4 corners_weights;
 uniform int uv_scaling_mode;
 
@@ -104,7 +141,14 @@ float phi2(vec2 pos){return (pos.x)*(1-pos.y);}
 float phi3(vec2 pos){return (pos.x)*(pos.y);}
 float phi4(vec2 pos){return (1-pos.x)*(pos.y);}
 
-subroutine(filterModeType) vec4 mode_perspective_transform_filter(){
+#ifndef mode_perspective_transform_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_perspective_transform_filter(){
+#else
+vec4 filter(){
+#endif
     vec2 transf_pos = v2QuadCoords.xy;
     vec4 color      = vec4(1);
 
@@ -189,7 +233,15 @@ subroutine(filterModeType) vec4 mode_perspective_transform_filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_invert_components_filter(){
+#ifndef mode_invert_components_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_invert_components_filter(){
+#else
+vec4 filter(){
+#endif
+
     vec4 color = texture( layerA, v2QuadCoords.xy);
     vec4 inversion;
     if(gui_image_type == 3){
@@ -207,7 +259,16 @@ subroutine(filterModeType) vec4 mode_invert_components_filter(){
 // ----------------------------------------------------------------
 uniform float gui_ao_cancellation;
 uniform int gui_remove_shading;
-subroutine(filterModeType) vec4 mode_ao_cancellation_filter(){
+
+#ifndef mode_ao_cancellation_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_ao_cancellation_filter(){
+#else
+vec4 filter(){
+#endif
+
     float remove_sh = gui_remove_shading/100.0; // normalization to 1
     vec4 colorA   = texture( layerA, v2QuadCoords.xy); // color
     vec4 colorB   = texture( layerB, v2QuadCoords.xy); // ao
@@ -221,9 +282,19 @@ subroutine(filterModeType) vec4 mode_ao_cancellation_filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
+
 uniform vec3 average_color;
 uniform float gui_remove_shading_lf_blending;
-subroutine(filterModeType) vec4 mode_remove_low_freq_filter(){
+
+#ifndef mode_remove_low_freq_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_remove_low_freq_filter(){
+#else
+vec4 filter(){
+#endif
+
     vec4 colorA   = texture( layerA, v2QuadCoords.xy);
     vec4 blured   = texture( layerB, v2QuadCoords.xy);
     vec4 finalColor = colorA + (vec4(average_color,1) - blured);
@@ -237,22 +308,38 @@ subroutine(filterModeType) vec4 mode_remove_low_freq_filter(){
 vec4 overlay_filter(vec4 colorA, vec4 colorB){
 	return colorA * ( colorA + 2 * colorB *( 1 - colorA ) );
 }
+#ifndef mode_overlay_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_overlay_filter(){
+#else
+vec4 filter(){
+#endif
 
-subroutine(filterModeType) vec4 mode_overlay_filter(){
     vec4 colorA = texture( layerA, v2QuadCoords.xy);
     vec4 colorB = texture( layerB, v2QuadCoords.xy);
     return overlay_filter(colorA,colorB);
 }
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_invert_filter(){
+#ifndef mode_invert_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_invert_filter(){
+#else
+vec4 filter(){
+#endif
+
     vec4 color = texture( layerA, v2QuadCoords.xy);
     vec4 icolor = 1 - color;
     icolor.a = 1;
     return icolor;
  }
- // ----------------------------------------------------------------
+// ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
 
@@ -297,8 +384,15 @@ vec4 gauss_filter_v(sampler2D layer,float w, int radius, float depth){
     }
     return color/totalw;
 }
+#ifndef mode_gauss_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_gauss_filter(){
+#else
+vec4 filter(){
+#endif
 
-subroutine(filterModeType) vec4 mode_gauss_filter(){
     float w    = gui_gauss_w;
     int radius = gui_gauss_radius;
 
@@ -331,16 +425,8 @@ subroutine(filterModeType) vec4 mode_gauss_filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-uniform float make_seamless_radius;
-uniform int   gui_seamless_mode;        // 1 - simple , 2 - mirror
-uniform int   gui_seamless_mirror_type; // 0 - xy, 1 - x , 2 - y mirror
-// atoms positions used in random mode
-const float atoms_x[9] = float[](0.0, 0.0, 0.0, 0.5, 0.5 , 0.5 ,1.0,1.0,1.0);
-const float atoms_y[9] = float[](0.0, 0.5, 1.0, 0.0, 0.5 , 1.0 ,0.0,0.5,1.0);
-uniform mat3 gui_seamless_random_angles;
-uniform float gui_seamless_random_phase;
-uniform float gui_seamless_random_inner_radius;
-uniform float gui_seamless_random_outer_radius;
+
+
 
 
 float sobel_edge_detection(){
@@ -370,9 +456,31 @@ float sobel_edge_detection(){
 
     #undef UPDATE_SOBEL_VALUES
 }
+
+
+
+uniform float make_seamless_radius;
+uniform int   gui_seamless_mode;        // 1 - simple , 2 - mirror
+uniform int   gui_seamless_mirror_type; // 0 - xy, 1 - x , 2 - y mirror
+// atoms positions used in random mode
+const float atoms_x[9] = float[](0.0, 0.0, 0.0, 0.5, 0.5 , 0.5 ,1.0,1.0,1.0);
+const float atoms_y[9] = float[](0.0, 0.5, 1.0, 0.0, 0.5 , 1.0 ,0.0,0.5,1.0);
+uniform mat3 gui_seamless_random_angles;
+uniform float gui_seamless_random_phase;
+uniform float gui_seamless_random_inner_radius;
+uniform float gui_seamless_random_outer_radius;
+
 uniform float gui_seamless_contrast_strenght;
 uniform float gui_seamless_contrast_power;
-subroutine(filterModeType) vec4 mode_seamless_linear_filter(){
+
+#ifndef mode_seamless_linear_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_seamless_linear_filter(){
+#else
+vec4 filter(){
+#endif
 
     vec2 tc   = v2QuadCoords.st;
     float x   = tc.x;
@@ -403,9 +511,15 @@ subroutine(filterModeType) vec4 mode_seamless_linear_filter(){
 
 }
 
-subroutine(filterModeType) vec4 mode_seamless_filter(){
 
-
+#ifndef mode_seamless_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_seamless_filter(){
+#else
+vec4 filter(){
+#endif
     vec2 tc = v2QuadCoords.st;
     float x = tc.x;
     float y = tc.y;
@@ -482,7 +596,7 @@ subroutine(filterModeType) vec4 mode_seamless_filter(){
     }
 
  }
- 
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
@@ -503,8 +617,15 @@ vec4 dgaussian_filter(sampler2D layer, float r1, float r2, int radius, float dep
     return colorA - colorB;
 }
 
+#ifndef mode_dgaussians_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_dgaussians_filter(){
+#else
+vec4 filter(){
+#endif
 
-subroutine(filterModeType) vec4 mode_dgaussians_filter(){
 
     vec4 c1 =texture(layerA,v2QuadCoords.xy);
     vec4 c2 =texture(layerB,v2QuadCoords.xy);
@@ -522,34 +643,62 @@ subroutine(filterModeType) vec4 mode_dgaussians_filter(){
         }
     }
 }
-
- // ----------------------------------------------------------------
+// ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
 vec4 contrast_filter(vec4 color,float contrast){
     float c = 1.01 * (contrast+1.0)/(1.01-contrast);
     return c * (color-0.5) + 0.5;
 }
-subroutine(filterModeType) vec4 mode_constrast_filter(){
+
+#ifndef mode_constrast_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_constrast_filter(){
+#else
+vec4 filter(){
+#endif
+
     vec4 color = texture( layerA, v2QuadCoords.xy);
     vec4 icolor = contrast_filter(color,gui_specular_contrast);
     icolor = clamp(icolor,vec4(0),vec4(1));
     return clamp(icolor+gui_specular_brightness,vec4(0),vec4(1));
 }
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
 uniform vec3 gui_gray_scale_preset;
-subroutine(filterModeType) vec4 mode_gray_scale_filter(){
+
+#ifndef mode_gray_scale_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_gray_scale_filter(){
+#else
+vec4 filter(){
+#endif
+
 	
     vec4 color = texture( layerA, v2QuadCoords.xy);
     color = vec4(1)*(color.r * gui_gray_scale_preset.r + color.g * gui_gray_scale_preset.g + color.b * gui_gray_scale_preset.b);
     return clamp(color,vec4(0),vec4(1));
 }
+
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_normalize_filter(){		
+#ifndef mode_normalize_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_normalize_filter(){
+#else
+vec4 filter(){
+#endif
+
     vec4 color = texture( layerA, v2QuadCoords.xy);
     color.rgb =  ( color.rgb - min_color )/(max_color-min_color) ;
     color.a = 1;
@@ -559,7 +708,15 @@ subroutine(filterModeType) vec4 mode_normalize_filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_small_details_filter(){
+#ifndef mode_small_details_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_small_details_filter(){
+#else
+vec4 filter(){
+#endif
+
 
     vec4 colorA   = texture( layerA, v2QuadCoords.xy);
     vec4 colorB   =-texture( layerB, v2QuadCoords.xy);
@@ -570,8 +727,14 @@ subroutine(filterModeType) vec4 mode_small_details_filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_medium_details_filter(){
-
+#ifndef mode_medium_details_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_medium_details_filter(){
+#else
+vec4 filter(){
+#endif
 
 
     vec4 colorA      = texture( layerA, v2QuadCoords.xy); // oryginal texture (not blured)
@@ -590,7 +753,15 @@ subroutine(filterModeType) vec4 mode_medium_details_filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_sharpen_blur(){
+#ifndef mode_sharpen_blur_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_sharpen_blur(){
+#else
+vec4 filter(){
+#endif
+
     vec4 gcolor;
     int radius 	  = abs(gui_sharpen_blur);
     float w 		  = radius;
@@ -610,10 +781,19 @@ subroutine(filterModeType) vec4 mode_sharpen_blur(){
             return gcolor;
     }
 }
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_normals_step_filter(){
+#ifndef mode_normals_step_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_normals_step_filter(){
+#else
+vec4 filter(){
+#endif
+
 	
         vec4 color = 2*(texture( layerA, v2QuadCoords.xy) - 0.5);
 
@@ -633,7 +813,15 @@ uniform float gui_normal_mixer_scale;
 uniform float gui_normal_mixer_pos_x;
 uniform float gui_normal_mixer_pos_y;
 
-subroutine(filterModeType) vec4 mode_normal_mixer_filter(){
+#ifndef mode_normal_mixer_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_normal_mixer_filter(){
+#else
+vec4 filter(){
+#endif
+
 
         vec2 newTexCoords = vec2(v2QuadCoords.xy-0.5) - vec2(gui_normal_mixer_pos_x,gui_normal_mixer_pos_y);
         // rotate
@@ -668,7 +856,14 @@ subroutine(filterModeType) vec4 mode_normal_mixer_filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_normal_to_height(){	
+#ifndef mode_normal_to_height_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_normal_to_height(){
+#else
+vec4 filter(){
+#endif
 
 	float scale   = hn_min_max_scale.z;
 
@@ -696,7 +891,15 @@ subroutine(filterModeType) vec4 mode_normal_to_height(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_height_to_normal(){
+
+#ifndef mode_height_to_normal_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_height_to_normal(){
+#else
+vec4 filter(){
+#endif
 
 
     const vec2 size = vec2(1.0,0.0);
@@ -718,7 +921,15 @@ subroutine(filterModeType) vec4 mode_height_to_normal(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_sobel_filter(){
+#ifndef mode_sobel_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_sobel_filter(){
+#else
+vec4 filter(){
+#endif
+
     float sobel_x = 0;
     float sobel_y = 0;
 
@@ -738,7 +949,16 @@ subroutine(filterModeType) vec4 mode_sobel_filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_normal_expansion_filter(){
+
+#ifndef mode_normal_expansion_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_normal_expansion_filter(){
+#else
+vec4 filter(){
+#endif
+
     vec3 filt  = vec3(0);
     float wtotal = 0.0;
     int radius   = gui_filter_radius;
@@ -782,8 +1002,15 @@ uniform float gui_base_map_w0;
 uniform float gui_base_map_w1;
 uniform float gui_base_map_w2;
 uniform float gui_base_map_w3;
+#ifndef mode_mix_normal_levels_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_mix_normal_levels_filter(){
+#else
+vec4 filter(){
+#endif
 
-subroutine(filterModeType) vec4 mode_mix_normal_levels_filter(){
     vec3 normalA     = normalize(texture(layerA,v2QuadCoords.xy).rgb - 0.5);
     vec3 normalB     = normalize(texture(layerB,v2QuadCoords.xy).rgb - 0.5);
     vec3 normalC     = normalize(texture(layerC,v2QuadCoords.xy).rgb - 0.5);
@@ -799,15 +1026,6 @@ subroutine(filterModeType) vec4 mode_mix_normal_levels_filter(){
     return finalColor;
 }
 
-
-// ----------------------------------------------------------------
-//
-// ----------------------------------------------------------------
-subroutine(filterModeType) vec4 mode_smooth_filter(){
-	float w     = gui_smooth_radius;
-	int radius = int(w)+1;
-	return gauss_filter(layerA,w,radius,1.0);
-}
 
 
 // ----------------------------------------------------------------
@@ -831,7 +1049,16 @@ float doAmbientOcclusion(in vec2 tcoord,in vec2 uv, in vec3 p, in vec3 cnorm){
 	vec3 v = normalize(diff);
 	return max(0.0,dot(cnorm,v))*g_intensity;
 }
-subroutine(filterModeType) vec4 mode_occlusion_filter(){		
+
+
+#ifndef mode_occlusion_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_occlusion_filter(){
+#else
+vec4 filter(){
+#endif
 	vec3 p 		= getPosition(v2QuadCoords.xy); // pozycja w ukladzie oka
 	vec3 n 		= getNormal(v2QuadCoords.xy); // normalna
 	float ao      = 0.0f;
@@ -841,11 +1068,16 @@ subroutine(filterModeType) vec4 mode_occlusion_filter(){
 	}}
 	ao /= (2*gui_ssao_no_iters+1.0)*(2*gui_ssao_no_iters+1.0);	
 
-        return vec4(clamp(1-ao,0,1));
-        //return vec4(clamp(texture(layerC, v2QuadCoords),0,1));
+        return vec4(clamp(1-ao,0,1));        
 }
-
-subroutine(filterModeType) vec4 mode_combine_normal_height_filter(){
+#ifndef mode_combine_normal_height_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_combine_normal_height_filter(){
+#else
+vec4 filter(){
+#endif
         vec4 colorA   = texture( layerA, v2QuadCoords.xy);
         vec4 colorB   = texture( layerB, v2QuadCoords.xy);
 	return vec4(colorA.rgb,colorB.r);
@@ -885,8 +1117,15 @@ vec4 height_clamp2(vec4 inputc, float weight,float vmin,float vmax){
     if(inputc.b < vmin) outputValue.b = vmin + dmin_ave.b;
     return outputValue;
 }
+#ifndef mode_height_processing_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_height_processing_filter(){
+#else
+vec4 filter(){
+#endif
 
-subroutine(filterModeType) vec4 mode_height_processing_filter(){
     int radius      = gui_height_proc_ave_radius/5+1;
     float w         = gui_height_proc_ave_radius/50.0; // "details" slider in gui
     vec4 height     = texture( layerA, v2QuadCoords.xy);
@@ -921,7 +1160,16 @@ subroutine(filterModeType) vec4 mode_height_processing_filter(){
 uniform float gui_roughness_depth;
 uniform float gui_roughness_treshold;
 uniform float gui_roughness_amplifier;
-subroutine(filterModeType) vec4 mode_roughness_filter(){
+
+#ifndef mode_roughness_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_roughness_filter(){
+#else
+vec4 filter(){
+#endif
+
 
     float depth     = gui_roughness_depth ;
     float treshold  = gui_roughness_treshold/20.0;
@@ -939,21 +1187,11 @@ subroutine(filterModeType) vec4 mode_roughness_filter(){
     float cc = curvature;
     float dc =  clamp(clamp(  curvature - abs(treshold) ,0.0,1.0) * amplifier,0,1);
     if(treshold < 0) dc = 1 - dc;
-    /*
-    if(treshold > 0){
-        if( curvature > treshold ) curvature = 1.0;
-        else curvature = 0.0;
-        cc = -cc;
-    }else{
-        if( curvature > abs(treshold) ) curvature = 0.0;
-        else curvature = 1.0;
 
-    }
-
-    float dc = 0*amplifier*cc + curvature ;// mix(curvature,cc,(curvature-treshold)*amplifier);
-    */
     return  vec4(dc) ;
 }
+
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
@@ -963,8 +1201,15 @@ uniform bool gui_roughness_invert_mask;
 uniform float gui_roughness_color_offset;
 uniform float gui_roughness_color_global_offset;
 uniform float gui_roughness_color_amplifier;
+#ifndef mode_roughness_color_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_roughness_color_filter(){
+#else
+vec4 filter(){
+#endif
 
-subroutine(filterModeType) vec4 mode_roughness_color_filter(){
     // differente approaches to measure difference in colors
     float angle;
     float amp = (1+5*gui_roughness_color_amplifier);
@@ -992,6 +1237,7 @@ subroutine(filterModeType) vec4 mode_roughness_color_filter(){
 }
 
 
+
 out vec4 FragColor;
 uniform int material_id;
 
@@ -1004,14 +1250,22 @@ void main() {
 
     if(material_id >= 0){// if current ID is different than -1
         if( materialIndex == material_id ){ // compare colors and process only the mask region
+            #ifndef USE_OPENGL_330
             FragColor   = filterMode();
+            #else
+            FragColor   = filter();
+            #endif
         }else{
             discard;
         }
     }else if(material_id == -1){//draw just last image
         FragColor = texture( layerA, v2QuadCoords.xy);
     }else{// normal processing (materials disabled)
-        FragColor   = filterMode();
+            #ifndef USE_OPENGL_330
+            FragColor   = filterMode();
+            #else
+            FragColor   = filter();
+            #endif
     }
 
 

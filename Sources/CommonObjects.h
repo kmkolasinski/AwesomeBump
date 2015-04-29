@@ -6,7 +6,7 @@
 #include <cstdio>
 #include <iostream>
 #include "qopenglerrorcheck.h"
-#include <QOpenGLFunctions_4_0_Core>
+#include <QOpenGLFunctions_3_3_Core>
 
 #define TAB_SETTINGS 8
 #define TAB_TILING   9
@@ -26,6 +26,8 @@
 #define TEXTURE_FORMAT GL_RGB16F
 
 #define KEY_SHOW_MATERIALS Qt::Key_S
+
+#define USE_OPENGL_330
 
 using namespace std;
 

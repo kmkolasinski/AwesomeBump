@@ -53,7 +53,7 @@ QT_BEGIN_NAMESPACE
 class QMatrix4x4;
 QT_END_NAMESPACE
 
-class GLTexture : public QOpenGLFunctions_4_0_Core
+class GLTexture : public QOpenGLFunctions_3_3_Core
 {
 public:
     GLTexture();

@@ -9,8 +9,9 @@
 
 
 #include <QtOpenGL>
-#include <QOpenGLFunctions_4_0_Core>
 
+
+#include "../CommonObjects.h"
 #include <QString>
 #include <QDebug>
 #include <QVector>
@@ -18,9 +19,20 @@
 #include <iostream>
 #include "../qopenglerrorcheck.h"
 #include "tinyobj/tiny_obj_loader.h"
+
+
+#ifdef USE_OPENGL_330
+    #include <QOpenGLFunctions_3_3_Core>
+    #define OPENGL_FUNCTIONS QOpenGLFunctions_3_3_Core
+#else
+    #include <QOpenGLFunctions_4_0_Core>
+    #define OPENGL_FUNCTIONS QOpenGLFunctions_4_0_Core
+#endif
+
+
 using namespace std;
 
-class Mesh : public QOpenGLFunctions_4_0_Core {
+class Mesh : public OPENGL_FUNCTIONS {
 public:
 
 	/**

@@ -263,7 +263,8 @@ void GLWidget::initializeGL()
 
     program = new QOpenGLShaderProgram(this);
 
-    if(Performance3DSettings::openGLVersion > 3.3){
+
+    #ifndef USE_OPENGL_330
         qDebug() << "Loading quad (vertex shader)";
         vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
         vshader->compileSourceFile(":/resources/plane.vert");
@@ -286,14 +287,13 @@ void GLWidget::initializeGL()
         program->addShader(teshader);
 
     // setting shaders for 3.30 version of openGL
-    }else{
+    #else
         qDebug() << "Loading quad (vertex shader) for openGL 3.30";
         vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
         vshader->compileSourceFile(":/resources/plane_330.vert");
         if (!vshader->log().isEmpty()) qDebug() << vshader->log();
         else qDebug() << "done";
-
-    }
+    #endif
 
     program->addShader(vshader);
     program->addShader(fshader);
@@ -332,10 +332,11 @@ void GLWidget::initializeGL()
     line_program = new QOpenGLShaderProgram(this);
     line_program->addShader(vshader);
     line_program->addShader(fshader);
-    if(Performance3DSettings::openGLVersion > 3.3){
+
+    #ifndef USE_OPENGL_330
         line_program->addShader(tcshader);
         line_program->addShader(teshader);
-    }
+    #endif
     line_program->addShader(gshader);
     line_program->bindAttributeLocation("FragColor",0);
     line_program->bindAttributeLocation("FragNormal",1);
@@ -678,10 +679,8 @@ void GLWidget::paintGL()
 
         tindeks++;
         GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks) );
-        GLCHK( m_env_map->bind());
-        if(Performance3DSettings::openGLVersion > 3.3){
-            GLCHK( mesh->drawMesh() );
-        }else{  GLCHK( mesh->drawMesh(true) );}
+        GLCHK( m_env_map->bind());    
+        GLCHK( mesh->drawMesh() );
         // set default active texture
         glActiveTexture(GL_TEXTURE0);
     }

@@ -97,16 +97,28 @@ bool checkOpenGL(){
 
     float version = glContext->format().majorVersion() + 0.1 * glContext->format().minorVersion();
     Performance3DSettings::openGLVersion = version;
-    //Performance3DSettings::openGLVersion = 3.3;
+    #ifdef USE_OPENGL_330
+        Performance3DSettings::openGLVersion = 3.3;
+    #endif
     delete glWidget;
 
     qDebug() << "Version:" << version;
-    // check openGL version
-    if( version < 4.0 )
-    {
-       qDebug() << "Error: AwesomeBump does not support openGL versions lower than 4.0 :(" ;
-       return false;
-    }
+
+    #ifdef USE_OPENGL_330
+        // check openGL version
+        if( version < 3.3 )
+        {
+           qDebug() << "Error: This version of AwesomeBump does not support openGL versions lower than 3.3 :(" ;
+           return false;
+        }
+    #else
+        // check openGL version
+        if( version < 4.0 )
+        {
+           qDebug() << "Error: AwesomeBump does not support openGL versions lower than 4.0 :(" ;
+           return false;
+        }
+    #endif
     return true;
 
 }

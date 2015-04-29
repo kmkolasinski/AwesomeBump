@@ -51,12 +51,18 @@
 #include "utils/qglbuffers.h"
 #include "glwidgetbase.h"
 #include "glimageeditor.h"
-#include <QOpenGLFunctions_4_0_Core>
 
-QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram);
+#ifdef USE_OPENGL_330
+    #include <QOpenGLFunctions_3_3_Core>
+    #define OPENGL_FUNCTIONS QOpenGLFunctions_3_3_Core
+#else
+    #include <QOpenGLFunctions_4_0_Core>
+    #define OPENGL_FUNCTIONS QOpenGLFunctions_4_0_Core
+#endif
 
 
-class GLWidget : public GLWidgetBase , protected QOpenGLFunctions_4_0_Core
+
+class GLWidget : public GLWidgetBase , protected OPENGL_FUNCTIONS
 {
     Q_OBJECT
 

@@ -186,7 +186,7 @@ vec3 normalizedLightDirection = normalize(lightDirection);
 const float PI = 3.14159;
 float chiGGX(float v)
 {
-    return v > 0 ? 1 : 0;
+    return (v > 0) ? 1.0 : 0.0;
 }
 
 float GGX_Distribution(vec3 n, vec3 h, float alpha)
