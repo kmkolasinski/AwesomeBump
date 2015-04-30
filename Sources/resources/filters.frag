@@ -1229,7 +1229,7 @@ vec4 filter(){
     }else if(gui_roughness_color_method == 2){ // distance based
         vec3 colorA     = (texture( layerA, v2QuadCoords.xy).rgb);
         vec3 maskColor  = (gui_roughness_picked_color);
-        angle           = clamp((1-distance(colorA,maskColor)/sqrt(3))*amp + offset,0.0,1.0);
+        angle           = clamp((1-distance(colorA,maskColor)/sqrt(3.0))*amp + offset,0.0,1.0);
 
     }
     float value = abs(float(gui_roughness_invert_mask)-angle)+gui_roughness_color_global_offset;
