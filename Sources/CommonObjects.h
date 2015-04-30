@@ -21,13 +21,19 @@
     #define AB_LOG_ALT "log.txt"
 #endif
 
-#define AWESOME_BUMP_VERSION "AwesomeBump Pi (2015)"
+
 
 #define TEXTURE_FORMAT GL_RGB16F
 
 #define KEY_SHOW_MATERIALS Qt::Key_S
 
-#define USE_OPENGL_330
+//#define USE_OPENGL_330
+
+#ifdef USE_OPENGL_330
+#define AWESOME_BUMP_VERSION "AwesomeBump Pi (2015) (openGL 330 release)"
+#else
+#define AWESOME_BUMP_VERSION "AwesomeBump Pi (2015)"
+#endif
 
 using namespace std;
 

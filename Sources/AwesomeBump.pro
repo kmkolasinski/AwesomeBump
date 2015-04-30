@@ -1,5 +1,14 @@
-CONFIG       += c++11 debug release
+CONFIG       += c++11
 QT           += opengl gui widgets
+
+CONFIG(release_gl330) {
+    #This is a release build
+    DEFINES += USE_OPENGL_330
+    TARGET = AwesomeBumpGL330
+} else {
+    TARGET = AwesomeBump
+    #This is a debug build
+}
 
 VPATH += ../shared
 INCLUDEPATH += ../shared

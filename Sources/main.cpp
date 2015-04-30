@@ -154,9 +154,18 @@ int main(int argc, char *argv[])
     if(!checkOpenGL()){
 
         msgBox.setText("Fatal Error!");
+
+#ifdef USE_OPENGL_330
+        msgBox.setInformativeText("Sorry but it seems that your graphics card does not support openGL 3.3.\n"
+                                  "Program will not run :(\n"
+                                  "See log.txt file for more info.");
+#else
         msgBox.setInformativeText("Sorry but it seems that your graphics card does not support openGL 4.0.\n"
                                   "Program will not run :(\n"
                                   "See log.txt file for more info.");
+#endif
+
+
         msgBox.setStandardButtons(QMessageBox::Close);
         msgBox.show();
 
