@@ -59,5 +59,8 @@
         <file>resources/copyToCB.png</file>
         <file>resources/pasteFromCB.png</file>
         <file>resources/plane_330.vert</file>
+        <file>resources/lenscolor.png</file>
+        <file>resources/lensdirt.png</file>
+        <file>resources/lensstar.png</file>
     </qresource>
 </RCC>

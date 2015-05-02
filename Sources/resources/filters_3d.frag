@@ -72,13 +72,16 @@ uniform int   gui_gauss_mode;
 
 vec4 filter(){
     float w     = gui_gauss_w;
-    float depth = 1.0;
+
+    float depth = 2.0;
     int radius = int(gui_gauss_radius);
     if(gui_gauss_mode == 0){
          return gauss_filter_h(layerA,w,radius,depth);
     }else{
          return gauss_filter_v(layerA,w,radius,depth);
     }
+
+
 }
 
 #endif
@@ -93,16 +96,169 @@ vec4 filter(){
    vec3 b3    = texture(layerD, v2QuadCoords.st).rgb;
    vec3 b4    = texture(layerE, v2QuadCoords.st).rgb;
 
-   vec3 bloom =  (b1*0.4f + b2*0.8f + b3*0.6f + b4*.8f)/2.0;
+   vec3 bloom =  (b1*0.4f + b2*0.8f + b3*0.6f + b4*0.8f)/2.5;
    float x = v2QuadCoords.x;
    float y = v2QuadCoords.y;
    float attenuateX = 1.0 - 0.8*(1 - smoothstep(0.0,0.4,x) + smoothstep(0.6,1.0,x));
    float attenuateY = 1.0 - 0.8*(1 - smoothstep(0.0,0.4,y) + smoothstep(0.6,1.0,y));
+
    return vec4(  color + bloom * attenuateX * attenuateY  ,1);
 }
 #endif
 
+#ifdef TONE_MAPPING_FILTER
 
+float A = 0.15;
+float B = 0.50;
+float C = 0.10;
+float D = 0.20;
+float E = 0.02;
+float F = 0.30;
+float W = 1.2;
+
+vec3 Uncharted2Tonemap(vec3 x)
+{
+   return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
+}
+
+vec4 filter(){
+
+   vec3 texColor = texture(layerA, v2QuadCoords.st).rgb;
+   vec3 bloom = texture(layerB, vec2(0.5,0.5)).rgb;
+
+
+   float ExposureBias = 1+0.5*length(bloom);
+   vec3 curr = Uncharted2Tonemap(ExposureBias*texColor);
+
+   vec3 whiteScale = 1.0f/Uncharted2Tonemap(vec3(W));
+   vec3 color = curr*whiteScale;
+
+   vec3 retColor = pow(color,vec3(2.5/2.2));
+
+   return vec4(retColor,1);
+
+
+}
+#endif
+
+
+#ifdef LENS_FLARES_FILTER
+
+int uSamples = 4;
+float uDispersal  = 0.5;
+float uHaloWidth  = 0.5;
+float uDistortion = 1.5;
+
+/**
+
+Lens flares effect based on:
+www: http://john-chapman-graphics.blogspot.com/2013/02/pseudo-lens-flare.html
+author: John Chapman
+
+Copyright (c) 2013 John Chapman
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+*/
+
+
+
+/*----------------------------------------------------------------------------*/
+vec4 textureDistorted(
+        in sampler2D tex,
+        in vec2 texcoord,
+        in vec2 direction,
+        in vec3 distortion
+) {
+        return vec4(
+                texture(tex, texcoord + direction * distortion.r).r,
+                texture(tex, texcoord + direction * distortion.g).g,
+                texture(tex, texcoord + direction * distortion.b).b,
+                1.0
+        );
+}
+
+/*----------------------------------------------------------------------------*/
+vec4 lf_scale = vec4(4.0);
+vec4 lf_bias  = vec4(-0.5);
+uniform int lf_step;
+uniform mat4 lf_starMatrix;
+vec4 filter() {
+    if(lf_step == 0){
+        // treshold image
+        float dp = length(texture(layerB, v2QuadCoords.st).rgb)/sqrt(3.0);
+        return max(vec4(0.0),  vec4(dp + lf_bias)) * lf_scale;
+    }else if(lf_step == 1){ // prepare ghosts and halos
+
+        vec2 texcoord = -v2QuadCoords + vec2(1.0); // flip texcoordoords
+        vec2 texelSize = 1.0 / vec2(textureSize(layerB, 0));
+
+        vec2 ghostVec = (vec2(0.5) - texcoord) * uDispersal;
+        vec2 haloVec = normalize(ghostVec) * uHaloWidth;
+
+        vec3 distortion = vec3(-texelSize.x * uDistortion, 0.0, texelSize.x * uDistortion);
+
+// sample ghosts:
+        vec4 result = vec4(0.0);
+        float nw  = 0.0;
+        for (int i = 0; i < uSamples; ++i) {
+                vec2 offset = fract(texcoord + ghostVec * float(i));
+
+                float weight = length(vec2(0.5) - offset) / length(vec2(0.5));
+
+
+                result += textureDistorted(
+                        layerB,
+                        offset,
+                        normalize(ghostVec),
+                        distortion
+                ) ;//* weight;
+
+                nw += 1.0;//weight;
+        }
+
+        result *= texture(layerC, vec2(length(vec2(0.5) - texcoord) / length(vec2(0.5)),0.0));
+
+//	sample halo:
+        float weight = 2*length(vec2(0.5) - fract(texcoord + haloVec)) / length(vec2(0.5));
+        weight = clamp(pow(clamp(1.0 - weight,0,1), 4.0),0,1);
+
+
+        result += textureDistorted(
+                layerB,
+                fract(texcoord + haloVec),
+                normalize(ghostVec),
+                distortion
+        )*weight ;
+        nw += weight;
+
+        return result/nw;
+
+     }else{ // blend images
+        vec2 texelSize = vec2(textureSize(layerB, 0));
+        float ratio = texelSize.x/texelSize.y;
+        vec4 dirtColor = texture(layerC, v2QuadCoords.st*vec2(0.5*ratio,1)); //dirt texture
+
+
+        vec2 lensStarTexcoord = (lf_starMatrix * vec4(v2QuadCoords.st,1.0,0.0)).xy; // star texture
+        lensStarTexcoord -= 0.5;
+        lensStarTexcoord *= 0.5;
+        lensStarTexcoord += 0.5;
+        vec4 starColor = texture(layerD, lensStarTexcoord);
+        vec4 lensColor = texture(layerB, v2QuadCoords.st);
+        //return lensColor;
+        return texture(layerA, v2QuadCoords.st) + 5*(starColor+dirtColor)*lensColor;
+    }
+}
+
+#endif
 
 // ----------------------------------------------------------------
 //                        DOF EFFECT
@@ -163,7 +319,7 @@ const float fstop = 140.0;       //f-stop value
 //user variables
 
 const int samples = 4; //samples on the first ring
-const int rings   = 8; //ring count
+const int rings   = 7; //ring count
 
 
 const float CoC = 0.03;//circle of confusion size in mm (35mm film = 0.03mm)

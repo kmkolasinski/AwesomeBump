@@ -203,7 +203,9 @@ private:
     GLFrameBufferObject* glowInputColor[4];
     GLFrameBufferObject* glowOutputColor[4];
 
-
+    GLuint lensFlareColorsTexture;
+    GLuint lensDirtTexture;
+    GLuint lensStarTexture;
 
 protected:
     void resizeFBOs();
@@ -212,11 +214,12 @@ protected:
     void copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst);
     void applyGaussFilter(GLuint input_tex,
                           QGLFramebufferObject* auxFBO,
-                          QGLFramebufferObject* outputFBO, float radius = 5.0);
+                          QGLFramebufferObject* outputFBO, float radius = 10.0);
     void applyDofFilter(GLuint input_tex,
-                        QGLFramebufferObject* auxFBO,
                         QGLFramebufferObject* outputFBO);
     void applyGlowFilter(QGLFramebufferObject* outputFBO);
+    void applyToneFilter(GLuint input_tex,QGLFramebufferObject* outputFBO);
+    void applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outputFBO);
 public:
     static QDir* recentMeshDir;
 };

@@ -78,7 +78,7 @@ void GLImage::cleanup()
   makeCurrent();
   averageColorFBO->bindDefault();
   typedef std::map<std::string,QOpenGLShaderProgram*>::iterator it_type;
-  qDebug() << "Removing filters:";
+  qDebug() << "Removing GLImage filters:";
   for(it_type iterator = filter_programs.begin(); iterator != filter_programs.end(); iterator++) {
       qDebug() << "Removing filter:" << QString(iterator->first.c_str());
       delete iterator->second;

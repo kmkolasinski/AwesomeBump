@@ -271,6 +271,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->checkBoxPerformanceSimplePBR  ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
     connect(ui->checkBoxBloomEffect           ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
     connect(ui->checkBoxDOFEffect             ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
+    connect(ui->checkBoxLensFlaresEffect      ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
     connect(ui->checkBoxShowTriangleEdges     ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
 
 
@@ -1303,6 +1304,7 @@ void MainWindow::updatePerformanceSettings(){
     settings.bBloomEffect       = ui->checkBoxBloomEffect->isChecked();
     settings.bDofEffect         = ui->checkBoxDOFEffect->isChecked();
     settings.bShowTriangleEdges = ui->checkBoxShowTriangleEdges->isChecked();
+    settings.bLensFlares        = ui->checkBoxLensFlaresEffect->isChecked();
     glWidget->updatePerformanceSettings(settings);
 }
 void MainWindow::updatePerformanceSettings(int indeks){
@@ -1772,6 +1774,7 @@ void MainWindow::saveSettings(){
     settings.setValue("noPBRRays",ui->comboBoxPerformanceNoRays->currentIndex());
     settings.setValue("noTessSubdivision",ui->comboBoxPerformanceNoTessSub->currentIndex());
     settings.setValue("bBloomEffect",ui->checkBoxBloomEffect->isChecked());
+    settings.setValue("bLensFlaresEffect",ui->checkBoxLensFlaresEffect->isChecked());
     settings.setValue("bDofEffect",ui->checkBoxDOFEffect->isChecked());
 
 
@@ -1875,11 +1878,12 @@ void MainWindow::loadSettings(){
     ui->checkBoxPerformanceSimplePBR->setChecked(settings.value("bUseSimplePBR",false).toBool());
     ui->checkBoxBloomEffect         ->setChecked(settings.value("bBloomEffect",true).toBool());
     ui->checkBoxDOFEffect           ->setChecked(settings.value("bDofEffect",true).toBool());
+    ui->checkBoxLensFlaresEffect    ->setChecked(settings.value("bLensFlaresEffect",true).toBool());
     ui->comboBoxPerformanceNoRays   ->setCurrentIndex(settings.value("noPBRRays",0).toInt());
     ui->comboBoxPerformanceNoTessSub->setCurrentIndex(settings.value("noTessSubdivision",0).toInt());
 
 
-
+    updatePerformanceSettings();
 
 
     loadImageSettings("d",diffuseImageProp);

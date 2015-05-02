@@ -295,6 +295,7 @@ public:
   bool bBloomEffect;
   bool bDofEffect;
   bool bShowTriangleEdges;
+  bool bLensFlares;
   static float openGLVersion;
   Performance3DSettings(){
         bUseCullFace  = false;
@@ -304,6 +305,7 @@ public:
         bBloomEffect       = true;
         bDofEffect         = true;
         bShowTriangleEdges = false;
+        bLensFlares        = true;
   }
 };
 

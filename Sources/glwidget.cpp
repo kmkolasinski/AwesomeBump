@@ -102,6 +102,10 @@ void GLWidget::cleanup()
         qDebug() << "Removing program:" << QString(iterator->first.c_str());
         delete iterator->second;
     }
+    deleteTexture(lensFlareColorsTexture);
+    deleteTexture(lensDirtTexture);
+    deleteTexture(lensStarTexture);
+
 
     delete program;
     delete line_program;
@@ -450,6 +454,9 @@ void GLWidget::initializeGL()
     filters_list.push_back("GAUSSIAN_BLUR_FILTER");
     filters_list.push_back("BLOOM_FILTER");
     filters_list.push_back("DOF_FILTER");
+    filters_list.push_back("TONE_MAPPING_FILTER");
+    filters_list.push_back("LENS_FLARES_FILTER");
+
 
     for(int filter = 0 ; filter < filters_list.size() ; filter++ ){
 
@@ -482,6 +489,14 @@ void GLWidget::initializeGL()
         delete fshader;
     }
     if(vshader  != NULL) delete vshader;
+
+
+    GLCHK( lensFlareColorsTexture = bindTexture(QImage(":/resources/lenscolor.png"),GL_TEXTURE_2D) );
+    qDebug() << "Loading lensColors texture: (id=" << lensFlareColorsTexture << ")";
+    GLCHK( lensDirtTexture = bindTexture(QImage(":/resources/lensdirt.png"),GL_TEXTURE_2D) );
+    qDebug() << "Loading lensDirt texture: (id=" << lensDirtTexture << ")";
+    GLCHK( lensStarTexture = bindTexture(QImage(":/resources/lensstar.png"),GL_TEXTURE_2D) );
+    qDebug() << "Loading lensDirt texture: (id=" << lensStarTexture << ")";
 
 
 
@@ -570,8 +585,6 @@ void GLWidget::paintGL()
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( m_env_map->bind());
     GLCHK( skybox_mesh->drawMesh(true) );
-
-
 
 
     // ---------------------------------------------------------
@@ -724,10 +737,23 @@ void GLWidget::paintGL()
         // 2. DOF (can be disabled/enabled by gui)
         // -----------------------------------------------------------
         if(performanceSettings.bDofEffect){
-            applyDofFilter(colorFBO->fbo->texture(),auxFBO->fbo,outputFBO->fbo);
+            applyDofFilter(colorFBO->fbo->texture(),outputFBO->fbo);
             copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
         }
-        applyNormalFilter(colorFBO->fbo->texture());
+
+        // -----------------------------------------------------------
+        // Post processing:
+        // 3. Lens Flares (can be disabled/enabled by gui)
+        // -----------------------------------------------------------
+        if(performanceSettings.bLensFlares){
+            applyLensFlaresFilter(colorFBO->fbo->texture(),outputFBO->fbo);
+            copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
+        }
+
+        applyToneFilter(colorFBO->fbo->texture(),outputFBO->fbo);
+
+        //copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
+        applyNormalFilter(outputFBO->fbo->texture());
 
     }else{ // end of if SHOW MATERIALS TEXTURE DISABLED
         GLCHK( applyNormalFilter(colorFBO->fbo->texture()));
@@ -1126,7 +1152,6 @@ void GLWidget::applyGaussFilter(  GLuint input_tex,
     filter_program->bind();
 
     GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
-   // GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_gauss_filter"]) );
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( filter_program->setUniformValue("gui_gauss_w"       , (float)radius ));
@@ -1147,11 +1172,9 @@ void GLWidget::applyGaussFilter(  GLuint input_tex,
     outputFBO->bindDefault();
 
 
-
 }
 
 void GLWidget::applyDofFilter(GLuint input_tex,
-                QGLFramebufferObject* auxFBO,
                 QGLFramebufferObject* outputFBO){
 
     //applyGaussFilter(input_tex,auxFBO,outputFBO,15.0);
@@ -1167,8 +1190,7 @@ void GLWidget::applyDofFilter(GLuint input_tex,
     GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, colorFBO->getAttachedTexture(2)) );
-    GLCHK( glActiveTexture(GL_TEXTURE2) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO->texture()) );
+
 
     outputFBO->bind();
         quad_mesh->drawMesh(true);
@@ -1181,6 +1203,8 @@ void GLWidget::applyDofFilter(GLuint input_tex,
 
 
 void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
+
+
 
 
     applyGaussFilter(colorFBO->getAttachedTexture(1),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
@@ -1218,8 +1242,114 @@ void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
 
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     outputFBO->bindDefault();
+}
 
 
+void GLWidget::applyToneFilter(GLuint input_tex,QGLFramebufferObject* outputFBO){
 
 
+    filter_program = post_processing_programs["TONE_MAPPING_FILTER"];
+    filter_program->bind();
+    outputFBO->bind();
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+    GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[3]->fbo->texture()) );
+    quad_mesh->drawMesh(true);
+    outputFBO->bindDefault();
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+}
+
+void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outputFBO){
+    // Based on: http://john-chapman-graphics.blogspot.com/2013/02/pseudo-lens-flare.html
+    // prepare mask image
+    if(!performanceSettings.bBloomEffect){
+        applyGaussFilter(colorFBO->getAttachedTexture(1),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
+        applyGaussFilter(glowOutputColor[0]->fbo->texture(),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
+    }
+
+    filter_program = post_processing_programs["LENS_FLARES_FILTER"];
+    filter_program->bind();
+
+    // First step -- prepare treshold image
+
+    glowInputColor[0]->fbo->bind();
+    GLCHK( glViewport(0,0,glowInputColor[0]->fbo->width(),glowInputColor[0]->fbo->height()) );
+    GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( filter_program->setUniformValue("lf_step"  , int(0)) );// treshold step
+
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[0]->fbo->texture()) );
+    quad_mesh->drawMesh(true);
+
+    // Second step -- create ghosts and halos
+
+    glowOutputColor[0]->fbo->bind();
+    GLCHK( glViewport(0,0,glowOutputColor[0]->fbo->width(),glowOutputColor[0]->fbo->height()) );
+
+    GLCHK( filter_program->setUniformValue("lf_step"  , int(1)) );//II step
+
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
+    GLCHK( glActiveTexture(GL_TEXTURE2) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, lensFlareColorsTexture) );
+
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, glowInputColor[0]->fbo->texture()) );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    quad_mesh->drawMesh(true);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    outputFBO->bindDefault();
+
+    float camrot = QVector3D::dotProduct(camera.side_direction,QVector3D(1,0,0)) +
+                   QVector3D::dotProduct(camera.updown_direction,QVector3D(0,1,0));
+
+
+    QMatrix4x4 scaleBias1 = QMatrix4x4(
+       2.0f,   0.0f,  -1.0f, 0.0f,
+       0.0f,   2.0f,  -1.0f, 0.0f,
+       0.0f,   0.0f,   1.0f, 0.0f,
+       0.0f,   0.0f,   0.0f, 1.0f
+    );
+    QMatrix4x4 rotation = QMatrix4x4(
+       cos(camrot), -sin(camrot), 0.0f, 0.0f,
+       sin(camrot), cos(camrot),  0.0f, 0.0f,
+       0.0f,        0.0f,         1.0f, 0.0f,
+       0.0f,   0.0f,   0.0f, 1.0f
+    );
+    QMatrix4x4 scaleBias2 = QMatrix4x4(
+       0.5f,   0.0f,   0.5f, 0.0f,
+       0.0f,   0.5f,   0.5f, 0.0f,
+       0.0f,   0.0f,   1.0f, 0.0f,
+       0.0f,   0.0f,   0.0f, 1.0f
+    );
+
+    QMatrix4x4 uLensStarMatrix = scaleBias2 * rotation * scaleBias1;
+
+     // Third step -- blend images (orginal,halos,dirt texture, and star texture)
+
+
+    outputFBO->bind();
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+    GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( filter_program->setUniformValue("lf_step"  , int(2)) );// 3
+    GLCHK( filter_program->setUniformValue("lf_starMatrix"  , uLensStarMatrix) );// 3
+
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[0]->fbo->texture()) );
+    GLCHK( glActiveTexture(GL_TEXTURE2) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, lensDirtTexture) );
+    GLCHK( glActiveTexture(GL_TEXTURE3) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, lensStarTexture) );
+    quad_mesh->drawMesh(true);
+
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
 }
