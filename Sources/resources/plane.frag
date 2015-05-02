@@ -78,7 +78,7 @@ vec4 bump_mapping(int lightIndeks,vec2 texcoord){
     vec3  fvTSLightPosition  = normalize( TSLightPosition[lightIndeks] );
 
 
-    float fNDotL             = dot( fvESVertexNormal, fvTSLightPosition );
+    float fNDotL             = max(dot( fvESVertexNormal, fvTSLightPosition ),0.0);
 
     vec3  fvReflection       = normalize( ( ( 2.0 * fvESVertexNormal ) * fNDotL ) - fvTSLightPosition );
     vec3  fvTSViewDirection  = normalize( TSViewDirection[lightIndeks] );
@@ -454,7 +454,7 @@ void main( void )
         vec3 diffuse    = fvBaseColor.rgb * irradiance ;
         fvBaseColor.rgb =  diffuse;
         vec4 bumpMapShadingColor = (bump_mapping(0,texcoords)+bump_mapping(1,texcoords))/2;
-        bumpMapShadingColor = bump_mapping(1,texcoords);
+        //bumpMapShadingColor = bump_mapping(0,texcoords);
         FragColor = bumpMapShadingColor;
         finalColor = FragColor ;
 
