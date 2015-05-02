@@ -86,24 +86,22 @@ vec4 filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
+// Based on:
+// https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Source/Shaders/Builtin/Functions/hue.glsl
+/**
+    Copyright 2011-2015 Cesium Contributors
 
-vec3 rgb2hsv(vec3 c)
-{
-    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and limitations under the License.
 
-    float d = q.x - min(q.w, q.y);
-    float e = 1.0e-10;
-    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
-}
-
-vec3 hsv2rgb(vec3 c)
-{
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-}
+    Columbus View (Pat. Pend.)
+*/
 
 uniform float gui_hue; // number from -1:1
 #ifndef mode_color_hue_filter_330
@@ -116,16 +114,23 @@ vec4 filter(){
 #endif
 
    vec4 textureColor = texture( layerA, v2QuadCoords.xy);
+   //return textureColor;
    vec3 fragRGB = textureColor.rgb;
-   vec3 fragHSV = rgb2hsv(fragRGB);
-   float h = gui_hue;
-   fragHSV.x += h;
 
-   fragHSV.x = mod(fragHSV.x, 1.0);
-   fragHSV.y = mod(fragHSV.y, 1.0);
-   fragHSV.z = mod(fragHSV.z, 1.0);
-   fragRGB = hsv2rgb(fragHSV);
-   return  vec4(hsv2rgb(fragHSV), textureColor.w);
+   mat3 toYIQ = mat3(0.299,0.587,0.114,
+                   0.595716, -0.274453, -0.321263,
+                   0.211456, -0.522591,  0.311135);
+   mat3 toRGB = mat3(1.0,  0.9563,  0.6210,
+                   1.0, -0.2721, -0.6474,
+                   1.0, -1.107,   1.7046);
+
+   vec3 yiq     = toYIQ * textureColor.rgb;
+   float hue    = atan(yiq.z, yiq.y) + 3.14159*gui_hue;
+   float chroma = sqrt(yiq.z * yiq.z + yiq.y * yiq.y);
+   vec3 color   = vec3(yiq.x, chroma * cos(hue), chroma * sin(hue));
+   return vec4(toRGB * color,1);
+
+
 
 }
 // ----------------------------------------------------------------
