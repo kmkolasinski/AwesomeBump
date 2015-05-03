@@ -62,7 +62,7 @@
         <enum>QTabWidget::East</enum>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>8</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideMiddle</enum>
@@ -115,7 +115,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>398</width>
+              <width>376</width>
               <height>646</height>
              </rect>
             </property>
@@ -189,7 +189,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>398</width>
+              <width>376</width>
               <height>646</height>
              </rect>
             </property>
@@ -266,7 +266,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>398</width>
+              <width>376</width>
               <height>646</height>
              </rect>
             </property>
@@ -337,7 +337,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>398</width>
+              <width>376</width>
               <height>646</height>
              </rect>
             </property>
@@ -408,7 +408,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>398</width>
+              <width>376</width>
               <height>646</height>
              </rect>
             </property>
@@ -476,7 +476,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>398</width>
+              <width>376</width>
               <height>646</height>
              </rect>
             </property>
@@ -550,7 +550,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>398</width>
+              <width>376</width>
               <height>646</height>
              </rect>
             </property>
@@ -603,7 +603,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>389</width>
+              <width>367</width>
               <height>644</height>
              </rect>
             </property>
@@ -706,9 +706,9 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
-              <width>381</width>
-              <height>656</height>
+              <y>-25</y>
+              <width>359</width>
+              <height>675</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -1222,41 +1222,14 @@
                  </layout>
                 </item>
                 <item>
+                 <widget class="QLabel" name="label_42">
+                  <property name="text">
+                   <string>Enable images</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <layout class="QGridLayout" name="gridLayout_4">
-                  <item row="1" column="1">
-                   <widget class="QPushButton" name="pushButtonSaveAll">
-                    <property name="statusTip">
-                     <string>Save all images</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="content.qrc">
-                      <normaloff>:/resources/saveAll.png</normaloff>:/resources/saveAll.png</iconset>
-                    </property>
-                    <property name="iconSize">
-                     <size>
-                      <width>32</width>
-                      <height>32</height>
-                     </size>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="4">
-                   <widget class="QCheckBox" name="checkBoxSaveRoughness">
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="content.qrc">
-                      <normaloff>:/resources/roughness.png</normaloff>:/resources/roughness.png</iconset>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="0" column="1">
                    <widget class="QPushButton" name="pushButtonSaveChecked">
                     <property name="toolTip">
@@ -1280,63 +1253,48 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="2">
-                   <widget class="QCheckBox" name="checkBoxSaveDiffuse">
-                    <property name="toolTip">
-                     <string/>
-                    </property>
+                  <item row="1" column="1">
+                   <widget class="QPushButton" name="pushButtonSaveAll">
                     <property name="statusTip">
-                     <string>Select diffuse image to save</string>
+                     <string>Save all images</string>
                     </property>
                     <property name="text">
                      <string/>
                     </property>
                     <property name="icon">
                      <iconset resource="content.qrc">
-                      <normaloff>:/resources/diffuse.png</normaloff>:/resources/diffuse.png</iconset>
+                      <normaloff>:/resources/saveAll.png</normaloff>:/resources/saveAll.png</iconset>
                     </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                    <property name="tristate">
-                     <bool>false</bool>
+                    <property name="iconSize">
+                     <size>
+                      <width>32</width>
+                      <height>32</height>
+                     </size>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="2">
-                   <widget class="QCheckBox" name="checkBoxSaveSpecular">
-                    <property name="toolTip">
-                     <string/>
-                    </property>
-                    <property name="statusTip">
-                     <string>Select specular image to save</string>
-                    </property>
+                  <item row="1" column="5">
+                   <widget class="QCheckBox" name="checkBoxSaveMetallic">
                     <property name="text">
                      <string/>
                     </property>
                     <property name="icon">
                      <iconset resource="content.qrc">
-                      <normaloff>:/resources/specular.png</normaloff>:/resources/specular.png</iconset>
+                      <normaloff>:/resources/metalic.png</normaloff>:/resources/metalic.png</iconset>
                     </property>
                     <property name="checked">
                      <bool>true</bool>
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="3">
-                   <widget class="QCheckBox" name="checkBoxSaveNormal">
-                    <property name="toolTip">
-                     <string/>
-                    </property>
-                    <property name="statusTip">
-                     <string>Select normal image to save</string>
-                    </property>
+                  <item row="1" column="4">
+                   <widget class="QCheckBox" name="checkBoxSaveRoughness">
                     <property name="text">
                      <string/>
                     </property>
                     <property name="icon">
                      <iconset resource="content.qrc">
-                      <normaloff>:/resources/normal.png</normaloff>:/resources/normal.png</iconset>
+                      <normaloff>:/resources/roughness.png</normaloff>:/resources/roughness.png</iconset>
                     </property>
                     <property name="checked">
                      <bool>true</bool>
@@ -1383,17 +1341,66 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="5">
-                   <widget class="QCheckBox" name="checkBoxSaveMetallic">
+                  <item row="1" column="2">
+                   <widget class="QCheckBox" name="checkBoxSaveSpecular">
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Select specular image to save</string>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
                     <property name="icon">
                      <iconset resource="content.qrc">
-                      <normaloff>:/resources/metalic.png</normaloff>:/resources/metalic.png</iconset>
+                      <normaloff>:/resources/specular.png</normaloff>:/resources/specular.png</iconset>
                     </property>
                     <property name="checked">
                      <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QCheckBox" name="checkBoxSaveNormal">
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Select normal image to save</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="content.qrc">
+                      <normaloff>:/resources/normal.png</normaloff>:/resources/normal.png</iconset>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QCheckBox" name="checkBoxSaveDiffuse">
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Select diffuse image to save</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="content.qrc">
+                      <normaloff>:/resources/diffuse.png</normaloff>:/resources/diffuse.png</iconset>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                    <property name="tristate">
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
@@ -2019,7 +2026,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>398</width>
+              <width>376</width>
               <height>646</height>
              </rect>
             </property>

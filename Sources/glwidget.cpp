@@ -632,7 +632,12 @@ void GLWidget::paintGL()
     GLCHK( program_ptr->setUniformValue("gui_uvScale"           , uvScale) );
     GLCHK( program_ptr->setUniformValue("gui_uvScaleOffset"     , uvOffset) );
     GLCHK( program_ptr->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
-    GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
+    if(FBOImageProporties::bConversionBaseMap){
+        GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , false) );
+    }else{
+        GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
+    }
+
     GLCHK( program_ptr->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
     GLCHK( program_ptr->setUniformValue("gui_bHeight"           , bToggleHeightView) );
     GLCHK( program_ptr->setUniformValue("gui_bNormal"           , bToggleNormalView) );
@@ -1344,11 +1349,13 @@ void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outp
     GLCHK( filter_program->setUniformValue("lf_starMatrix"  , uLensStarMatrix) );// 3
 
     GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[0]->fbo->texture()) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[0]->fbo->texture()) );// ghost texture
     GLCHK( glActiveTexture(GL_TEXTURE2) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, lensDirtTexture) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, lensDirtTexture) ); // dirt texture
     GLCHK( glActiveTexture(GL_TEXTURE3) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, lensStarTexture) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, lensStarTexture) ); // star texture
+    GLCHK( glActiveTexture(GL_TEXTURE4) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[3]->fbo->texture()) ); // exposure reference
     quad_mesh->drawMesh(true);
 
     GLCHK( glActiveTexture(GL_TEXTURE0) );

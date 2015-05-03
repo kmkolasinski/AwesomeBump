@@ -144,10 +144,10 @@ vec4 filter(){
 
 #ifdef LENS_FLARES_FILTER
 
-int uSamples = 4;
-float uDispersal  = 0.5;
+int uSamples = 8;
+float uDispersal  = 0.25;
 float uHaloWidth  = 0.5;
-float uDistortion = 1.5;
+float uDistortion = 1.0;
 
 /**
 
@@ -186,8 +186,8 @@ vec4 textureDistorted(
 }
 
 /*----------------------------------------------------------------------------*/
-vec4 lf_scale = vec4(4.0);
-vec4 lf_bias  = vec4(-0.5);
+vec4 lf_scale = vec4(5.0);
+vec4 lf_bias  = vec4(-0.6);
 uniform int lf_step;
 uniform mat4 lf_starMatrix;
 vec4 filter() {
@@ -245,16 +245,18 @@ vec4 filter() {
         vec2 texelSize = vec2(textureSize(layerB, 0));
         float ratio = texelSize.x/texelSize.y;
         vec4 dirtColor = texture(layerC, v2QuadCoords.st*vec2(0.5*ratio,1)); //dirt texture
-
-
         vec2 lensStarTexcoord = (lf_starMatrix * vec4(v2QuadCoords.st,1.0,0.0)).xy; // star texture
         lensStarTexcoord -= 0.5;
         lensStarTexcoord *= 0.5;
         lensStarTexcoord += 0.5;
-        vec4 starColor = texture(layerD, lensStarTexcoord);
-        vec4 lensColor = texture(layerB, v2QuadCoords.st);
+        vec4 starColor      = texture(layerD, lensStarTexcoord);
+        vec4 lensColor      = texture(layerB, v2QuadCoords.st);
+        vec3 exposureColor  = texture(layerE, vec2(0.5,0.5)).rgb;
+
+
+        float exposureBias = max(1-0.5*length(exposureColor),0.0);
         //return lensColor;
-        return texture(layerA, v2QuadCoords.st) + 5*(starColor+dirtColor)*lensColor;
+        return texture(layerA, v2QuadCoords.st) + 10*(starColor+dirtColor)*lensColor*exposureBias;
     }
 }
 

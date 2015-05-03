@@ -334,6 +334,8 @@ void GLImage::render(){
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
     bool bSkipStandardProcessing = false;
 
+    if((!activeImage->bSkipProcessing) && (activeImage->imageType != MATERIAL_TEXTURE)) bSkipProcessing = true;// do not process images when is disabled
+
     if(!bSkipProcessing == true){
     // resizing the FBOs in case of convertion procedure
     switch(conversionType){

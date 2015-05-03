@@ -323,6 +323,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowMetallicImage  ,SIGNAL(triggered()),this,SLOT(selectMetallicTab()));
     connect(ui->actionShowMaterialsImage ,SIGNAL(triggered()),this,SLOT(selectMaterialsTab()));
 
+    connect(ui->checkBoxSaveDiffuse ,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
+    connect(ui->checkBoxSaveNormal  ,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
+    connect(ui->checkBoxSaveSpecular,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
+    connect(ui->checkBoxSaveHeight,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
+    connect(ui->checkBoxSaveOcclusion,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
+    connect(ui->checkBoxSaveRoughness,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
+    connect(ui->checkBoxSaveMetallic,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
+
+
+
 
     connect(ui->actionShowSettingsImage ,SIGNAL(triggered()),this,SLOT(selectGeneralSettingsTab()));
     connect(ui->actionShowUVsTab        ,SIGNAL(triggered()),this,SLOT(selectUVsTab()));
@@ -657,6 +667,60 @@ void MainWindow::fitImage(){
 }
 
 
+void MainWindow::showHideTextureTypes(bool){
+
+    //qDebug() << "Toggle processing images";
+    bool value = ui->checkBoxSaveDiffuse->isChecked();
+    diffuseImageProp->getImageProporties()->bSkipProcessing = value;
+    ui->tabWidget->setTabEnabled(DIFFUSE_TEXTURE,value);
+    ui->pushButtonToggleDiffuse->setVisible(value);
+    ui->pushButtonToggleDiffuse->setChecked(value);
+    ui->actionShowDiffuseImage->setVisible(value);
+
+        value = ui->checkBoxSaveNormal->isChecked();
+    normalImageProp->getImageProporties()->bSkipProcessing = value;
+    ui->tabWidget->setTabEnabled(NORMAL_TEXTURE,value);
+    ui->pushButtonToggleNormal->setVisible(value);
+    ui->pushButtonToggleNormal->setChecked(value);
+    ui->actionShowNormalImage->setVisible(value);
+
+        value = ui->checkBoxSaveHeight->isChecked();
+    occlusionImageProp->getImageProporties()->bSkipProcessing = value;
+    ui->tabWidget->setTabEnabled(OCCLUSION_TEXTURE,value);
+    ui->pushButtonToggleOcclusion->setVisible(value);
+    ui->pushButtonToggleOcclusion->setChecked(value);
+    ui->actionShowOcclusiontImage->setVisible(value);
+
+        value = ui->checkBoxSaveOcclusion->isChecked();
+    heightImageProp->getImageProporties()->bSkipProcessing = value;
+    ui->tabWidget->setTabEnabled(HEIGHT_TEXTURE,value);
+    ui->pushButtonToggleHeight->setVisible(value);
+    ui->pushButtonToggleHeight->setChecked(value);
+    ui->actionShowHeightImage->setVisible(value);
+
+        value = ui->checkBoxSaveSpecular->isChecked();
+    specularImageProp->getImageProporties()->bSkipProcessing = value;
+    ui->tabWidget->setTabEnabled(SPECULAR_TEXTURE,value);
+    ui->pushButtonToggleSpecular->setVisible(value);
+    ui->pushButtonToggleSpecular->setChecked(value);
+    ui->actionShowSpecularImage->setVisible(value);
+
+        value = ui->checkBoxSaveRoughness->isChecked();
+    roughnessImageProp->getImageProporties()->bSkipProcessing = value;
+    ui->tabWidget->setTabEnabled(ROUGHNESS_TEXTURE,value);
+    ui->pushButtonToggleRoughness->setVisible(value);
+    ui->pushButtonToggleRoughness->setChecked(value);
+    ui->actionShowRoughnessImage->setVisible(value);
+
+        value = ui->checkBoxSaveMetallic->isChecked();
+    metallicImageProp->getImageProporties()->bSkipProcessing = value;
+    ui->tabWidget->setTabEnabled(METALLIC_TEXTURE,value);
+    ui->pushButtonToggleMetallic->setVisible(value);
+    ui->pushButtonToggleMetallic->setChecked(value);
+    ui->actionShowMetallicImage->setVisible(value);
+
+}
+
 void MainWindow::saveImages(){
 
     QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
@@ -695,7 +759,6 @@ bool MainWindow::saveAllImages(const QString &dir){
         ui->labelProgressInfo->setText("Saving diffuse image...");
         if(bSaveCheckedImages*ui->checkBoxSaveDiffuse->isChecked() || !bSaveCheckedImages ){
             diffuseImageProp ->saveFileToDir(dir);
-
         }
         ui->progressBar->setValue(15);
 
@@ -1430,6 +1493,8 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
 
 
     QSettings settings(QString(AB_INI), QSettings::IniFormat);
+    settings.setValue("t_"+abbr+"_bSkipProcessing" ,image->getImageProporties()->bSkipProcessing);
+
 
     settings.setValue("t_"+abbr+"_bGrayScale"                       ,image->getImageProporties()->bGrayScale);
     settings.setValue("t_"+abbr+"_grayScaleR"                       ,image->getImageProporties()->grayScalePreset.R);
@@ -1549,6 +1614,10 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
 void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
 
     QSettings settings(QString(AB_INI), QSettings::IniFormat);
+
+
+    image->getImageProporties()->bSkipProcessing                    = settings.value("t_"+abbr+"_bSkipProcessing",false).toBool();
+
     image->getImageProporties()->bGrayScale                         = settings.value("t_"+abbr+"_bGrayScale",false).toBool();
     image->getImageProporties()->grayScalePreset.R                  = settings.value("t_"+abbr+"_grayScaleR",0.333).toFloat();
     image->getImageProporties()->grayScalePreset.G                  = settings.value("t_"+abbr+"_grayScaleG",0.333).toFloat();
@@ -1738,6 +1807,16 @@ void MainWindow::saveSettings(){
     settings.setValue("r_postfix",ui->lineEditPostfixRoughness->text());
     settings.setValue("m_postfix",ui->lineEditPostfixMetallic->text());
 
+
+    settings.setValue("d_enable",ui->checkBoxSaveDiffuse->isChecked());
+    settings.setValue("n_enable",ui->checkBoxSaveNormal->isChecked());
+    settings.setValue("s_enable",ui->checkBoxSaveSpecular->isChecked());
+    settings.setValue("o_enable",ui->checkBoxSaveOcclusion->isChecked());
+    settings.setValue("h_enable",ui->checkBoxSaveHeight->isChecked());
+    settings.setValue("m_enable",ui->checkBoxSaveMetallic->isChecked());
+    settings.setValue("r_enable",ui->checkBoxSaveRoughness->isChecked());
+
+
     settings.setValue("recent_dir"      ,recentDir.absolutePath());
     settings.setValue("recent_mesh_dir" ,recentMeshDir.absolutePath());
     settings.setValue("gui_style"       ,ui->comboBoxGUIStyle->currentText());
@@ -1824,6 +1903,17 @@ void MainWindow::loadSettings(){
     PostfixNames::occlusionName = settings.value("o_postfix","_o").toString();
     PostfixNames::roughnessName = settings.value("m_postfix","_m").toString();
     PostfixNames::metallicName  = settings.value("r_postfix","_r").toString();
+
+    ui->checkBoxSaveDiffuse->setChecked( settings.value("d_enable",true).toBool());
+    ui->checkBoxSaveNormal->setChecked( settings.value("n_enable",true).toBool());
+    ui->checkBoxSaveSpecular->setChecked( settings.value("s_enable",true).toBool());
+    ui->checkBoxSaveOcclusion->setChecked( settings.value("o_enable",true).toBool());
+    ui->checkBoxSaveHeight->setChecked( settings.value("h_enable",true).toBool());
+    ui->checkBoxSaveMetallic->setChecked( settings.value("m_enable",true).toBool());
+    ui->checkBoxSaveRoughness->setChecked( settings.value("r_enable",true).toBool());
+
+    showHideTextureTypes(true);
+
 
     ui->horizontalSliderDepthScale->setValue(settings.value("3d_depth","0.25").toFloat()*100);
     ui->lineEditPostfixDiffuse  ->setText(PostfixNames::diffuseName);

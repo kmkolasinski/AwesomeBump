@@ -72,6 +72,9 @@ public slots:
     void selectUVsTab();
     void fitImage();// resize 2D image
 
+    // disabling textures
+    void showHideTextureTypes(bool);
+
     // repaint views after changes
     void updateDiffuseImage();
     void updateNormalImage();

@@ -389,7 +389,7 @@ struct BaseMapConvLevelProperties{
 // Main object. Contains information about Image and the post process parameters
 class FBOImageProporties{
 public:
-
+    bool bSkipProcessing;
     QGLFramebufferObject *fbo     ; // output image
 
     GLuint scr_tex_id;       // Id of texture loaded from image, from loaded file
@@ -439,7 +439,7 @@ public:
     int  conversionNHItersSmall;
     int  conversionNHItersVerySmall;
     // Base to others settings
-    bool bConversionBaseMap;
+    static bool bConversionBaseMap;
     BaseMapConvLevelProperties baseMapConvLevels[4];
 
     // ambient occlusion settings
@@ -522,7 +522,7 @@ public:
 
 
      FBOImageProporties(){
-
+        bSkipProcessing = false;
         //ref_fbo      = NULL;
         fbo          = NULL;
         //aux_fbo      = NULL;
