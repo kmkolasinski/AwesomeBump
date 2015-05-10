@@ -179,6 +179,18 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderNormalMixerPosX,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderNormalMixerPosY,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
 
+    // grunge
+    connect(ui->horizontalSliderGrungeOverallWeight,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderGrungeSeed,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderGrungeRadius,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->checkBoxGrungeRandomTranslations,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+    connect(ui->checkBoxGrungeReplotAllAfterChange,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+
+    connect(ui->horizontalSliderGrungeImageWeight,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderGrungeMainImageWeight,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->comboBoxGrungeBlendingMode,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
+    // this actually invert all color components
+    connect(ui->checkBoxGrungeInvert,SIGNAL(toggled(bool)),this,SLOT(invertGrunge(bool)));
 
 
     setAcceptDrops(true);
@@ -215,7 +227,12 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     // normal mixer
     ui->groupBoxNormalMixerSettings->hide();
     ui->groupBoxNormalMixer->hide();
+    ui->groupBoxGrungeSettings->hide();
+    ui->groupBoxGrungeImageSettings->hide();
 
+    ui->labelGrungeImageWeight->hide();
+    ui->labelGrungeImageWeight2->hide();
+    ui->horizontalSliderGrungeMainImageWeight->hide();
     setMouseTracking(true);
     setFocus();
     setFocusPolicy(Qt::ClickFocus);
@@ -309,6 +326,7 @@ void FormImageProp::updateComboBoxes(int index){
 
     // updating selective blur groupboxes
     imageProp.selectiveBlurType = (SelectiveBlurType) ui->comboBoxSelectiveBlurTypes->currentIndex();
+
 
     switch(imageProp.selectiveBlurType){
         case(SELECTIVE_BLUR_DIFFERENCE_OF_GAUSSIANS):
@@ -416,7 +434,8 @@ void FormImageProp::updateComboBoxes(int index){
     // color picker
     imageProp.colorPickerMethod     = (ColorPickerMethod) ui->comboBoxColorPickerMethod->currentIndex();
 
-
+    // grunge blending mode
+    imageProp.grungeBlendingMode    =  ui->comboBoxGrungeBlendingMode->currentIndex();
     emit imageChanged();
 }
 
@@ -525,6 +544,21 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
     imageProp.normalMixerPosX     = ui->horizontalSliderNormalMixerPosX->value()/100.0;
     imageProp.normalMixerPosY     = ui->horizontalSliderNormalMixerPosY->value()/100.0;
 
+    if(imageProp.imageType == GRUNGE_TEXTURE){
+        imageProp.grungeOverallWeight = ui->horizontalSliderGrungeOverallWeight->value();
+        imageProp.grungeSeed          = ui->horizontalSliderGrungeSeed->value();
+        imageProp.grungeRadius        = ui->horizontalSliderGrungeRadius->value();
+    }
+    imageProp.grungeImageWeight       = ui->horizontalSliderGrungeImageWeight->value();
+    imageProp.grungeMainImageWeight   = ui->horizontalSliderGrungeMainImageWeight->value();
+
+
+    if(ui->horizontalSliderGrungeOverallWeight->value() == 0){
+        emit  toggleGrungeSettings(false);
+    }else{
+        emit  toggleGrungeSettings(true);
+    }
+
     ui->labelNormalMixerScale->setText(QString::number(imageProp.normalMixerScale));
 }
 
@@ -566,6 +600,12 @@ void FormImageProp::updateGuiCheckBoxes(){
 
     imageProp.bHeightEnableNormalization        = ui->checkBoxHeightProcEnableNormalization->isChecked();
     imageProp.bNormalMixerEnabled               = ui->checkBoxNormalMixerEnable->isChecked();
+
+
+    if(imageProp.imageType == GRUNGE_TEXTURE){
+        imageProp.bGrungeEnableRandomTranslations = ui->checkBoxGrungeRandomTranslations->isChecked();
+        imageProp.bGrungeReplotAllWhenChanged     = ui->checkBoxGrungeReplotAllAfterChange->isChecked();
+    }
 
 
     if(imageProp.bRoughnessEnableColorPicking){
@@ -700,6 +740,34 @@ void FormImageProp::hideRoughnessInputGroup(){
 
 void FormImageProp::showNormalMixerGroup(){
     ui->groupBoxNormalMixer->show();
+}
+
+void FormImageProp::showGrungeSettingsGroup(){
+    ui->groupBoxGrungeSettings->show();
+}
+
+void FormImageProp::showGrungeMainImageWeightSlider(){
+    ui->labelGrungeImageWeight->show();
+    ui->labelGrungeImageWeight2->show();
+    ui->horizontalSliderGrungeMainImageWeight->show();
+}
+
+void FormImageProp::hideGrungeBlendinModeComboBox(){
+    ui->comboBoxGrungeBlendingMode->hide();
+    ui->labelGrungeBlendingMode->hide();
+}
+
+void FormImageProp::toggleGrungeImageSettingsGroup(bool toggle){
+    if(toggle) ui->groupBoxGrungeImageSettings->show();
+    else ui->groupBoxGrungeImageSettings->hide();
+}
+
+void FormImageProp::invertGrunge(bool toggle){
+
+    ui->checkBoxInvertB->setChecked(toggle);
+    ui->checkBoxInvertG->setChecked(toggle);
+    ui->checkBoxInvertR->setChecked(toggle);
+    updateGuiCheckBoxes();
 }
 
 void FormImageProp::hideOcclusionInputGroup(){
@@ -862,11 +930,23 @@ void FormImageProp::reloadSettings(){
     ui->checkBoxRoughnessColorInvert->setChecked(imageProp.bRoughnessInvertColorMask);
     ui->horizontalSliderRoughnessColorOffset->setValue(imageProp.roughnessColorOffset*100);
     ui->horizontalSliderRoughnessColorGlobalOffset->setValue(imageProp.roughnessColorGlobalOffset*255);
-
     ui->horizontalSliderRoughnessColorAmplifier->setValue(imageProp.roughnessColorAmplifier*100);
-
     ui->horizontalSliderSelectiveBlurNoIters->setValue(imageProp.selectiveBlurNoIters);
     ui->comboBoxColorPickerMethod->setCurrentIndex(imageProp.colorPickerMethod);
+
+    // grunge map
+    ui->horizontalSliderGrungeImageWeight    ->setValue(imageProp.grungeImageWeight);
+    ui->horizontalSliderGrungeMainImageWeight->setValue(imageProp.grungeMainImageWeight);
+    ui->comboBoxGrungeBlendingMode->setCurrentIndex(imageProp.grungeBlendingMode);
+    if(imageProp.imageType == GRUNGE_TEXTURE){
+
+        //ui->horizontalSliderGrungeOverallWeight ->setValue(imageProp.grungeOverallWeight);
+        ui->horizontalSliderGrungeRadius        ->setValue(imageProp.grungeRadius);
+        ui->horizontalSliderGrungeSeed          ->setValue(imageProp.grungeSeed);
+        ui->checkBoxGrungeRandomTranslations->setChecked(imageProp.bGrungeEnableRandomTranslations);
+    }
+
+
 
     // input image case study
     switch(imageProp.imageType){

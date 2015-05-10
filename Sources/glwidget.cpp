@@ -687,7 +687,7 @@ void GLWidget::paintGL()
 
         int tindeks = 0;
 
-        for(tindeks = 0 ; tindeks < MAX_TEXTURES_TYPE ; tindeks++){
+        for(tindeks = 0 ; tindeks <= MATERIAL_TEXTURE ; tindeks++){ // skip grunge texture (not used in 3D view)
             GLCHK( glActiveTexture(GL_TEXTURE0+tindeks) );
             GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[tindeks]))->texture()) );
         }
@@ -980,6 +980,8 @@ void GLWidget::setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes 
             break;
         case(MATERIAL_TEXTURE ):
             fboIdPtrs[7] = pointer;
+            break;
+        default:
             break;
     }
 }

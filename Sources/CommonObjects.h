@@ -8,8 +8,8 @@
 #include "qopenglerrorcheck.h"
 #include <QOpenGLFunctions_3_3_Core>
 
-#define TAB_SETTINGS 8
-#define TAB_TILING   9
+#define TAB_SETTINGS 9
+#define TAB_TILING   10
 
 #ifdef Q_OS_MAC
 # define AB_INI "AwesomeBump.ini"
@@ -46,6 +46,7 @@ enum TextureTypes{
     ROUGHNESS_TEXTURE,
     METALLIC_TEXTURE,
     MATERIAL_TEXTURE,
+    GRUNGE_TEXTURE,
     MAX_TEXTURES_TYPE
 };
 
@@ -128,6 +129,8 @@ enum MaterialIndicesType{
     MATERIALS_DISABLED = -10,
     MATERIALS_ENABLED = -1
 };
+
+
 
 #define TARGA_HEADER_SIZE    0x12
 #define TARGA_UNCOMP_RGB_IMG 0x02
@@ -221,6 +224,8 @@ public:
                 break;
             case(MATERIAL_TEXTURE  ):
                 return "material";
+            case(GRUNGE_TEXTURE  ):
+                return "grunge";
                 break;
             default: return "default-diffuse";
         }
@@ -279,8 +284,11 @@ struct RandomTilingMode{
   }
   // generate random angles
   void randomize(){
+      static int seed = 312;
+      qsrand(seed);
+      seed = qrand() % 41211; // fake seed
       for(int i = 0; i < 9 ; i++){
-           angles[i] = 2 * 3.1415269 * rand() / (RAND_MAX + 0.0);
+           angles[i] = 2 * 3.1415269 * qrand() / (RAND_MAX + 0.0);
       }
   }
 };
@@ -504,6 +512,15 @@ public:
     float normalMixerPosX;
     float normalMixerPosY;
 
+    // grunge settings
+    static float grungeOverallWeight; // general weight for all images
+    static int   grungeSeed;          // grunge randomization seed (if = 0 no randomization)
+    static float grungeRadius;        // random radius
+    static bool bGrungeReplotAllWhenChanged;
+    float grungeImageWeight;   // per image additional weight
+    float grungeMainImageWeight; // used for normal blending only
+    static bool bGrungeEnableRandomTranslations;
+    unsigned int grungeBlendingMode;
     // global settings seamless parameters
 
     static SeamlessMode seamlessMode;
@@ -634,6 +651,12 @@ public:
         normalMixerAngle = 0.0;
         normalMixerPosX  = 0.0;
         normalMixerPosY  = 0.0;
+
+        // grunge settings
+        grungeImageWeight   = 0.0;
+        grungeBlendingMode  = 0;
+        grungeMainImageWeight = 0.0;
+
 
      }
 

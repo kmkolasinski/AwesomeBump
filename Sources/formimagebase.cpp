@@ -27,12 +27,13 @@ void FormImageBase::open()
     QFileDialog dialog(this,
                        tr("Open File"),
                        picturesLocations.isEmpty() ? QDir::currentPath() : picturesLocations.first(),
-                       tr("All Images (*.png *.jpg  *.tga *.jpeg *.bmp);;"
+                       tr("All Images (*.png *.jpg  *.tga *.jpeg *.bmp  *.tif);;"
                           "Images (*.png);;"
                           "Images (*.jpg);;"
                           "Images (*.tga);;"
                           "Images (*.jpeg);;"
                           "Images (*.bmp);;"
+                          "Images (*.tif);;"
                           "All files (*.*)"));
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
@@ -90,7 +91,7 @@ void FormImageBase::save(){
     QFileDialog dialog(this,
                        tr("Save current image to file"),
                        picturesLocations.isEmpty() ? QDir::currentPath() : picturesLocations.first(),
-                       tr("All images (*.png *.jpg  *.tga *.jpeg *.bmp);;All files (*.*)"));
+                       tr("All images (*.png *.jpg  *.tga *.jpeg *.bmp *.tif);;All files (*.*)"));
     dialog.setDirectory(recentDir->absolutePath());
     dialog.setAcceptMode(QFileDialog::AcceptSave);
 

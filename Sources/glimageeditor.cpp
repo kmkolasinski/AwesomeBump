@@ -161,8 +161,8 @@ void GLImage::initializeGL()
     filters_list.push_back("mode_mix_normal_levels_filter");
     filters_list.push_back("mode_combine_normal_height_filter");
     filters_list.push_back("mode_roughness_color_filter");
-
-
+    filters_list.push_back("mode_grunge_filter");
+    filters_list.push_back("mode_grunge_randomization_filter");
 
 
 
@@ -272,7 +272,8 @@ void GLImage::initializeGL()
     GLCHK( subroutines["mode_roughness_filter"]            = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_roughness_filter" ) );
     GLCHK( subroutines["mode_roughness_color_filter"]      = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_roughness_color_filter" ) );
     GLCHK( subroutines["mode_remove_low_freq_filter"]      = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_remove_low_freq_filter" ) );
-
+    GLCHK( subroutines["mode_grunge_filter"]               = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_grunge_filter" ) );
+    GLCHK( subroutines["mode_grunge_randomization_filter"] = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_grunge_randomization_filter" ) );
 
 
 #endif
@@ -310,7 +311,11 @@ void GLImage::paintGL()
 void GLImage::render(){
 
     if (!activeImage) return;
-  
+    if ( activeImage->fbo){ // since grunge map can be different we need to calculate ratio each time
+      fboRatio = float(activeImage->fbo->width())/activeImage->fbo->height();
+      orthographicProjHeight = (1+zoom)/windowRatio;
+      orthographicProjWidth = (1+zoom)/fboRatio;
+    }
     // do not clear the background during rendering process
     if(!bShadowRender){
         GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
@@ -334,7 +339,7 @@ void GLImage::render(){
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
     bool bSkipStandardProcessing = false;
 
-    if((!activeImage->bSkipProcessing) && (activeImage->imageType != MATERIAL_TEXTURE)) bSkipProcessing = true;// do not process images when is disabled
+    if((activeImage->bSkipProcessing) && (activeImage->imageType != MATERIAL_TEXTURE)) bSkipProcessing = true;// do not process images when is disabled
 
     if(!bSkipProcessing == true){
     // resizing the FBOs in case of convertion procedure
@@ -403,7 +408,9 @@ void GLImage::render(){
         bSkipStandardProcessing = true;
         GLCHK( program->setUniformValue("material_id", int(-1) ) );
     }
-
+    if(activeImage->imageType == GRUNGE_TEXTURE){
+        bTransformUVs = false;
+    }
 
     GLCHK( glActiveTexture(GL_TEXTURE10) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageMaterial->scr_tex_id) );
@@ -436,32 +443,13 @@ void GLImage::render(){
                     // perspective transformation treats differently normal texture
                     // change for a moment the texture type to performe transformations
 
-                    openGL330ForceTexType = HEIGHT_TEXTURE;
+                    openGL330ForceTexType = HEIGHT_TEXTURE;// used for GL3.30 version
                     GLCHK( program->setUniformValue("gui_image_type", HEIGHT_TEXTURE) );
 
-                    //copyFBO(targetImageHeight->ref_fbo,activeFBO);
+
                     copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
 
-                    if(FBOImageProporties::bSeamlessTranslationsFirst){
-                      applyPerspectiveTransformFilter(activeFBO,auxFBO1);// the output is save to activeFBO
-                    }
-                    // Making seamless...
-                    switch(FBOImageProporties::seamlessMode){
-                        case(SEAMLESS_SIMPLE):
-                            applySeamlessLinearFilter(activeFBO,auxFBO1); //  the output is save to activeFBO
-                            break;
-                        case(SEAMLESS_MIRROR):
-                        case(SEAMLESS_RANDOM):
-                            applySeamlessFilter(activeFBO,auxFBO1);
-                            copyFBO(auxFBO1,activeFBO);
-                        break;
-                        case(SEAMLESS_NONE):
-                        default: break;
-                    }
-                    if(!FBOImageProporties::bSeamlessTranslationsFirst){
-                      applyPerspectiveTransformFilter(activeFBO,auxFBO1);// the output is save to activeFBO
-                    }
-
+                    applyAllUVsTransforms(activeFBO);
 
                     copyFBO(activeFBO,auxFBO1);
                     applyHeightToNormal(auxFBO1,activeFBO);
@@ -477,7 +465,8 @@ void GLImage::render(){
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 applyHeightToNormal(targetImageHeight->fbo,activeFBO);
-                bTransformUVs = false;
+
+                if(!targetImageHeight->bSkipProcessing)bTransformUVs = false;
                 break;
             default: break;
         }
@@ -492,22 +481,19 @@ void GLImage::render(){
             case(INPUT_FROM_SPECULAR_INPUT):
                 // do nothing
                 break;
-            case(INPUT_FROM_HEIGHT_INPUT):
-                //copyFBO(targetImageHeight->ref_fbo,activeFBO);
-                copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
-                //bTransformUVs = false;
+            case(INPUT_FROM_HEIGHT_INPUT):                
+                copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);                
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 copyFBO(targetImageHeight->fbo,activeFBO);
-                bTransformUVs = false;
+                if(!targetImageHeight->bSkipProcessing) bTransformUVs = false;
                 break;
             case(INPUT_FROM_DIFFUSE_INPUT):                
-                copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);
-                //bTransformUVs = false;
+                copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);                
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
                 copyFBO(targetImageDiffuse->fbo,activeFBO);
-                bTransformUVs = false;
+                if(!targetImageDiffuse->bSkipProcessing) bTransformUVs = false;
                 break;
             default: break;
         }
@@ -526,7 +512,7 @@ void GLImage::render(){
                     // some part of processing is skiped                    
                     applyOcclusionFilter(targetImageHeight->fbo->texture(),targetImageNormal->fbo->texture(),activeFBO);
                     bSkipStandardProcessing =  true;
-                    bTransformUVs = false;
+                    if(!targetImageHeight->bSkipProcessing && !targetImageNormal->bSkipProcessing) bTransformUVs = false;
                     qDebug() << "Calculation AO from Normal and Height";
                 }
 
@@ -540,7 +526,7 @@ void GLImage::render(){
                 break;     
             case(INPUT_FROM_HO_NO):
                 applyOcclusionFilter(targetImageHeight->fbo->texture(),targetImageNormal->fbo->texture(),activeFBO);
-                bTransformUVs = false;
+                if(!targetImageHeight->bSkipProcessing && !targetImageNormal->bSkipProcessing) bTransformUVs = false;
                 break;
             default: break;
         }
@@ -557,7 +543,7 @@ void GLImage::render(){
             copyFBO(auxFBO2,activeFBO);
 
             targetImageHeight->updateSrcTexId(activeFBO);
-            bTransformUVs = false;
+            if(!targetImageNormal->bSkipProcessing)  bTransformUVs = false;
 
 
         }
@@ -577,14 +563,14 @@ void GLImage::render(){
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 copyFBO(targetImageHeight->fbo,activeFBO);
-                bTransformUVs = false;
+                if(!targetImageHeight->bSkipProcessing)  bTransformUVs = false;
                 break;
             case(INPUT_FROM_DIFFUSE_INPUT):                
                 copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
                 copyFBO(targetImageDiffuse->fbo,activeFBO);
-                bTransformUVs = false;
+                if(!targetImageDiffuse->bSkipProcessing)  bTransformUVs = false;
                 break;
             default: break;
         }
@@ -603,50 +589,47 @@ void GLImage::render(){
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 copyFBO(targetImageHeight->fbo,activeFBO);
-                bTransformUVs = false;
+                if(!targetImageHeight->bSkipProcessing)  bTransformUVs = false;
                 break;
             case(INPUT_FROM_DIFFUSE_INPUT):                
                 copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
                 copyFBO(targetImageDiffuse->fbo,activeFBO);
-                bTransformUVs = false;
+                if(!targetImageDiffuse->bSkipProcessing)  bTransformUVs = false;
                 break;
             default: break;
         }
-        break;}// end of case Roughness
+        break;}// end of case Roughness        
+        case(GRUNGE_TEXTURE):{
+            if(activeImage->grungeSeed != 0){
+                applyGrungeRandomizationFilter(activeFBO,auxFBO2);
+                copyTex2FBO(auxFBO2->texture(),activeFBO);
+            }
+        break;
+        }// end of case Grunge
         default:break;
-
     };
 
+    // apply grunge filter when enabled
+    if(conversionType == CONVERT_NONE && targetImageGrunge->grungeOverallWeight != 0.0 ){
+        if(activeImage->imageType < MATERIAL_TEXTURE){
+
+            copyTex2FBO(targetImageGrunge->fbo->texture(),auxFBO2);
+            // when user choose source image "output" type one must
+            // transform grunge map additionally
+            if(bTransformUVs == false) applyAllUVsTransforms(auxFBO2); // auxFBO1 is used inside
+
+            applyGrungeImageFilter(activeFBO,auxFBO1,auxFBO2);// auxFBO3 is used inside
+            copyTex2FBO(auxFBO1->texture(),activeFBO);
+        }// end of image type > MATERIAL
+    }// end of if not conversion process
 
     // Transform UVs in some cases
     if(conversionType == CONVERT_NONE && bTransformUVs){
 
-        if(FBOImageProporties::bSeamlessTranslationsFirst){
-          applyPerspectiveTransformFilter(activeFBO,auxFBO1);// the output is save to activeFBO
-        }
-        // Making seamless...
-        switch(FBOImageProporties::seamlessMode){
-            case(SEAMLESS_SIMPLE):
-                applySeamlessLinearFilter(activeFBO,auxFBO1); //  the output is save to activeFBO
-                break;
-            case(SEAMLESS_MIRROR):
-            case(SEAMLESS_RANDOM):
-                applySeamlessFilter(activeFBO,auxFBO1);
-                copyFBO(auxFBO1,activeFBO);
-            break;
-            case(SEAMLESS_NONE):
-            default: break;
-        }
-        if(!FBOImageProporties::bSeamlessTranslationsFirst){
-          applyPerspectiveTransformFilter(activeFBO,auxFBO1);// the output is save to activeFBO
-        }
+        applyAllUVsTransforms(activeFBO);
     }
-
-
-
-
 
 
     // skip all processing and when mouse is dragged
@@ -665,8 +648,8 @@ void GLImage::render(){
        activeImage->imageType != ROUGHNESS_TEXTURE){
 
         // hue manipulation
-        applyColorHueFilter(auxFBO1,activeFBO);
-        copyFBO(activeFBO,auxFBO1);
+        //applyColorHueFilter(auxFBO1,activeFBO);
+        //copyFBO(activeFBO,auxFBO1);
     }
 
     // In case when color picking is enabled disable
@@ -1048,6 +1031,10 @@ void GLImage::enableShadowRender(bool enable){
 void GLImage::setConversionType(ConversionType type){
     conversionType = type ;
 }
+ConversionType GLImage::getConversionType(){
+    return conversionType;
+}
+
 void GLImage::updateCornersPosition(QVector2D dc1,QVector2D dc2,QVector2D dc3,QVector2D dc4){
 
     cornerPositions[0] = QVector2D(0,0) + dc1;
@@ -2597,6 +2584,153 @@ void GLImage::copyTex2FBO(GLuint src_tex_id,QGLFramebufferObject* dst){
     dst->bindDefault();
 }
 
+void GLImage::applyAllUVsTransforms(QGLFramebufferObject* inoutFBO){
+    if(FBOImageProporties::bSeamlessTranslationsFirst){
+      applyPerspectiveTransformFilter(inoutFBO,auxFBO1);// the output is save to activeFBO
+    }
+    // Making seamless...
+    switch(FBOImageProporties::seamlessMode){
+        case(SEAMLESS_SIMPLE):
+            applySeamlessLinearFilter(inoutFBO,auxFBO1); //  the output is save to activeFBO
+            break;
+        case(SEAMLESS_MIRROR):
+        case(SEAMLESS_RANDOM):
+            applySeamlessFilter(inoutFBO,auxFBO1);
+            copyFBO(auxFBO1,inoutFBO);
+        break;
+        case(SEAMLESS_NONE):
+        default: break;
+    }
+    if(!FBOImageProporties::bSeamlessTranslationsFirst){
+      applyPerspectiveTransformFilter(inoutFBO,auxFBO1);// the output is save to activeFBO
+    }
+}
+
+void GLImage::applyGrungeImageFilter (QGLFramebufferObject* inputFBO,
+                                      QGLFramebufferObject* outputFBO,
+                                      QGLFramebufferObject* grungeFBO){
+
+
+    // in case of normal texture grunge is treated differently
+    if(activeImage->imageType == NORMAL_TEXTURE){
+
+
+#ifdef USE_OPENGL_330
+    program = filter_programs["mode_height_to_normal"];
+    program->bind();
+    updateProgramUniforms(0);
+#else
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_height_to_normal"]) );
+#endif
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( program->setUniformValue("gui_hn_conversion_depth", activeImage->grungeImageWeight/25.0f*targetImageGrunge->grungeOverallWeight/100.0f) );
+    GLCHK( glViewport(0,0,auxFBO3->width(),auxFBO3->height()) );
+    GLCHK( auxFBO3->bind() );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, grungeFBO->texture()) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( auxFBO3->bindDefault() );
+
+#ifdef USE_OPENGL_330
+    program = filter_programs["mode_normal_mixer_filter"];
+    program->bind();
+    updateProgramUniforms(0);
+#else
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_mixer_filter"]) );
+#endif
+
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    float weight = activeImage->grungeMainImageWeight/2.0;
+
+    GLCHK( program->setUniformValue("gui_normal_mixer_depth", weight) );
+    GLCHK( program->setUniformValue("gui_normal_mixer_angle", 0.0f) );
+    GLCHK( program->setUniformValue("gui_normal_mixer_scale", 1.0f) );
+    GLCHK( program->setUniformValue("gui_normal_mixer_pos_x", 0.0f) );
+    GLCHK( program->setUniformValue("gui_normal_mixer_pos_y", 0.0f) );
+
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+    GLCHK( outputFBO->bind() );
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO3->texture()) );
+
+
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( outputFBO->bindDefault() );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+
+    }else{
+
+#ifdef USE_OPENGL_330
+    program = filter_programs["mode_grunge_filter"];
+    program->bind();
+    updateProgramUniforms(0);
+#else
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_grunge_filter"]) );
+#endif
+
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    float weight = targetImageGrunge->grungeOverallWeight/100.0 * activeImage->grungeImageWeight/100.0;
+    GLCHK( program->setUniformValue("gui_grunge_overall_weight"  , weight ) );
+    GLCHK( program->setUniformValue("gui_grunge_blending_mode"  , (int)activeImage->grungeBlendingMode) );
+
+
+
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    GLCHK( outputFBO->bind() );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, grungeFBO->texture()) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    outputFBO->bindDefault();
+
+    }
+}
+
+void GLImage::applyGrungeRandomizationFilter(QGLFramebufferObject* inputFBO,
+                                             QGLFramebufferObject* outputFBO){
+
+
+#ifdef USE_OPENGL_330
+    program = filter_programs["mode_grunge_randomization_filter"];
+    program->bind();
+    updateProgramUniforms(0);
+#else
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_grunge_randomization_filter"]) );
+#endif
+
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    QMatrix3x3 random_angles;
+    qsrand(activeImage->grungeSeed);
+    for(int i = 0; i < 9; i++)random_angles.data()[i] = 3.1415*qrand()/(RAND_MAX+0.0);
+    GLCHK( program->setUniformValue("gui_seamless_random_angles" , random_angles) );
+    float phase = 3.1415*qrand()/(RAND_MAX+0.0);
+    GLCHK( program->setUniformValue("gui_seamless_random_phase" , phase) );
+    GLCHK( program->setUniformValue("gui_grunge_radius" , activeImage->grungeRadius) );
+    GLCHK( program->setUniformValue("gui_grunge_translations" , int(activeImage->bGrungeEnableRandomTranslations) ) );
+
+
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    GLCHK( outputFBO->bind() );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageGrunge->fbo->texture()) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    outputFBO->bindDefault();
+
+
+}
+
+
 void GLImage::updateProgramUniforms(int step){
 
     switch(step){
@@ -2734,6 +2868,16 @@ void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, Qt::MouseB
         msgBox.exec();
         return;
     }
+
+    if(activeImage->imageType == GRUNGE_TEXTURE && buttons & Qt::LeftButton){
+        QMessageBox msgBox;
+        msgBox.setText("Warning!");
+        msgBox.setInformativeText("Sorry, but you cannot modify UV's mapping of Grunge texture. Try Diffuse or height texture.");
+        msgBox.setStandardButtons(QMessageBox::Cancel);
+        msgBox.exec();
+        return;
+    }
+
     if(activeImage->imageType == OCCLUSION_TEXTURE && buttons & Qt::LeftButton){
         QMessageBox msgBox;
         msgBox.setText("Warning!");

@@ -45,6 +45,9 @@ public:
     void hideSpecularInputGroup();
     void hideRoughnessInputGroup();
     void showNormalMixerGroup();
+    void showGrungeSettingsGroup();
+    void showGrungeMainImageWeightSlider();
+    void hideGrungeBlendinModeComboBox();
 
 
     ~FormImageProp();
@@ -79,6 +82,10 @@ public slots:
     // normal mixer
     void openNormalMixerImage();
     void pasteNormalFromClipBoard();
+
+    // grunge
+    void toggleGrungeImageSettingsGroup(bool toggle);
+    void invertGrunge(bool toggle);
 signals:
     void reloadSettingsFromConfigFile(TextureTypes type);
     void imageChanged();
@@ -89,6 +96,7 @@ signals:
     void conversionHeightNormalToOcclusionApplied();
     void recalculateOcclusion();
     void toggleColorPickingApplied(bool toggle);
+    void toggleGrungeSettings(bool toggle);
 
 
 private:

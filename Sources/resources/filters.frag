@@ -530,7 +530,7 @@ vec4 filter(){
     float y = tc.y;
 
     float pwr = gui_seamless_contrast_power*2+0.001;
-    float cst = (gui_seamless_contrast_strenght)*0;
+    float cst = (gui_seamless_contrast_strenght);
 
     if(gui_seamless_mode == 2){
         // XY - mirror image
@@ -572,7 +572,7 @@ vec4 filter(){
         vec4 color         = vec4(0.0);
         //color = texture(layerA,tc);
         highp float weight = 0;
-        vec4 hA = texture( layerB, tc);
+        //vec4 hA = texture( layerB, tc);
         // loop over all atoms
         float total_diff = 0;
         for(int i = 0 ; i < 9 ; i++){
@@ -587,15 +587,44 @@ vec4 filter(){
             highp float dist     = distance(tc,atom_pos);
             highp float alpha    = 1-smoothstep(gui_seamless_random_inner_radius,gui_seamless_random_outer_radius,dist);
 
-            vec4 hB = texture( layerB, rot_mat*(tc - atom_pos)+0.5);
-            float diff  = pow(cst*length(hA.xyz-hB.xyz)/sqrt(3.0),pwr+0.0001);
+            //vec4 hB = texture( layerB, rot_mat*((2.5*cst+0.0)*(tc - atom_pos))+0.5);
+            float diff  = 0;//100*cst*pow(cst*length(hA.xyz-hB.xyz)/sqrt(2.0),pwr*25+0.0001);
+            //hA = hB;
             total_diff += diff;
-            alpha                = clamp(alpha + alpha * diff,0,1);
+            alpha                = clamp(alpha + (alpha) * diff,0,1);
             weight              += alpha;
-            vec4 ncolor = texture( layerA, rot_mat*(tc - atom_pos)+0.5);
-            //color                = mix(color,ncolor,alpha);
-            color               += texture( layerA, rot_mat*(tc - atom_pos)+0.5)* alpha;
+            vec4 ncolor = texture( layerA, (rot_mat*((2.5*cst+0.0)*(tc - atom_pos))+0.5));
+
+            color               += ncolor* alpha;
         }
+
+        float rr = 0.37 - gui_seamless_random_outer_radius;
+        if(rr> 0){
+
+        // filling other points
+         float x_pos[4] = float[](0.25,0.25,0.75,0.75);
+         float y_pos[4] = float[](0.25,0.75,0.25,0.75);
+         float rands[4] = float[](gui_seamless_random_angles[0][2],
+                                       gui_seamless_random_angles[1][2],
+                                       gui_seamless_random_angles[2][2],
+                                       gui_seamless_random_angles[2][1]);
+
+        for(int i = 0 ; i < 4 ; i++){
+            float angle = rands[i] + gui_seamless_random_phase;
+
+            // creating the rotation matrix
+            mat2 rot_mat = mat2(cos(angle),sin(angle),-sin(angle),cos(angle));
+
+            vec2 atom_pos        = vec2(x_pos[i],y_pos[i]);
+            float dist     = distance(tc,atom_pos);
+
+            float alpha    = 1-smoothstep(0.0,0.15,dist);
+            alpha                = clamp(alpha,0,1);
+            weight              += alpha;
+            vec4 ncolor = texture( layerA, (rot_mat*(2.5*cst*(angle*0+tc - atom_pos))+0.5));
+            color += ncolor* alpha;
+        }
+        }// end of if rr
         //return color;
         return color/weight;
     }
@@ -1241,6 +1270,156 @@ vec4 filter(){
     return vec4(clamp(value,0,1)) ;
 }
 
+// ----------------------------------------------------------------
+//  Grunge
+// ----------------------------------------------------------------
+uniform float gui_grunge_overall_weight;
+uniform int gui_grunge_blending_mode;
+
+// based on GIMP: http://docs.gimp.org/en/gimp-concepts-layer-modes.html
+#define GRUNGE_NORMAL       0
+#define GRUNGE_MULTIPLY     1
+#define GRUNGE_ADD          2
+#define GRUNGE_SUBTRACT     3
+#define GRUNGE_DIFFERENCE   4
+#define GRUNGE_DIVIDE       5
+#define GRUNGE_SCREEN       6
+#define GRUNGE_OVERLAY      7
+#define GRUNGE_DODGE        8
+#define GRUNGE_BURN         9
+#define GRUNGE_DARKEN_ONLY  10
+#define GRUNGE_LIGHTEN_ONLY 11
+
+
+#ifndef mode_grunge_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_grunge_filter(){
+#else
+vec4 filter(){
+#endif
+
+    vec4 I  = texture( layerA, v2QuadCoords.xy);
+    vec4 M  = texture( layerB, v2QuadCoords.xy);
+    float w = gui_grunge_overall_weight;
+    vec4 color = I;
+
+    if(gui_grunge_blending_mode == GRUNGE_NORMAL){
+       color = M;
+    }else if(gui_grunge_blending_mode == GRUNGE_MULTIPLY){
+       color = I*M;
+    }else if(gui_grunge_blending_mode == GRUNGE_ADD){
+       color = clamp(I+M,vec4(0.0),vec4(1.0));
+    }else if(gui_grunge_blending_mode == GRUNGE_SUBTRACT){
+        color = clamp(I-M,vec4(0.0),vec4(1.0));
+        float gray = dot(color.rgb,vec3(1));
+        color = gray * I;
+    }else if(gui_grunge_blending_mode == GRUNGE_DIFFERENCE){
+        color = clamp(abs(I-M),vec4(0.0),vec4(1.0));
+        float gray = dot(color.rgb,vec3(1));
+        color = gray * I;
+    }else if(gui_grunge_blending_mode == GRUNGE_DIVIDE){
+        color = clamp(I/(M+0.004),vec4(0.0),vec4(1.0));
+    }else if(gui_grunge_blending_mode == GRUNGE_SCREEN){
+        vec4 ocolor = 1.0 - (1-I)*(1-M);
+        color = clamp(ocolor,vec4(0.0),vec4(1.0));
+    }else if(gui_grunge_blending_mode ==  GRUNGE_OVERLAY){
+        vec4 ocolor =  I * ( I + 2 * M *( 1 - I ) );
+        color = clamp(ocolor,vec4(0.0),vec4(1.0));
+    }else if(gui_grunge_blending_mode ==  GRUNGE_DODGE){
+        vec4 ocolor =  I / ((1-M)+0.004);
+        color = clamp(ocolor,vec4(0.0),vec4(1.0));
+    }else if(gui_grunge_blending_mode ==  GRUNGE_BURN){
+        vec4 ocolor = 1 - (1-I)/(M+0.004);
+        color = clamp(ocolor,vec4(0.0),vec4(1.0));
+    }else if(gui_grunge_blending_mode ==  GRUNGE_DARKEN_ONLY){
+        vec4 ocolor = min(I,M);
+        color = clamp(ocolor,vec4(0.0),vec4(1.0));
+    }else if(gui_grunge_blending_mode ==  GRUNGE_LIGHTEN_ONLY){
+        vec4 ocolor = max(I,M);
+        color = clamp(ocolor,vec4(0.0),vec4(1.0));
+    }
+
+
+    return mix(I,color,w);
+}
+
+
+// ----------------------------------------------------------------
+//  Grunge randomization
+// ----------------------------------------------------------------
+uniform float gui_grunge_radius;
+uniform int gui_grunge_translations;
+#ifndef mode_grunge_randomization_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_grunge_randomization_filter(){
+#else
+vec4 filter(){
+#endif
+
+    vec4 color         = vec4(0.0);
+    float weight = 0;
+    // loop over all atoms
+    vec2 tc = v2QuadCoords.st;
+    float x = tc.x;
+    float y = tc.y;
+    float rand_scale = gui_grunge_radius/25.0;
+    float translate = gui_grunge_translations;
+
+    for(int i = 0 ; i < 9 ; i++){
+        int ii = (i/3)%2;
+        int jj = i%2;
+        float angle = gui_seamless_random_angles[ii][jj] + gui_seamless_random_phase;
+
+        // creating the rotation matrix
+        mat2 rot_mat = mat2(cos(angle),sin(angle),-sin(angle),cos(angle));
+
+        vec2 atom_pos        = vec2(atoms_x[i],atoms_y[i]);
+        float dist     = distance(tc,atom_pos);
+        float alpha    = 1-smoothstep(0.0,0.37,dist);
+
+        alpha                = clamp(alpha,0,1);
+
+        vec4 ncolor = texture( layerA, (rot_mat*(rand_scale*(angle*translate+tc - atom_pos))+0.5));
+
+        color = max(color,ncolor*smoothstep(0.1,0.2,alpha));
+
+    }
+     // Filling other points
+     float x_pos[4] = float[](0.25,0.25,0.75,0.75);
+     float y_pos[4] = float[](0.25,0.75,0.25,0.75);
+     float rands[4] = float[](gui_seamless_random_angles[0][2],
+                                   gui_seamless_random_angles[1][2],
+                                   gui_seamless_random_angles[2][2],
+                                   gui_seamless_random_angles[2][1]);
+
+    for(int i = 0 ; i < 4 ; i++){
+        float angle = rands[i] + gui_seamless_random_phase;
+
+        // creating the rotation matrix
+        mat2 rot_mat = mat2(cos(angle),sin(angle),-sin(angle),cos(angle));
+
+        vec2 atom_pos  = vec2(x_pos[i],y_pos[i]);
+        float dist     = distance(tc,atom_pos);
+        float alpha    = 1-smoothstep(0.0,0.2,dist);
+        alpha          = clamp(alpha,0,1);
+
+        vec4 ncolor = texture( layerA, (rot_mat*(rand_scale*(angle*translate+tc - atom_pos))+0.5));
+
+        color = max(color,ncolor*smoothstep(0.1,0.3,alpha));
+    }
+
+    //weight = 1.0;
+    return clamp(color,vec4(0.0),vec4(1.0));
+
+}
+
+// ----------------------------------------------------------------
+//
+// ----------------------------------------------------------------
 
 
 out vec4 FragColor;

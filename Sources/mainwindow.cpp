@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp= new FormImageProp(this,glImage);
     roughnessImageProp= new FormImageProp(this,glImage);
     metallicImageProp = new FormImageProp(this,glImage);
+    grungeImageProp   = new FormImageProp(this,glImage);
 
 
     materialManager = new FormMaterialIndicesManager(this,glImage);
@@ -62,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
     glWidget->setPointerToTexture(&metallicImageProp->getImageProporties()->fbo,METALLIC_TEXTURE);
 
     glWidget->setPointerToTexture(&materialManager->getImageProporties()->fbo,MATERIAL_TEXTURE);
+    //glWidget->setPointerToTexture(&grungeImageProp->getImageProporties()->fbo,GRUNGE_TEXTURE);
 
     // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
@@ -73,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
     metallicImageProp ->getImageProporties()->imageType = METALLIC_TEXTURE;
 
     materialManager->getImageProporties()   ->imageType = MATERIAL_TEXTURE;
+    grungeImageProp->getImageProporties()   ->imageType = GRUNGE_TEXTURE;
+
 
     // disabling some options for each texture
     specularImageProp->setSpecularControlChecked();
@@ -106,7 +110,8 @@ MainWindow::MainWindow(QWidget *parent) :
     normalImageProp->hideHeightInputGroup();
     normalImageProp->hideRoughnessInputGroup();
     normalImageProp->showNormalMixerGroup();
-
+    normalImageProp->hideGrungeBlendinModeComboBox();
+    normalImageProp->showGrungeMainImageWeightSlider();
 
     heightImageProp->hideSpecularInputGroup();
     heightImageProp->hideNormalInputGroup();
@@ -146,7 +151,17 @@ MainWindow::MainWindow(QWidget *parent) :
     metallicImageProp->hideOcclusionInputGroup();
     metallicImageProp->hideBMGroupBox();
     metallicImageProp->hideSelectiveBlurBox();
-    //metallicImageProp->hideRoughnessInputGroup();
+
+    grungeImageProp->hideRoughnessInputGroup();
+    grungeImageProp->hideSpecularInputGroup();
+    grungeImageProp->hideNormalStepBar();
+    grungeImageProp->hideNormalInputGroup();
+    grungeImageProp->hideHeightInputGroup();
+    grungeImageProp->hideOcclusionInputGroup();
+    grungeImageProp->hideBMGroupBox();
+    grungeImageProp->hideSelectiveBlurBox();
+    grungeImageProp->hideSpecularGroupBox();
+    grungeImageProp->showGrungeSettingsGroup();
 
 
 
@@ -157,8 +172,8 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage ->targetImageDiffuse   = diffuseImageProp  ->getImageProporties();
     glImage ->targetImageRoughness = roughnessImageProp->getImageProporties();
     glImage ->targetImageMetallic  = metallicImageProp ->getImageProporties();
-    glImage ->targetImageMaterial  = materialManager ->getImageProporties();
-
+    glImage ->targetImageMaterial  = materialManager   ->getImageProporties();
+    glImage ->targetImageGrunge    = grungeImageProp   ->getImageProporties();
     // ------------------------------------------------------
     //                      GUI setup
     // ------------------------------------------------------
@@ -187,7 +202,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutRoughnessImage->addWidget(roughnessImageProp);
     ui->verticalLayoutMetallicImage ->addWidget(metallicImageProp);
     ui->verticalLayoutMaterialIndicesImage->addWidget(materialManager);
-
+    ui->verticalLayoutGrungeImage   ->addWidget(grungeImageProp);
 
     ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
     
@@ -195,13 +210,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
     
     // imageChange and imageLoaded signals
-    connect(diffuseImageProp,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
-    connect(normalImageProp,SIGNAL(imageChanged()),this,SLOT(updateNormalImage()));
-    connect(specularImageProp,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
-    connect(heightImageProp,SIGNAL(imageChanged()),this,SLOT(updateHeightImage()));
-    connect(occlusionImageProp,SIGNAL(imageChanged()),this,SLOT(updateOcclusionImage()));
-    connect(roughnessImageProp,SIGNAL(imageChanged()),this,SLOT(updateRoughnessImage()));
-    connect(metallicImageProp,SIGNAL(imageChanged()),this,SLOT(updateMetallicImage()));
+    connect(diffuseImageProp    ,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
+    connect(normalImageProp     ,SIGNAL(imageChanged()),this,SLOT(updateNormalImage()));
+    connect(specularImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
+    connect(heightImageProp     ,SIGNAL(imageChanged()),this,SLOT(updateHeightImage()));
+    connect(occlusionImageProp  ,SIGNAL(imageChanged()),this,SLOT(updateOcclusionImage()));
+    connect(roughnessImageProp  ,SIGNAL(imageChanged()),this,SLOT(updateRoughnessImage()));
+    connect(metallicImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateMetallicImage()));
+    connect(grungeImageProp     ,SIGNAL(imageChanged()),this,SLOT(updateGrungeImage()));
+    // grunge
+    connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),diffuseImageProp     ,SLOT(toggleGrungeImageSettingsGroup(bool)));
+    connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),normalImageProp      ,SLOT(toggleGrungeImageSettingsGroup(bool)));
+    connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),specularImageProp    ,SLOT(toggleGrungeImageSettingsGroup(bool)));
+    connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),heightImageProp      ,SLOT(toggleGrungeImageSettingsGroup(bool)));
+    connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),occlusionImageProp   ,SLOT(toggleGrungeImageSettingsGroup(bool)));
+    connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),roughnessImageProp   ,SLOT(toggleGrungeImageSettingsGroup(bool)));
+    connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),metallicImageProp    ,SLOT(toggleGrungeImageSettingsGroup(bool)));
 
     // Material Manager slots
     connect(materialManager,SIGNAL(materialChanged()),this,SLOT(replotAllImages()));   
@@ -216,7 +240,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(occlusionImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
     connect(roughnessImageProp,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
     connect(metallicImageProp ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
-
+    //connect(grungeImageProp   ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
 
     connect(materialManager ,SIGNAL(imageLoaded(int,int)),this,SLOT(applyResizeImage(int,int)));
 
@@ -228,7 +252,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(occlusionImageProp ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
     connect(roughnessImageProp ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
     connect(metallicImageProp  ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
-
+    connect(grungeImageProp    ,SIGNAL(reloadSettingsFromConfigFile(TextureTypes)),this,SLOT(loadImageSettings(TextureTypes)));
 
     // conversion signals
     connect(normalImageProp   ,SIGNAL(conversionHeightToNormalApplied()) ,this,SLOT(convertFromHtoN()));
@@ -426,8 +450,10 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "Supported GUI styles: " << guiStyleList.join(", ");
     ui->comboBoxGUIStyle->addItems(guiStyleList);
 
+    qDebug() << "Load settings:" ;
     // Now we can load settings
     loadSettings();
+
 
     // Loading default (initial) textures
     diffuseImageProp   ->setImage(QImage(QString(":/resources/logo_D.png")));
@@ -438,7 +464,7 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp ->setImage(QImage(QString(":/resources/logo_O.png")));
     roughnessImageProp ->setImage(QImage(QString(":/resources/logo_R.png")));
     metallicImageProp  ->setImage(QImage(QString(":/resources/logo_M.png")));
-
+    grungeImageProp    ->setImage(QImage(QString(":/resources/logo_R.png")));
     materialManager    ->setImage(QImage(QString(":/resources/logo_R.png")));
 
 
@@ -449,6 +475,7 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp ->setImageName(ui->lineEditOutputName->text());
     roughnessImageProp ->setImageName(ui->lineEditOutputName->text());
     metallicImageProp  ->setImageName(ui->lineEditOutputName->text());
+    grungeImageProp    ->setImageName(ui->lineEditOutputName->text());
 
     // Setting the active image
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
@@ -519,6 +546,7 @@ MainWindow::~MainWindow()
     delete heightImageProp;
     delete occlusionImageProp;
     delete roughnessImageProp;
+    delete grungeImageProp;
     delete metallicImageProp;
 
     delete statusLabel;
@@ -562,6 +590,11 @@ void MainWindow::replotAllImages(){
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
 
+    // skip grunge map if conversion is enabled
+    if(glImage->getConversionType() != CONVERT_FROM_D_TO_O){
+        updateImage(GRUNGE_TEXTURE);
+        glImage->update();
+    }
 
     updateImage(DIFFUSE_TEXTURE);
     glImage->update();
@@ -575,7 +608,6 @@ void MainWindow::replotAllImages(){
     updateImage(HEIGHT_TEXTURE);
     glImage->update();
 
-
     // recalulate normal at the end
     updateImage(NORMAL_TEXTURE);
     glImage->update();
@@ -588,6 +620,8 @@ void MainWindow::replotAllImages(){
 
     updateImage(MATERIAL_TEXTURE);
     glImage->update();
+
+
 
     glImage->enableShadowRender(false);
 
@@ -671,49 +705,49 @@ void MainWindow::showHideTextureTypes(bool){
 
     //qDebug() << "Toggle processing images";
     bool value = ui->checkBoxSaveDiffuse->isChecked();
-    diffuseImageProp->getImageProporties()->bSkipProcessing = value;
+    diffuseImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(DIFFUSE_TEXTURE,value);
     ui->pushButtonToggleDiffuse->setVisible(value);
     ui->pushButtonToggleDiffuse->setChecked(value);
     ui->actionShowDiffuseImage->setVisible(value);
 
         value = ui->checkBoxSaveNormal->isChecked();
-    normalImageProp->getImageProporties()->bSkipProcessing = value;
+    normalImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(NORMAL_TEXTURE,value);
     ui->pushButtonToggleNormal->setVisible(value);
     ui->pushButtonToggleNormal->setChecked(value);
     ui->actionShowNormalImage->setVisible(value);
 
         value = ui->checkBoxSaveHeight->isChecked();
-    occlusionImageProp->getImageProporties()->bSkipProcessing = value;
+    occlusionImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(OCCLUSION_TEXTURE,value);
     ui->pushButtonToggleOcclusion->setVisible(value);
     ui->pushButtonToggleOcclusion->setChecked(value);
     ui->actionShowOcclusiontImage->setVisible(value);
 
         value = ui->checkBoxSaveOcclusion->isChecked();
-    heightImageProp->getImageProporties()->bSkipProcessing = value;
+    heightImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(HEIGHT_TEXTURE,value);
     ui->pushButtonToggleHeight->setVisible(value);
     ui->pushButtonToggleHeight->setChecked(value);
     ui->actionShowHeightImage->setVisible(value);
 
         value = ui->checkBoxSaveSpecular->isChecked();
-    specularImageProp->getImageProporties()->bSkipProcessing = value;
+    specularImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(SPECULAR_TEXTURE,value);
     ui->pushButtonToggleSpecular->setVisible(value);
     ui->pushButtonToggleSpecular->setChecked(value);
     ui->actionShowSpecularImage->setVisible(value);
 
         value = ui->checkBoxSaveRoughness->isChecked();
-    roughnessImageProp->getImageProporties()->bSkipProcessing = value;
+    roughnessImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(ROUGHNESS_TEXTURE,value);
     ui->pushButtonToggleRoughness->setVisible(value);
     ui->pushButtonToggleRoughness->setChecked(value);
     ui->actionShowRoughnessImage->setVisible(value);
 
         value = ui->checkBoxSaveMetallic->isChecked();
-    metallicImageProp->getImageProporties()->bSkipProcessing = value;
+    metallicImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(METALLIC_TEXTURE,value);
     ui->pushButtonToggleMetallic->setVisible(value);
     ui->pushButtonToggleMetallic->setChecked(value);
@@ -1037,6 +1071,21 @@ void MainWindow::updateMetallicImage(){
     glWidget->repaint();
 }
 
+void MainWindow::updateGrungeImage(){
+
+    bool test = (grungeImageProp->getImageProporties()->bGrungeReplotAllWhenChanged == true);
+    //test *= (grungeImageProp->getImageProporties()->grungeOverallWeight > 0.0);
+
+    //if replot enabled and grunge weight > 0 then replot all textures
+    if(test){
+        replotAllImages();
+
+    }else{ // otherwise replot only the grunge map
+        glImage->repaint();
+        glWidget->repaint();
+    }
+}
+
 void MainWindow::updateImageInformation(){
 
     ui->labelCurrentImageWidth ->setNum(diffuseImageProp->getImageProporties()->fbo->width());
@@ -1059,6 +1108,7 @@ void MainWindow::initializeGL(){
       occlusionImageProp->setImage(QImage(QString(":/resources/logo_O.png")));
       roughnessImageProp->setImage(QImage(QString(":/resources/logo_R.png")));
       metallicImageProp ->setImage(QImage(QString(":/resources/logo_M.png")));
+      grungeImageProp   ->setImage(QImage(QString(":/resources/logo_R.png")));
 
       diffuseImageProp  ->setImageName(ui->lineEditOutputName->text());
       normalImageProp   ->setImageName(ui->lineEditOutputName->text());
@@ -1067,6 +1117,7 @@ void MainWindow::initializeGL(){
       occlusionImageProp->setImageName(ui->lineEditOutputName->text());
       roughnessImageProp->setImageName(ui->lineEditOutputName->text());
       metallicImageProp ->setImageName(ui->lineEditOutputName->text());
+      grungeImageProp   ->setImageName(ui->lineEditOutputName->text());
       // Setting the active image
       glImage->setActiveImage(diffuseImageProp->getImageProporties());
     }
@@ -1125,6 +1176,10 @@ void MainWindow::updateImage(int tType){
             glImage->setActiveImage(materialManager->getImageProporties());
             metallicImageProp->cancelColorPicking();
             break;
+        case(GRUNGE_TEXTURE  ):
+            glImage->setActiveImage(grungeImageProp->getImageProporties());
+            grungeImageProp->cancelColorPicking();
+            break;
         default: // Settings
             return;
     }
@@ -1157,8 +1212,10 @@ void MainWindow::applyResizeImage(){
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
-        glImage->resizeFBO(width,height);
-        updateImage(i);
+        if( i != GRUNGE_TEXTURE){ // grunge map does not scale like other images
+            glImage->resizeFBO(width,height);
+            updateImage(i);
+        }
     }
     glImage->enableShadowRender(false);
     glImage->setActiveImage(lastActive);
@@ -1182,8 +1239,10 @@ void MainWindow::applyResizeImage(int width, int height){
     FBOImageProporties* lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
-        glImage->resizeFBO(width,height);
-        updateImage(i);
+        if( i != GRUNGE_TEXTURE){
+            glImage->resizeFBO(width,height);
+            updateImage(i);
+        }
     }
     glImage->enableShadowRender(false);
     glImage->setActiveImage(lastActive);
@@ -1261,11 +1320,15 @@ void MainWindow::selectSeamlessMode(int mode){
     ui->groupBoxMirrorMode->hide();
     ui->groupBoxRandomPatchesMode->hide();
     ui->groupBoxUVContrastSettings->setDisabled(false);
+    ui->horizontalSliderSeamlessContrastPower->setEnabled(true);
+    ui->comboBoxSeamlessContrastInputImage->setEnabled(true);
+    ui->doubleSpinBoxSeamlessContrastPower->setEnabled(true);
     switch(mode){
     case(SEAMLESS_NONE):
         break;
     case(SEAMLESS_SIMPLE):
         ui->groupBoxSimpleSeamlessMode->show();
+        ui->labelContrastStrenght->setText("Contrast strenght");
         break;
     case(SEAMLESS_MIRROR):
         ui->groupBoxMirrorMode->show();
@@ -1273,6 +1336,10 @@ void MainWindow::selectSeamlessMode(int mode){
         break;
     case(SEAMLESS_RANDOM):
         ui->groupBoxRandomPatchesMode->show();
+        ui->labelContrastStrenght->setText("Radius");
+        ui->doubleSpinBoxSeamlessContrastPower->setEnabled(false);
+        ui->horizontalSliderSeamlessContrastPower->setEnabled(false);
+        ui->comboBoxSeamlessContrastInputImage->setEnabled(false);
         break;
     default:
         break;
@@ -1607,6 +1674,15 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_pickedColorG"                     ,image->getImageProporties()->pickedColor.y());
     settings.setValue("t_"+abbr+"_pickedColorB"                     ,image->getImageProporties()->pickedColor.z());
 
+    if(image->getImageProporties()->imageType == GRUNGE_TEXTURE){
+        settings.setValue("t_"+abbr+"_grungeOverallWeight"  ,image->getImageProporties()->grungeOverallWeight);
+        settings.setValue("t_"+abbr+"_grungeSeed"           ,image->getImageProporties()->grungeSeed);
+        settings.setValue("t_"+abbr+"_grungeRadius"         ,image->getImageProporties()->grungeRadius);
+        settings.setValue("t_"+abbr+"_bGrungeEnableRandomTranslations",image->getImageProporties()->bGrungeEnableRandomTranslations);
+    }
+    settings.setValue("t_"+abbr+"_grungeBlendingMode"   ,image->getImageProporties()->grungeBlendingMode);
+    settings.setValue("t_"+abbr+"_grungeImageWeight"    ,image->getImageProporties()->grungeImageWeight);
+    settings.setValue("t_"+abbr+"_grungeMainImageWeight",image->getImageProporties()->grungeMainImageWeight);
 
 
 }
@@ -1734,6 +1810,17 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->selectiveBlurMaskInputImageType= (SourceImageType)settings.value("t_"+abbr+"_selectiveBlurMaskInputImageType",0).toInt();
     image->getImageProporties()->selectiveBlurNoIters           = settings.value("t_"+abbr+"_selectiveBlurNoIters",1).toInt();
 
+    if(image->getImageProporties()->imageType == GRUNGE_TEXTURE){
+        image->getImageProporties()->grungeOverallWeight        = settings.value("t_"+abbr+"_grungeOverallWeight",0.0).toFloat();
+        image->getImageProporties()->grungeRadius               = settings.value("t_"+abbr+"_grungeRadius",0.0).toFloat();
+        image->getImageProporties()->grungeSeed                 = settings.value("t_"+abbr+"_grungeSeed",0).toInt();
+        image->getImageProporties()->bGrungeEnableRandomTranslations = settings.value("t_"+abbr+"_bGrungeEnableRandomTranslations",0.0).toFloat();
+
+    }
+    image->getImageProporties()->grungeBlendingMode   = settings.value("t_"+abbr+"_grungeBlendingMode",0).toInt();
+    image->getImageProporties()->grungeImageWeight    = settings.value("t_"+abbr+"_grungeImageWeight",0.0).toFloat();
+    image->getImageProporties()->grungeMainImageWeight= settings.value("t_"+abbr+"_grungeMainImageWeight",50.0).toFloat();
+
 
     image->reloadSettings();
 
@@ -1762,6 +1849,9 @@ void MainWindow::loadImageSettings(TextureTypes type){
             break;
         case(METALLIC_TEXTURE):
             loadImageSettings("m",metallicImageProp);
+            break;
+        case(GRUNGE_TEXTURE):
+            loadImageSettings("g",grungeImageProp);
             break;
         default: qWarning() << "Trying to load non supported image! Given textureType:" << type;
     }
@@ -1864,6 +1954,7 @@ void MainWindow::saveSettings(){
     saveImageSettings("o",occlusionImageProp);
     saveImageSettings("r",roughnessImageProp);
     saveImageSettings("m",metallicImageProp);
+    saveImageSettings("g",grungeImageProp);
 
 }
 
@@ -1974,6 +2065,7 @@ void MainWindow::loadSettings(){
 
 
     updatePerformanceSettings();
+    updateSliders();
 
 
     loadImageSettings("d",diffuseImageProp);
@@ -1983,6 +2075,7 @@ void MainWindow::loadSettings(){
     loadImageSettings("o",occlusionImageProp);
     loadImageSettings("r",roughnessImageProp);
     loadImageSettings("m",metallicImageProp);
+    loadImageSettings("g",grungeImageProp);
 
 
     QString name = settings.value("settings_name","Default").toString();

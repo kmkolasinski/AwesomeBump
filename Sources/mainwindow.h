@@ -83,6 +83,7 @@ public slots:
     void updateOcclusionImage();
     void updateRoughnessImage();
     void updateMetallicImage();
+    void updateGrungeImage();
     // repaint selected tab
     void updateImage(int tab);
     void updateImageInformation();
@@ -147,7 +148,7 @@ private:
     FormImageProp* occlusionImageProp;
     FormImageProp* roughnessImageProp;
     FormImageProp* metallicImageProp;
-
+    FormImageProp* grungeImageProp;
     // Material manager
     FormMaterialIndicesManager* materialManager;
 

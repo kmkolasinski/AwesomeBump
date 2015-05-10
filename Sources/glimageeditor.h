@@ -75,6 +75,7 @@ public:
     FBOImageProporties* getActiveImage(){return activeImage;}
     void enableShadowRender(bool enable);
     void setConversionType(ConversionType conversionType);
+    ConversionType getConversionType();
     void updateCornersPosition(QVector2D dc1,QVector2D dc2,QVector2D dc3,QVector2D dc4);
     void render();
 
@@ -85,6 +86,7 @@ public:
     FBOImageProporties* targetImageOcclusion;
     FBOImageProporties* targetImageRoughness;
     FBOImageProporties* targetImageMetallic;
+    FBOImageProporties* targetImageGrunge;
 
     FBOImageProporties* targetImageMaterial;
 public slots:
@@ -241,6 +243,17 @@ public:
 
     void copyFBO(QGLFramebufferObject* src,QGLFramebufferObject* dst);
     void copyTex2FBO(GLuint src_tex_id,QGLFramebufferObject* dst);
+
+    void applyAllUVsTransforms(QGLFramebufferObject* inoutFBO);
+
+    void applyGrungeImageFilter (QGLFramebufferObject* inputFBO,
+                                 QGLFramebufferObject* outputFBO,
+                                 QGLFramebufferObject *grungeFBO);
+
+    void applyGrungeRandomizationFilter(QGLFramebufferObject* inputFBO,
+                                        QGLFramebufferObject* outputFBO);
+
+
     void updateProgramUniforms(int step);
 //! [3]
 private:

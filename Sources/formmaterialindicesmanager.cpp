@@ -95,7 +95,7 @@ bool FormMaterialIndicesManager::updateMaterials(QImage& image){
 
 
     qDebug() << "Updating material indices. Total indices count:" << ui->listWidgetMaterialIndices->count();
-    for(int i = 0 ; i < MAX_TEXTURES_TYPE - 1 ; i++){
+    for(int i = 0 ; i < METALLIC_TEXTURE ; i++){
         materialIndices[i].clear();
         FBOImageProporties tmp;
         tmp.copySettings(imagesPointers[i]->imageProp);
@@ -128,7 +128,7 @@ void FormMaterialIndicesManager::changeMaterial(int index){
     // copy current settings
     ui->listWidgetMaterialIndices->item(lastMaterialIndex)->setText("Material"+QString::number(lastMaterialIndex+1));
 
-    for(int i = 0 ; i < MAX_TEXTURES_TYPE - 1 ; i++){
+    for(int i = 0 ; i < METALLIC_TEXTURE ; i++){
         QString m_name = ui->listWidgetMaterialIndices->item(lastMaterialIndex)->text();
         materialIndices[i][m_name].copySettings(imagesPointers[i]->imageProp);
 
@@ -136,7 +136,7 @@ void FormMaterialIndicesManager::changeMaterial(int index){
 
     lastMaterialIndex = index;
     // load different material
-    for(int i = 0 ; i < MAX_TEXTURES_TYPE - 1 ; i++){
+    for(int i = 0 ; i < METALLIC_TEXTURE ; i++){
         QString m_name = ui->listWidgetMaterialIndices->item(index)->text();
 
         imagesPointers[i]->imageProp.copySettings(materialIndices[i][m_name]);
