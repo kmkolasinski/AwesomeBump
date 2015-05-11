@@ -10,12 +10,13 @@ SourceImageType FBOImageProporties::seamlessContrastInputType = INPUT_FROM_HEIGH
 bool FBOImageProporties::bSeamlessTranslationsFirst       = true;
 int FBOImageProporties::seamlessMirroModeType             = 0;
 bool FBOImageProporties::bConversionBaseMap = false;
-
+bool FBOImageProporties::bConversionBaseMapShowHeightTexture = false;
 float FBOImageProporties::grungeOverallWeight = 0.0; // general weight for all images
 float FBOImageProporties::grungeRadius        = 25.0; // general weight for all images
-bool FBOImageProporties::bGrungeEnableRandomTranslations        = false; //
-bool FBOImageProporties::bGrungeReplotAllWhenChanged = true;
+bool FBOImageProporties::bGrungeEnableRandomTranslations  = false; //
+bool FBOImageProporties::bGrungeReplotAllWhenChanged = false;
 int   FBOImageProporties::grungeSeed = 0;          // grunge randomization seed (if = 0 no randomization)
+float FBOImageProporties::grungeNormalWarp = 0.0;
 
 map<QString,int>  FBOImageProporties::materialIndices;
 int FBOImageProporties::currentMaterialIndeks = MATERIALS_DISABLED;

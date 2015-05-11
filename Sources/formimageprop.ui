@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>279</width>
-    <height>2855</height>
+    <height>2880</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -229,6 +229,42 @@
      <layout class="QVBoxLayout" name="verticalLayout_31">
       <item>
        <layout class="QGridLayout" name="gridLayout_25">
+        <item row="2" column="1">
+         <widget class="QSlider" name="horizontalSliderGrungeRadius">
+          <property name="toolTip">
+           <string>When randomization is enabled it scales the UVs of generated random image</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="singleStep">
+           <number>25</number>
+          </property>
+          <property name="pageStep">
+           <number>0</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_112">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_111">
+          <property name="text">
+           <string>Radius</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="1">
          <widget class="QSlider" name="horizontalSliderGrungeOverallWeight">
           <property name="toolTip">
@@ -251,26 +287,6 @@
           </property>
           <property name="tickInterval">
            <number>5</number>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_24">
-          <property name="text">
-           <string>Overall weight</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label_29">
-          <property name="minimumSize">
-           <size>
-            <width>30</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>0</string>
           </property>
          </widget>
         </item>
@@ -304,26 +320,40 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_111">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_24">
           <property name="text">
-           <string>Radius</string>
+           <string>Overall weight</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QSlider" name="horizontalSliderGrungeRadius">
-          <property name="toolTip">
-           <string>When randomization is enabled it scales the UVs of generated random image</string>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_29">
+          <property name="minimumSize">
+           <size>
+            <width>30</width>
+            <height>0</height>
+           </size>
           </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_113">
+          <property name="text">
+           <string>Normal warp</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QSlider" name="horizontalSliderGrungeNormalWarp">
           <property name="minimum">
-           <number>1</number>
+           <number>-100</number>
           </property>
           <property name="maximum">
            <number>100</number>
-          </property>
-          <property name="singleStep">
-           <number>25</number>
           </property>
           <property name="pageStep">
            <number>0</number>
@@ -333,8 +363,8 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_112">
+        <item row="3" column="2">
+         <widget class="QLabel" name="label_114">
           <property name="text">
            <string>0</string>
           </property>
@@ -4555,6 +4585,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="checkBoxEnableBaseMapHeightTexture">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show height texture instead of normal texture. Calculation of height texture is quite demanding so this option is not suggested for large demanding.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Show height texture</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QGroupBox" name="groupBoxBaseToOthersProcessing">
         <property name="title">
          <string/>
@@ -4626,6 +4666,73 @@
           </widget>
          </item>
          <item>
+          <layout class="QGridLayout" name="gridLayout_27">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_115">
+             <property name="text">
+              <string>Angle correction</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="label_116">
+             <property name="minimumSize">
+              <size>
+               <width>30</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSlider" name="horizontalSliderBaseToOthersAngleCorrection">
+             <property name="maximum">
+              <number>360</number>
+             </property>
+             <property name="pageStep">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_117">
+             <property name="text">
+              <string>Angle weight</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSlider" name="horizontalSliderBaseToOthersAngleWeight">
+             <property name="minimum">
+              <number>-100</number>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>0</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QLabel" name="label_118">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButtonConvertToNormalAndHeight">
            <property name="enabled">
             <bool>true</bool>
@@ -4671,11 +4778,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>233</x>
-     <y>1751</y>
+     <y>1765</y>
     </hint>
     <hint type="destinationlabel">
      <x>269</x>
-     <y>1751</y>
+     <y>1765</y>
     </hint>
    </hints>
   </connection>
@@ -4687,11 +4794,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1827</y>
+     <y>1841</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1827</y>
+     <y>1841</y>
     </hint>
    </hints>
   </connection>
@@ -4703,11 +4810,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1852</y>
+     <y>1866</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1852</y>
+     <y>1866</y>
     </hint>
    </hints>
   </connection>
@@ -4719,11 +4826,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1877</y>
+     <y>1891</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1877</y>
+     <y>1891</y>
     </hint>
    </hints>
   </connection>
@@ -4735,11 +4842,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1902</y>
+     <y>1915</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1902</y>
+     <y>1915</y>
     </hint>
    </hints>
   </connection>
@@ -4751,11 +4858,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1927</y>
+     <y>1940</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1927</y>
+     <y>1940</y>
     </hint>
    </hints>
   </connection>
@@ -4767,11 +4874,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1336</y>
+     <y>1361</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1336</y>
+     <y>1361</y>
     </hint>
    </hints>
   </connection>
@@ -4783,11 +4890,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1952</y>
+     <y>1965</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1952</y>
+     <y>1965</y>
     </hint>
    </hints>
   </connection>
@@ -4799,11 +4906,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1311</y>
+     <y>1336</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1311</y>
+     <y>1336</y>
     </hint>
    </hints>
   </connection>
@@ -4815,11 +4922,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1361</y>
+     <y>1386</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1361</y>
+     <y>1386</y>
     </hint>
    </hints>
   </connection>
@@ -4831,11 +4938,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1386</y>
+     <y>1411</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1386</y>
+     <y>1411</y>
     </hint>
    </hints>
   </connection>
@@ -4847,11 +4954,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1411</y>
+     <y>1436</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1411</y>
+     <y>1436</y>
     </hint>
    </hints>
   </connection>
@@ -4863,11 +4970,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1436</y>
+     <y>1461</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1436</y>
+     <y>1461</y>
     </hint>
    </hints>
   </connection>
@@ -4879,11 +4986,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>223</x>
-     <y>2060</y>
+     <y>2073</y>
     </hint>
     <hint type="destinationlabel">
      <x>269</x>
-     <y>2060</y>
+     <y>2073</y>
     </hint>
    </hints>
   </connection>
@@ -4895,7 +5002,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>272</x>
-     <y>1480</y>
+     <y>1505</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
@@ -4911,11 +5018,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>225</x>
-     <y>1557</y>
+     <y>1579</y>
     </hint>
     <hint type="destinationlabel">
      <x>261</x>
-     <y>1557</y>
+     <y>1579</y>
     </hint>
    </hints>
   </connection>
@@ -4927,11 +5034,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>225</x>
-     <y>1582</y>
+     <y>1600</y>
     </hint>
     <hint type="destinationlabel">
      <x>261</x>
-     <y>1582</y>
+     <y>1600</y>
     </hint>
    </hints>
   </connection>
@@ -4943,11 +5050,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>225</x>
-     <y>1607</y>
+     <y>1621</y>
     </hint>
     <hint type="destinationlabel">
      <x>261</x>
-     <y>1607</y>
+     <y>1621</y>
     </hint>
    </hints>
   </connection>
@@ -4959,11 +5066,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>223</x>
-     <y>2085</y>
+     <y>2098</y>
     </hint>
     <hint type="destinationlabel">
      <x>269</x>
-     <y>2085</y>
+     <y>2098</y>
     </hint>
    </hints>
   </connection>
@@ -4975,11 +5082,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>203</x>
-     <y>2418</y>
+     <y>2410</y>
     </hint>
     <hint type="destinationlabel">
      <x>269</x>
-     <y>2418</y>
+     <y>2410</y>
     </hint>
    </hints>
   </connection>
@@ -4991,11 +5098,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>203</x>
-     <y>2443</y>
+     <y>2435</y>
     </hint>
     <hint type="destinationlabel">
      <x>269</x>
-     <y>2443</y>
+     <y>2435</y>
     </hint>
    </hints>
   </connection>
@@ -5007,11 +5114,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>230</x>
-     <y>2507</y>
+     <y>2499</y>
     </hint>
     <hint type="destinationlabel">
      <x>266</x>
-     <y>2507</y>
+     <y>2499</y>
     </hint>
    </hints>
   </connection>
@@ -5023,11 +5130,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>230</x>
-     <y>2532</y>
+     <y>2524</y>
     </hint>
     <hint type="destinationlabel">
      <x>266</x>
-     <y>2532</y>
+     <y>2524</y>
     </hint>
    </hints>
   </connection>
@@ -5039,11 +5146,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>230</x>
-     <y>2557</y>
+     <y>2549</y>
     </hint>
     <hint type="destinationlabel">
      <x>266</x>
-     <y>2557</y>
+     <y>2549</y>
     </hint>
    </hints>
   </connection>
@@ -5055,11 +5162,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>230</x>
-     <y>2582</y>
+     <y>2574</y>
     </hint>
     <hint type="destinationlabel">
      <x>266</x>
-     <y>2582</y>
+     <y>2574</y>
     </hint>
    </hints>
   </connection>
@@ -5071,11 +5178,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>242</x>
-     <y>2624</y>
+     <y>2616</y>
     </hint>
     <hint type="destinationlabel">
      <x>266</x>
-     <y>2624</y>
+     <y>2616</y>
     </hint>
    </hints>
   </connection>
@@ -5087,11 +5194,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>242</x>
-     <y>2649</y>
+     <y>2641</y>
     </hint>
     <hint type="destinationlabel">
      <x>266</x>
-     <y>2649</y>
+     <y>2641</y>
     </hint>
    </hints>
   </connection>
@@ -5103,11 +5210,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>242</x>
-     <y>2674</y>
+     <y>2666</y>
     </hint>
     <hint type="destinationlabel">
      <x>266</x>
-     <y>2674</y>
+     <y>2666</y>
     </hint>
    </hints>
   </connection>
@@ -5119,11 +5226,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>242</x>
-     <y>2699</y>
+     <y>2691</y>
     </hint>
     <hint type="destinationlabel">
      <x>266</x>
-     <y>2699</y>
+     <y>2691</y>
     </hint>
    </hints>
   </connection>
@@ -5134,12 +5241,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>142</x>
-     <y>2325</y>
+     <x>147</x>
+     <y>2317</y>
     </hint>
     <hint type="destinationlabel">
      <x>95</x>
-     <y>2706</y>
+     <y>2673</y>
     </hint>
    </hints>
   </connection>
@@ -5151,11 +5258,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>1802</y>
+     <y>1816</y>
     </hint>
     <hint type="destinationlabel">
      <x>272</x>
-     <y>1802</y>
+     <y>1816</y>
     </hint>
    </hints>
   </connection>
@@ -5167,11 +5274,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>233</x>
-     <y>1776</y>
+     <y>1790</y>
     </hint>
     <hint type="destinationlabel">
      <x>269</x>
-     <y>1776</y>
+     <y>1790</y>
     </hint>
    </hints>
   </connection>
@@ -5183,7 +5290,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>107</x>
-     <y>1480</y>
+     <y>1505</y>
     </hint>
     <hint type="destinationlabel">
      <x>110</x>
@@ -5199,11 +5306,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>229</x>
-     <y>999</y>
+     <y>1024</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>999</y>
+     <y>1024</y>
     </hint>
    </hints>
   </connection>
@@ -5215,11 +5322,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>229</x>
-     <y>1024</y>
+     <y>1049</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>1024</y>
+     <y>1049</y>
     </hint>
    </hints>
   </connection>
@@ -5231,11 +5338,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>229</x>
-     <y>1049</y>
+     <y>1074</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>1049</y>
+     <y>1074</y>
     </hint>
    </hints>
   </connection>
@@ -5247,11 +5354,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>229</x>
-     <y>1181</y>
+     <y>1206</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>1181</y>
+     <y>1206</y>
     </hint>
    </hints>
   </connection>
@@ -5263,11 +5370,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>229</x>
-     <y>1206</y>
+     <y>1231</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>1206</y>
+     <y>1231</y>
     </hint>
    </hints>
   </connection>
@@ -5279,11 +5386,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>203</x>
-     <y>2468</y>
+     <y>2460</y>
     </hint>
     <hint type="destinationlabel">
      <x>269</x>
-     <y>2468</y>
+     <y>2460</y>
     </hint>
    </hints>
   </connection>
@@ -5295,7 +5402,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>180</x>
-     <y>960</y>
+     <y>985</y>
     </hint>
     <hint type="destinationlabel">
      <x>134</x>
@@ -5311,7 +5418,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>268</x>
-     <y>960</y>
+     <y>985</y>
     </hint>
     <hint type="destinationlabel">
      <x>134</x>
@@ -5326,12 +5433,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>165</x>
-     <y>2124</y>
+     <x>173</x>
+     <y>2137</y>
     </hint>
     <hint type="destinationlabel">
      <x>122</x>
-     <y>2280</y>
+     <y>2268</y>
     </hint>
    </hints>
   </connection>
@@ -5342,8 +5449,8 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>2748</y>
+     <x>138</x>
+     <y>2740</y>
     </hint>
     <hint type="destinationlabel">
      <x>130</x>
@@ -5359,7 +5466,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>92</x>
-     <y>1156</y>
+     <y>1181</y>
     </hint>
     <hint type="destinationlabel">
      <x>39</x>
@@ -5375,11 +5482,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>229</x>
-     <y>1231</y>
+     <y>1256</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>1231</y>
+     <y>1256</y>
     </hint>
    </hints>
   </connection>
@@ -5391,11 +5498,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>219</x>
-     <y>1699</y>
+     <y>1713</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>1699</y>
+     <y>1713</y>
     </hint>
    </hints>
   </connection>
@@ -5407,11 +5514,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>219</x>
-     <y>1724</y>
+     <y>1738</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>1724</y>
+     <y>1738</y>
     </hint>
    </hints>
   </connection>
@@ -5423,11 +5530,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>235</x>
-     <y>573</y>
+     <y>598</y>
     </hint>
     <hint type="destinationlabel">
      <x>271</x>
-     <y>573</y>
+     <y>598</y>
     </hint>
    </hints>
   </connection>
@@ -5438,8 +5545,8 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>110</x>
-     <y>492</y>
+     <x>115</x>
+     <y>517</y>
     </hint>
     <hint type="destinationlabel">
      <x>79</x>
@@ -5455,11 +5562,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>235</x>
-     <y>598</y>
+     <y>623</y>
     </hint>
     <hint type="destinationlabel">
      <x>271</x>
-     <y>598</y>
+     <y>623</y>
     </hint>
    </hints>
   </connection>
@@ -5471,11 +5578,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>235</x>
-     <y>648</y>
+     <y>673</y>
     </hint>
     <hint type="destinationlabel">
      <x>271</x>
-     <y>648</y>
+     <y>673</y>
     </hint>
    </hints>
   </connection>
@@ -5487,11 +5594,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>235</x>
-     <y>673</y>
+     <y>698</y>
     </hint>
     <hint type="destinationlabel">
      <x>271</x>
-     <y>673</y>
+     <y>698</y>
     </hint>
    </hints>
   </connection>
@@ -5519,11 +5626,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>229</x>
-     <y>325</y>
+     <y>350</y>
     </hint>
     <hint type="destinationlabel">
      <x>265</x>
-     <y>325</y>
+     <y>350</y>
     </hint>
    </hints>
   </connection>
@@ -5566,12 +5673,60 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>219</x>
-     <y>341</y>
+     <x>229</x>
+     <y>375</y>
     </hint>
     <hint type="destinationlabel">
-     <x>250</x>
-     <y>340</y>
+     <x>265</x>
+     <y>375</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderGrungeNormalWarp</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_114</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>219</x>
+     <y>203</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>246</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderBaseToOthersAngleCorrection</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_116</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>225</x>
+     <y>2800</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>251</x>
+     <y>2802</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderBaseToOthersAngleWeight</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_118</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>194</x>
+     <y>2830</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>2830</y>
     </hint>
    </hints>
   </connection>

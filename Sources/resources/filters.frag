@@ -980,6 +980,27 @@ vec4 filter(){
     return ocolor;
 }
 
+
+// ----------------------------------------------------------------
+// angle correction
+// ----------------------------------------------------------------
+uniform float base_map_angle_correction;
+uniform float base_map_angle_weight;
+#ifndef mode_normal_angle_correction_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_normal_angle_correction_filter(){
+#else
+vec4 filter(){
+#endif
+    vec3 normal   = normalize(texture(layerA,v2QuadCoords.xy).rgb-0.5);
+    vec2 anglevec = vec2(cos(base_map_angle_correction),sin(base_map_angle_correction));
+    float ndota   = dot(anglevec,normal.st)*base_map_angle_weight*2.0;
+    normal = normalize(vec3(normal.x,normal.y,abs(normal.z + ndota)));
+    return vec4(normal+0.5,1.0);
+}
+
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
@@ -1416,6 +1437,26 @@ vec4 filter(){
     return clamp(color,vec4(0.0),vec4(1.0));
 
 }
+
+
+// ----------------------------------------------------------------
+//  Grunge normal warp
+// ----------------------------------------------------------------
+uniform float grunge_normal_warp;
+#ifndef mode_grunge_normal_warp_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_grunge_normal_warp_filter(){
+#else
+vec4 filter(){
+#endif
+    vec2 normal = texture( layerB, v2QuadCoords.xy).st - 0.5;
+    vec4 color  = texture( layerA, v2QuadCoords.xy + normal*grunge_normal_warp*0.05);
+
+    return color;
+}
+
 
 // ----------------------------------------------------------------
 //

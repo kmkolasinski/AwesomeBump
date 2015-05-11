@@ -448,6 +448,9 @@ public:
     int  conversionNHItersVerySmall;
     // Base to others settings
     static bool bConversionBaseMap;
+    static bool bConversionBaseMapShowHeightTexture;
+    float baseMapAngleCorrection;
+    float baseMapAngleWeight;
     BaseMapConvLevelProperties baseMapConvLevels[4];
 
     // ambient occlusion settings
@@ -517,9 +520,10 @@ public:
     static int   grungeSeed;          // grunge randomization seed (if = 0 no randomization)
     static float grungeRadius;        // random radius
     static bool bGrungeReplotAllWhenChanged;
+    static bool bGrungeEnableRandomTranslations;
+    static float grungeNormalWarp; // warp grunge image according to normal texture
     float grungeImageWeight;   // per image additional weight
     float grungeMainImageWeight; // used for normal blending only
-    static bool bGrungeEnableRandomTranslations;
     unsigned int grungeBlendingMode;
     // global settings seamless parameters
 
@@ -586,6 +590,8 @@ public:
         conversionNHItersVerySmall  = 10;
 
         bConversionBaseMap          = false;
+        baseMapAngleCorrection      = 0.0;
+        baseMapAngleWeight          = 0.0;
 
 
         ssaoNoIters   = 4;

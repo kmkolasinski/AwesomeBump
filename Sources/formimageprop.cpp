@@ -86,6 +86,9 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 
     // base map convertion
     connect(ui->checkBoxEnableBaseMapToOthers               ,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+    connect(ui->checkBoxEnableBaseMapHeightTexture          ,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
+    connect(ui->horizontalSliderBaseToOthersAngleCorrection ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderBaseToOthersAngleWeight     ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
 
 
     connect(ui->pushButtonConvertToNormalAndHeight,SIGNAL(released()),this,SLOT(applyBaseConversionConversion()));
@@ -183,6 +186,8 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderGrungeOverallWeight,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderGrungeSeed,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderGrungeRadius,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderGrungeNormalWarp,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+
     connect(ui->checkBoxGrungeRandomTranslations,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
     connect(ui->checkBoxGrungeReplotAllAfterChange,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
 
@@ -492,6 +497,8 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
             baseMapConvLevels[i]->getSlidersValues(imageProp.baseMapConvLevels[i]);
         }
     }
+    imageProp.baseMapAngleCorrection = ui->horizontalSliderBaseToOthersAngleCorrection->value();
+    imageProp.baseMapAngleWeight     = ui->horizontalSliderBaseToOthersAngleWeight->value();
 
 
     imageProp.ssaoNoIters   = ui->horizontalSliderSSAONoIters->value();
@@ -548,6 +555,7 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
         imageProp.grungeOverallWeight = ui->horizontalSliderGrungeOverallWeight->value();
         imageProp.grungeSeed          = ui->horizontalSliderGrungeSeed->value();
         imageProp.grungeRadius        = ui->horizontalSliderGrungeRadius->value();
+        imageProp.grungeNormalWarp    = ui->horizontalSliderGrungeNormalWarp->value();
     }
     imageProp.grungeImageWeight       = ui->horizontalSliderGrungeImageWeight->value();
     imageProp.grungeMainImageWeight   = ui->horizontalSliderGrungeMainImageWeight->value();
@@ -588,6 +596,7 @@ void FormImageProp::updateGuiCheckBoxes(){
 
 
     imageProp.bConversionBaseMap    = ui->checkBoxEnableBaseMapToOthers->isChecked();
+    imageProp.bConversionBaseMapShowHeightTexture  = ui->checkBoxEnableBaseMapHeightTexture->isChecked();
 
     imageProp.bSelectiveBlurPreviewMask = ui->pushButtonSelectiveBlurPreviewMask->isChecked();
     imageProp.bSelectiveBlurInvertMask  = ui->checkBoxSelectiveBlurInvertMask   ->isChecked();
@@ -821,8 +830,8 @@ void FormImageProp::reloadSettings(){
 
     //ui->checkBoxEnableHeightToNormal    ->setChecked(imageProp.bConversionHN);
     //ui->checkBoxEnableNormalToHeight    ->setChecked(imageProp.bConversionNH);
-    //ui->checkBoxEnableBaseMapToOthers   ->setChecked(imageProp.bConversionBaseMap);
-
+    //
+    ui->checkBoxEnableBaseMapHeightTexture    ->setChecked(imageProp.bConversionBaseMapShowHeightTexture);
     ui->horizontalSliderRemoveShadingGaussIter->setValue(imageProp.noRemoveShadingGaussIter);
 
 
@@ -867,6 +876,8 @@ void FormImageProp::reloadSettings(){
             baseMapConvLevels[i]->updateSliders(imageProp.baseMapConvLevels[i]);
         }
     }
+    ui->horizontalSliderBaseToOthersAngleCorrection->setValue(imageProp.baseMapAngleCorrection);
+    ui->horizontalSliderBaseToOthersAngleWeight    ->setValue(imageProp.baseMapAngleWeight);
 
     ui->horizontalSliderSSAONoIters     ->setValue(imageProp.ssaoNoIters);
     ui->horizontalSliderSSAOBias        ->setValue(imageProp.ssaoBias*100);
@@ -943,7 +954,11 @@ void FormImageProp::reloadSettings(){
         //ui->horizontalSliderGrungeOverallWeight ->setValue(imageProp.grungeOverallWeight);
         ui->horizontalSliderGrungeRadius        ->setValue(imageProp.grungeRadius);
         ui->horizontalSliderGrungeSeed          ->setValue(imageProp.grungeSeed);
+        ui->horizontalSliderGrungeNormalWarp    ->setValue(imageProp.grungeNormalWarp);
+
         ui->checkBoxGrungeRandomTranslations->setChecked(imageProp.bGrungeEnableRandomTranslations);
+        ui->checkBoxGrungeReplotAllAfterChange->setChecked(imageProp.bGrungeReplotAllWhenChanged);
+
     }
 
 

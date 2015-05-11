@@ -163,6 +163,8 @@ void GLImage::initializeGL()
     filters_list.push_back("mode_roughness_color_filter");
     filters_list.push_back("mode_grunge_filter");
     filters_list.push_back("mode_grunge_randomization_filter");
+    filters_list.push_back("mode_grunge_normal_warp_filter");
+    filters_list.push_back("mode_normal_angle_correction_filter");
 
 
 
@@ -274,6 +276,8 @@ void GLImage::initializeGL()
     GLCHK( subroutines["mode_remove_low_freq_filter"]      = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_remove_low_freq_filter" ) );
     GLCHK( subroutines["mode_grunge_filter"]               = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_grunge_filter" ) );
     GLCHK( subroutines["mode_grunge_randomization_filter"] = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_grunge_randomization_filter" ) );
+    GLCHK( subroutines["mode_grunge_normal_warp_filter"]   = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_grunge_normal_warp_filter" ) );
+    GLCHK( subroutines["mode_normal_angle_correction_filter"]   = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_normal_angle_correction_filter" ) );
 
 
 #endif
@@ -536,7 +540,6 @@ void GLImage::render(){
         // ----------------------------------------------------
         case(HEIGHT_TEXTURE):{
         if(conversionType == CONVERT_FROM_N_TO_H){
-
             applyNormalToHeight(activeImage,targetImageNormal->fbo,activeFBO,auxFBO1);
             applyCPUNormalizationFilter(auxFBO1,activeFBO);
             applyGaussFilter(activeFBO,auxFBO1,auxFBO2,1,0.5); // small blur
@@ -544,8 +547,6 @@ void GLImage::render(){
 
             targetImageHeight->updateSrcTexId(activeFBO);
             if(!targetImageNormal->bSkipProcessing)  bTransformUVs = false;
-
-
         }
         // ----------------------------------------------------
         //
@@ -602,10 +603,13 @@ void GLImage::render(){
         }
         break;}// end of case Roughness        
         case(GRUNGE_TEXTURE):{
+            applyGrungeWarpNormalFilter(activeFBO,auxFBO2);
+
             if(activeImage->grungeSeed != 0){
-                applyGrungeRandomizationFilter(activeFBO,auxFBO2);
+                applyGrungeRandomizationFilter(auxFBO2,activeFBO);
+            }else
                 copyTex2FBO(auxFBO2->texture(),activeFBO);
-            }
+
         break;
         }// end of case Grunge
         default:break;
@@ -840,20 +844,18 @@ void GLImage::render(){
                            auxFBO2BMLevels[2]->texture(),
                            activeFBO);
 
-
-       // applyGaussFilter(activeFBO,auxFBO1,auxFBO2,1,1.0); // small blur
-       // copyFBO(auxFBO2,activeFBO);
+        //  apply angle correction
+        applyNormalAngleCorrectionFilter(activeFBO,auxFBO1);
+        copyTex2FBO(auxFBO1->texture(),activeFBO);
 
         if(conversionType == CONVERT_FROM_D_TO_O){
             applyNormalToHeight(targetImageHeight,activeFBO,auxFBO1,auxFBO2);
             applyCPUNormalizationFilter(auxFBO2,auxFBO1);
-
+        }else if(activeImage->bConversionBaseMapShowHeightTexture){
+            applyNormalToHeight(targetImageHeight,activeFBO,auxFBO1,auxFBO2);
+            applyCPUNormalizationFilter(auxFBO2,activeFBO);
         }
-
-
-    }
-
-
+    } // end of base map conversion
 
     }// end of skip standard processing
 
@@ -2185,8 +2187,33 @@ void GLImage::applyNormalToHeight(FBOImageProporties* image,QGLFramebufferObject
 }
 
 
+void GLImage::applyNormalAngleCorrectionFilter(QGLFramebufferObject* inputFBO,
+                                               QGLFramebufferObject* outputFBO){
+
+#ifdef USE_OPENGL_330
+    program = filter_programs["mode_normal_angle_correction_filter"];
+    program->bind();
+    updateProgramUniforms(0);
+#else
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_angle_correction_filter"]) );
+#endif
+
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( program->setUniformValue("base_map_angle_correction"  , activeImage->baseMapAngleCorrection/180.0f*3.1415926f) );
+    GLCHK( program->setUniformValue("base_map_angle_weight"      , activeImage->baseMapAngleWeight/100.0f) );
+
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    GLCHK( outputFBO->bind() );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( outputFBO->bindDefault() );
+
+}
+
 void GLImage::applyNormalExpansionFilter(QGLFramebufferObject* inputFBO,
-                              QGLFramebufferObject* outputFBO){
+                                         QGLFramebufferObject* outputFBO){
 
 #ifdef USE_OPENGL_330
     program = filter_programs["mode_normal_expansion_filter"];
@@ -2726,10 +2753,36 @@ void GLImage::applyGrungeRandomizationFilter(QGLFramebufferObject* inputFBO,
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     outputFBO->bindDefault();
-
-
 }
 
+
+void GLImage::applyGrungeWarpNormalFilter(QGLFramebufferObject* inputFBO,
+                                          QGLFramebufferObject* outputFBO){
+
+
+#ifdef USE_OPENGL_330
+    program = filter_programs["mode_grunge_normal_warp_filter"];
+    program->bind();
+    updateProgramUniforms(0);
+#else
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_grunge_normal_warp_filter"]) );
+#endif
+
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( program->setUniformValue("grunge_normal_warp"  , activeImage->grungeNormalWarp/100.0f) );
+
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+    GLCHK( outputFBO->bind() );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glActiveTexture(GL_TEXTURE1) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageNormal->scr_tex_id) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    outputFBO->bindDefault();
+
+}
 
 void GLImage::updateProgramUniforms(int step){
 

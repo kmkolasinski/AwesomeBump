@@ -216,6 +216,9 @@ public:
     void applySobelToNormalFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* outputFBO, BaseMapConvLevelProperties &convProp);
 
+    void applyNormalAngleCorrectionFilter(QGLFramebufferObject* inputFBO,
+                                          QGLFramebufferObject* outputFBO);
+
     void applyNormalExpansionFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* outputFBO);
 
@@ -253,6 +256,8 @@ public:
     void applyGrungeRandomizationFilter(QGLFramebufferObject* inputFBO,
                                         QGLFramebufferObject* outputFBO);
 
+    void applyGrungeWarpNormalFilter(QGLFramebufferObject* inputFBO,
+                                     QGLFramebufferObject* outputFBO);
 
     void updateProgramUniforms(int step);
 //! [3]
