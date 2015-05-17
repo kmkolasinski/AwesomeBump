@@ -1,5 +1,5 @@
 
-![alt tag](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/githubimage2.jpg)
+![alt tag](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/githubimage3.jpg)
 AwesomeBump  Pi 
 ===========
 
@@ -49,6 +49,14 @@ See the [pdf ](https://github.com/kmkolasinski/AwesomeBump/releases/download/Bui
 
 ### OpenGL 3.30 support
 You can now build AB to run all openGL instructions with 3.30 compatibility (note that tessellation will not work with 3.30). See [pdf ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) file and "Step 8" for more datails. Basicaly you just have to add "CONFIG+=release_gl330" command in the qmake settings in order to build 3.30  supported version of AB. 
+
+New in version 4.0  
+===========
+1) Grunge texture added
+
+2) Angle correction algorithm added when converting from Base map.
+
+3) And some minor fixes.
 
 New in version Pi (3.14) 
 ===========
