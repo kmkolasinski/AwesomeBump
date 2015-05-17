@@ -306,6 +306,8 @@ private:
 
     // perspective transformation
     QVector2D cornerPositions[4]; // position of four corner used to perform perspective transformation of quad
+    QVector2D grungeCornerPositions[4];
+
     QVector4D cornerWeights;
     int draggingCorner; // contains Id of current corner dragged or -1
     QCursor cornerCursors[4];

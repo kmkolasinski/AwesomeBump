@@ -591,7 +591,7 @@ void MainWindow::replotAllImages(){
     glImage->enableShadowRender(true);
 
     // skip grunge map if conversion is enabled
-    if(glImage->getConversionType() != CONVERT_FROM_D_TO_O){
+    if(glImage->getConversionType() != CONVERT_FROM_D_TO_O){        
         updateImage(GRUNGE_TEXTURE);
         glImage->update();
     }
@@ -1484,6 +1484,7 @@ void MainWindow::convertFromBase(){
     metallicImageProp ->setImageName(diffuseImageProp->getImageName());
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
     glImage->updateGLNow();
+    glImage->setConversionType(CONVERT_FROM_D_TO_O);
     replotAllImages();
     qDebug() << "Conversion from Base to others applied";
 }
@@ -1608,8 +1609,8 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_bConversionBaseMap"               ,image->getImageProporties()->bConversionBaseMap);
     settings.setValue("t_"+abbr+"_baseMapAngleCorrection"           ,image->getImageProporties()->baseMapAngleCorrection);
     settings.setValue("t_"+abbr+"_baseMapAngleWeight"               ,image->getImageProporties()->baseMapAngleWeight);
-
     settings.setValue("t_"+abbr+"_bConversionBaseMapShowHeightTexture",image->getImageProporties()->bConversionBaseMapShowHeightTexture);
+
     if(image->getImageProporties()->imageType == DIFFUSE_TEXTURE){
         for(int i = 0; i < 4 ; i++){
         QString level = "_Level"+QString::number(i);
@@ -1818,12 +1819,13 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->selectiveBlurNoIters           = settings.value("t_"+abbr+"_selectiveBlurNoIters",1).toInt();
 
     if(image->getImageProporties()->imageType == GRUNGE_TEXTURE){
-        image->getImageProporties()->grungeOverallWeight        = settings.value("t_"+abbr+"_grungeOverallWeight",0.0).toFloat();
+        //image->getImageProporties()->grungeOverallWeight        = settings.value("t_"+abbr+"_grungeOverallWeight",0.0).toFloat();
         image->getImageProporties()->grungeRadius               = settings.value("t_"+abbr+"_grungeRadius",0.0).toFloat();
         image->getImageProporties()->grungeNormalWarp           = settings.value("t_"+abbr+"_grungeNormalWarp",0.0).toFloat();
         image->getImageProporties()->grungeSeed                 = settings.value("t_"+abbr+"_grungeSeed",0).toInt();
         image->getImageProporties()->bGrungeEnableRandomTranslations = settings.value("t_"+abbr+"_bGrungeEnableRandomTranslations",0.0).toBool();
         image->getImageProporties()->bGrungeReplotAllWhenChanged     = settings.value("t_"+abbr+"_bGrungeReplotAllWhenChanged",0.0).toBool();
+
     }
     image->getImageProporties()->grungeBlendingMode   = settings.value("t_"+abbr+"_grungeBlendingMode",0).toInt();
     image->getImageProporties()->grungeImageWeight    = settings.value("t_"+abbr+"_grungeImageWeight",0.0).toFloat();

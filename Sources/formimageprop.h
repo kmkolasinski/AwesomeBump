@@ -62,6 +62,7 @@ public slots:
     void updateComboBoxes(int index);
     void updateGuiSpinBoxesAndLabes(int);
     void updateSlidersOnRelease();
+
     void updateGuiCheckBoxes();
     void updateSlidersNow(int);
 
@@ -86,6 +87,8 @@ public slots:
     // grunge
     void toggleGrungeImageSettingsGroup(bool toggle);
     void invertGrunge(bool toggle);
+    void loadPredefinedGrunge(QString);
+
 signals:
     void reloadSettingsFromConfigFile(TextureTypes type);
     void imageChanged();

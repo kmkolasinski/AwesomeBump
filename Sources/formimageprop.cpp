@@ -186,6 +186,8 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderGrungeOverallWeight,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderGrungeSeed,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderGrungeRadius,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
+    connect(ui->horizontalSliderGrungeRadius,SIGNAL(valueChanged(int)),this,SLOT(updateSlidersNow(int)));
+
     connect(ui->horizontalSliderGrungeNormalWarp,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
 
     connect(ui->checkBoxGrungeRandomTranslations,SIGNAL(clicked()),this,SLOT(updateGuiCheckBoxes()));
@@ -196,7 +198,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->comboBoxGrungeBlendingMode,SIGNAL(activated(int)),this,SLOT(updateComboBoxes(int)));
     // this actually invert all color components
     connect(ui->checkBoxGrungeInvert,SIGNAL(toggled(bool)),this,SLOT(invertGrunge(bool)));
-
+    connect(ui->comboBoxGrungePredefined,SIGNAL(activated(QString)),this,SLOT(loadPredefinedGrunge(QString)));
 
     setAcceptDrops(true);
     ui->groupBoxRemoveShading->hide();
@@ -238,6 +240,11 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     ui->labelGrungeImageWeight->hide();
     ui->labelGrungeImageWeight2->hide();
     ui->horizontalSliderGrungeMainImageWeight->hide();
+
+
+
+
+
     setMouseTracking(true);
     setFocus();
     setFocusPolicy(Qt::ClickFocus);
@@ -291,6 +298,7 @@ bool FormImageProp::loadFile(const QString &fileName)
 
         //emit imageChanged();
         emit imageLoaded(image.width(),image.height());
+        if(imageProp.imageType == GRUNGE_TEXTURE)emit imageChanged();
     }
     return true;
 }
@@ -300,6 +308,7 @@ void FormImageProp::pasteImageFromClipboard(QImage& _image){
     image     = _image;
     imageProp.init(image);
     emit imageLoaded(image.width(),image.height());
+    if(imageProp.imageType == GRUNGE_TEXTURE)emit imageChanged();
 }
 
 
@@ -556,6 +565,7 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
         imageProp.grungeSeed          = ui->horizontalSliderGrungeSeed->value();
         imageProp.grungeRadius        = ui->horizontalSliderGrungeRadius->value();
         imageProp.grungeNormalWarp    = ui->horizontalSliderGrungeNormalWarp->value();
+        ui->labelGrungeRadius->setText(QString::number(imageProp.grungeRadius/25.0));
     }
     imageProp.grungeImageWeight       = ui->horizontalSliderGrungeImageWeight->value();
     imageProp.grungeMainImageWeight   = ui->horizontalSliderGrungeMainImageWeight->value();
@@ -576,10 +586,14 @@ void FormImageProp::updateSlidersOnRelease(){
     emit imageChanged();
 }
 
+
 void FormImageProp::updateSlidersNow(int){
 
     imageProp.normalMixerScale    = ui->horizontalSliderNormalMixerScale->value()/10.0;
     ui->labelNormalMixerScale->setText(QString::number(imageProp.normalMixerScale));
+
+    imageProp.grungeRadius        = ui->horizontalSliderGrungeRadius->value();
+    ui->labelGrungeRadius->setText(QString::number(imageProp.grungeRadius/25.0));
 }
 
 void FormImageProp::updateGuiCheckBoxes(){
@@ -753,6 +767,21 @@ void FormImageProp::showNormalMixerGroup(){
 
 void FormImageProp::showGrungeSettingsGroup(){
     ui->groupBoxGrungeSettings->show();
+    // ------------------------------------------------------- //
+    //               Loading grunge maps folders
+    // ------------------------------------------------------- //
+    qDebug() << "Loading cubemaps folders:";
+    QDir currentDir("Core/2D/grunge");
+    currentDir.setFilter(QDir::Files);
+    QStringList entries = currentDir.entryList();
+    for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ){
+        QString dirname=*entry;
+        if(dirname != tr(".") && dirname != tr("..")){
+            qDebug() << "Enviromental map:" << dirname;
+            ui->comboBoxGrungePredefined->addItem(dirname);
+        }
+    }// end of for
+    // setting cube map for glWidget
 }
 
 void FormImageProp::showGrungeMainImageWeightSlider(){
@@ -777,6 +806,10 @@ void FormImageProp::invertGrunge(bool toggle){
     ui->checkBoxInvertG->setChecked(toggle);
     ui->checkBoxInvertR->setChecked(toggle);
     updateGuiCheckBoxes();
+}
+
+void FormImageProp::loadPredefinedGrunge(QString image){
+    loadFile("Core/2D/grunge/"+image);
 }
 
 void FormImageProp::hideOcclusionInputGroup(){
@@ -951,11 +984,10 @@ void FormImageProp::reloadSettings(){
     ui->comboBoxGrungeBlendingMode->setCurrentIndex(imageProp.grungeBlendingMode);
     if(imageProp.imageType == GRUNGE_TEXTURE){
 
-        //ui->horizontalSliderGrungeOverallWeight ->setValue(imageProp.grungeOverallWeight);
+       // ui->horizontalSliderGrungeOverallWeight ->setValue(imageProp.grungeOverallWeight);
         ui->horizontalSliderGrungeRadius        ->setValue(imageProp.grungeRadius);
         ui->horizontalSliderGrungeSeed          ->setValue(imageProp.grungeSeed);
         ui->horizontalSliderGrungeNormalWarp    ->setValue(imageProp.grungeNormalWarp);
-
         ui->checkBoxGrungeRandomTranslations->setChecked(imageProp.bGrungeEnableRandomTranslations);
         ui->checkBoxGrungeReplotAllAfterChange->setChecked(imageProp.bGrungeReplotAllWhenChanged);
 

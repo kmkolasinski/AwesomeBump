@@ -709,7 +709,8 @@ public:
         conversionNHItersSmall      = src.conversionNHItersSmall;
         conversionNHItersVerySmall  = src.conversionNHItersVerySmall;
         bConversionBaseMap          = src.bConversionBaseMap;
-
+        baseMapAngleCorrection      = src.baseMapAngleCorrection;
+        baseMapAngleWeight          = src.baseMapAngleWeight;
 
         ssaoNoIters   = src.ssaoNoIters;
         ssaoIntensity = src.ssaoIntensity;
@@ -769,6 +770,17 @@ public:
         normalMixerAngle = src.normalMixerAngle;
         normalMixerPosX  = src.normalMixerPosX;
         normalMixerPosY  = src.normalMixerPosY;
+
+        // grunge
+        grungeOverallWeight             = src.grungeOverallWeight;      // general weight for all images
+        grungeSeed                      = src.grungeSeed;               // grunge randomization seed (if = 0 no randomization)
+        grungeRadius                    = src.grungeRadius;             // random radius
+        bGrungeReplotAllWhenChanged     = src.bGrungeReplotAllWhenChanged;
+        bGrungeEnableRandomTranslations = src.bGrungeEnableRandomTranslations;
+        grungeNormalWarp                = src.grungeNormalWarp;         // warp grunge image according to normal texture
+        grungeImageWeight               = src.grungeImageWeight;        // per image additional weight
+        grungeMainImageWeight           = src.grungeMainImageWeight;    // used for normal blending only
+        grungeBlendingMode              = src.grungeBlendingMode;
 
      }
 

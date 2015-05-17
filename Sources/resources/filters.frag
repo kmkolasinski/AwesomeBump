@@ -86,22 +86,83 @@ vec4 filter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
-// Based on:
-// https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Source/Shaders/Builtin/Functions/hue.glsl
+
+// taken from: http://axonflux.com/handy-rgb-to-hsl-and-rgb-to-hsv-color-model-c
 /**
-    Copyright 2011-2015 Cesium Contributors
+ * Converts an RGB color value to HSV. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+ * Assumes r, g, and b are contained in the set [0, 255] and
+ * returns h, s, and v in the set [0, 1].
+ *
+ * @param   Number  r       The red color value
+ * @param   Number  g       The green color value
+ * @param   Number  b       The blue color value
+ * @return  Array           The HSV representation
+ */
+vec3 rgbToHsv(float r,float g,float b){
+    //r = r/255, g = g/255, b = b/255;
+    float max = max(max(r, g), b);
+    float min = min(min(r, g), b);
+    float h, s, v = max;
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and limitations under the License.
+    float d = max - min;
+    s = (max == 0) ? 0 : d / max;
 
-    Columbus View (Pat. Pend.)
-*/
+    if(max == min){
+        h = 0; // achromatic
+    }else{
+        if(max == r){
+             h = (g - b) / d + (g < b ? 6 : 0);
+        }else if(max == g){
+             h = (b - r) / d + 2;
+        }else{
+             h = (r - g) / d + 4;
+        }
+
+        h /= 6.0;
+    }
+
+    return vec3(h, s, v);
+}
+
+/**
+ * Converts an HSV color value to RGB. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+ * Assumes h, s, and v are contained in the set [0, 1] and
+ * returns r, g, and b in the set [0, 255].
+ *
+ * @param   Number  h       The hue
+ * @param   Number  s       The saturation
+ * @param   Number  v       The value
+ * @return  Array           The RGB representation
+ */
+vec3 hsvToRgb(float h, float s,float v){
+    float r, g, b;
+
+    int   i = int(floor(h * 6));
+    float f = h * 6.0 - i;
+    float p = v * (1.0 - s);
+    float q = v * (1.0 - f * s);
+    float t = v * (1.0 - (1.0 - f) * s);
+
+    if( i%6 == 0){
+        r = v; g = t; b = p;
+    }else if( i%6 == 1){
+        r = q; g = v; b = p;
+    }else if( i%6 == 2){
+        r = p; g = v; b = t;
+    }else if( i%6 == 3){
+        r = p; g = q; b = v;
+    }else if( i%6 == 4){
+        r = t; g = p; b = v;
+    }else if( i%6 == 5){
+        r = v; g = p; b = q;
+    }
+
+    return vec3(r,g,b);
+}
+
+
 
 uniform float gui_hue; // number from -1:1
 #ifndef mode_color_hue_filter_330
@@ -114,23 +175,10 @@ vec4 filter(){
 #endif
 
    vec4 textureColor = texture( layerA, v2QuadCoords.xy);
-   //return textureColor;
-   vec3 fragRGB = textureColor.rgb;
-
-   mat3 toYIQ = mat3(0.299,0.587,0.114,
-                   0.595716, -0.274453, -0.321263,
-                   0.211456, -0.522591,  0.311135);
-   mat3 toRGB = mat3(1.0,  0.9563,  0.6210,
-                   1.0, -0.2721, -0.6474,
-                   1.0, -1.107,   1.7046);
-
-   vec3 yiq     = toYIQ * textureColor.rgb;
-   float hue    = atan(yiq.z, yiq.y) + 3.14159*gui_hue;
-   float chroma = sqrt(yiq.z * yiq.z + yiq.y * yiq.y);
-   vec3 color   = vec3(yiq.x, chroma * cos(hue), chroma * sin(hue));
-   return vec4(toRGB * color,1);
-
-
+   vec3 hsv = rgbToHsv(textureColor.r,textureColor.g,textureColor.b);
+   hsv.r +=  (gui_hue);
+   vec3 rgb = clamp(hsvToRgb(hsv.r,hsv.g,hsv.b),vec3(-1.0),vec3(1.0));
+   return vec4(clamp(rgb,vec3(0),vec3(1)),1);
 
 }
 // ----------------------------------------------------------------
@@ -1337,7 +1385,7 @@ vec4 filter(){
         float gray = dot(color.rgb,vec3(1));
         color = gray * I;
     }else if(gui_grunge_blending_mode == GRUNGE_DIFFERENCE){
-        color = clamp(abs(I-M),vec4(0.0),vec4(1.0));
+        color = clamp((I-M),vec4(0.0),vec4(1.0));
         float gray = dot(color.rgb,vec3(1));
         color = gray * I;
     }else if(gui_grunge_blending_mode == GRUNGE_DIVIDE){
@@ -1372,6 +1420,7 @@ vec4 filter(){
 // ----------------------------------------------------------------
 uniform float gui_grunge_radius;
 uniform int gui_grunge_translations;
+uniform bool gui_grunge_brandomize;
 #ifndef mode_grunge_randomization_filter_330
 #ifndef USE_OPENGL_330
 subroutine(filterModeType)
@@ -1381,13 +1430,19 @@ vec4 mode_grunge_randomization_filter(){
 vec4 filter(){
 #endif
 
+    float rand_scale = gui_grunge_radius/25.0;
+
+    if(!gui_grunge_brandomize){
+           return texture( layerA, v2QuadCoords.xy*rand_scale);
+    }
+
     vec4 color         = vec4(0.0);
     float weight = 0;
     // loop over all atoms
     vec2 tc = v2QuadCoords.st;
     float x = tc.x;
     float y = tc.y;
-    float rand_scale = gui_grunge_radius/25.0;
+
     float translate = gui_grunge_translations;
 
     for(int i = 0 ; i < 9 ; i++){

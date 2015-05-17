@@ -58,6 +58,9 @@ GLImage::GLImage(QWidget *parent)
     cornerPositions[1] = QVector2D( 1,-0);
     cornerPositions[2] = QVector2D( 1, 1);
     cornerPositions[3] = QVector2D(-0, 1);
+    for(int i = 0 ; i < 4 ; i++){
+        grungeCornerPositions[i] = cornerPositions[i];
+    }
     draggingCorner       = -1;
     gui_perspective_mode =  0;
     gui_seamless_mode    =  0;
@@ -414,7 +417,10 @@ void GLImage::render(){
     }
     if(activeImage->imageType == GRUNGE_TEXTURE){
         bTransformUVs = false;
+        GLCHK( program->setUniformValue("material_id", int(MATERIALS_DISABLED) ) );
     }
+
+
 
     GLCHK( glActiveTexture(GL_TEXTURE10) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageMaterial->scr_tex_id) );
@@ -605,10 +611,10 @@ void GLImage::render(){
         case(GRUNGE_TEXTURE):{
             applyGrungeWarpNormalFilter(activeFBO,auxFBO2);
 
-            if(activeImage->grungeSeed != 0){
+            //if(activeImage->grungeSeed != 0){
                 applyGrungeRandomizationFilter(auxFBO2,activeFBO);
-            }else
-                copyTex2FBO(auxFBO2->texture(),activeFBO);
+            //}else
+             //   copyTex2FBO(auxFBO2->texture(),activeFBO);
 
         break;
         }// end of case Grunge
@@ -630,6 +636,7 @@ void GLImage::render(){
     }// end of if not conversion process
 
     // Transform UVs in some cases
+
     if(conversionType == CONVERT_NONE && bTransformUVs){
 
         applyAllUVsTransforms(activeFBO);
@@ -652,8 +659,8 @@ void GLImage::render(){
        activeImage->imageType != ROUGHNESS_TEXTURE){
 
         // hue manipulation
-        //applyColorHueFilter(auxFBO1,activeFBO);
-        //copyFBO(activeFBO,auxFBO1);
+        applyColorHueFilter(auxFBO1,activeFBO);
+        copyFBO(activeFBO,auxFBO1);
     }
 
     // In case when color picking is enabled disable
@@ -1043,6 +1050,10 @@ void GLImage::updateCornersPosition(QVector2D dc1,QVector2D dc2,QVector2D dc3,QV
     cornerPositions[1] = QVector2D(1,0) + dc2;
     cornerPositions[2] = QVector2D(1,1) + dc3;
     cornerPositions[3] = QVector2D(0,1) + dc4;
+
+    for(int i = 0 ; i < 4 ; i++){
+        grungeCornerPositions[i] = cornerPositions[i];
+    }
     updateGL();
 }
 void GLImage::selectPerspectiveTransformMethod(int method){
@@ -1170,10 +1181,17 @@ void GLImage::applyPerspectiveTransformFilter(  QGLFramebufferObject* inputFBO,
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    GLCHK( program->setUniformValue("corner1"  , cornerPositions[0]) );
-    GLCHK( program->setUniformValue("corner2"  , cornerPositions[1]) );
-    GLCHK( program->setUniformValue("corner3"  , cornerPositions[2]) );
-    GLCHK( program->setUniformValue("corner4"  , cornerPositions[3]) );
+    if(activeImage->imageType == GRUNGE_TEXTURE){
+        GLCHK( program->setUniformValue("corner1"  , grungeCornerPositions[0]) );
+        GLCHK( program->setUniformValue("corner2"  , grungeCornerPositions[1]) );
+        GLCHK( program->setUniformValue("corner3"  , grungeCornerPositions[2]) );
+        GLCHK( program->setUniformValue("corner4"  , grungeCornerPositions[3]) );
+    }else{
+        GLCHK( program->setUniformValue("corner1"  , cornerPositions[0]) );
+        GLCHK( program->setUniformValue("corner2"  , cornerPositions[1]) );
+        GLCHK( program->setUniformValue("corner3"  , cornerPositions[2]) );
+        GLCHK( program->setUniformValue("corner4"  , cornerPositions[3]) );
+    }
     GLCHK( program->setUniformValue("corners_weights"  , cornerWeights) );
     GLCHK( program->setUniformValue("uv_scaling_mode", 0) );
     GLCHK( program->setUniformValue("gui_perspective_mode"  , gui_perspective_mode) );
@@ -1455,22 +1473,22 @@ void GLImage::applySeamlessLinearFilter(QGLFramebufferObject* inputFBO,
         default:
         case(INPUT_FROM_HEIGHT_INPUT):
             //copyFBO(targetImageHeight->ref_fbo,activeImage->aux2_fbo);
-            copyTex2FBO(targetImageHeight->scr_tex_id,auxFBO1);
+            copyTex2FBO(targetImageHeight->scr_tex_id,auxFBO2);
             break;
         case(INPUT_FROM_DIFFUSE_INPUT):
             //copyFBO(targetImageDiffuse->ref_fbo,activeImage->aux2_fbo);
-            copyTex2FBO(targetImageDiffuse->scr_tex_id,auxFBO1);
+            copyTex2FBO(targetImageDiffuse->scr_tex_id,auxFBO2);
             break;
     };
 
     // when translations are applied first one has to translate
     // alse the contrast mask image
     if(FBOImageProporties::bSeamlessTranslationsFirst){
-        applyPerspectiveTransformFilter(auxFBO1,outputFBO);// the output is save to auxFBO1
+        applyPerspectiveTransformFilter(auxFBO2,outputFBO);// the output is save to auxFBO1
     }
 
     GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO1->texture()) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO2->texture()) );
 
 #ifdef USE_OPENGL_330
     program = filter_programs["mode_seamless_linear_filter"];
@@ -1479,8 +1497,6 @@ void GLImage::applySeamlessLinearFilter(QGLFramebufferObject* inputFBO,
 #else
     GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_seamless_linear_filter"]) );
 #endif
-
-
 
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
@@ -2740,7 +2756,9 @@ void GLImage::applyGrungeRandomizationFilter(QGLFramebufferObject* inputFBO,
     GLCHK( program->setUniformValue("gui_seamless_random_angles" , random_angles) );
     float phase = 3.1415*qrand()/(RAND_MAX+0.0);
     GLCHK( program->setUniformValue("gui_seamless_random_phase" , phase) );
-    GLCHK( program->setUniformValue("gui_grunge_radius" , activeImage->grungeRadius) );
+    GLCHK( program->setUniformValue("gui_grunge_radius"    , activeImage->grungeRadius) );
+    GLCHK( program->setUniformValue("gui_grunge_brandomize" , bool(activeImage->grungeSeed!=0)) );
+
     GLCHK( program->setUniformValue("gui_grunge_translations" , int(activeImage->bGrungeEnableRandomTranslations) ) );
 
 
@@ -2904,6 +2922,8 @@ void GLImage::wheelEvent(QWheelEvent *event){
 
 void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, Qt::MouseButtons buttons)
 {
+
+    if(activeImage->imageType != GRUNGE_TEXTURE)
     if(FBOImageProporties::currentMaterialIndeks != MATERIALS_DISABLED && buttons & Qt::LeftButton){
         QMessageBox msgBox;
         msgBox.setText("Warning!");
@@ -2930,6 +2950,8 @@ void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, Qt::MouseB
         msgBox.exec();
         return;
     }
+
+
 
     if(activeImage->imageType == OCCLUSION_TEXTURE && buttons & Qt::LeftButton){
         QMessageBox msgBox;
@@ -2991,13 +3013,15 @@ void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, Qt::MouseB
                 QVector2D dmouse = QVector2D(-dx*(float(orthographicProjWidth)/width()),dy*(float(orthographicProjHeight)/height()));
                 for(int i = 0; i < 4 ; i++){
                     averagePos += cornerPositions[i]*0.25;
-                    cornerPositions[i] += dmouse;
+                    if(activeImage->imageType == GRUNGE_TEXTURE) grungeCornerPositions[i] += dmouse;
+                    else cornerPositions[i] += dmouse;
                 }
                 repaint();
             }
         break;
         // grab corners in perspective correction tool
         case(UV_GRAB_CORNERS):
+            if(activeImage->imageType == GRUNGE_TEXTURE) break;
             if(draggingCorner == -1){
             setCursor(Qt::OpenHandCursor);
             for(int i = 0; i < 4 ; i++){
@@ -3017,11 +3041,13 @@ void GLImage::relativeMouseMoveEvent(int dx, int dy, bool* wrapMouse, Qt::MouseB
                 }
             }// end of for corners
             }// end of if
-            if(draggingCorner >=0 && draggingCorner < 4) cornerPositions[draggingCorner] += QVector2D(-dx*(float(orthographicProjWidth)/width()),dy*(float(orthographicProjHeight)/height()));
+            if(draggingCorner >=0 && draggingCorner < 4)
+                cornerPositions[draggingCorner] += QVector2D(-dx*(float(orthographicProjWidth)/width()),dy*(float(orthographicProjHeight)/height()));
             repaint();
             }
         break;
         case(UV_SCALE_XY):
+            if(activeImage->imageType == GRUNGE_TEXTURE) break;
             setCursor(Qt::OpenHandCursor);
             if(buttons & Qt::LeftButton){ // drag image
                 setCursor(Qt::SizeAllCursor);
