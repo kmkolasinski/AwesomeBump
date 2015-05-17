@@ -346,6 +346,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowRoughnessImage ,SIGNAL(triggered()),this,SLOT(selectRoughnessTab()));
     connect(ui->actionShowMetallicImage  ,SIGNAL(triggered()),this,SLOT(selectMetallicTab()));
     connect(ui->actionShowMaterialsImage ,SIGNAL(triggered()),this,SLOT(selectMaterialsTab()));
+    connect(ui->actionShowGrungeTexture  ,SIGNAL(triggered()),this,SLOT(selectGrungeTab()));
+
 
     connect(ui->checkBoxSaveDiffuse ,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
     connect(ui->checkBoxSaveNormal  ,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
@@ -686,6 +688,11 @@ void MainWindow::selectMaterialsTab(){
     ui->tabWidget->setCurrentIndex(7);
     updateImage(7);
 }
+void MainWindow::selectGrungeTab(){
+    ui->tabWidget->setCurrentIndex(8);
+    updateImage(8);
+}
+
 
 void MainWindow::selectGeneralSettingsTab(){
     ui->tabWidget->setCurrentIndex(TAB_SETTINGS);

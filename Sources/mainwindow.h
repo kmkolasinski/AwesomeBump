@@ -68,6 +68,7 @@ public slots:
     void selectRoughnessTab();
     void selectMetallicTab();
     void selectMaterialsTab();
+    void selectGrungeTab();
     void selectGeneralSettingsTab();
     void selectUVsTab();
     void fitImage();// resize 2D image

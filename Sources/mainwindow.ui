@@ -115,8 +115,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>376</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -189,8 +189,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>376</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -266,8 +266,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>376</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -337,8 +337,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>376</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -408,8 +408,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>376</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -476,8 +476,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>376</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -550,8 +550,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>100</width>
-              <height>30</height>
+              <width>376</width>
+              <height>646</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -603,8 +603,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>98</width>
-              <height>28</height>
+              <width>367</width>
+              <height>644</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -650,8 +650,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>98</width>
-              <height>28</height>
+              <width>360</width>
+              <height>630</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_33">
@@ -736,7 +736,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>393</width>
+              <width>359</width>
               <height>675</height>
              </rect>
             </property>
@@ -2060,8 +2060,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>264</width>
-              <height>471</height>
+              <width>376</width>
+              <height>646</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -4044,6 +4044,7 @@
    <addaction name="actionShowRoughnessImage"/>
    <addaction name="actionShowMetallicImage"/>
    <addaction name="actionShowMaterialsImage"/>
+   <addaction name="actionShowGrungeTexture"/>
    <addaction name="actionShowSettingsImage"/>
    <addaction name="actionShowUVsTab"/>
    <addaction name="actionFitToScreen"/>
@@ -4287,6 +4288,21 @@
    </property>
    <property name="shortcut">
     <string>Alt+E</string>
+   </property>
+  </action>
+  <action name="actionShowGrungeTexture">
+   <property name="icon">
+    <iconset resource="content.qrc">
+     <normaloff>:/resources/showGrunge.png</normaloff>:/resources/showGrunge.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Grunge Map</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show grunge tab (G)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="shortcut">
+    <string>G</string>
    </property>
   </action>
  </widget>

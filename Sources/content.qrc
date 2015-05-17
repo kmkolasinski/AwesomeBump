@@ -62,5 +62,6 @@
         <file>resources/lenscolor.png</file>
         <file>resources/lensdirt.png</file>
         <file>resources/lensstar.png</file>
+        <file>resources/showGrunge.png</file>
     </qresource>
 </RCC>

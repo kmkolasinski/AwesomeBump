@@ -30,9 +30,9 @@
 //#define USE_OPENGL_330
 
 #ifdef USE_OPENGL_330
-#define AWESOME_BUMP_VERSION "AwesomeBump Pi (2015) (openGL 330 release)"
+#define AWESOME_BUMP_VERSION "AwesomeBump 4.0 Beta (2015) (openGL 330 release)"
 #else
-#define AWESOME_BUMP_VERSION "AwesomeBump Pi (2015)"
+#define AWESOME_BUMP_VERSION "AwesomeBump 4.0 Beta (2015)"
 #endif
 
 using namespace std;
