@@ -1,5 +1,8 @@
 
+
 ![alt tag](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/githubimage3.jpg)
+Official AB website is down :( But in future I will move all the information here on GitHub server.
+
 AwesomeBump  4.0 Beta 
 ===========
 
