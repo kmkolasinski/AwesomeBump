@@ -3,12 +3,17 @@
 ![alt tag](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/githubimage3.jpg)
 Official AB website is down :( But in future I will move all the information here on GitHub server.
 
+Info
+===========
+Since I have a lot of work now (from June to September) I have no time for AB programming, so there will be a long break before next commits and upgrades. During this time you (AB users) could help other users to solve thier problems reported in the Issues tab. 
+
+
 AwesomeBump  4.0 Beta 
 ===========
 
 AwesomeBump is a free and open source program written using Qt library designed to generate normal, height, specular or ambient occlusion, metallic, roughness textures from a single image. Additionals features like material textures or grunge maps are available. Since the image processing is done in 99% on GPU the program runs very fast and all the parameters can be changed in real time. AB was made to be a new alternative to known gimp plugin called Insane Bump or commercial tool: Crazy Bump.
 
-Feel free to contact me if you find any bugs and problems: support@awesomebump.besaba.com
+Feel free to contact me if you find any bugs and problems: awesomebump.help@gmail.com
 
 If you want to fix or improve something please fork my repo and send me the pull-request with changes. 
 
