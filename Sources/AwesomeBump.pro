@@ -1,5 +1,13 @@
+TEMPLATE      = app
 CONFIG       += c++11
 QT           += opengl gui widgets
+
+DESTDIR = Build/Bin
+OBJECTS_DIR = Build/Obj
+MOC_DIR = Build/Ui
+UI_DIR = Build/Ui
+RCC_DIR = Build/Obj
+
 
 CONFIG(release_gl330) {
     #This is a release build
@@ -11,9 +19,9 @@ CONFIG(release_gl330) {
 }
 
 VPATH += ../shared
-INCLUDEPATH += ../shared
+INCLUDEPATH += ../shared include
 
-HEADERS       = glwidget.h \
+HEADERS = glwidget.h \
     mainwindow.h \
     CommonObjects.h \
     formimageprop.h \
@@ -31,10 +39,11 @@ HEADERS       = glwidget.h \
     formbasemapconversionlevels.h \
     formmaterialindicesmanager.h \
     dialogshortcuts.h \
+    allaboutdialog.h \    
     formimagebase.h
 
-SOURCES       = glwidget.cpp \
-                main.cpp \
+SOURCES = glwidget.cpp \
+    main.cpp \
     mainwindow.cpp \
     formimageprop.cpp \
     glimageeditor.cpp \
@@ -51,14 +60,11 @@ SOURCES       = glwidget.cpp \
     formbasemapconversionlevels.cpp \
     formmaterialindicesmanager.cpp \
     dialogshortcuts.cpp \
+    allaboutdialog.cpp \
     formimagebase.cpp
 
 
-# install
-INSTALLS += target
-
-RESOURCES += \
-    content.qrc
+RESOURCES += content.qrc
 
 RC_FILE = icon.rc
 
@@ -71,12 +77,19 @@ FORMS += \
     dialoglogger.ui \
     formbasemapconversionlevels.ui \
     formmaterialindicesmanager.ui \
+    allaboutdialog.ui \
     dialogshortcuts.ui
 
 ICON = resources/icon.icns
-INCLUDEPATH += include
 
 DISTFILES += \
     resources/quad.obj
 
+# install additional files into target destination
+# (require "make install")
+config.path = $$OUT_PWD/$$DESTDIR
+config.files += ../Bin/Configs ../Bin/Core
+INSTALLS += config
+
+include("../Third/QtnProperty/QtnProperty.pri")
 

@@ -13,12 +13,10 @@
 
 #ifdef Q_OS_MAC
 # define AB_INI "AwesomeBump.ini"
-# define AB_LOG "AwesomeBump.log" // log created in current directory
-# define AB_LOG_ALT (QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).arg(AB_LOG))
+# define AB_LOG "AwesomeBump.log"
 #else
-    #define AB_INI "config.ini"
-    #define AB_LOG "log.txt"
-    #define AB_LOG_ALT "log.txt"
+# define AB_INI "config.ini"
+# define AB_LOG "log.txt"
 #endif
 
 

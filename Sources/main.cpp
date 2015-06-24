@@ -46,6 +46,23 @@
 #include "CommonObjects.h"
 #include "glimageeditor.h"
 
+// find data directory for each platform:
+QString _find_data_dir(const QString& path)
+{
+   if (path.startsWith(":"))
+     return path; // resource
+   QString fpath = QApplication::applicationDirPath();
+#if defined(Q_OS_DARWIN)
+    fpath += "/../../../"+path;
+#elif defined(Q_OS_WIN32)
+    fpath += "/"+path;
+#else
+    fpath = QDir::homePath();
+    fpath += "/awesomebump/"+path;
+#endif
+    return fpath;
+}
+
 // Redirect qDebug() to file log.txt file.
 void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -71,8 +88,15 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
          break;
    }
 
+   // avoid recursive calling here: 
    QFile outFile(AB_LOG);
-   outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+   if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
+      // try any safe location:
+      QString glob = QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).arg(QFileInfo(AB_LOG).fileName());
+      outFile.setFileName(glob);
+      if (!outFile.open(QIODevice::WriteOnly | QIODevice::Append))
+         return;
+   }
 
    QTextStream textStream(&outFile);
    textStream << txt << endl;
@@ -87,13 +111,13 @@ bool checkOpenGL(){
 
     qDebug() << "Running the " + QString(AWESOME_BUMP_VERSION);
     qDebug() << "Checking OpenGL version...";
-    qDebug() << "Widget OpenGL: " << glContext->format().majorVersion() << "." << glContext->format().minorVersion() ;
-    qDebug() << "Context valid: " << glContext->isValid() ;
-    qDebug() << "OpenGL information: " ;
-    qDebug() << "VENDOR: "       << (const char*)glGetString(GL_VENDOR) ;
-    qDebug() << "RENDERER: "     << (const char*)glGetString(GL_RENDERER) ;
-    qDebug() << "VERSION: "      << (const char*)glGetString(GL_VERSION) ;
-    qDebug() << "GLSL VERSION: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
+    qDebug() << "Widget OpenGL:" << QString("%1.%2").arg(glContext->format().majorVersion()).arg(glContext->format().minorVersion());
+    qDebug() << "Context valid:" << glContext->isValid() ;
+    qDebug() << "OpenGL information:" ;
+    qDebug() << "VENDOR:"       << (const char*)glGetString(GL_VENDOR) ;
+    qDebug() << "RENDERER:"     << (const char*)glGetString(GL_RENDERER) ;
+    qDebug() << "VERSION:"      << (const char*)glGetString(GL_VERSION) ;
+    qDebug() << "GLSL VERSION:" << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
 
     float version = glContext->format().majorVersion() + 0.1 * glContext->format().minorVersion();
     Performance3DSettings::openGLVersion = version;
@@ -125,10 +149,11 @@ bool checkOpenGL(){
 
 int main(int argc, char *argv[])
 {
-
-
-
     QApplication app(argc, argv);
+
+    qDebug() << "Application dir:" << QApplication::applicationDirPath();
+    qDebug() << "Data dir:" << _find_data_dir("");
+
 
     // Chossing proper GUI style from config.ini file.
     QSettings settings("config.ini", QSettings::IniFormat);
@@ -147,6 +172,15 @@ int main(int argc, char *argv[])
     QFile::remove(AB_LOG);
 
 
+    QGLFormat glFormat(QGL::SampleBuffers);
+
+#ifdef Q_OS_MAC
+    glFormat.setProfile( QGLFormat::CoreProfile );
+    glFormat.setVersion( 4, 1 );
+#endif
+    QGLFormat::setDefaultFormat(glFormat);
+
+
     qInstallMessageHandler(customMessageHandler);
     qDebug() << "Starting application:";
 
@@ -158,11 +192,11 @@ int main(int argc, char *argv[])
 #ifdef USE_OPENGL_330
         msgBox.setInformativeText("Sorry but it seems that your graphics card does not support openGL 3.3.\n"
                                   "Program will not run :(\n"
-                                  "See log.txt file for more info.");
+                                  "See " AB_LOG " file for more info.");
 #else
         msgBox.setInformativeText("Sorry but it seems that your graphics card does not support openGL 4.0.\n"
                                   "Program will not run :(\n"
-                                  "See log.txt file for more info.");
+                                  "See " AB_LOG " file for more info.");
 #endif
 
 
