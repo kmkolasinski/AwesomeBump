@@ -647,6 +647,26 @@ void MainWindow::replotAllImages(){
                       + QString(" Memory left:") +QString::number(float(cur_avail_mem_kb/1024.0f))+QString("[MB]")
                       + QString(" Total memory:")+QString::number(float(total_mem_kb/1024.0f))+QString("[MB]");
 
+    // added memory info to log file (ATI and NVIDIA)
+    GLint ati_mem_avail = 0;
+    glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, &ati_mem_avail);
+    qDebug() << "ATI    RAM Left=" << QString::number(ati_mem_avail/1024.0f) << "[MB]";
+    qDebug() << "NVIDIA RAM Left=" << QString::number(cur_avail_mem_kb/1024.0f) << "[MB]";
+    // calling both functions lead to erros:
+    
+    GLenum err (glGetError());
+    QString error;
+
+    switch(err) {
+            case GL_INVALID_OPERATION:      error="INVALID_OPERATION";      break;
+            case GL_INVALID_ENUM:           error="INVALID_ENUM";           break;
+            case GL_INVALID_VALUE:          error="INVALID_VALUE";          break;
+            case GL_OUT_OF_MEMORY:          error="OUT_OF_MEMORY";          break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION:  error="INVALID_FRAMEBUFFER_OPERATION";  break;
+    };
+
+    qDebug() << "Just checking possible error after memory call: GL_" << error <<" - "<<__FILE__<<":"<<__LINE__;
+
 
     statusLabel->setText(menu_text);
 
