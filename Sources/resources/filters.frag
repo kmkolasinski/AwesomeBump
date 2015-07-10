@@ -106,13 +106,13 @@ vec3 rgbToHsv(float r,float g,float b){
     float h, s, v = max;
 
     float d = max - min;
-    s = (max == 0) ? 0 : d / max;
+    s = (max == 0.0) ? 0.0 : d / max;
 
     if(max == min){
         h = 0; // achromatic
     }else{
         if(max == r){
-             h = (g - b) / d + (g < b ? 6 : 0);
+             h = (g - b) / d + (g < b ? 6.0 : 0.0);
         }else if(max == g){
              h = (b - r) / d + 2;
         }else{
