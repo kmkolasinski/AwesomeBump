@@ -45,6 +45,7 @@
 #include "mainwindow.h"
 #include "CommonObjects.h"
 #include "glimageeditor.h"
+#include "allaboutdialog.h"
 
 // find data directory for each platform:
 QString _find_data_dir(const QString& path)
@@ -52,7 +53,7 @@ QString _find_data_dir(const QString& path)
    if (path.startsWith(":"))
      return path; // resource
    QString fpath = QApplication::applicationDirPath();
-#if defined(Q_OS_DARWIN)
+#if defined(Q_OS_MAC)
     fpath += "/../../../"+path;
 #elif defined(Q_OS_WIN32)
     fpath += "/"+path;
@@ -124,6 +125,7 @@ bool checkOpenGL(){
     #ifdef USE_OPENGL_330
         Performance3DSettings::openGLVersion = 3.3;
     #endif
+
     delete glWidget;
 
     qDebug() << "Version:" << version;
@@ -154,7 +156,6 @@ int main(int argc, char *argv[])
     qDebug() << "Application dir:" << QApplication::applicationDirPath();
     qDebug() << "Data dir:" << _find_data_dir("");
 
-
     // Chossing proper GUI style from config.ini file.
     QSettings settings("config.ini", QSettings::IniFormat);
     // Dude, this default style is really amazing...
@@ -162,6 +163,9 @@ int main(int argc, char *argv[])
     // No...
     QString guiStyle = settings.value("gui_style","DefaultAwesomeStyle").toString();
     app.setStyle(QStyleFactory::create( guiStyle ));
+
+    // Customize some elements:
+    app.setStyleSheet("QGroupBox { font-weight: bold; } ");
 
     QFont font;
     font.setFamily(font.defaultFamily());
@@ -184,9 +188,10 @@ int main(int argc, char *argv[])
     qInstallMessageHandler(customMessageHandler);
     qDebug() << "Starting application:";
 
-    QMessageBox msgBox;
     if(!checkOpenGL()){
 
+        AllAboutDialog msgBox;
+        msgBox.setPixmap(":/resources/icon-off.png");
         msgBox.setText("Fatal Error!");
 
 #ifdef USE_OPENGL_330
@@ -200,12 +205,10 @@ int main(int argc, char *argv[])
 #endif
 
 
-        msgBox.setStandardButtons(QMessageBox::Close);
         msgBox.show();
 
         return app.exec();
     }else{
-
 
         MainWindow window;
         window.setWindowTitle(AWESOME_BUMP_VERSION);

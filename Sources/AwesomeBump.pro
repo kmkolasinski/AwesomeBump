@@ -91,5 +91,7 @@ config.path = $$OUT_PWD/$$DESTDIR
 config.files += ../Bin/Configs ../Bin/Core
 INSTALLS += config
 
-include("../Third/QtnProperty/QtnProperty.pri")
-
+exists("../Third/QtnProperty/QtnProperty.pri") {
+  DEFINES += HAVE_QTNPROP
+  include("../Third/QtnProperty/QtnProperty.pri")
+}
