@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include <iostream>
 
+extern QString _find_data_dir(const QString& path);
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -16,14 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
     GLWidget::recentMeshDir     = &recentMeshDir;
 
     statusLabel = new QLabel("Memory left:");
-
-    QGLFormat glFormat(QGL::SampleBuffers);
-
-#ifdef Q_OS_MAC
-    glFormat.setProfile( QGLFormat::CoreProfile );
-    glFormat.setVersion( 4, 1 );
-#endif
-    QGLFormat::setDefaultFormat(glFormat);
 
     glImage          = new GLImage(this);
     glWidget         = new GLWidget(this,glImage);
@@ -521,7 +515,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //               Loading cub maps folders
     // ------------------------------------------------------- //
     qDebug() << "Loading cubemaps folders:";
-    QDir currentDir("Core/2D/skyboxes");
+    QDir currentDir(_find_data_dir("Core/2D/skyboxes"));
     currentDir.setFilter(QDir::Dirs);
     QStringList entries = currentDir.entryList();
     for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ){
@@ -633,6 +627,7 @@ void MainWindow::replotAllImages(){
     // ploting the memory usage after each replot
     #define GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX   0x9048
     #define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
+
     GLint total_mem_kb = 0;
     glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
                   &total_mem_kb);
@@ -731,6 +726,7 @@ void MainWindow::fitImage(){
 void MainWindow::showHideTextureTypes(bool){
 
     //qDebug() << "Toggle processing images";
+
     bool value = ui->checkBoxSaveDiffuse->isChecked();
     diffuseImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(DIFFUSE_TEXTURE,value);
@@ -738,42 +734,42 @@ void MainWindow::showHideTextureTypes(bool){
     ui->pushButtonToggleDiffuse->setChecked(value);
     ui->actionShowDiffuseImage->setVisible(value);
 
-        value = ui->checkBoxSaveNormal->isChecked();
+    value = ui->checkBoxSaveNormal->isChecked();
     normalImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(NORMAL_TEXTURE,value);
     ui->pushButtonToggleNormal->setVisible(value);
     ui->pushButtonToggleNormal->setChecked(value);
     ui->actionShowNormalImage->setVisible(value);
 
-        value = ui->checkBoxSaveHeight->isChecked();
+    value = ui->checkBoxSaveHeight->isChecked();
     occlusionImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(OCCLUSION_TEXTURE,value);
     ui->pushButtonToggleOcclusion->setVisible(value);
     ui->pushButtonToggleOcclusion->setChecked(value);
     ui->actionShowOcclusiontImage->setVisible(value);
 
-        value = ui->checkBoxSaveOcclusion->isChecked();
+    value = ui->checkBoxSaveOcclusion->isChecked();
     heightImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(HEIGHT_TEXTURE,value);
     ui->pushButtonToggleHeight->setVisible(value);
     ui->pushButtonToggleHeight->setChecked(value);
     ui->actionShowHeightImage->setVisible(value);
 
-        value = ui->checkBoxSaveSpecular->isChecked();
+    value = ui->checkBoxSaveSpecular->isChecked();
     specularImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(SPECULAR_TEXTURE,value);
     ui->pushButtonToggleSpecular->setVisible(value);
     ui->pushButtonToggleSpecular->setChecked(value);
     ui->actionShowSpecularImage->setVisible(value);
 
-        value = ui->checkBoxSaveRoughness->isChecked();
+    value = ui->checkBoxSaveRoughness->isChecked();
     roughnessImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(ROUGHNESS_TEXTURE,value);
     ui->pushButtonToggleRoughness->setVisible(value);
     ui->pushButtonToggleRoughness->setChecked(value);
     ui->actionShowRoughnessImage->setVisible(value);
 
-        value = ui->checkBoxSaveMetallic->isChecked();
+    value = ui->checkBoxSaveMetallic->isChecked();
     metallicImageProp->getImageProporties()->bSkipProcessing = !value;
     ui->tabWidget->setTabEnabled(METALLIC_TEXTURE,value);
     ui->pushButtonToggleMetallic->setVisible(value);

@@ -76,7 +76,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_normal_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
     vec4 c =  texture( layerA, v2QuadCoords.xy);    
     return c;
@@ -171,7 +171,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_color_hue_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
    vec4 textureColor = texture( layerA, v2QuadCoords.xy);
@@ -200,7 +200,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_perspective_transform_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
     vec2 transf_pos = v2QuadCoords.xy;
     vec4 color      = vec4(1);
@@ -292,7 +292,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_invert_components_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec4 color = texture( layerA, v2QuadCoords.xy);
@@ -319,7 +319,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_ao_cancellation_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     float remove_sh = gui_remove_shading/100.0; // normalization to 1
@@ -345,7 +345,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_remove_low_freq_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec4 colorA   = texture( layerA, v2QuadCoords.xy);
@@ -367,7 +367,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_overlay_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec4 colorA = texture( layerA, v2QuadCoords.xy);
@@ -384,7 +384,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_invert_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec4 color = texture( layerA, v2QuadCoords.xy);
@@ -443,7 +443,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_gauss_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     float w    = gui_gauss_w;
@@ -532,7 +532,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_seamless_linear_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec2 tc   = v2QuadCoords.st;
@@ -571,7 +571,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_seamless_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
     vec2 tc = v2QuadCoords.st;
     float x = tc.x;
@@ -705,7 +705,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_dgaussians_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
 
@@ -739,7 +739,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_constrast_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec4 color = texture( layerA, v2QuadCoords.xy);
@@ -759,7 +759,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_gray_scale_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
 	
@@ -778,7 +778,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_normalize_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec4 color = texture( layerA, v2QuadCoords.xy);
@@ -796,7 +796,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_small_details_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
 
@@ -815,7 +815,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_medium_details_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
 
@@ -841,7 +841,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_sharpen_blur(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec4 gcolor;
@@ -873,7 +873,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_normals_step_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
 	
@@ -901,7 +901,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_normal_mixer_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
 
@@ -944,7 +944,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_normal_to_height(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
 	float scale   = hn_min_max_scale.z;
@@ -980,7 +980,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_height_to_normal(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
 
@@ -1009,7 +1009,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_sobel_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     float sobel_x = 0;
@@ -1040,7 +1040,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_normal_angle_correction_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
     vec3 normal   = normalize(texture(layerA,v2QuadCoords.xy).rgb-0.5);
     vec2 anglevec = vec2(cos(base_map_angle_correction),sin(base_map_angle_correction));
@@ -1059,7 +1059,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_normal_expansion_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec3 filt  = vec3(0);
@@ -1111,7 +1111,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_mix_normal_levels_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec3 normalA     = normalize(texture(layerA,v2QuadCoords.xy).rgb - 0.5);
@@ -1160,7 +1160,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_occlusion_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 	vec3 p 		= getPosition(v2QuadCoords.xy); // pozycja w ukladzie oka
 	vec3 n 		= getNormal(v2QuadCoords.xy); // normalna
@@ -1179,7 +1179,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_combine_normal_height_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
         vec4 colorA   = texture( layerA, v2QuadCoords.xy);
         vec4 colorB   = texture( layerB, v2QuadCoords.xy);
@@ -1226,7 +1226,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_height_processing_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     int radius      = gui_height_proc_ave_radius/5+1;
@@ -1270,7 +1270,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_roughness_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
 
@@ -1310,7 +1310,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_roughness_color_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     // differente approaches to measure difference in colors
@@ -1366,7 +1366,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_grunge_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     vec4 I  = texture( layerA, v2QuadCoords.xy);
@@ -1427,7 +1427,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_grunge_randomization_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
 
     float rand_scale = gui_grunge_radius/25.0;
@@ -1504,7 +1504,7 @@ subroutine(filterModeType)
 #endif
 vec4 mode_grunge_normal_warp_filter(){
 #else
-vec4 filter(){
+vec4 ffilter(){
 #endif
     vec2 normal = texture( layerB, v2QuadCoords.xy).st - 0.5;
     vec4 color  = texture( layerA, v2QuadCoords.xy + normal*grunge_normal_warp*0.05);
@@ -1533,7 +1533,7 @@ void main() {
             #ifndef USE_OPENGL_330
             FragColor   = filterMode();
             #else
-            FragColor   = filter();
+            FragColor   = ffilter();
             #endif
         }else{
             discard;
@@ -1544,7 +1544,7 @@ void main() {
             #ifndef USE_OPENGL_330
             FragColor   = filterMode();
             #else
-            FragColor   = filter();
+            FragColor   = ffilter();
             #endif
     }
 

@@ -24,7 +24,7 @@ in vec2 v2QuadCoords;
 //
 // ----------------------------------------------------------------
 #ifdef NORMAL_FILTER
-vec4 filter(){
+vec4 ffilter(){
     vec4 c = texture( layerA, v2QuadCoords.xy);
     return c;
 }
@@ -70,7 +70,7 @@ uniform float gui_gauss_w;
 uniform float gui_gauss_radius;
 uniform int   gui_gauss_mode;
 
-vec4 filter(){
+vec4 ffilter(){
     float w     = gui_gauss_w;
 
     float depth = 2.0;
@@ -88,7 +88,7 @@ vec4 filter(){
 
 
 #ifdef BLOOM_FILTER
-vec4 filter(){
+vec4 ffilter(){
 
    vec3 color = texture(layerA, v2QuadCoords.st).rgb;
    vec3 b1    = texture(layerB, v2QuadCoords.st).rgb;
@@ -121,7 +121,7 @@ vec3 Uncharted2Tonemap(vec3 x)
    return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
 }
 
-vec4 filter(){
+vec4 ffilter(){
 
    vec3 texColor = texture(layerA, v2QuadCoords.st).rgb;
    vec3 bloom = texture(layerB, vec2(0.5,0.5)).rgb;
@@ -190,7 +190,7 @@ vec4 lf_scale = vec4(5.0);
 vec4 lf_bias  = vec4(-0.6);
 uniform int lf_step;
 uniform mat4 lf_starMatrix;
-vec4 filter() {
+vec4 ffilter() {
     if(lf_step == 0){
         // treshold image
         float dp = length(texture(layerB, v2QuadCoords.st).rgb)/sqrt(3.0);
@@ -379,7 +379,7 @@ float linearize(vec3 position)
 //                        DOF/BOKEH EFFECT
 // ----------------------------------------------------------------
 
-vec4 filter(){
+vec4 ffilter(){
         //scene depth calculation
 
 
@@ -466,6 +466,6 @@ vec4 filter(){
 
 out vec4 FragColor;
 void main() {
-       FragColor   =  filter();
+       FragColor   =  ffilter();
 }
 
