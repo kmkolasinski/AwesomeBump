@@ -80,7 +80,7 @@
             </font>
            </property>
            <property name="text">
-            <string>&lt;a href=&quot;http://awesomebump.besaba.com&quot;&gt;http://awesomebump.besaba.com&lt;/a&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/kmkolasinski/AwesomeBump&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;AwesomeBump github webpage&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>

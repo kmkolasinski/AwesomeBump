@@ -52,15 +52,16 @@ QString _find_data_dir(const QString& path)
 {
    if (path.startsWith(":"))
      return path; // resource
+
    QString fpath = QApplication::applicationDirPath();
 #if defined(Q_OS_MAC)
     fpath += "/../../../"+path;
 #elif defined(Q_OS_WIN32)
-    fpath += "/"+path;
+    fpath = path;
 #else
-    fpath = QDir::homePath();
-    fpath += "/awesomebump/"+path;
+    fpath = path;
 #endif
+    qDebug() << "fphath2:" << fpath;
     return fpath;
 }
 
