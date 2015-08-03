@@ -183,6 +183,14 @@ int main(int argc, char *argv[])
     glFormat.setProfile( QGLFormat::CoreProfile );
     glFormat.setVersion( 4, 1 );
 #endif
+
+#ifdef USE_OPENGL_330
+#ifdef Q_OS_LINUX
+    glFormat.setProfile( QGLFormat::CoreProfile );
+    glFormat.setVersion( 3, 3 );
+#endif
+#endif
+
     QGLFormat::setDefaultFormat(glFormat);
 
 
