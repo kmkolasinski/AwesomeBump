@@ -133,14 +133,14 @@ bool checkOpenGL(){
 
     #ifdef USE_OPENGL_330
         // check openGL version
-        if( version < 3.3 )
+        if( floor(version * 100) < 330 )
         {
            qDebug() << "Error: This version of AwesomeBump does not support openGL versions lower than 3.3 :(" ;
            return false;
         }
     #else
         // check openGL version
-        if( version < 4.0 )
+        if( floor(version * 100) < 400 )
         {
            qDebug() << "Error: AwesomeBump does not support openGL versions lower than 4.0 :(" ;
            return false;
