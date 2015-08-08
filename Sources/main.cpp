@@ -179,15 +179,13 @@ int main(int argc, char *argv[])
 
     QGLFormat glFormat(QGL::SampleBuffers);
 
-#ifdef Q_OS_MAC
-    glFormat.setProfile( QGLFormat::CoreProfile );
-    glFormat.setVersion( 4, 1 );
-#endif
-
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
 #ifdef USE_OPENGL_330
-#ifdef Q_OS_LINUX
     glFormat.setProfile( QGLFormat::CoreProfile );
     glFormat.setVersion( 3, 3 );
+#else
+    glFormat.setProfile( QGLFormat::CoreProfile );
+    glFormat.setVersion( 4, 1 );
 #endif
 #endif
 
