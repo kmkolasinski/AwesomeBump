@@ -47,6 +47,14 @@
 #include "glimageeditor.h"
 #include "allaboutdialog.h"
 
+#ifdef USE_OPENGL_330
+    #define GL_MAJOR 3
+    #define GL_MINOR 3
+#else
+    #define GL_MAJOR 4
+    #define GL_MINOR 1
+#endif
+    
 // find data directory for each platform:
 QString _find_data_dir(const QString& path)
 {
@@ -111,9 +119,14 @@ bool checkOpenGL(){
     QGLContext* glContext = (QGLContext *) glWidget->context();
     GLCHK( glContext->makeCurrent() );
 
+    int glMajorVersion, glMinorVersion;
+
+    glMajorVersion = glContext->format().majorVersion();
+    glMinorVersion = glContext->format().minorVersion();
+
     qDebug() << "Running the " + QString(AWESOME_BUMP_VERSION);
     qDebug() << "Checking OpenGL version...";
-    qDebug() << "Widget OpenGL:" << QString("%1.%2").arg(glContext->format().majorVersion()).arg(glContext->format().minorVersion());
+    qDebug() << "Widget OpenGL:" << QString("%1.%2").arg(glMajorVersion).arg(glMinorVersion);
     qDebug() << "Context valid:" << glContext->isValid() ;
     qDebug() << "OpenGL information:" ;
     qDebug() << "VENDOR:"       << (const char*)glGetString(GL_VENDOR) ;
@@ -121,31 +134,19 @@ bool checkOpenGL(){
     qDebug() << "VERSION:"      << (const char*)glGetString(GL_VERSION) ;
     qDebug() << "GLSL VERSION:" << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
 
-    float version = glContext->format().majorVersion() + 0.1 * glContext->format().minorVersion();
-    Performance3DSettings::openGLVersion = version;
-    #ifdef USE_OPENGL_330
-        Performance3DSettings::openGLVersion = 3.3;
-    #endif
+    Performance3DSettings::openGLVersion = GL_MAJOR + (GL_MINOR * 0.1);
 
     delete glWidget;
 
-    qDebug() << "Version:" << version;
+    qDebug() << QString("Version: %1.%2").arg(glMajorVersion).arg(glMinorVersion);
 
-    #ifdef USE_OPENGL_330
-        // check openGL version
-        if( floor(version * 100) < 330 )
-        {
-           qDebug() << "Error: This version of AwesomeBump does not support openGL versions lower than 3.3 :(" ;
+    // check openGL version
+    if( glMajorVersion < GL_MAJOR || (glMajorVersion == GL_MAJOR && glMinorVersion < GL_MINOR))
+    {
+
+        qDebug() << QString("Error: This version of AwesomeBump does not support openGL versions lower than %1.%2 :(").arg(GL_MAJOR).arg(GL_MINOR) ;
            return false;
-        }
-    #else
-        // check openGL version
-        if( floor(version * 100) < 400 )
-        {
-           qDebug() << "Error: AwesomeBump does not support openGL versions lower than 4.0 :(" ;
-           return false;
-        }
-    #endif
+    }
     return true;
 
 }
@@ -180,13 +181,8 @@ int main(int argc, char *argv[])
     QGLFormat glFormat(QGL::SampleBuffers);
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-#ifdef USE_OPENGL_330
     glFormat.setProfile( QGLFormat::CoreProfile );
-    glFormat.setVersion( 3, 3 );
-#else
-    glFormat.setProfile( QGLFormat::CoreProfile );
-    glFormat.setVersion( 4, 1 );
-#endif
+    glFormat.setVersion( GL_MAJOR, GL_MINOR );
 #endif
 
     QGLFormat::setDefaultFormat(glFormat);
@@ -201,16 +197,9 @@ int main(int argc, char *argv[])
         msgBox.setPixmap(":/resources/icon-off.png");
         msgBox.setText("Fatal Error!");
 
-#ifdef USE_OPENGL_330
-        msgBox.setInformativeText("Sorry but it seems that your graphics card does not support openGL 3.3.\n"
-                                  "Program will not run :(\n"
-                                  "See " AB_LOG " file for more info.");
-#else
-        msgBox.setInformativeText("Sorry but it seems that your graphics card does not support openGL 4.0.\n"
-                                  "Program will not run :(\n"
-                                  "See " AB_LOG " file for more info.");
-#endif
-
+        msgBox.setInformativeText(QString("Sorry but it seems that your graphics card does not support openGL %1.%2.\n"
+                                          "Program will not run :(\n"
+                                          "See " AB_LOG " file for more info.").arg(GL_MAJOR).arg(GL_MINOR));
 
         msgBox.show();
 
