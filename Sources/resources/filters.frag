@@ -995,7 +995,7 @@ vec4 ffilter(){
     highp vec3 va   = normalize(vec3(size.xy,gui_hn_conversion_depth*(s21-s11)));
     highp vec3 vb   = normalize(vec3(size.yx,gui_hn_conversion_depth*(s12-s11)));
     highp vec3 bump = normalize( cross(va,vb) );
-    highp  return vec4(clamp(bump*0.5 + 0.5,vec3(0),vec3(1)),1);
+    return vec4(clamp(bump*0.5 + 0.5,vec3(0),vec3(1)),1);
 }
 
 
