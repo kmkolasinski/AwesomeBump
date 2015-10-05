@@ -64,7 +64,7 @@ Command-line instructions
 
 ### OpenGL 3.30 support
 
-You can now build AB to run all openGL instructions with 3.30 compatibility (note that tessellation will not work with 3.30). See [PDF ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) file and "Step 8" for more datails. Basicaly you just have to add `CONFIG+=release_gl330` command in the qmake settings in order to build 3.30-supported version of AwesomeBump.
+You can now build AB to run all openGL instructions with 3.30 compatibility (note that tessellation will not work with 3.30). See [PDF ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) file and "Step 8" for more datails. Basically you just have to add `CONFIG+=release_gl330` command in the qmake settings in order to build 3.30-supported version of AwesomeBump.
 
 License
 =======
