@@ -181,7 +181,12 @@ int main(int argc, char *argv[])
     QGLFormat glFormat(QGL::SampleBuffers);
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    glFormat.setProfile( QGLFormat::CoreProfile );
+     /*
+     * Commenting out the next line because it causes rendering to fail.  QGLFormat::CoreProfile
+     * disables all OpenGL functions that are depreciated as of OpenGL 3.0.  This fix is a workaround.
+     * The full solution is to replace all depreciated OpenGL functions with their current implements.
+    */
+//  glFormat.setProfile( QGLFormat::CoreProfile );
     glFormat.setVersion( GL_MAJOR, GL_MINOR );
 #endif
 
