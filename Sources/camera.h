@@ -22,7 +22,7 @@ public:
     /**
     * Zwraca macierz widoku kamery: ViewMatrix
     */
-    QMatrix4x4& updateCamera(void);
+    QMatrix4x4 updateCamera(void);
     /**
     * Zmienia stan kamery na Free albo zwiazany (WSAD - nie dziala)
     */

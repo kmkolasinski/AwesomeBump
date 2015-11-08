@@ -27,7 +27,7 @@ AwesomeCamera::~AwesomeCamera(){
 /**
 *Odnawia pozycje kamery
 */
-QMatrix4x4& AwesomeCamera::updateCamera(void){
+QMatrix4x4 AwesomeCamera::updateCamera(void){
     QMatrix4x4 unit_mat;
     unit_mat.setToIdentity();
     if(isFree){
