@@ -2,12 +2,13 @@
 
 ![Image](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/githubimage3.jpg)
 
-**Official AB website is down** :( But in future I will move all the information here on GitHub server.
+
 
 Info
 ====
 
-Since I have a lot of work now (from June to September) I have no time for AB programming, so there will be a long break before next commits and upgrades. During this time you (AB users) could help other users to solve thier problems reported in the Issues tab.
+Since I have a lot of work now I have no more time for AB programming. During this time you (AB users) could help other users to solve thier problems reported in the Issues tab. I will also try to do my best.
+
 
 
 AwesomeBump 4.0 Beta
