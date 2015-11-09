@@ -18,6 +18,14 @@ CONFIG(release_gl330) {
     #This is a debug build
 }
 
+# It's now required to define the path for resource files
+# at compile time
+# To keep compatibility with older releases, the application
+# continues to look for these resource files in its current
+# directory's subfolders (Config/* and Core/*) when using
+# qmake to compile
+DEFINES += RESOURCE_BASE=\\\"./\\\"
+
 VPATH += ../shared
 INCLUDEPATH += ../shared include
 

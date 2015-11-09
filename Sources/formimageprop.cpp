@@ -771,7 +771,7 @@ void FormImageProp::showGrungeSettingsGroup(){
     //               Loading grunge maps folders
     // ------------------------------------------------------- //
     qDebug() << "Loading cubemaps folders:";
-    QDir currentDir("Core/2D/grunge");
+    QDir currentDir(QString(RESOURCE_BASE) + "Core/2D/grunge");
     currentDir.setFilter(QDir::Files);
     QStringList entries = currentDir.entryList();
     for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ){
@@ -809,7 +809,7 @@ void FormImageProp::invertGrunge(bool toggle){
 }
 
 void FormImageProp::loadPredefinedGrunge(QString image){
-    loadFile("Core/2D/grunge/"+image);
+    loadFile(QString(RESOURCE_BASE) + "Core/2D/grunge/image");
 }
 
 void FormImageProp::hideOcclusionInputGroup(){

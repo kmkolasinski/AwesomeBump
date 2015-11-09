@@ -515,7 +515,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //               Loading cub maps folders
     // ------------------------------------------------------- //
     qDebug() << "Loading cubemaps folders:";
-    QDir currentDir(_find_data_dir("Core/2D/skyboxes"));
+    QDir currentDir(_find_data_dir(QString(RESOURCE_BASE) + "Core/2D/skyboxes"));
     currentDir.setFilter(QDir::Dirs);
     QStringList entries = currentDir.entryList();
     for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ){

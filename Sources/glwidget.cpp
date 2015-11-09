@@ -508,10 +508,10 @@ void GLWidget::initializeGL()
     lightDirection.toggleFreeCamera(false);
     lightDirection.radius = 1;
 
-    mesh        = new Mesh("Core/3D/","Cube.obj");
-    skybox_mesh = new Mesh("Core/3D/","sky_cube.obj");
-    env_mesh    = new Mesh("Core/3D/","sky_cube_env.obj");
-    quad_mesh   = new Mesh("Core/3D/","quad.obj");
+    mesh        = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","Cube.obj");
+    skybox_mesh = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","sky_cube.obj");
+    env_mesh    = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","sky_cube_env.obj");
+    quad_mesh   = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","quad.obj");
 
     m_prefiltered_env_map = new GLTextureCube(512);
 
@@ -1015,7 +1015,7 @@ bool GLWidget::loadMeshFile(const QString &fileName, bool bAddExtension)
     // loading new mesh
     Mesh* new_mesh;
     if(bAddExtension){
-        new_mesh = new Mesh(QString("Core/3D/"),fileName+QString(".obj"));
+      new_mesh = new Mesh(QString(RESOURCE_BASE) + "Core/3D/",fileName+QString(".obj"));
     }else{
         new_mesh = new Mesh(QString(""),fileName);
     }
@@ -1053,9 +1053,8 @@ void GLWidget::chooseMeshFile(const QString &fileName){
 void GLWidget::chooseSkyBox(QString cubeMapName,bool bFirstTime){
     QStringList list;
     makeCurrent();
-    list << "Core/2D/skyboxes/" + cubeMapName + "/posx.jpg" << "Core/2D/skyboxes/" + cubeMapName  + "/negx.jpg" << "Core/2D/skyboxes/" + cubeMapName + "/posy.jpg"
-         << "Core/2D/skyboxes/" + cubeMapName + "/negy.jpg" << "Core/2D/skyboxes/" + cubeMapName  + "/posz.jpg" << "Core/2D/skyboxes/" + cubeMapName + "/negz.jpg";
-
+    list << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posx.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/negx.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posy.jpg"
+         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negy.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/posz.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negz.jpg";
 
     qDebug() << "Reading new cube map:" << list;
     bDiffuseMapBaked     = false;
