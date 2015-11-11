@@ -71,7 +71,7 @@ set(AwesomeBump_SRCS
 # Configure the linker and finalize binary compilation
 add_executable(awesomebump ${AwesomeBump_SRCS} ${UI_HEADERS} ${UI_RESOURCES} Sources/resources/icon.icns)
 target_link_libraries(awesomebump Qt5::Core Qt5::DBus Qt5::Gui Qt5::Widgets Qt5::OpenGL
-    GL icudata icui18n icuuc)
+    GL)
 
 # Create an install target for "Release" builds using custom or default binary and
 # resource file paths
@@ -79,3 +79,11 @@ if(${CMAKE_BUILD_TYPE} MATCHES "Release")
   install(TARGETS awesomebump RUNTIME DESTINATION bin)
   install(DIRECTORY Bin/ DESTINATION ${RESOURCE_BASE})
 endif()
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
