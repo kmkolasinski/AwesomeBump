@@ -71,7 +71,7 @@ set(AwesomeBump_SRCS
 # Configure the linker and finalize binary compilation
 add_executable(awesomebump ${AwesomeBump_SRCS} ${UI_HEADERS} ${UI_RESOURCES} Sources/resources/icon.icns)
 target_link_libraries(awesomebump Qt5::Core Qt5::DBus Qt5::Gui Qt5::Widgets Qt5::OpenGL
-    GL )
+    GL)
 
 # Create an install target for "Release" builds using custom or default binary and
 # resource file paths
