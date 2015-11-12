@@ -47,7 +47,7 @@ GLImage::GLImage(QWidget *parent)
 {
     bShadowRender         = false;
     bSkipProcessing       = false;
-
+    bRendering            = false;
     conversionType        = CONVERT_NONE;
     uvManilupationMethod  = UV_TRANSLATE;
     cornerWeights         = QVector4D(0,0,0,0);
@@ -69,6 +69,8 @@ GLImage::GLImage(QWidget *parent)
     cornerCursors[1] = QCursor(QPixmap(":/resources/corner2.png"));
     cornerCursors[2] = QCursor(QPixmap(":/resources/corner3.png"));
     cornerCursors[3] = QCursor(QPixmap(":/resources/corner4.png"));
+
+    connect(this,SIGNAL(rendered()),this,SLOT(copyRenderToPaintFBO()));
 }
 
 GLImage::~GLImage()
@@ -100,6 +102,9 @@ void GLImage::cleanup()
       delete auxFBO1BMLevels[i] ;
       delete auxFBO2BMLevels[i] ;
   }
+  delete  paintFBO;
+  delete renderFBO;
+
 
   glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]);
   //delete program;
@@ -303,25 +308,84 @@ void GLImage::initializeGL()
         auxFBO1BMLevels[i] = NULL;
         auxFBO2BMLevels[i] = NULL;
     }
+    paintFBO   = NULL;
 
     emit readyGL();
 }
 
 void GLImage::paintGL()
 {
-    render();
-    emit rendered();
+
+    // Perform filters on images and render the final result to renderFBO
+    // avoid rendering function if there is rendered something already
+    if(!bSkipProcessing && !bRendering){
+        qDebug() << "b=" << bSkipProcessing << bRendering;
+        bRendering = true;
+        render();
+    }
+
+
+    bSkipProcessing = false;
+    conversionType  = CONVERT_NONE;
+
+    // Draw current FBO using current image after rendering the paintFBO will be replaced
+    if(!bShadowRender){
+
+        //if (!activeImage) return;
+        if (paintFBO != NULL){ // since grunge map can be different we need to calculate ratio each time
+          fboRatio = float(paintFBO->width())/paintFBO->height();
+          orthographicProjHeight = (1+zoom)/windowRatio;
+          orthographicProjWidth  = (1+zoom)/fboRatio;
+        }
+        GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+        GLCHK( glDisable(GL_CULL_FACE) );
+        GLCHK( glDisable(GL_DEPTH_TEST) );
+        // positions
+        glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
+        glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
+        // indices
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
+
+        QGLFramebufferObject* activeFBO     = paintFBO;
+
+        #ifdef USE_OPENGL_330
+            program = filter_programs["mode_normal_filter"];
+            program->bind();
+        #else
+            GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
+        #endif
+
+        // Displaying new image
+        activeFBO->bindDefault();
+        program->setUniformValue("quad_draw_mode", 1);
+
+        GLCHK( glViewport(0,0,width(),height()) );
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, activeFBO->texture()) );
+
+        QMatrix4x4 m;
+        m.ortho(0,orthographicProjWidth,0,orthographicProjHeight,-1,1);
+        GLCHK( program->setUniformValue("ProjectionMatrix", m) );
+        m.setToIdentity();
+        m.translate(xTranslation,yTranslation,0);
+        GLCHK( program->setUniformValue("ModelViewMatrix", m) );
+        GLCHK( program->setUniformValue("material_id", int(-1)) );
+        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+        GLCHK( program->setUniformValue("quad_draw_mode", int(0)) );
+    }
+
 }
 
 
 
 void GLImage::render(){
 
+
     if (!activeImage) return;
     if ( activeImage->fbo){ // since grunge map can be different we need to calculate ratio each time
       fboRatio = float(activeImage->fbo->width())/activeImage->fbo->height();
       orthographicProjHeight = (1+zoom)/windowRatio;
-      orthographicProjWidth = (1+zoom)/fboRatio;
+      orthographicProjWidth  = (1+zoom)/fboRatio;
     }
     // do not clear the background during rendering process
     if(!bShadowRender){
@@ -931,38 +995,46 @@ void GLImage::render(){
 
 
 
+    bSkipProcessing = false;
+    conversionType  = CONVERT_NONE;
+
+    GLCHK(FBOImages::resize(renderFBO,activeFBO->width(),activeFBO->height()));
+    GLCHK(copyFBO(activeFBO,renderFBO));
+    emit rendered();
+
 
     if(!bShadowRender){
 
-        #ifdef USE_OPENGL_330
-            program = filter_programs["mode_normal_filter"];
-            program->bind();
-        #else
-            GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
-        #endif
+//        #ifdef USE_OPENGL_330
+//            program = filter_programs["mode_normal_filter"];
+//            program->bind();
+//        #else
+//            GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
+//        #endif
 
-        // Displaying new image
-        activeFBO->bindDefault();
-        program->setUniformValue("quad_draw_mode", 1);
+//        // Displaying new image
+//        activeFBO->bindDefault();
+//        program->setUniformValue("quad_draw_mode", 1);
 
-        GLCHK( glViewport(0,0,width(),height()) );
-        GLCHK( glActiveTexture(GL_TEXTURE0) );
-        GLCHK( glBindTexture(GL_TEXTURE_2D, activeFBO->texture()) );
+//        GLCHK( glViewport(0,0,width(),height()) );
+//        GLCHK( glActiveTexture(GL_TEXTURE0) );
+//        GLCHK( glBindTexture(GL_TEXTURE_2D, activeFBO->texture()) );
 
-        QMatrix4x4 m;        
-        m.ortho(0,orthographicProjWidth,0,orthographicProjHeight,-1,1);
-        GLCHK( program->setUniformValue("ProjectionMatrix", m) );
-        m.setToIdentity();
-        m.translate(xTranslation,yTranslation,0);
-        GLCHK( program->setUniformValue("ModelViewMatrix", m) );
-        GLCHK( program->setUniformValue("material_id", int(-1)) );       
-        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-        GLCHK( program->setUniformValue("quad_draw_mode", int(0)) );
+//        QMatrix4x4 m;
+//        m.ortho(0,orthographicProjWidth,0,orthographicProjHeight,-1,1);
+//        GLCHK( program->setUniformValue("ProjectionMatrix", m) );
+//        m.setToIdentity();
+//        m.translate(xTranslation,yTranslation,0);
+//        GLCHK( program->setUniformValue("ModelViewMatrix", m) );
+//        GLCHK( program->setUniformValue("material_id", int(-1)) );
+//        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+//        GLCHK( program->setUniformValue("quad_draw_mode", int(0)) );
+
+
 
         
     }
-    bSkipProcessing = false;
-    conversionType  = CONVERT_NONE;
+
 
 }
 
@@ -3108,6 +3180,7 @@ void GLImage::mouseReleaseEvent(QMouseEvent *event){
     setCursor(Qt::OpenHandCursor);
     draggingCorner = -1;
     event->accept();
+    bSkipProcessing = true;
     repaint();
 }
 
@@ -3117,4 +3190,12 @@ void GLImage::toggleColorPicking(bool toggle){
         setCursor(Qt::UpArrowCursor);
     }else
         setCursor(Qt::PointingHandCursor);
+}
+
+void GLImage::copyRenderToPaintFBO(){
+
+     GLCHK(FBOImages::resize(paintFBO,renderFBO->width(),renderFBO->height()));
+     copyFBO(renderFBO,paintFBO);
+
+     bRendering      = false;
 }

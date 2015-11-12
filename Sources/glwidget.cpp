@@ -49,7 +49,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
 {
     setAcceptDrops(true);
     zoom                    = 60;
-    lightPosition           = QVector4D(0,0,5.0,1);
+    lightPosition           = QVector4D(0,0.0,5.0,1);
     depthScale              = 1;
     uvScale                 = 1.0;
     uvOffset                = QVector2D(0,0);
@@ -504,7 +504,8 @@ void GLWidget::initializeGL()
     camera.toggleFreeCamera(false);
     newCamera.toggleFreeCamera(false);
 
-    lightDirection.position.setZ(0);
+    lightDirection.position  = QVector3D(0.0,0.0,0.0);
+    lightDirection.direction = QVector3D(0.0,0.0,-1.0);// set the light infront of the camera
     lightDirection.toggleFreeCamera(false);
     lightDirection.radius = 1;
 
@@ -624,9 +625,11 @@ void GLWidget::paintGL()
     GLCHK( program_ptr->setUniformValue("NormalMatrix"          , NormalMatrix) );
     GLCHK( program_ptr->setUniformValue("ModelMatrix"           , objectMatrix) );
     GLCHK( program_ptr->setUniformValue("meshScale"             , mesh_scale) );
+
     GLCHK( program_ptr->setUniformValue("lightPos"              , lightPosition) );
 
     GLCHK( program_ptr->setUniformValue("lightDirection"        , lightDirection.direction) );
+//    qDebug() << lightDirection.direction;
     GLCHK( program_ptr->setUniformValue("cameraPos"             , camera.get_position()) );
     GLCHK( program_ptr->setUniformValue("gui_depthScale"        , depthScale) );
     GLCHK( program_ptr->setUniformValue("gui_uvScale"           , uvScale) );

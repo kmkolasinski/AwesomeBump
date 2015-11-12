@@ -777,7 +777,7 @@ void FormImageProp::showGrungeSettingsGroup(){
     for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ){
         QString dirname=*entry;
         if(dirname != tr(".") && dirname != tr("..")){
-            qDebug() << "Enviromental map:" << dirname;
+            qDebug() << "Loading grunge map:" << dirname;
             ui->comboBoxGrungePredefined->addItem(dirname);
         }
     }// end of for
@@ -809,7 +809,7 @@ void FormImageProp::invertGrunge(bool toggle){
 }
 
 void FormImageProp::loadPredefinedGrunge(QString image){
-    loadFile(QString(RESOURCE_BASE) + "Core/2D/grunge/image");
+    loadFile(QString(RESOURCE_BASE) + "Core/2D/grunge/" + image);
 }
 
 void FormImageProp::hideOcclusionInputGroup(){

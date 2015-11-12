@@ -98,6 +98,8 @@ public slots:
     void updateCornersWeights(float w1, float w2, float w3, float w4);
     void selectSeamlessMode(SeamlessMode mode);
     void toggleColorPicking(bool toggle);
+
+    void copyRenderToPaintFBO(); // when image is rendered copy it to paintFBO in order to display result
 signals:
     void rendered();
     void readyGL();
@@ -279,6 +281,9 @@ private:
     QGLFramebufferObject* auxFBO2BMLevels[3]; //
     QGLFramebufferObject* auxFBO0BMLevels[3]; //
 
+    //
+    QGLFramebufferObject* paintFBO;  // Used for painting texture
+    QGLFramebufferObject* renderFBO; // Used for rendering to it
 
     std::map<std::string,GLuint> subroutines;
     std::map<std::string,QOpenGLShaderProgram*> filter_programs; // all filters in one array
@@ -322,6 +327,9 @@ private:
     // openGL 330 variables
 
     TextureTypes openGL330ForceTexType;
+
+    // rendering variables
+    bool bRendering;//define if opengl is currently rendering some textures
 };
 
 

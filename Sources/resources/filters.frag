@@ -764,7 +764,10 @@ vec4 ffilter(){
 
 	
     vec4 color = texture( layerA, v2QuadCoords.xy);
+//    vec3 clevel = color.rgb;
     color = vec4(1)*(color.r * gui_gray_scale_preset.r + color.g * gui_gray_scale_preset.g + color.b * gui_gray_scale_preset.b);
+//    float cdist = length(clevel - vec3(1,0,0));
+//    return clamp(vec4(cdist),vec4(0),vec4(1));
     return clamp(color,vec4(0),vec4(1));
 }
 

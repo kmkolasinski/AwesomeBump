@@ -1,4 +1,6 @@
-/Bin/config.ini
+Bin/config.ini
+Bin/Configs/*
+
 build/Makefile
 *.pydevproject
 .project
