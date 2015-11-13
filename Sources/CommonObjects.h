@@ -319,7 +319,8 @@ public:
 class FBOImages {
 public:
     static void create(QGLFramebufferObject *&fbo,int width,int height,GLuint internal_format = TEXTURE_FORMAT){
-        if(fbo !=NULL ){
+       if(fbo)
+       {
             fbo->release();
             delete fbo;
         }
@@ -355,7 +356,7 @@ public:
         }
     }
     static void resize(QGLFramebufferObject *&src,int width, int height,GLuint internal_format = TEXTURE_FORMAT){
-        if(src == NULL){
+        if(!src){
             GLCHK(FBOImages::create(src ,width,height,internal_format));
         }else if( width  == src->width() &&
             height == src->height() ){}else{
@@ -803,7 +804,7 @@ public:
                 break;
         }
         */
-        GLCHK(FBOImages::create(fbo     ,image.width(),image.height()));
+        GLCHK(FBOImages::create(fbo , image.width(), image.height()));
 
     }
 

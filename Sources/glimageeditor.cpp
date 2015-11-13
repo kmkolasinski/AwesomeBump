@@ -52,6 +52,8 @@ GLImage::GLImage(QWidget *parent)
     uvManilupationMethod  = UV_TRANSLATE;
     cornerWeights         = QVector4D(0,0,0,0);
     fboRatio = 1;
+    renderFBO		  = NULL;
+    paintFBO		  = NULL;
 
     // initialize position of the corners
     cornerPositions[0] = QVector2D(-0.0,-0);
