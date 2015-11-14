@@ -753,6 +753,28 @@ vec4 ffilter(){
 // ----------------------------------------------------------------
 uniform vec3 gui_gray_scale_preset;
 
+// Special treating in case of basemap conversion
+uniform vec3 gui_gray_scale_max_color;
+uniform bool gui_gray_scale_max_color_defined;
+uniform vec3 gui_gray_scale_min_color;
+uniform bool gui_gray_scale_min_color_defined;
+uniform float gui_gray_scale_range_tol;
+
+/**
+ * Takes two colors RBG and calculate the similarity between them.
+ * @return some number which resemble the similarity.
+ */
+float color_dist(vec3 colorA,vec3 colorB){
+    // if 1.0 the results should be same like without any
+    // modyfications
+    if(gui_gray_scale_range_tol == 0.0) return 1.0;
+
+    float cdist = length(colorA - colorB);    // distance between two colors
+    float tol   = gui_gray_scale_range_tol/5.0;
+    return 1 - exp( -tol*cdist ); // Example weight calculation it can be any.
+    // return clamp(cdist * gui_gray_scale_range_tol/10.0,0,1); // another example weight
+}
+
 #ifndef mode_gray_scale_filter_330
 #ifndef USE_OPENGL_330
 subroutine(filterModeType)
@@ -764,10 +786,25 @@ vec4 ffilter(){
 
 	
     vec4 color = texture( layerA, v2QuadCoords.xy);
-//    vec3 clevel = color.rgb;
+    vec3 clevel = color.rgb;
+
+    // Standard gray scale filter:
     color = vec4(1)*(color.r * gui_gray_scale_preset.r + color.g * gui_gray_scale_preset.g + color.b * gui_gray_scale_preset.b);
-//    float cdist = length(clevel - vec3(1,0,0));
-//    return clamp(vec4(cdist),vec4(0),vec4(1));
+
+    // Additional filtering, for base map conversion enabled
+    // based on selected by user min and max values force the colors which are "near"
+    // them to be 0 (for min color) or 1 (for max color). By near we mean if the calculated
+    // distance between two vec3 is close to zero.
+    if(gui_gray_scale_max_color_defined){
+        float d = color_dist(clevel,gui_gray_scale_max_color);
+        color.rgb = mix(vec3(1),color.rgb,d);
+    }
+    if(gui_gray_scale_min_color_defined){
+        float d = color_dist(clevel,gui_gray_scale_min_color);
+        color.rgb = mix(vec3(0),color.rgb,d);
+    }
+
+
     return clamp(color,vec4(0),vec4(1));
 }
 
@@ -967,7 +1004,6 @@ vec4 ffilter(){
         float nym  = 2*(texture(layerB,tex_coord + off.zx ).y-0.5);
 
         float h = (nxp-nxm+nyp-nym)/8.0*scale + (hxp + hxm + hyp + hym)/4.0;
-        //h =   h / (1.0 + abs(nxp-nxm+nyp-nym)/8.0*scale);
 
         return vec4(h);
 	

@@ -72,7 +72,10 @@ public slots:
     void applyBaseConversionConversion();    
     void applyHeightNormalToOcclusionConversion();
 
-
+    /**
+     * Restore to default settings.
+     */
+    void resetBaseMapMinMaxColors();
     void showHeightCalculatorDialog();
 
     void toggleColorPicking(bool toggle);

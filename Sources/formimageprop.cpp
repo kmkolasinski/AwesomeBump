@@ -90,6 +90,10 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(ui->horizontalSliderBaseToOthersAngleCorrection ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderBaseToOthersAngleWeight     ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
 
+    connect(ui->pushButtonBaseMapToOthersHMaxVal,SIGNAL(toggled(bool)),this,SLOT(toggleColorPicking(bool)));
+    connect(ui->pushButtonBaseMapToOthersHMinVal,SIGNAL(toggled(bool)),this,SLOT(toggleColorPicking(bool)));
+    connect(ui->pushButtonBaseMapToOthersHReset ,SIGNAL(pressed()),this,SLOT(resetBaseMapMinMaxColors()));
+    connect(ui->horizontalSliderBaseMapToOthersHRangeTolerance ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
 
     connect(ui->pushButtonConvertToNormalAndHeight,SIGNAL(released()),this,SLOT(applyBaseConversionConversion()));
 
@@ -506,9 +510,10 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
             baseMapConvLevels[i]->getSlidersValues(imageProp.baseMapConvLevels[i]);
         }
     }
-    imageProp.baseMapAngleCorrection = ui->horizontalSliderBaseToOthersAngleCorrection->value();
-    imageProp.baseMapAngleWeight     = ui->horizontalSliderBaseToOthersAngleWeight->value();
 
+    imageProp.baseMapAngleCorrection                 = ui->horizontalSliderBaseToOthersAngleCorrection->value();
+    imageProp.baseMapAngleWeight                     = ui->horizontalSliderBaseToOthersAngleWeight->value();
+    imageProp.conversionBaseMapHeightMinMaxTolerance = ui->horizontalSliderBaseMapToOthersHRangeTolerance->value();
 
     imageProp.ssaoNoIters   = ui->horizontalSliderSSAONoIters->value();
     imageProp.ssaoDepth     = ui->horizontalSliderSSAODepth->value()/100.0;
@@ -655,6 +660,19 @@ void FormImageProp::applyHeightNormalToOcclusionConversion(){
     emit conversionHeightNormalToOcclusionApplied();
 }
 
+void FormImageProp::resetBaseMapMinMaxColors(){
+    // negative X component means no action, this is cecked in the
+    // GLSL code.
+    imageProp.conversionBaseMapheightMax = QVector3D(-1,0,0);
+    imageProp.conversionBaseMapheightMin = QVector3D(-1,0,0);
+    // Take care about the buttons and colors
+    ui->pushButtonBaseMapToOthersHMinVal->setChecked(false);
+    ui->pushButtonBaseMapToOthersHMaxVal->setChecked(false);
+    ui->pushButtonBaseMapToOthersHMaxVal->setPalette(QApplication::palette());
+    ui->pushButtonBaseMapToOthersHMinVal->setPalette(QApplication::palette());
+    emit imageChanged();
+
+}
 
 void FormImageProp::showHeightCalculatorDialog(){
 
@@ -670,7 +688,7 @@ void FormImageProp::showHeightCalculatorDialog(){
 
 void FormImageProp::toggleColorPicking(bool toggle){
     imageProp.bRoughnessColorPickingToggled = toggle;
-
+    // Roughness or Metallic map edition
     if(imageProp.bRoughnessEnableColorPicking && toggle){
         QPalette palette = ui->pushButtonRoughnessPickColor->palette();
         palette.setColor(ui->pushButtonRoughnessPickColor->backgroundRole(), QColor(255, 0, 0, 127));
@@ -686,14 +704,35 @@ void FormImageProp::toggleColorPicking(bool toggle){
         ui->pushButtonRoughnessPickColor->setPalette(palette);
         ui->pushButtonRoughnessPickColor->setText("click to pick");
 
+
+        // Same for base map tab
+        ui->pushButtonBaseMapToOthersHMaxVal->setText("Max");
+        ui->pushButtonBaseMapToOthersHMaxVal->setChecked(false);
+        ui->pushButtonBaseMapToOthersHMinVal->setText("Min");
+        ui->pushButtonBaseMapToOthersHMinVal->setChecked(false);
+
     }
+
+    // When conversion from BaseMap to others is enabled:
+    if(imageProp.bConversionBaseMap){
+        if(ui->pushButtonBaseMapToOthersHMaxVal->isChecked()){
+            ui->pushButtonBaseMapToOthersHMaxVal->setText("Pick!");
+            ui->pushButtonBaseMapToOthersHMinVal->setChecked(false); // toggle off the second button
+        }
+        if(ui->pushButtonBaseMapToOthersHMinVal->isChecked()){
+            ui->pushButtonBaseMapToOthersHMinVal->setText("Pick!");
+            ui->pushButtonBaseMapToOthersHMaxVal->setChecked(false); // toggle off the second button
+        }
+
+        emit toggleColorPickingApplied(toggle);
+    }
+
     emit imageChanged();
 }
 
 void FormImageProp::colorPicked(QVector4D color){
 
     if(imageProp.bRoughnessColorPickingToggled){
-
         ui->pushButtonRoughnessPickColor->setChecked(false);
         imageProp.bRoughnessColorPickingToggled = false;
         imageProp.pickedColor                   = color.toVector3D()/255.0;
@@ -704,6 +743,30 @@ void FormImageProp::colorPicked(QVector4D color){
         update();
         emit imageChanged();
     }
+
+    // When conversion from BaseMap to others is enabled:
+    if(imageProp.bConversionBaseMap){
+        if(ui->pushButtonBaseMapToOthersHMaxVal->isChecked()){
+            ui->pushButtonBaseMapToOthersHMaxVal->setChecked(false);
+            imageProp.conversionBaseMapheightMax = color.toVector3D()/255.0;
+            QPalette palette = ui->pushButtonBaseMapToOthersHMaxVal->palette();
+            palette.setColor(ui->pushButtonBaseMapToOthersHMaxVal->backgroundRole(), QColor(color.x(),color.y(),color.z()));
+            palette.setColor(ui->pushButtonBaseMapToOthersHMaxVal->foregroundRole(), QColor(255-color.x(),255-color.y(),255-color.z()));
+            ui->pushButtonBaseMapToOthersHMaxVal->setPalette(palette);
+        }
+
+        if(ui->pushButtonBaseMapToOthersHMinVal->isChecked()){
+            ui->pushButtonBaseMapToOthersHMinVal->setChecked(false);
+            imageProp.conversionBaseMapheightMin = color.toVector3D()/255.0;
+            QPalette palette = ui->pushButtonBaseMapToOthersHMinVal->palette();
+            palette.setColor(ui->pushButtonBaseMapToOthersHMinVal->backgroundRole(), QColor(color.x(),color.y(),color.z()));
+            palette.setColor(ui->pushButtonBaseMapToOthersHMinVal->foregroundRole(), QColor(255-color.x(),255-color.y(),255-color.z()));
+            ui->pushButtonBaseMapToOthersHMinVal->setPalette(palette);
+        }
+        update();
+        emit imageChanged();
+    }
+
 }
 
 void FormImageProp::cancelColorPicking(){
@@ -909,8 +972,11 @@ void FormImageProp::reloadSettings(){
             baseMapConvLevels[i]->updateSliders(imageProp.baseMapConvLevels[i]);
         }
     }
-    ui->horizontalSliderBaseToOthersAngleCorrection->setValue(imageProp.baseMapAngleCorrection);
-    ui->horizontalSliderBaseToOthersAngleWeight    ->setValue(imageProp.baseMapAngleWeight);
+    ui->horizontalSliderBaseToOthersAngleCorrection   ->setValue(imageProp.baseMapAngleCorrection);
+    ui->horizontalSliderBaseToOthersAngleWeight       ->setValue(imageProp.baseMapAngleWeight);
+
+    ui->horizontalSliderBaseMapToOthersHRangeTolerance->setValue(imageProp.conversionBaseMapHeightMinMaxTolerance);
+
 
     ui->horizontalSliderSSAONoIters     ->setValue(imageProp.ssaoNoIters);
     ui->horizontalSliderSSAOBias        ->setValue(imageProp.ssaoBias*100);

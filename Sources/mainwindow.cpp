@@ -419,6 +419,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(roughnessImageProp ,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
     connect(glImage           ,SIGNAL(colorPicked(QVector4D)),roughnessImageProp,SLOT(colorPicked(QVector4D)));
 
+    connect(diffuseImageProp  ,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
+    connect(glImage           ,SIGNAL(colorPicked(QVector4D)),diffuseImageProp,SLOT(colorPicked(QVector4D)));
+
 
     // 2D imate tool box settings
     QActionGroup *group = new QActionGroup( this );
@@ -1206,7 +1209,7 @@ void MainWindow::updateImage(int tType){
         default: // Settings
             return;
     }
-    glImage->toggleColorPicking(false);
+    //glImage->toggleColorPicking(false);
     glWidget->repaint();
 }
 
@@ -1632,6 +1635,15 @@ void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
     settings.setValue("t_"+abbr+"_bConversionBaseMap"               ,image->getImageProporties()->bConversionBaseMap);
     settings.setValue("t_"+abbr+"_baseMapAngleCorrection"           ,image->getImageProporties()->baseMapAngleCorrection);
     settings.setValue("t_"+abbr+"_baseMapAngleWeight"               ,image->getImageProporties()->baseMapAngleWeight);
+
+    settings.setValue("t_"+abbr+"_conversionBaseMapheightMaxX"       ,image->getImageProporties()->conversionBaseMapheightMax.x());
+    settings.setValue("t_"+abbr+"_conversionBaseMapheightMaxY"       ,image->getImageProporties()->conversionBaseMapheightMax.y());
+    settings.setValue("t_"+abbr+"_conversionBaseMapheightMaxZ"       ,image->getImageProporties()->conversionBaseMapheightMax.z());
+    settings.setValue("t_"+abbr+"_conversionBaseMapheightMinX"       ,image->getImageProporties()->conversionBaseMapheightMin.x());
+    settings.setValue("t_"+abbr+"_conversionBaseMapheightMinY"       ,image->getImageProporties()->conversionBaseMapheightMin.y());
+    settings.setValue("t_"+abbr+"_conversionBaseMapheightMinZ"       ,image->getImageProporties()->conversionBaseMapheightMin.z());
+    settings.setValue("t_"+abbr+"_conversionBaseMapHeightMinMaxTolerance"       ,image->getImageProporties()->conversionBaseMapHeightMinMaxTolerance);
+
     settings.setValue("t_"+abbr+"_bConversionBaseMapShowHeightTexture",image->getImageProporties()->bConversionBaseMapShowHeightTexture);
 
     if(image->getImageProporties()->imageType == DIFFUSE_TEXTURE){
@@ -1772,6 +1784,19 @@ void MainWindow::loadImageSettings(QString abbr,FormImageProp* image){
     image->getImageProporties()->bConversionBaseMapShowHeightTexture= settings.value("t_"+abbr+"_bConversionBaseMapShowHeightTexture",false).toBool();
     image->getImageProporties()->baseMapAngleCorrection             = settings.value("t_"+abbr+"_baseMapAngleCorrection",0.0).toFloat();
     image->getImageProporties()->baseMapAngleWeight                 = settings.value("t_"+abbr+"_baseMapAngleWeight",0.0).toFloat();
+
+    image->getImageProporties()->conversionBaseMapheightMax.setX(settings.value("t_"+abbr+"_conversionBaseMapheightMaxX",-1.0).toFloat());
+    image->getImageProporties()->conversionBaseMapheightMax.setY(settings.value("t_"+abbr+"_conversionBaseMapheightMaxY", 0.0).toFloat());
+    image->getImageProporties()->conversionBaseMapheightMax.setZ(settings.value("t_"+abbr+"_conversionBaseMapheightMaxZ", 0.0).toFloat());
+
+    image->getImageProporties()->conversionBaseMapheightMin.setX(settings.value("t_"+abbr+"_conversionBaseMapheightMinX",-1.0).toFloat());
+    image->getImageProporties()->conversionBaseMapheightMin.setY(settings.value("t_"+abbr+"_conversionBaseMapheightMinY", 0.0).toFloat());
+    image->getImageProporties()->conversionBaseMapheightMin.setZ(settings.value("t_"+abbr+"_conversionBaseMapheightMinZ", 0.0).toFloat());
+
+    image->getImageProporties()->conversionBaseMapHeightMinMaxTolerance = settings.value("t_"+abbr+"_conversionBaseMapHeightMinMaxTolerance", 0.0).toFloat();
+
+
+
     if(image->getImageProporties()->imageType == DIFFUSE_TEXTURE){
         for(int i = 0; i < 4 ; i++){
         QString level = "_Level"+QString::number(i);

@@ -320,8 +320,7 @@ void GLImage::paintGL()
 
     // Perform filters on images and render the final result to renderFBO
     // avoid rendering function if there is rendered something already
-    if(!bSkipProcessing && !bRendering){
-        qDebug() << "b=" << bSkipProcessing << bRendering;
+    if(!bSkipProcessing && !bRendering){        
         bRendering = true;
         render();
     }
@@ -411,6 +410,8 @@ void GLImage::render(){
 
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
     bool bSkipStandardProcessing = false;
+
+
 
     if((activeImage->bSkipProcessing) && (activeImage->imageType != MATERIAL_TEXTURE)) bSkipProcessing = true;// do not process images when is disabled
 
@@ -896,6 +897,8 @@ void GLImage::render(){
     // -------------------------------------------------------- //
     // diffuse processing pipeline
     // -------------------------------------------------------- //
+
+    if(!bToggleColorPicking) // skip this step if the Color picking is enabled
     if(activeImage->imageType == DIFFUSE_TEXTURE && activeImage->bConversionBaseMap){
 
         // create mipmaps
@@ -903,6 +906,7 @@ void GLImage::render(){
         copyTex2FBO(activeFBO->texture(),auxFBO0BMLevels[1]);
         copyTex2FBO(activeFBO->texture(),auxFBO0BMLevels[2]);
         // calculate normal for orginal image
+        copyFBO(activeFBO,auxFBO4);
         applyBaseMapConversion(activeFBO,auxFBO2,auxFBO1,activeImage->baseMapConvLevels[0]);
 
         // calulcate normal for mipmaps
@@ -928,6 +932,10 @@ void GLImage::render(){
             applyNormalToHeight(targetImageHeight,activeFBO,auxFBO1,auxFBO2);
             applyCPUNormalizationFilter(auxFBO2,activeFBO);
         }
+
+
+        //copyFBO(auxFBO4,activeFBO);
+
     } // end of base map conversion
 
     }// end of skip standard processing
@@ -1000,42 +1008,12 @@ void GLImage::render(){
     bSkipProcessing = false;
     conversionType  = CONVERT_NONE;
 
-    GLCHK(FBOImages::resize(renderFBO,activeFBO->width(),activeFBO->height()));
-    GLCHK(copyFBO(activeFBO,renderFBO));
-    emit rendered();
-
-
     if(!bShadowRender){
+        GLCHK(FBOImages::resize(renderFBO,activeFBO->width(),activeFBO->height()));
+        GLCHK(applyNormalFilter(activeFBO,renderFBO));
 
-//        #ifdef USE_OPENGL_330
-//            program = filter_programs["mode_normal_filter"];
-//            program->bind();
-//        #else
-//            GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
-//        #endif
-
-//        // Displaying new image
-//        activeFBO->bindDefault();
-//        program->setUniformValue("quad_draw_mode", 1);
-
-//        GLCHK( glViewport(0,0,width(),height()) );
-//        GLCHK( glActiveTexture(GL_TEXTURE0) );
-//        GLCHK( glBindTexture(GL_TEXTURE_2D, activeFBO->texture()) );
-
-//        QMatrix4x4 m;
-//        m.ortho(0,orthographicProjWidth,0,orthographicProjHeight,-1,1);
-//        GLCHK( program->setUniformValue("ProjectionMatrix", m) );
-//        m.setToIdentity();
-//        m.translate(xTranslation,yTranslation,0);
-//        GLCHK( program->setUniformValue("ModelViewMatrix", m) );
-//        GLCHK( program->setUniformValue("material_id", int(-1)) );
-//        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-//        GLCHK( program->setUniformValue("quad_draw_mode", int(0)) );
-
-
-
-        
     }
+    emit rendered();
 
 
 }
@@ -1975,6 +1953,24 @@ void GLImage::applyGrayScaleFilter(QGLFramebufferObject* inputFBO,
     GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_gray_scale_filter"]) );
 #endif
 
+    // There is a change if gray scale filter is used for convertion from diffuse
+    // texture to others in any other case this filter works just a simple gray scale filter.
+    // Check if the baseMapToOthers is enabled, if yes check is min and max values are defined.
+
+    GLCHK( program->setUniformValue("gui_gray_scale_max_color_defined",false) );
+    GLCHK( program->setUniformValue("gui_gray_scale_min_color_defined",false) );
+
+    if(activeImage->bConversionBaseMap){
+        if(activeImage->conversionBaseMapheightMax.x() >= 0.0){
+            GLCHK( program->setUniformValue("gui_gray_scale_max_color_defined",true) );
+            GLCHK( program->setUniformValue("gui_gray_scale_max_color",activeImage->conversionBaseMapheightMax) );
+        }
+        if(activeImage->conversionBaseMapheightMin.x() >= 0.0){
+            GLCHK( program->setUniformValue("gui_gray_scale_min_color_defined",true) );
+            GLCHK( program->setUniformValue("gui_gray_scale_min_color",activeImage->conversionBaseMapheightMin) );
+        }
+        GLCHK( program->setUniformValue("gui_gray_scale_range_tol",float(activeImage->conversionBaseMapHeightMinMaxTolerance)) );
+    }
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
@@ -2196,6 +2192,18 @@ void GLImage::applyNormalToHeight(FBOImageProporties* image,QGLFramebufferObject
     GLCHK( glBindTexture(GL_TEXTURE_2D, heightFBO->texture()) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, normalFBO->texture()) );
+
+    // When conversion is enabled (diffuse image only) then
+    // this texture (auxFBO4) keeps the orginal diffuse image
+    // before the gray scale filter applied, this is then
+    // used to force propper height levels in the bump map
+    // since user wants to have defined min/max colors to be 0 or 1
+    // in the height map. In case of other conversion this is no more used.
+    if(activeImage->bConversionBaseMap){
+        GLCHK( glActiveTexture(GL_TEXTURE2) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO4->texture()) );
+    }
+
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
 
     for(int i = 0; i < image->conversionNHItersHuge ; i++){
@@ -3188,6 +3196,7 @@ void GLImage::mouseReleaseEvent(QMouseEvent *event){
 
 void GLImage::toggleColorPicking(bool toggle){
     bToggleColorPicking = toggle;
+
     if(toggle){
         setCursor(Qt::UpArrowCursor);
     }else

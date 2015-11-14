@@ -451,6 +451,10 @@ public:
     float baseMapAngleCorrection;
     float baseMapAngleWeight;
     BaseMapConvLevelProperties baseMapConvLevels[4];
+    // Base map height levels variables
+    QVector3D conversionBaseMapheightMin; // User defined color of height=0
+    QVector3D conversionBaseMapheightMax; // User defined color of height=1 if one compoment is < 0 there will be no action applied
+    float conversionBaseMapHeightMinMaxTolerance; // defines the smoothnes of the filter
 
     // ambient occlusion settings
     int ssaoNoIters;
@@ -592,6 +596,9 @@ public:
         baseMapAngleCorrection      = 0.0;
         baseMapAngleWeight          = 0.0;
 
+        conversionBaseMapheightMin             = QVector3D(-1,0,0);
+        conversionBaseMapheightMax             = QVector3D(-1,0,0);
+        conversionBaseMapHeightMinMaxTolerance =  0;
 
         ssaoNoIters   = 4;
         ssaoIntensity = 1.0;
@@ -710,6 +717,11 @@ public:
         bConversionBaseMap          = src.bConversionBaseMap;
         baseMapAngleCorrection      = src.baseMapAngleCorrection;
         baseMapAngleWeight          = src.baseMapAngleWeight;
+
+
+        conversionBaseMapheightMin             = src.conversionBaseMapheightMin;
+        conversionBaseMapheightMax             = src.conversionBaseMapheightMax;
+        conversionBaseMapHeightMinMaxTolerance = src.conversionBaseMapHeightMinMaxTolerance;
 
         ssaoNoIters   = src.ssaoNoIters;
         ssaoIntensity = src.ssaoIntensity;
