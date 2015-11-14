@@ -48,7 +48,8 @@ HEADERS = glwidget.h \
     formmaterialindicesmanager.h \
     dialogshortcuts.h \
     allaboutdialog.h \    
-    formimagebase.h
+    formimagebase.h \
+    dockwidget3dsettings.h
 
 SOURCES = glwidget.cpp \
     main.cpp \
@@ -69,7 +70,8 @@ SOURCES = glwidget.cpp \
     formmaterialindicesmanager.cpp \
     dialogshortcuts.cpp \
     allaboutdialog.cpp \
-    formimagebase.cpp
+    formimagebase.cpp \
+    dockwidget3dsettings.cpp
 
 
 RESOURCES += content.qrc
@@ -86,7 +88,8 @@ FORMS += \
     formbasemapconversionlevels.ui \
     formmaterialindicesmanager.ui \
     allaboutdialog.ui \
-    dialogshortcuts.ui
+    dialogshortcuts.ui \
+    dockwidget3dsettings.ui
 
 ICON = resources/icon.icns
 

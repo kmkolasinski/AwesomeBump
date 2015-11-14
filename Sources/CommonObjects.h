@@ -291,9 +291,24 @@ struct RandomTilingMode{
   }
 };
 
-
-class Performance3DSettings{
+/**
+ * All settings for the 3D widget
+ */
+class Display3DSettings{
 public:
+
+  float     depthScale;
+  float     uvScale;
+  QVector2D uvOffset;
+  float     specularIntensity;
+  float     diffuseIntensity;
+  float     lightPower ;
+  float     lightRadius;
+  ShadingType  shadingType;
+  ShadingModel shadingModel;
+
+
+  // rendering quality settings
   bool bUseCullFace;
   bool bUseSimplePBR;
   int  noTessSubdivision;
@@ -303,7 +318,7 @@ public:
   bool bShowTriangleEdges;
   bool bLensFlares;
   static float openGLVersion;
-  Performance3DSettings(){
+  Display3DSettings(){
         bUseCullFace  = false;
         bUseSimplePBR = false;
         noTessSubdivision  = 16;

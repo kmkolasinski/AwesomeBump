@@ -50,9 +50,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     setAcceptDrops(true);
     zoom                    = 60;
     lightPosition           = QVector4D(0,0.0,5.0,1);
-    depthScale              = 1;
-    uvScale                 = 1.0;
-    uvOffset                = QVector2D(0,0);
+
     bToggleDiffuseView      = true;
     bToggleSpecularView     = true;
     bToggleOcclusionView    = true;
@@ -60,12 +58,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     bToggleNormalView       = true;
     bToggleRoughnessView    = true;
     bToggleMetallicView     = true;
-    shadingType             = SHADING_RELIEF_MAPPING;
-    shadingModel            = SHADING_MODEL_PBR;
-    specularIntensity       = 1.0;
-    diffuseIntensity        = 1.0;
-    lightPower              = 1.0;
-    lightRadius             = 0.1;
+
     m_env_map               = NULL;
 
     setCursor(Qt::PointingHandCursor);
@@ -124,7 +117,7 @@ void GLWidget::cleanup()
 
 QSize GLWidget::minimumSizeHint() const
 {
-    return QSize(360, 360);
+    return QSize(100, 100);
 }
 QSize GLWidget::sizeHint() const
 {
@@ -132,22 +125,6 @@ QSize GLWidget::sizeHint() const
 }
 
 
-void GLWidget::setDepthScale(int scale){
-
-    depthScale = scale/50.0;
-    updateGL();
-
-}
-
-void GLWidget::setUVScale(int scale){
-    uvScale = scale/10.0;
-    updateGL();
-}
-
-void GLWidget::setUVScaleOffset(double x,double y){
-    uvOffset = QVector2D(x,y);
-    updateGL();
-}
 
 void GLWidget::setCameraMouseSensitivity(int value){
     camera.setMouseSensitivity(value);
@@ -198,32 +175,6 @@ void GLWidget::toggleMetallicView(bool enable){
     updateGL();
 }
 
-void GLWidget::selectShadingType(int indeks){
-    shadingType = (ShadingType)indeks;
-    updateGL();
-}
-
-void GLWidget::selectShadingModel(int i){
-       shadingModel = (ShadingModel) i;
-
-       updateGL();
-}
-
-
-void GLWidget::setSpecularIntensity(double val){
-    specularIntensity = val;
-    updateGL();
-}
-void GLWidget::setDiffuseIntensity(double val){
-    diffuseIntensity = val;
-    updateGL();
-}
-
-void GLWidget::setLightParameters(float power,float radius){
-    lightPower  = power;
-    lightRadius = radius;
-    updateGL();
-}
 
 void GLWidget::initializeGL()
 {
@@ -237,7 +188,7 @@ void GLWidget::initializeGL()
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
 
-    qDebug() << "Initializing 3D widget: detected openGL version:" << QString::number(Performance3DSettings::openGLVersion);
+    qDebug() << "Initializing 3D widget: detected openGL version:" << QString::number(Display3DSettings::openGLVersion);
 
     QOpenGLShader *vshader  = NULL;
     QOpenGLShader *fshader  = NULL;
@@ -629,11 +580,11 @@ void GLWidget::paintGL()
     GLCHK( program_ptr->setUniformValue("lightPos"              , lightPosition) );
 
     GLCHK( program_ptr->setUniformValue("lightDirection"        , lightDirection.direction) );
-//    qDebug() << lightDirection.direction;
+
     GLCHK( program_ptr->setUniformValue("cameraPos"             , camera.get_position()) );
-    GLCHK( program_ptr->setUniformValue("gui_depthScale"        , depthScale) );
-    GLCHK( program_ptr->setUniformValue("gui_uvScale"           , uvScale) );
-    GLCHK( program_ptr->setUniformValue("gui_uvScaleOffset"     , uvOffset) );
+    GLCHK( program_ptr->setUniformValue("gui_depthScale"        , display3Dparameters.depthScale) );
+    GLCHK( program_ptr->setUniformValue("gui_uvScale"           , display3Dparameters.uvScale) );
+    GLCHK( program_ptr->setUniformValue("gui_uvScaleOffset"     , display3Dparameters.uvOffset) );
     GLCHK( program_ptr->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
     if(FBOImageProporties::bConversionBaseMap){
         GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , false) );
@@ -646,29 +597,29 @@ void GLWidget::paintGL()
     GLCHK( program_ptr->setUniformValue("gui_bNormal"           , bToggleNormalView) );
     GLCHK( program_ptr->setUniformValue("gui_bRoughness"        , bToggleRoughnessView) );
     GLCHK( program_ptr->setUniformValue("gui_bMetallic"         , bToggleMetallicView) );
-    GLCHK( program_ptr->setUniformValue("gui_shading_type"      , shadingType) );
-    GLCHK( program_ptr->setUniformValue("gui_shading_model"     , shadingModel) );
-    GLCHK( program_ptr->setUniformValue("gui_SpecularIntensity" , specularIntensity) );
-    GLCHK( program_ptr->setUniformValue("gui_DiffuseIntensity"  , diffuseIntensity) );
-    GLCHK( program_ptr->setUniformValue("gui_LightPower"        , lightPower) );
-    GLCHK( program_ptr->setUniformValue("gui_LightRadius"       , lightRadius) );
+    GLCHK( program_ptr->setUniformValue("gui_shading_type"      , display3Dparameters.shadingType) );
+    GLCHK( program_ptr->setUniformValue("gui_shading_model"     , display3Dparameters.shadingModel) );
+    GLCHK( program_ptr->setUniformValue("gui_SpecularIntensity" , display3Dparameters.specularIntensity) );
+    GLCHK( program_ptr->setUniformValue("gui_DiffuseIntensity"  , display3Dparameters.diffuseIntensity) );
+    GLCHK( program_ptr->setUniformValue("gui_LightPower"        , display3Dparameters.lightPower) );
+    GLCHK( program_ptr->setUniformValue("gui_LightRadius"       , display3Dparameters.lightRadius) );
 
     // number of mipmaps
     GLCHK( program_ptr->setUniformValue("num_mipmaps"   , m_env_map->numMipmaps ) );
     // 3D settings
-    GLCHK( program_ptr->setUniformValue("gui_bUseCullFace"   , performanceSettings.bUseCullFace) );
-    GLCHK( program_ptr->setUniformValue("gui_bUseSimplePBR"  , performanceSettings.bUseSimplePBR) );
-    GLCHK( program_ptr->setUniformValue("gui_noTessSub"      , performanceSettings.noTessSubdivision) );
-    GLCHK( program_ptr->setUniformValue("gui_noPBRRays"      , performanceSettings.noPBRRays) );
+    GLCHK( program_ptr->setUniformValue("gui_bUseCullFace"   , display3Dparameters.bUseCullFace) );
+    GLCHK( program_ptr->setUniformValue("gui_bUseSimplePBR"  , display3Dparameters.bUseSimplePBR) );
+    GLCHK( program_ptr->setUniformValue("gui_noTessSub"      , display3Dparameters.noTessSubdivision) );
+    GLCHK( program_ptr->setUniformValue("gui_noPBRRays"      , display3Dparameters.noPBRRays) );
 
-    if(performanceSettings.bShowTriangleEdges && pindex == 0){
+    if(display3Dparameters.bShowTriangleEdges && pindex == 0){
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
         glEnable( GL_POLYGON_OFFSET_FILL );
         glPolygonOffset( 1.0f, 1.0f );
         GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", true) );
         GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , true) );
     }else{
-        if(performanceSettings.bShowTriangleEdges){
+        if(display3Dparameters.bShowTriangleEdges){
             glDisable( GL_POLYGON_OFFSET_FILL );
             glEnable( GL_POLYGON_OFFSET_LINE );
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -677,10 +628,10 @@ void GLWidget::paintGL()
 
         }
 
-        GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", performanceSettings.bShowTriangleEdges) );
+        GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", display3Dparameters.bShowTriangleEdges) );
 
         // Material preview: M key : when triangles are disabled
-        if(!performanceSettings.bShowTriangleEdges)
+        if(!display3Dparameters.bShowTriangleEdges)
             GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , bool(keyPressed == KEY_SHOW_MATERIALS)) );
     }
 
@@ -706,7 +657,7 @@ void GLWidget::paintGL()
         glActiveTexture(GL_TEXTURE0);
     }
 
-    if(!performanceSettings.bShowTriangleEdges) break;
+    if(!display3Dparameters.bShowTriangleEdges) break;
     }// end of loop over triangles
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDisable( GL_POLYGON_OFFSET_LINE );
@@ -734,7 +685,7 @@ void GLWidget::paintGL()
         // -----------------------------------------------------------
 
         // enable of disable bloom effect
-        if(performanceSettings.bBloomEffect){
+        if(display3Dparameters.bBloomEffect){
              applyGlowFilter(outputFBO->fbo);
              copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
 
@@ -744,7 +695,7 @@ void GLWidget::paintGL()
         // Post processing:
         // 2. DOF (can be disabled/enabled by gui)
         // -----------------------------------------------------------
-        if(performanceSettings.bDofEffect){
+        if(display3Dparameters.bDofEffect){
             applyDofFilter(colorFBO->fbo->texture(),outputFBO->fbo);
             copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
         }
@@ -753,7 +704,7 @@ void GLWidget::paintGL()
         // Post processing:
         // 3. Lens Flares (can be disabled/enabled by gui)
         // -----------------------------------------------------------
-        if(performanceSettings.bLensFlares){
+        if(display3Dparameters.bLensFlares){
             applyLensFlaresFilter(colorFBO->fbo->texture(),outputFBO->fbo);
             copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
         }
@@ -1073,9 +1024,9 @@ void GLWidget::chooseSkyBox(QString cubeMapName,bool bFirstTime){
     else qDebug() << "Skipping glWidget repainting during first Env. maps. load.";
 }
 
-void GLWidget::updatePerformanceSettings(Performance3DSettings settings){
+void GLWidget::updatePerformanceSettings(Display3DSettings settings){
     qDebug() << "Changing 3D settings";
-    performanceSettings = settings;
+    display3Dparameters = settings;
     updateGL();
 }
 
@@ -1275,7 +1226,7 @@ void GLWidget::applyToneFilter(GLuint input_tex,QGLFramebufferObject* outputFBO)
 void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outputFBO){
     // Based on: http://john-chapman-graphics.blogspot.com/2013/02/pseudo-lens-flare.html
     // prepare mask image
-    if(!performanceSettings.bBloomEffect){
+    if(!display3Dparameters.bBloomEffect){
         applyGaussFilter(colorFBO->getAttachedTexture(1),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
         applyGaussFilter(glowOutputColor[0]->fbo->texture(),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
     }

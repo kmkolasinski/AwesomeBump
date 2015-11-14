@@ -23,7 +23,7 @@ int FBOImageProporties::currentMaterialIndeks = MATERIALS_DISABLED;
 
 RandomTilingMode FBOImageProporties::seamlessRandomTiling = RandomTilingMode();
 
-float Performance3DSettings::openGLVersion = 3.3;
+float Display3DSettings::openGLVersion = 3.3;
 
 QString  PostfixNames::diffuseName    = "_d";
 QString  PostfixNames::normalName     = "_n";

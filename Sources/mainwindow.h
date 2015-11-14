@@ -15,7 +15,7 @@
 #include "CommonObjects.h"
 #include "dialoglogger.h"
 #include "dialogshortcuts.h"
-
+#include "dockwidget3dsettings.h"
 
 namespace Ui {
 class MainWindow;
@@ -99,14 +99,10 @@ public slots:
     void applyScaleImage();
     void applyCurrentUVsTransformations();// copy current image to diffuse and convert to others
 
+
     // Setting the global parameters
-    void setSpecularIntensity(int);
-    void setDiffuseIntensity(int);
     void updateSpinBoxes(int);
     void selectShadingModel(int i);
-    // change current performance settings
-    void updatePerformanceSettings();
-    void updatePerformanceSettings(int);
 
     // Conversion functions
     void convertFromHtoN();
@@ -155,6 +151,8 @@ private:
 
     // Settings container
     FormSettingsContainer *settingsContainer;
+    // 3D settings manager
+    DockWidget3DSettings *dock3Dsettings;
 
     QAction *aboutQtAction;
     QAction *aboutAction;

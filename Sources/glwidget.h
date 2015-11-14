@@ -75,8 +75,7 @@ public:
     void setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes type);
 
 public slots:
-    void setDepthScale(int scale);
-    void setUVScale(int scale);
+
 
     void toggleDiffuseView(bool);
     void toggleSpecularView(bool);
@@ -85,13 +84,6 @@ public slots:
     void toggleHeightView(bool);
     void toggleRoughnessView(bool);
     void toggleMetallicView(bool);
-    void selectShadingType(int);
-    void selectShadingModel(int i);
-
-    void setSpecularIntensity(double);
-    void setDiffuseIntensity(double);
-    void setLightParameters(float,float);
-    void setUVScaleOffset(double x,double y);
     void setCameraMouseSensitivity(int value);
     void resetCameraPosition();
     void cleanup();
@@ -104,7 +96,7 @@ public slots:
 
     // pbr functions
     void chooseSkyBox(QString cubeMapName, bool bFirstTime = false);
-    void updatePerformanceSettings(Performance3DSettings settings);
+    void updatePerformanceSettings(Display3DSettings settings);
 
 
 signals:
@@ -143,14 +135,7 @@ private:
     QGLFramebufferObject**  fboIdPtrs[8];
 
 
-    // parameters plane
-    float depthScale;
-    float uvScale;
-    QVector2D uvOffset;
-    float specularIntensity;
-    float diffuseIntensity;
-    float lightPower ;
-    float lightRadius;
+
     bool bToggleDiffuseView;
     bool bToggleSpecularView;
     bool bToggleOcclusionView;
@@ -159,9 +144,7 @@ private:
     bool bToggleRoughnessView;
     bool bToggleMetallicView;
 
-    ShadingType shadingType;
-    ShadingModel shadingModel;
-    Performance3DSettings performanceSettings;
+    Display3DSettings display3Dparameters;
 
     // 3D view parameters
     QMatrix4x4 projectionMatrix;

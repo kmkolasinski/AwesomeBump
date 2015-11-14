@@ -22,6 +22,13 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage          = new GLImage(this);
     glWidget         = new GLWidget(this,glImage);
 
+    // -------------------------------------------------------
+    // 3D settings widget
+    // -------------------------------------------------------
+    dock3Dsettings = new DockWidget3DSettings(this,glWidget);
+    connect(dock3Dsettings,SIGNAL(signalSelectedShadingModel(int)),this,SLOT(selectShadingModel(int)));
+//    addDockWidget(Qt::BottomDockWidgetArea,dock3Dsettings);
+
     connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
 
     diffuseImageProp  = new FormImageProp(this,glImage);
@@ -55,7 +62,6 @@ MainWindow::MainWindow(QWidget *parent) :
     glWidget->setPointerToTexture(&occlusionImageProp->getImageProporties()->fbo,OCCLUSION_TEXTURE);
     glWidget->setPointerToTexture(&roughnessImageProp->getImageProporties()->fbo,ROUGHNESS_TEXTURE);
     glWidget->setPointerToTexture(&metallicImageProp->getImageProporties()->fbo ,METALLIC_TEXTURE);
-
     glWidget->setPointerToTexture(&materialManager->getImageProporties()->fbo,MATERIAL_TEXTURE);
     //glWidget->setPointerToTexture(&grungeImageProp->getImageProporties()->fbo,GRUNGE_TEXTURE);
 
@@ -172,7 +178,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //                      GUI setup
     // ------------------------------------------------------
     ui->setupUi(this);
-    ui->widget3DSettings->hide();
     ui->statusbar->addWidget(statusLabel);
 
     // Settings container
@@ -255,16 +260,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(occlusionImageProp,SIGNAL(conversionHeightNormalToOcclusionApplied()),this,SLOT(convertFromHNtoOcc()));
 
 
-
-    // Global setting signals
-    // sliders
-    connect(ui->horizontalSliderDepthScale ,SIGNAL(valueChanged(int)),glWidget,SLOT(setDepthScale(int)));
-    connect(ui->horizontalSliderUVScale    ,SIGNAL(valueChanged(int)),glWidget,SLOT(setUVScale(int)));
-    connect(ui->horizontalSliderDepthScale ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderUVScale    ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderUVXOffset  ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderUVYOffset  ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-
     // Save signals
     connect(ui->pushButtonSaveAll,SIGNAL(released()),this,SLOT(saveImages()));
     connect(ui->pushButtonSaveChecked,SIGNAL(released()),this,SLOT(saveCheckedImages()));
@@ -280,25 +275,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonResizeApply ,SIGNAL(released()),this,SLOT(applyResizeImage()));
     connect(ui->pushButtonRescaleApply,SIGNAL(released()),this,SLOT(applyScaleImage()));
 
-    // Other signals - 3D settings
-
-    // 3D settings
-    connect(ui->comboBoxPerformanceNoRays     ,SIGNAL(activated(int)),this,SLOT(updatePerformanceSettings(int)));
-    connect(ui->comboBoxPerformanceNoTessSub  ,SIGNAL(activated(int)),this,SLOT(updatePerformanceSettings(int)));
-    connect(ui->checkBoxPerformanceCullFace   ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
-    connect(ui->checkBoxPerformanceSimplePBR  ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
-    connect(ui->checkBoxBloomEffect           ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
-    connect(ui->checkBoxDOFEffect             ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
-    connect(ui->checkBoxLensFlaresEffect      ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
-    connect(ui->checkBoxShowTriangleEdges     ,SIGNAL(clicked()),this,SLOT(updatePerformanceSettings()));
-
-
 
     connect(ui->pushButtonReplotAll           ,SIGNAL(released()),this,SLOT(replotAllImages()));
     connect(ui->pushButtonResetCameraPosition ,SIGNAL(released()),glWidget,SLOT(resetCameraPosition()));
     connect(ui->pushButtonChangeCamPosition   ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleChangeCamPosition(bool)));
     connect(glWidget,SIGNAL(changeCamPositionApplied(bool)),ui->pushButtonChangeCamPosition   ,SLOT(setChecked(bool)));
-
 
 
     connect(ui->pushButtonToggleDiffuse       ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleDiffuseView(bool)));
@@ -309,24 +290,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonToggleRoughness     ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleRoughnessView(bool)));
     connect(ui->pushButtonToggleMetallic      ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleMetallicView(bool)));
     connect(ui->pushButtonSaveCurrentSettings ,SIGNAL(released()),this,SLOT(saveSettings()));
-    connect(ui->horizontalSliderSpecularI     ,SIGNAL(valueChanged(int)),this,SLOT(setSpecularIntensity(int)));
-    connect(ui->horizontalSliderDiffuseI      ,SIGNAL(valueChanged(int)),this,SLOT(setDiffuseIntensity(int)));
-
-    connect(ui->horizontalSliderLightPower      ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-    connect(ui->horizontalSliderLightRadius     ,SIGNAL(valueChanged(int)),this,SLOT(updateSpinBoxes(int)));
-
-
     connect(ui->comboBoxImageOutputFormat     ,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
 
-    // loading 3d mesh signal
-    connect(ui->pushButtonLoadMesh            ,SIGNAL(released()),        glWidget,SLOT(loadMeshFromFile()));
-    connect(ui->comboBoxChooseOBJModel        ,SIGNAL(activated(QString)),glWidget,SLOT(chooseMeshFile(QString)));
-    connect(ui->comboBoxShadingType           ,SIGNAL(activated(int)),    glWidget,SLOT(selectShadingType(int)));
-    connect(ui->comboBoxShadingModel          ,SIGNAL(activated(int)),    this,SLOT(selectShadingModel(int)));
 
-
-    // PBR settings
-    connect(ui->comboBoxSkyBox        ,SIGNAL(activated(QString)),glWidget,SLOT(chooseSkyBox(QString)));
     // Other staff
 
     ui->progressBar->setValue(0);
@@ -341,6 +307,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowMetallicImage  ,SIGNAL(triggered()),this,SLOT(selectMetallicTab()));
     connect(ui->actionShowMaterialsImage ,SIGNAL(triggered()),this,SLOT(selectMaterialsTab()));
     connect(ui->actionShowGrungeTexture  ,SIGNAL(triggered()),this,SLOT(selectGrungeTab()));
+    // show hide 3D settings
+    connect(ui->pushButton3DSettings ,SIGNAL(toggled(bool)),dock3Dsettings,SLOT(setVisible(bool)));
 
 
     connect(ui->checkBoxSaveDiffuse ,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
@@ -440,6 +408,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->checkBoxToggleMouseLoop    ,SIGNAL(toggled(bool)),glImage ,SLOT(toggleMouseWrap(bool)));
 
 
+
 #ifdef Q_OS_MAC
     if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
 #endif
@@ -449,8 +418,12 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "Supported GUI styles: " << guiStyleList.join(", ");
     ui->comboBoxGUIStyle->addItems(guiStyleList);
 
-    qDebug() << "Load settings:" ;
+    qDebug() << "Loading settings:" ;
     // Now we can load settings
+
+
+
+
     loadSettings();
 
 
@@ -514,23 +487,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QAction *action = ui->toolBar->toggleViewAction();
     ui->menubar->addAction(action);
 
-    // ------------------------------------------------------- //
-    //               Loading cub maps folders
-    // ------------------------------------------------------- //
-    qDebug() << "Loading cubemaps folders:";
-    QDir currentDir(_find_data_dir(QString(RESOURCE_BASE) + "Core/2D/skyboxes"));
-    currentDir.setFilter(QDir::Dirs);
-    QStringList entries = currentDir.entryList();
-    for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ){
-        QString dirname=*entry;
-        if(dirname != tr(".") && dirname != tr("..")){
-            qDebug() << "Enviromental map:" << dirname;
-            ui->comboBoxSkyBox->addItem(dirname);
-        }
-    }// end of for
-    // setting cube map for glWidget
-    glWidget->chooseSkyBox(ui->comboBoxSkyBox->currentText(),true);
-
 }
 
 MainWindow::~MainWindow()
@@ -539,6 +495,7 @@ MainWindow::~MainWindow()
     delete dialogShortcuts;
     delete materialManager;
     delete settingsContainer;
+    delete dock3Dsettings;
     delete diffuseImageProp;
     delete normalImageProp;
     delete specularImageProp;
@@ -1410,62 +1367,25 @@ void MainWindow::resetRandomPatches(){
     replotAllImages();
 }
 
-void MainWindow::setSpecularIntensity(int val){
-    double d = val/50.0;
-    ui->doubleSpinBoxSpecularI->setValue(d);
-    glWidget->setSpecularIntensity(d);
-}
-void MainWindow::setDiffuseIntensity(int val){
-    double d = val/50.0;
-    ui->doubleSpinBoxDiffuseI->setValue(d);
-    glWidget->setDiffuseIntensity(d);
-}
+
 void MainWindow::updateSpinBoxes(int){
     ui->doubleSpinBoxMakeSeamless->setValue(ui->horizontalSliderMakeSeamlessRadius->value()/100.0);
-    ui->doubleSpinBoxDepthScale  ->setValue(ui->horizontalSliderDepthScale->value()/100.0);
-    ui->doubleSpinBoxUVScale     ->setValue(ui->horizontalSliderUVScale   ->value()/10.0);
-    ui->doubleSpinBoxUVXOffset   ->setValue(ui->horizontalSliderUVXOffset ->value()/100.0);
-    ui->doubleSpinBoxUVYOffset   ->setValue(ui->horizontalSliderUVYOffset ->value()/100.0);
 
     // random tilling mode
     ui->doubleSpinBoxRandomPatchesAngle      ->setValue(ui->horizontalSliderRandomPatchesRotate     ->value());
     ui->doubleSpinBoxRandomPatchesInnerRadius->setValue(ui->horizontalSliderRandomPatchesInnerRadius->value()/100.0);
     ui->doubleSpinBoxRandomPatchesOuterRadius->setValue(ui->horizontalSliderRandomPatchesOuterRadius->value()/100.0);
-
-    ui->doubleSpinBoxLightPower->setValue(ui->horizontalSliderLightPower->value()/100.0);
-    ui->doubleSpinBoxLightRadius->setValue(ui->horizontalSliderLightRadius->value()/100.0);
-
     //seamless strenght
     ui->doubleSpinBoxSeamlessContrastStrenght->setValue(ui->horizontalSliderSeamlessContrastStrenght->value()/100.0);
     ui->doubleSpinBoxSeamlessContrastPower->setValue(ui->horizontalSliderSeamlessContrastPower->value()/100.0);
-
-
-    glWidget->setLightParameters(ui->doubleSpinBoxLightPower->value(),ui->doubleSpinBoxLightRadius->value());
-    glWidget->setUVScaleOffset(ui->doubleSpinBoxUVXOffset->value(),ui->doubleSpinBoxUVYOffset->value());
 }
 
 void MainWindow::selectShadingModel(int i){
-      glWidget->selectShadingModel(i);
+
       if(i == 0) ui->tabWidget->setTabText(5,"Roughness");
       if(i == 1) ui->tabWidget->setTabText(5,"Glossiness");
 }
 
-
-void MainWindow::updatePerformanceSettings(){
-    Performance3DSettings settings;
-    settings.bUseCullFace       = ui->checkBoxPerformanceCullFace->isChecked();
-    settings.bUseSimplePBR      = ui->checkBoxPerformanceSimplePBR->isChecked();
-    settings.noPBRRays          = ui->comboBoxPerformanceNoRays->currentText().toInt();
-    settings.noTessSubdivision  = ui->comboBoxPerformanceNoTessSub->currentText().toInt();
-    settings.bBloomEffect       = ui->checkBoxBloomEffect->isChecked();
-    settings.bDofEffect         = ui->checkBoxDOFEffect->isChecked();
-    settings.bShowTriangleEdges = ui->checkBoxShowTriangleEdges->isChecked();
-    settings.bLensFlares        = ui->checkBoxLensFlaresEffect->isChecked();
-    glWidget->updatePerformanceSettings(settings);
-}
-void MainWindow::updatePerformanceSettings(int indeks){
-    updatePerformanceSettings();
-}
 
 void MainWindow::convertFromHtoN(){   
     glImage->setConversionType(CONVERT_FROM_H_TO_N);
@@ -1476,7 +1396,6 @@ void MainWindow::convertFromHtoN(){
     glImage->setActiveImage(normalImageProp->getImageProporties());
     glImage->enableShadowRender(false);
     glImage->setConversionType(CONVERT_NONE);
-
 
     replotAllImages();
 
@@ -1930,8 +1849,7 @@ void MainWindow::saveSettings(){
 
     settings.setValue("tab_win_w",ui->tabWidget->width());
     settings.setValue("tab_win_h",ui->tabWidget->height());
-    settings.setValue("tab_3d_settings_win_w",ui->widget3DSettings->width());
-    settings.setValue("tab_3d_settings_win_h",ui->widget3DSettings->height());
+
 
 
     settings.setValue("recent_dir",recentDir.absolutePath());
@@ -1946,7 +1864,6 @@ void MainWindow::saveSettings(){
     PostfixNames::metallicName  = ui->lineEditPostfixMetallic->text();
 
 
-    settings.setValue("3d_depth",ui->horizontalSliderDepthScale->value()/100.0);
     settings.setValue("d_postfix",ui->lineEditPostfixDiffuse->text());
     settings.setValue("n_postfix",ui->lineEditPostfixNormal->text());
     settings.setValue("s_postfix",ui->lineEditPostfixSpecular->text());
@@ -1995,16 +1912,7 @@ void MainWindow::saveSettings(){
     settings.setValue("mouse_loop",ui->checkBoxToggleMouseLoop->isChecked());
 
 
-    // 3D settings:
-    settings.setValue("bUseCullFace",ui->checkBoxPerformanceCullFace->isChecked());
-    settings.setValue("bUseSimplePBR",ui->checkBoxPerformanceSimplePBR->isChecked());
-    settings.setValue("noPBRRays",ui->comboBoxPerformanceNoRays->currentIndex());
-    settings.setValue("noTessSubdivision",ui->comboBoxPerformanceNoTessSub->currentIndex());
-    settings.setValue("bBloomEffect",ui->checkBoxBloomEffect->isChecked());
-    settings.setValue("bLensFlaresEffect",ui->checkBoxLensFlaresEffect->isChecked());
-    settings.setValue("bDofEffect",ui->checkBoxDOFEffect->isChecked());
-
-
+    dock3Dsettings->saveSettings();
     saveImageSettings("d",diffuseImageProp);
     saveImageSettings("n",normalImageProp);
     saveImageSettings("s",specularImageProp);
@@ -2038,11 +1946,6 @@ void MainWindow::loadSettings(){
         this->resize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
         ui->tabWidget->resize(settings.value("tab_win_w",200).toInt(),
                               settings.value("tab_win_h",600).toInt());
-        ui->widget3DSettings->resize(settings.value("tab_3d_settings_win_w",400).toInt(),
-                                     settings.value("tab_3d_settings_win_h",230).toInt());
-
-        //ui->tabWidget->resize(150,400);
-
     }
 
     PostfixNames::diffuseName   = settings.value("d_postfix","_d").toString();
@@ -2063,8 +1966,6 @@ void MainWindow::loadSettings(){
 
     showHideTextureTypes(true);
 
-
-    ui->horizontalSliderDepthScale->setValue(settings.value("3d_depth","0.25").toFloat()*100);
     ui->lineEditPostfixDiffuse  ->setText(PostfixNames::diffuseName);
     ui->lineEditPostfixNormal   ->setText(PostfixNames::normalName);
     ui->lineEditPostfixSpecular ->setText(PostfixNames::specularName);
@@ -2072,8 +1973,6 @@ void MainWindow::loadSettings(){
     ui->lineEditPostfixOcclusion->setText(PostfixNames::occlusionName);
     ui->lineEditPostfixRoughness->setText(PostfixNames::roughnessName);
     ui->lineEditPostfixMetallic ->setText(PostfixNames::metallicName);
-
-
 
 
     recentDir     = settings.value("recent_dir","").toString();
@@ -2113,16 +2012,17 @@ void MainWindow::loadSettings(){
 
 
     // 3D settings:
-    ui->checkBoxPerformanceCullFace ->setChecked(settings.value("bUseCullFace",false).toBool());
-    ui->checkBoxPerformanceSimplePBR->setChecked(settings.value("bUseSimplePBR",false).toBool());
-    ui->checkBoxBloomEffect         ->setChecked(settings.value("bBloomEffect",true).toBool());
-    ui->checkBoxDOFEffect           ->setChecked(settings.value("bDofEffect",true).toBool());
-    ui->checkBoxLensFlaresEffect    ->setChecked(settings.value("bLensFlaresEffect",true).toBool());
-    ui->comboBoxPerformanceNoRays   ->setCurrentIndex(settings.value("noPBRRays",0).toInt());
-    ui->comboBoxPerformanceNoTessSub->setCurrentIndex(settings.value("noTessSubdivision",0).toInt());
+//    ui->checkBoxPerformanceCullFace ->setChecked(settings.value("bUseCullFace",false).toBool());
+//    ui->checkBoxPerformanceSimplePBR->setChecked(settings.value("bUseSimplePBR",false).toBool());
+//    ui->checkBoxBloomEffect         ->setChecked(settings.value("bBloomEffect",true).toBool());
+//    ui->checkBoxDOFEffect           ->setChecked(settings.value("bDofEffect",true).toBool());
+//    ui->checkBoxLensFlaresEffect    ->setChecked(settings.value("bLensFlaresEffect",true).toBool());
+//    ui->comboBoxPerformanceNoRays   ->setCurrentIndex(settings.value("noPBRRays",0).toInt());
+//    ui->comboBoxPerformanceNoTessSub->setCurrentIndex(settings.value("noTessSubdivision",0).toInt());
 
 
-    updatePerformanceSettings();
+    //updatePerformanceSettings();
+    dock3Dsettings->loadSettings();
     updateSliders();
 
 
