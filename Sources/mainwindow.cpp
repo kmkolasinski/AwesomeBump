@@ -22,12 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage          = new GLImage(this);
     glWidget         = new GLWidget(this,glImage);
 
-    // -------------------------------------------------------
-    // 3D settings widget
-    // -------------------------------------------------------
-    dock3Dsettings = new DockWidget3DSettings(this,glWidget);
-    connect(dock3Dsettings,SIGNAL(signalSelectedShadingModel(int)),this,SLOT(selectShadingModel(int)));
-//    addDockWidget(Qt::BottomDockWidgetArea,dock3Dsettings);
+
 
     connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
 
@@ -188,9 +183,21 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(settingsContainer,SIGNAL(forceSaveCurrentConfig()),this,SLOT(saveSettings()));
     connect(ui->pushButtonProjectManager,SIGNAL(toggled(bool)),settingsContainer,SLOT(setVisible(bool)));
 
+    // -------------------------------------------------------
+    // 3D settings widget
+    // -------------------------------------------------------
+    dock3Dsettings = new DockWidget3DSettings(this,glWidget);
+    ui->verticalLayout3DImage->addWidget(dock3Dsettings);
+    setDockNestingEnabled(true);
+    connect(dock3Dsettings,SIGNAL(signalSelectedShadingModel(int)),this,SLOT(selectShadingModel(int)));
+    // show hide 3D settings
+    connect(ui->pushButton3DSettings ,SIGNAL(toggled(bool)),dock3Dsettings,SLOT(setVisible(bool)));
+
 
     ui->verticalLayout3DImage->addWidget(glWidget);
     ui->verticalLayout2DImage->addWidget(glImage);
+
+
 
 
     ui->verticalLayoutDiffuseImage  ->addWidget(diffuseImageProp);
@@ -307,8 +314,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowMetallicImage  ,SIGNAL(triggered()),this,SLOT(selectMetallicTab()));
     connect(ui->actionShowMaterialsImage ,SIGNAL(triggered()),this,SLOT(selectMaterialsTab()));
     connect(ui->actionShowGrungeTexture  ,SIGNAL(triggered()),this,SLOT(selectGrungeTab()));
-    // show hide 3D settings
-    connect(ui->pushButton3DSettings ,SIGNAL(toggled(bool)),dock3Dsettings,SLOT(setVisible(bool)));
+
 
 
     connect(ui->checkBoxSaveDiffuse ,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
@@ -2009,19 +2015,6 @@ void MainWindow::loadSettings(){
     ui->spinBoxFontSize->setValue(settings.value("font_size",10).toInt());
     ui->checkBoxToggleMouseLoop->setChecked(settings.value("mouse_loop",true).toBool());
 
-
-
-    // 3D settings:
-//    ui->checkBoxPerformanceCullFace ->setChecked(settings.value("bUseCullFace",false).toBool());
-//    ui->checkBoxPerformanceSimplePBR->setChecked(settings.value("bUseSimplePBR",false).toBool());
-//    ui->checkBoxBloomEffect         ->setChecked(settings.value("bBloomEffect",true).toBool());
-//    ui->checkBoxDOFEffect           ->setChecked(settings.value("bDofEffect",true).toBool());
-//    ui->checkBoxLensFlaresEffect    ->setChecked(settings.value("bLensFlaresEffect",true).toBool());
-//    ui->comboBoxPerformanceNoRays   ->setCurrentIndex(settings.value("noPBRRays",0).toInt());
-//    ui->comboBoxPerformanceNoTessSub->setCurrentIndex(settings.value("noTessSubdivision",0).toInt());
-
-
-    //updatePerformanceSettings();
     dock3Dsettings->loadSettings();
     updateSliders();
 
