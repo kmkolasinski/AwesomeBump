@@ -16,6 +16,7 @@
 #include "dialoglogger.h"
 #include "dialogshortcuts.h"
 #include "dockwidget3dsettings.h"
+#include "gpuinfo.h"
 
 namespace Ui {
 class MainWindow;
