@@ -596,9 +596,9 @@ void MainWindow::replotAllImages(){
 
     GLint gpuMemTotal = glGpu.getTotalMem();
     GLint gpuMemUsed = glGpu.getAvailMem();
-    QString menu_text = QString(" Memory Used:") + QString::number(gpuMemUsed) + QString("[MB]")
-		      + QString(" Memory Free:") + QString::number(gpuMemTotal - gpuMemUsed) + QString("[MB]")
-		      + QString(" Total Memory:") + QString::number(gpuMemTotal) + QString("[MB]");
+    QString menu_text = QString(" Memory Used:") + QString::number(float(gpuMemUsed) / 1024.0f) + QString("[MB]")
+		      + QString(" Memory Free:") + QString::number(float(gpuMemTotal - gpuMemUsed) / 1024.0f) + QString("[MB]")
+		      + QString(" Total Memory:") + QString::number(float(gpuMemTotal) / 1024.0f) + QString("[MB]");
 
     statusLabel->setText(menu_text);
 
