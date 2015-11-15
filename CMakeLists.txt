@@ -50,7 +50,7 @@ add_definitions(${Qt5Widgets_DEFINITIONS} -DRESOURCE_BASE="${RESOURCE_BASE}/")
 qt5_wrap_ui(UI_HEADERS Sources/allaboutdialog.ui Sources/dialogheightcalculator.ui Sources/dialoglogger.ui
     Sources/dialogshortcuts.ui Sources/formbasemapconversionlevels.ui Sources/formimageprop.ui
     Sources/formmaterialindicesmanager.ui Sources/formsettingscontainer.ui Sources/formsettingsfield.ui
-    Sources/mainwindow.ui )
+    Sources/mainwindow.ui dockwidget3dsettings.ui)
 qt5_add_resources(UI_RESOURCES Sources/content.qrc)
 
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
@@ -66,7 +66,8 @@ set(AwesomeBump_SRCS
     Sources/formbasemapconversionlevels.cpp Sources/formimageprop.cpp
     Sources/formmaterialindicesmanager.cpp Sources/formsettingscontainer.cpp
     Sources/formsettingsfield.cpp Sources/glimageeditor.cpp Sources/glwidget.cpp
-    Sources/glwidgetbase.cpp Sources/mainwindow.cpp Sources/main.cpp) 
+    Sources/glwidgetbase.cpp Sources/mainwindow.cpp Sources/main.cpp
+    Sources/dockwidget3dsettings.cpp) 
 
 # Configure the linker and finalize binary compilation
 add_executable(awesomebump ${AwesomeBump_SRCS} ${UI_HEADERS} ${UI_RESOURCES} Sources/resources/icon.icns)
