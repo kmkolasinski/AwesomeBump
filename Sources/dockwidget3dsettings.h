@@ -40,7 +40,7 @@ signals:
 private:
     GLWidget *ptr_glWidget;
     Ui::DockWidget3DSettings *ui;
-
+    QSize sizeHint() const;
 public:
     Display3DSettings settings;
 };
