@@ -59,7 +59,7 @@ set(AwesomeBump_SRCS
     Sources/utils/tinyobj/tiny_obj_loader.cc Sources/CommonObjects.cpp
     Sources/allaboutdialog.cpp Sources/camera.cpp Sources/dialogheightcalculator.cpp
     Sources/camera.cpp Sources/dialogheightcalculator.cpp Sources/camera.cpp
-    Sources/dialogheightcalculator.cpp Sources/camera.cpp
+    Sources/dialogheightcalculator.cpp Sources/camera.cpp Sources/gpuinfo.cpp
     Sources/dialogheightcalculator.cpp Sources/dialoglogger.cpp Sources/dialogshortcuts.cpp
     Sources/dialoglogger.cpp Sources/dialogshortcuts.cpp Sources/formimagebase.cpp
     Sources/formbasemapconversionlevels.cpp Sources/formimagebase.cpp
