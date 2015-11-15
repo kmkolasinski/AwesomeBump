@@ -9,6 +9,7 @@ DockWidget3DSettings::DockWidget3DSettings(QWidget *parent, GLWidget* ptr_gl) :
     ui->setupUi(this);
     close();
     setContentsMargins(0,0,0,0);
+    //setWindowFlags(Qt::Widget);
 
 
     // Connect all the sliders and other widgets
@@ -60,6 +61,12 @@ DockWidget3DSettings::DockWidget3DSettings(QWidget *parent, GLWidget* ptr_gl) :
     // setting cube map for glWidget
     ptr_glWidget->chooseSkyBox(ui->comboBoxSkyBox->currentText(),true);
 
+
+
+}
+QSize DockWidget3DSettings::sizeHint() const
+{
+    return QSize(200, 60);
 }
 
 void DockWidget3DSettings::updateSettings(int){

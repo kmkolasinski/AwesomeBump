@@ -77,6 +77,8 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
 
     cameraInterpolation = 1.0;
 
+    QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setSizePolicy(sizePolicy);
 }
 
 GLWidget::~GLWidget()
