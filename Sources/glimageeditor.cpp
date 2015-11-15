@@ -906,7 +906,6 @@ void GLImage::render(){
         copyTex2FBO(activeFBO->texture(),auxFBO0BMLevels[1]);
         copyTex2FBO(activeFBO->texture(),auxFBO0BMLevels[2]);
         // calculate normal for orginal image
-        copyFBO(activeFBO,auxFBO4);
         applyBaseMapConversion(activeFBO,auxFBO2,auxFBO1,activeImage->baseMapConvLevels[0]);
 
         // calulcate normal for mipmaps
