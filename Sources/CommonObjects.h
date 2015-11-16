@@ -414,11 +414,11 @@ public:
     bool bSkipProcessing;
     QGLFramebufferObject *fbo     ; // output image
 
-    GLuint scr_tex_id;       // Id of texture loaded from image, from loaded file
-    GLuint normalMixerInputTexId; // Used only by normal texture
+    QOpenGLTexture* scr_tex_id;       // Id of texture loaded from image, from loaded file
+    QOpenGLTexture* normalMixerInputTexId; // Used only by normal texture
     int scr_tex_width;       // width of the image loaded from file.
     int scr_tex_height;      // height ...
-    QGLWidget* glWidget_ptr; // pointer to GL context
+    QOpenGLWidget* glWidget_ptr; // pointer to GL context
     TextureTypes imageType;  // This will define what kind of preprocessing will be applied to image
 
 
@@ -562,18 +562,15 @@ public:
 
      FBOImageProporties(){
         bSkipProcessing = false;
-        //ref_fbo      = NULL;
         fbo          = NULL;
-        //aux_fbo      = NULL;
-        //aux2_fbo     = NULL;
-        normalMixerInputTexId = 0;
         glWidget_ptr = NULL;
         bFirstDraw   = true;
         bGrayScale   = false;
         grayScalePreset.mode2();
         bInvertR = bInvertG = bInvertB = false;
 
-        scr_tex_id     = 0;
+        scr_tex_id            = NULL;
+        normalMixerInputTexId = NULL;
         bRemoveShading = false;
         noRemoveShadingGaussIter = 10;
         aoCancellation   = 0.0;
@@ -814,8 +811,8 @@ public:
         qDebug() << Q_FUNC_INFO;
 
         glWidget_ptr->makeCurrent();
-        if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
-        scr_tex_id = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
+        if(glIsTexture(scr_tex_id->textureId())) delete (scr_tex_id);
+        scr_tex_id     = new QOpenGLTexture(image);
         scr_tex_width  = image.width();
         scr_tex_height = image.height();
         bFirstDraw    = true;
@@ -837,9 +834,9 @@ public:
 
     void updateSrcTexId(QGLFramebufferObject* in_ref_fbo){
         glWidget_ptr->makeCurrent();
-        if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
+        if(glIsTexture(scr_tex_id->textureId())) delete scr_tex_id;
         QImage image = in_ref_fbo->toImage();
-        scr_tex_id   = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
+        scr_tex_id   = new QOpenGLTexture(image);
 
     }
 
@@ -866,10 +863,10 @@ public:
             qDebug() << Q_FUNC_INFO;
             glWidget_ptr->makeCurrent();
 
-            if(glIsTexture(normalMixerInputTexId)) glWidget_ptr->deleteTexture(normalMixerInputTexId);
-            if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
-            normalMixerInputTexId = 0;
-            scr_tex_id = 0;
+            if(glIsTexture(normalMixerInputTexId->textureId())) GLCHK(delete normalMixerInputTexId);
+            if(glIsTexture(scr_tex_id->textureId())) GLCHK(delete scr_tex_id);
+            normalMixerInputTexId = NULL;
+            scr_tex_id   = NULL;
             glWidget_ptr = NULL;
             if(fbo        != NULL ) delete fbo;
         }

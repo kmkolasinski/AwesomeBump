@@ -4,7 +4,7 @@
 
 
 
-FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
+FormImageProp::FormImageProp(QMainWindow *parent, QOpenGLWidget *qlW_ptr) :
     FormImageBase(parent),
     ui(new Ui::FormImageProp)
 {
@@ -287,8 +287,8 @@ bool FormImageProp::loadFile(const QString &fileName)
         qDebug() << "<FormImageProp> Open normal mixer image:" << fileName;
 
         imageProp.glWidget_ptr->makeCurrent();
-        if(glIsTexture(imageProp.normalMixerInputTexId)) imageProp.glWidget_ptr->deleteTexture(imageProp.normalMixerInputTexId);
-        imageProp.normalMixerInputTexId = imageProp.glWidget_ptr->bindTexture(_image,GL_TEXTURE_2D);
+        if(glIsTexture(imageProp.normalMixerInputTexId->textureId())) delete (imageProp.normalMixerInputTexId);
+        imageProp.normalMixerInputTexId = new QOpenGLTexture(_image);
         ui->labelNormalMixerInfo->setText("Current image:"+ fileInfo.baseName());
         emit imageChanged();
 
@@ -793,8 +793,8 @@ void FormImageProp::pasteNormalFromClipBoard(){
         QImage _image = pixmap.toImage();
 
         imageProp.glWidget_ptr->makeCurrent();
-        if(glIsTexture(imageProp.normalMixerInputTexId)) imageProp.glWidget_ptr->deleteTexture(imageProp.normalMixerInputTexId);
-        imageProp.normalMixerInputTexId = imageProp.glWidget_ptr->bindTexture(_image,GL_TEXTURE_2D);
+        if(glIsTexture(imageProp.normalMixerInputTexId->textureId()))  delete (imageProp.normalMixerInputTexId);
+        imageProp.normalMixerInputTexId = new QOpenGLTexture(_image);
         ui->labelNormalMixerInfo->setText("Current image: (clipboard source)");
         emit imageChanged();
 

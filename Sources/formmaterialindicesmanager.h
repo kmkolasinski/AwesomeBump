@@ -14,7 +14,7 @@ class FormMaterialIndicesManager : public FormImageBase
     Q_OBJECT
 
 public:
-    FormMaterialIndicesManager(QMainWindow *parent = 0, QGLWidget *qlW_ptr = 0 );
+    FormMaterialIndicesManager(QMainWindow *parent = 0, QOpenGLWidget *qlW_ptr = 0 );
 
     void setImage(QImage image);
 

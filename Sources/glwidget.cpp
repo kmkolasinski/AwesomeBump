@@ -38,13 +38,11 @@
 **
 ****************************************************************************/
 
-#include <QtWidgets>
-#include <QtOpenGL>
-#include <math.h>
+
 #include "glwidget.h"
 QDir* GLWidget::recentMeshDir = NULL;
 
-GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
+GLWidget::GLWidget(QWidget *parent, QOpenGLWidget * shareWidget)
     : GLWidgetBase(QGLFormat::defaultFormat(), parent, shareWidget)
 {
     setAcceptDrops(true);
@@ -183,7 +181,8 @@ void GLWidget::initializeGL()
     initializeOpenGLFunctions();
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     makeCurrent();
-    qglClearColor(QColor::fromCmykF(0.79, 0.79, 0.79, 0.0).dark());
+    QColor bgColor = QColor::fromCmykF(0.79, 0.79, 0.79, 0.0).dark();
+    glClearColor(bgColor.redF(),bgColor.greenF(),bgColor.blueF(),1.0);
 
 
     glEnable(GL_DEPTH_TEST);
@@ -444,11 +443,11 @@ void GLWidget::initializeGL()
     if(vshader  != NULL) delete vshader;
 
 
-    GLCHK( lensFlareColorsTexture = bindTexture(QImage(":/resources/lenscolor.png"),GL_TEXTURE_2D) );
+    GLCHK( lensFlareColorsTexture = bindTexture(QImage(":/resources/lenscolor.png")) );
     qDebug() << "Loading lensColors texture: (id=" << lensFlareColorsTexture << ")";
-    GLCHK( lensDirtTexture = bindTexture(QImage(":/resources/lensdirt.png"),GL_TEXTURE_2D) );
+    GLCHK( lensDirtTexture = bindTexture(QImage(":/resources/lensdirt.png")) );
     qDebug() << "Loading lensDirt texture: (id=" << lensDirtTexture << ")";
-    GLCHK( lensStarTexture = bindTexture(QImage(":/resources/lensstar.png"),GL_TEXTURE_2D) );
+    GLCHK( lensStarTexture = bindTexture(QImage(":/resources/lensstar.png")) );
     qDebug() << "Loading lensDirt texture: (id=" << lensStarTexture << ")";
 
 
@@ -473,7 +472,7 @@ void GLWidget::initializeGL()
     emit readyGL();
 }
 
-void GLWidget::paintGL()
+void GLWidget::updateGL()
 {
 
 
@@ -1258,7 +1257,7 @@ void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outp
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
     GLCHK( glActiveTexture(GL_TEXTURE2) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, lensFlareColorsTexture) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, lensFlareColorsTexture->textureId()) );
 
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, glowInputColor[0]->fbo->texture()) );
@@ -1308,9 +1307,9 @@ void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outp
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[0]->fbo->texture()) );// ghost texture
     GLCHK( glActiveTexture(GL_TEXTURE2) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, lensDirtTexture) ); // dirt texture
+    GLCHK( glBindTexture(GL_TEXTURE_2D, lensDirtTexture->textureId()) ); // dirt texture
     GLCHK( glActiveTexture(GL_TEXTURE3) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, lensStarTexture) ); // star texture
+    GLCHK( glBindTexture(GL_TEXTURE_2D, lensStarTexture->textureId()) ); // star texture
     GLCHK( glActiveTexture(GL_TEXTURE4) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[3]->fbo->texture()) ); // exposure reference
     quad_mesh->drawMesh(true);

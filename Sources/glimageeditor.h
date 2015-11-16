@@ -114,7 +114,7 @@ protected:
     void showEvent(QShowEvent* event);
 
     void initializeGL();
-    void paintGL();
+    void updateGL();
     void resizeGL(int width, int height);
 public:
     void applyNormalFilter(  QGLFramebufferObject* inputFBO,

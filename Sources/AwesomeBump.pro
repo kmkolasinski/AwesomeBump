@@ -49,7 +49,8 @@ HEADERS = glwidget.h \
     dialogshortcuts.h \
     allaboutdialog.h \    
     formimagebase.h \
-    dockwidget3dsettings.h
+    dockwidget3dsettings.h \
+    gpuinfo.h
 
 SOURCES = glwidget.cpp \
     main.cpp \
@@ -71,7 +72,8 @@ SOURCES = glwidget.cpp \
     dialogshortcuts.cpp \
     allaboutdialog.cpp \
     formimagebase.cpp \
-    dockwidget3dsettings.cpp
+    dockwidget3dsettings.cpp \
+    gpuinfo.cpp
 
 
 RESOURCES += content.qrc

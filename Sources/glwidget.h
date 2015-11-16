@@ -41,7 +41,7 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QtOpenGL>
 #include <qmath.h>
 
@@ -67,7 +67,7 @@ class GLWidget : public GLWidgetBase , protected OPENGL_FUNCTIONS
     Q_OBJECT
 
 public:
-    GLWidget(QWidget *parent = 0 , QGLWidget * shareWidget  = 0);
+    GLWidget(QWidget *parent = 0 , QOpenGLWidget * shareWidget  = 0);
     ~GLWidget();
 
     QSize minimumSizeHint() const;
@@ -106,7 +106,7 @@ signals:
 
 protected:
     void initializeGL();
-    void paintGL();
+    void updateGL();
     void resizeGL(int width, int height);
     
     void mousePressEvent(QMouseEvent *event);
@@ -186,9 +186,10 @@ private:
     GLFrameBufferObject* glowInputColor[4];
     GLFrameBufferObject* glowOutputColor[4];
 
-    GLuint lensFlareColorsTexture;
-    GLuint lensDirtTexture;
-    GLuint lensStarTexture;
+
+    QOpenGLTexture *lensFlareColorsTexture;
+    QOpenGLTexture *lensDirtTexture;
+    QOpenGLTexture *lensStarTexture;
 
 protected:
     void resizeFBOs();

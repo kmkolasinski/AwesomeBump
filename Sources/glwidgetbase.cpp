@@ -4,8 +4,8 @@
 
 bool GLWidgetBase::wrapMouse = true;
 
-GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget * shareWidget)
-    : QGLWidget(format, parent, shareWidget),
+GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QOpenGLWidget * shareWidget)
+    : QOpenGLWidget(parent),
       updateIsQueued(false),
       mouseUpdateIsQueued(false),
       eventLoopStarted(false),
@@ -32,10 +32,10 @@ void GLWidgetBase::updateGLNow()
     updateIsQueued = false;
 
     // Call the default updateGL implementation, which will call the paint method
-    QGLWidget::updateGL();
+    QOpenGLWidget::paintGL();
 }
 
-void GLWidgetBase::updateGL()
+void GLWidgetBase::paintGL()
 {
     if(updateIsQueued == false)
     {
@@ -150,7 +150,7 @@ void GLWidgetBase::handleAccumulatedMouseMovement()
 
 
     }
-    updateGL();
+    paintGL();
 
     eventLoopStarted = true;
 }
@@ -168,7 +168,7 @@ void GLWidgetBase::toggleChangeCamPosition(bool toggle){
          keyPressed = Qt::Key_Shift;
          setCursor(centerCamCursor);
     }
-    updateGL();
+    paintGL();
 }
 
 // ----------------------------------------------------------------
@@ -184,7 +184,7 @@ void GLWidgetBase::keyPressEvent(QKeyEvent *event){
         if( event->key() == KEY_SHOW_MATERIALS )
         {
                keyPressed = KEY_SHOW_MATERIALS;
-               updateGL();
+               paintGL();
         }
         if( event->key() == Qt::Key_Shift )
         {
@@ -196,7 +196,7 @@ void GLWidgetBase::keyPressEvent(QKeyEvent *event){
                     keyPressed = Qt::Key_Shift;
                     setCursor(centerCamCursor);
                }
-               updateGL();
+               paintGL();
         }
 
     }// end of event type
@@ -210,11 +210,17 @@ void GLWidgetBase::keyReleaseEvent(QKeyEvent *event) {
         if( event->key() == KEY_SHOW_MATERIALS)
         {
                keyPressed = (Qt::Key)0;
-               updateGL();
+               paintGL();
                event->accept();
 
         }
     }// end of key press
 }
 
+void GLWidgetBase::deleteTexture(QOpenGLTexture *texture){
+    delete texture;
 
+}
+QOpenGLTexture* GLWidgetBase::bindTexture(QImage image){
+    return new QOpenGLTexture(image);
+}
