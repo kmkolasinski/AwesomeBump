@@ -592,6 +592,8 @@ void MainWindow::replotAllImages(){
     
     QGLContext* glContext = (QGLContext *) glWidget->context();
     GLCHK( glContext->makeCurrent() );
+
+#ifndef Q_OS_MAC
     GpuInfo glGpu(glContext);
 
     GLint gpuMemTotal = glGpu.getTotalMem();
@@ -601,7 +603,7 @@ void MainWindow::replotAllImages(){
 		      + QString(" Total Memory:") + QString::number(float(gpuMemTotal) / 1024.0f) + QString("[MB]");
 
     statusLabel->setText(menu_text);
-
+#endif
 }
 
 
