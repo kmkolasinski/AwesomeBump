@@ -24,7 +24,6 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 
-
 class GpuInfo
 {
 public:
