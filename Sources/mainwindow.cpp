@@ -589,48 +589,21 @@ void MainWindow::replotAllImages(){
 
     glImage->setActiveImage(lastActive);
     glWidget->update();
-
-    // ploting the memory usage after each replot
-    #define GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX   0x9048
-    #define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
-
-    GLint total_mem_kb = 0;
-    glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
-                  &total_mem_kb);
-
-    GLint cur_avail_mem_kb = 0;
-    glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX,
-                  &cur_avail_mem_kb);
-
-
-    GLint mem_usage = total_mem_kb - cur_avail_mem_kb;
-    QString menu_text = QString(" Memory usage:")+QString::number(float(mem_usage/1024.0f))+QString("[MB]")
-                      + QString(" Memory left:") +QString::number(float(cur_avail_mem_kb/1024.0f))+QString("[MB]")
-                      + QString(" Total memory:")+QString::number(float(total_mem_kb/1024.0f))+QString("[MB]");
-
-    // added memory info to log file (ATI and NVIDIA)
-    GLint ati_mem_avail = 0;
-    glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, &ati_mem_avail);
-    qDebug() << "ATI    RAM Left=" << QString::number(ati_mem_avail/1024.0f) << "[MB]";
-    qDebug() << "NVIDIA RAM Left=" << QString::number(cur_avail_mem_kb/1024.0f) << "[MB]";
-    // calling both functions lead to erros:
     
-    GLenum err (glGetError());
-    QString error;
+    QGLContext* glContext = (QGLContext *) glWidget->context();
+    GLCHK( glContext->makeCurrent() );
 
-    switch(err) {
-            case GL_INVALID_OPERATION:      error="INVALID_OPERATION";      break;
-            case GL_INVALID_ENUM:           error="INVALID_ENUM";           break;
-            case GL_INVALID_VALUE:          error="INVALID_VALUE";          break;
-            case GL_OUT_OF_MEMORY:          error="OUT_OF_MEMORY";          break;
-            case GL_INVALID_FRAMEBUFFER_OPERATION:  error="INVALID_FRAMEBUFFER_OPERATION";  break;
-    };
+#ifndef Q_OS_MAC
+    GpuInfo glGpu(glContext);
 
-    qDebug() << "Just checking possible error after memory call: GL_" << error <<" - "<<__FILE__<<":"<<__LINE__;
-
+    GLint gpuMemTotal = glGpu.getTotalMem();
+    GLint gpuMemUsed = glGpu.getAvailMem();
+    QString menu_text = QString(" Memory Used:") + QString::number(float(gpuMemUsed) / 1024.0f) + QString("[MB]")
+		      + QString(" Memory Free:") + QString::number(float(gpuMemTotal - gpuMemUsed) / 1024.0f) + QString("[MB]")
+		      + QString(" Total Memory:") + QString::number(float(gpuMemTotal) / 1024.0f) + QString("[MB]");
 
     statusLabel->setText(menu_text);
-
+#endif
 }
 
 
