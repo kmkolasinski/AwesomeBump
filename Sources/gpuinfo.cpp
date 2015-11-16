@@ -80,10 +80,12 @@ GLint GpuInfo::getAvailMem()
         }
         break;
       case ATI:
-        #define VBO_FREE_MEMORY_ATI 0x87FB
-
-        m_curGlContext->functions()->glGetIntegerv(VBO_FREE_MEMORY_ATI,
-                                    gpuMetrics);
+        if(m_curGlContext->hasExtension("GL_ATI_meminfo"))
+        {
+            #define VBO_FREE_MEMORY_ATI 0x87FB
+            m_curGlContext->functions()->glGetIntegerv(VBO_FREE_MEMORY_ATI,
+                                                       gpuMetrics);
+        }
         break;
       case INTEL:
         //Not sure how to get Intel stats yet
@@ -120,7 +122,7 @@ GLint GpuInfo::getTotalMem()
       case ATI:
 	// This code doesn't work yet.  I need to find the library/extension that these AMD OpenGL
 	// methods are defined in.
-	/*
+/*
 	UINT n = wglGetGPUIDsAMD(0, 0);
 	UINT *ids = new UINT[n];
 	size_t total_mem_mb = 0;
@@ -130,8 +132,8 @@ GLint GpuInfo::getTotalMem()
 		  GL_UNSIGNED_INT, 
 		  sizeof(size_t),
 	          &total_mem_mb);
-	          */
-	break;
+*/
+        break;
       case INTEL:
 	//Not sure how to get Intel stats yet
 	break;
