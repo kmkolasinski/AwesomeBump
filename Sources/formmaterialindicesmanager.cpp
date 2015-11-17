@@ -1,7 +1,7 @@
 #include "formmaterialindicesmanager.h"
 #include "ui_formmaterialindicesmanager.h"
 
-FormMaterialIndicesManager::FormMaterialIndicesManager(QMainWindow *parent, QOpenGLWidget *qlW_ptr) :
+FormMaterialIndicesManager::FormMaterialIndicesManager(QMainWindow *parent, QGLWidget* qlW_ptr) :
     FormImageBase(parent),
     ui(new Ui::FormMaterialIndicesManager)
 {
