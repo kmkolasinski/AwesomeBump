@@ -186,7 +186,9 @@ int main(int argc, char *argv[])
      * disables all OpenGL functions that are depreciated as of OpenGL 3.0.  This fix is a workaround.
      * The full solution is to replace all depreciated OpenGL functions with their current implements.
     */
-//  glFormat.setProfile( QGLFormat::CoreProfile );
+# if defined(Q_OS_MAC)
+	glFormat.setProfile( QGLFormat::CoreProfile );
+# endif
     glFormat.setVersion( GL_MAJOR, GL_MINOR );
 #endif
 
