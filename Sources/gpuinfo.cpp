@@ -21,6 +21,7 @@
 
 GpuInfo::GpuInfo(QGLContext*& glContext)
 {
+  //Initializing
   m_curGlContext = NULL;
   
   m_curGpu.availMem = 0;
@@ -54,7 +55,7 @@ void GpuInfo::setGpuMake()
     else if(strcmp(rawMake, "Intel Open Source Technology Center") == 0)
       m_curGpu.gpuMake = INTEL;
     else
-      m_curGpu.gpuMake = NONE;
+      m_curGpu.gpuMake = NONE; //Unknown vendor string or error
   }
 }
 
@@ -66,35 +67,39 @@ GpuInfo::gpuvendors GpuInfo::getGpuMake()
 GLint GpuInfo::getAvailMem()
 {
   if(m_curGlContext->isValid())
-  {  
+  {
     GLint gpuMetrics [] = {0, 0, 0, 0};
     switch (getGpuMake())
     {
       case NVIDIA:
-	#define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
-
-	m_curGlContext->functions()->glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX,
-						   gpuMetrics);
-	break;
+        if(m_curGlContext->hasExtension("GL_NVX_gpu_memory_info"))
+        {
+            #define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
+            m_curGlContext->functions()->glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX,
+                                               gpuMetrics);
+        }
+        break;
       case ATI:
-	#define VBO_FREE_MEMORY_ATI 0x87FB
-	
-	m_curGlContext->functions()->glGetIntegerv(VBO_FREE_MEMORY_ATI,
-				     gpuMetrics);
-	break;
+        if(m_curGlContext->hasExtension("GL_ATI_meminfo"))
+        {
+            #define VBO_FREE_MEMORY_ATI 0x87FB
+            m_curGlContext->functions()->glGetIntegerv(VBO_FREE_MEMORY_ATI,
+                                                       gpuMetrics);
+        }
+        break;
       case INTEL:
-	//Not sure how to get Intel stats yet
-	return 0;
-	break;
-      default:
-	return 0;
-	break;
+        //Not sure how to get Intel stats yet
+        return 0;
+        break;
+      default: //Unsupported card
+        return 0; 
+        break;
     }
     return gpuMetrics[0];
   }
-  else
-    return 0;
+  return 0; //Context needs to be valid
 }
+
 GLint GpuInfo::getTotalMem()
 {
   if(m_curGlContext->isValid())
@@ -103,18 +108,21 @@ GLint GpuInfo::getTotalMem()
     {
       case NVIDIA:
       {
-	#define GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX 0x9048
-	GLint nvTotalMem [] = {0, 0, 0, 0};
-	
-	m_curGlContext->functions()->glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
-		    nvTotalMem);
-	return nvTotalMem[0];
-	break;
+        if(m_curGlContext->hasExtension("GL_NVX_gpu_memory_info"))
+        {
+          #define GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX 0x9048
+          GLint nvTotalMem [] = {0, 0, 0, 0};
+
+          m_curGlContext->functions()->glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX,
+                                                     nvTotalMem);
+          return nvTotalMem[0];
+        }
+        break;
       }
       case ATI:
-	// This code doesn't work yet.  I need to find the library that these AMD OpenGL
+	// This code doesn't work yet.  I need to find the library/extension that these AMD OpenGL
 	// methods are defined in.
-	/*
+/*
 	UINT n = wglGetGPUIDsAMD(0, 0);
 	UINT *ids = new UINT[n];
 	size_t total_mem_mb = 0;
@@ -124,16 +132,15 @@ GLint GpuInfo::getTotalMem()
 		  GL_UNSIGNED_INT, 
 		  sizeof(size_t),
 	          &total_mem_mb);
-	          */
-	break;
+*/
+        break;
       case INTEL:
 	//Not sure how to get Intel stats yet
 	break;
-      default:
+      default: //Unsupported card
 	break;
     } 
-    return 0;
+    return 0; //Cannot get memory info
   }
-  else
-    return 0;
+  return 0; //Context needs to be valid
 }
