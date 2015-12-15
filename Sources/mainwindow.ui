@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1529</width>
-    <height>617</height>
+    <width>1397</width>
+    <height>782</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -58,11 +58,14 @@
          <height>16777215</height>
         </size>
        </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
        <property name="tabPosition">
         <enum>QTabWidget::East</enum>
        </property>
        <property name="currentIndex">
-        <number>8</number>
+        <number>11</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideMiddle</enum>
@@ -115,8 +118,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>472</width>
+              <height>713</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -189,8 +192,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>472</width>
+              <height>713</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -266,8 +269,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>472</width>
+              <height>713</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -292,76 +295,32 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tabHeightImage">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
+       <widget class="QWidget" name="tab_9">
         <attribute name="title">
          <string>Height</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_10">
-         <property name="leftMargin">
-          <number>2</number>
+        <widget class="QWidget" name="layoutWidget_2">
+         <property name="geometry">
+          <rect>
+           <x>310</x>
+           <y>210</y>
+           <width>2</width>
+           <height>2</height>
+          </rect>
          </property>
-         <property name="topMargin">
-          <number>2</number>
+         <layout class="QVBoxLayout" name="verticalLayoutSpecularImage_2"/>
+        </widget>
+        <widget class="QWidget" name="layoutWidget_3">
+         <property name="geometry">
+          <rect>
+           <x>2</x>
+           <y>0</y>
+           <width>471</width>
+           <height>661</height>
+          </rect>
          </property>
-         <property name="rightMargin">
-          <number>2</number>
-         </property>
-         <property name="bottomMargin">
-          <number>2</number>
-         </property>
-         <item>
-          <widget class="QScrollArea" name="scrollArea_4">
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-           <property name="horizontalScrollBarPolicy">
-            <enum>Qt::ScrollBarAlwaysOff</enum>
-           </property>
-           <property name="widgetResizable">
-            <bool>true</bool>
-           </property>
-           <widget class="QWidget" name="scrollAreaWidgetContents_5">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>96</width>
-              <height>26</height>
-             </rect>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayoutHeightImage"/>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-         </item>
-        </layout>
+         <layout class="QVBoxLayout" name="verticalLayoutHeightImage"/>
+        </widget>
        </widget>
        <widget class="QWidget" name="tabOcclusionImage">
         <property name="sizePolicy">
@@ -408,8 +367,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>472</width>
+              <height>713</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -476,8 +435,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>472</width>
+              <height>713</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -550,8 +509,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>472</width>
+              <height>713</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -603,8 +562,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>87</width>
-              <height>24</height>
+              <width>463</width>
+              <height>711</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -627,7 +586,11 @@
               <number>0</number>
              </property>
              <item>
-              <layout class="QVBoxLayout" name="verticalLayoutMaterialIndicesImage"/>
+              <layout class="QVBoxLayout" name="verticalLayoutMaterialIndicesImage">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetDefaultConstraint</enum>
+               </property>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -645,20 +608,29 @@
            <property name="widgetResizable">
             <bool>true</bool>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
            <widget class="QWidget" name="scrollAreaWidgetContents_11">
             <property name="geometry">
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>447</width>
-              <height>528</height>
+              <width>456</width>
+              <height>697</height>
              </rect>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_33">
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayoutGrungeImage"/>
-             </item>
-            </layout>
+            <widget class="QWidget" name="verticalLayoutWidget_2">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>451</width>
+               <height>701</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayoutGrungeImage"/>
+            </widget>
            </widget>
           </widget>
          </item>
@@ -736,8 +708,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>376</width>
-              <height>761</height>
+              <width>455</width>
+              <height>698</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -1263,8 +1235,55 @@
                  </widget>
                 </item>
                 <item>
+                 <widget class="QCheckBox" name="checkBoxSaveUnityMetallic">
+                  <property name="statusTip">
+                   <string>Add a metallic map that can be used when making PB materials in Unity.</string>
+                  </property>
+                  <property name="text">
+                   <string>Add metallic/Smoothness map for Unity</string>
+                  </property>
+                  <property name="tristate">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <layout class="QGridLayout" name="gridLayout_4">
-                  <item row="0" column="1">
+                  <item row="2" column="4">
+                   <widget class="QCheckBox" name="checkBoxSaveRoughness">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="content.qrc">
+                      <normaloff>:/resources/roughness.png</normaloff>:/resources/roughness.png</iconset>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QPushButton" name="pushButtonSaveAll">
+                    <property name="statusTip">
+                     <string>Save all images</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="content.qrc">
+                      <normaloff>:/resources/saveAll.png</normaloff>:/resources/saveAll.png</iconset>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>32</width>
+                      <height>32</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
                    <widget class="QPushButton" name="pushButtonSaveChecked">
                     <property name="toolTip">
                      <string/>
@@ -1287,55 +1306,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="QPushButton" name="pushButtonSaveAll">
-                    <property name="statusTip">
-                     <string>Save all images</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="content.qrc">
-                      <normaloff>:/resources/saveAll.png</normaloff>:/resources/saveAll.png</iconset>
-                    </property>
-                    <property name="iconSize">
-                     <size>
-                      <width>32</width>
-                      <height>32</height>
-                     </size>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="5">
-                   <widget class="QCheckBox" name="checkBoxSaveMetallic">
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="content.qrc">
-                      <normaloff>:/resources/metalic.png</normaloff>:/resources/metalic.png</iconset>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="1" column="4">
-                   <widget class="QCheckBox" name="checkBoxSaveRoughness">
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="content.qrc">
-                      <normaloff>:/resources/roughness.png</normaloff>:/resources/roughness.png</iconset>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="4">
                    <widget class="QCheckBox" name="checkBoxSaveHeight">
                     <property name="toolTip">
                      <string/>
@@ -1355,7 +1326,21 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="3">
+                  <item row="2" column="5">
+                   <widget class="QCheckBox" name="checkBoxSaveMetallic">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="content.qrc">
+                      <normaloff>:/resources/metalic.png</normaloff>:/resources/metalic.png</iconset>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="3">
                    <widget class="QCheckBox" name="checkBoxSaveOcclusion">
                     <property name="toolTip">
                      <string/>
@@ -1376,46 +1361,6 @@
                    </widget>
                   </item>
                   <item row="1" column="2">
-                   <widget class="QCheckBox" name="checkBoxSaveSpecular">
-                    <property name="toolTip">
-                     <string/>
-                    </property>
-                    <property name="statusTip">
-                     <string>Select specular image to save</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="content.qrc">
-                      <normaloff>:/resources/specular.png</normaloff>:/resources/specular.png</iconset>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="3">
-                   <widget class="QCheckBox" name="checkBoxSaveNormal">
-                    <property name="toolTip">
-                     <string/>
-                    </property>
-                    <property name="statusTip">
-                     <string>Select normal image to save</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="content.qrc">
-                      <normaloff>:/resources/normal.png</normaloff>:/resources/normal.png</iconset>
-                    </property>
-                    <property name="checked">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
                    <widget class="QCheckBox" name="checkBoxSaveDiffuse">
                     <property name="toolTip">
                      <string/>
@@ -1435,6 +1380,46 @@
                     </property>
                     <property name="tristate">
                      <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="3">
+                   <widget class="QCheckBox" name="checkBoxSaveNormal">
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Select normal image to save</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="content.qrc">
+                      <normaloff>:/resources/normal.png</normaloff>:/resources/normal.png</iconset>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="2">
+                   <widget class="QCheckBox" name="checkBoxSaveSpecular">
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Select specular image to save</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="content.qrc">
+                      <normaloff>:/resources/specular.png</normaloff>:/resources/specular.png</iconset>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -1496,6 +1481,50 @@
                     </property>
                    </widget>
                   </item>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="lineEditPostfixDiffuse">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Diffuse image postfix</string>
+                    </property>
+                    <property name="text">
+                     <string>_d</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QLabel" name="label_7">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>26</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="pixmap">
+                     <pixmap resource="content.qrc">:/resources/showNormal.png</pixmap>
+                    </property>
+                    <property name="scaledContents">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_6">
                     <property name="sizePolicy">
@@ -1518,25 +1547,6 @@
                     </property>
                     <property name="scaledContents">
                      <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLineEdit" name="lineEditPostfixDiffuse">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="toolTip">
-                     <string/>
-                    </property>
-                    <property name="statusTip">
-                     <string>Diffuse image postfix</string>
-                    </property>
-                    <property name="text">
-                     <string>_d</string>
                     </property>
                    </widget>
                   </item>
@@ -1584,8 +1594,8 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="2">
-                   <widget class="QLabel" name="label_7">
+                  <item row="1" column="2">
+                   <widget class="QLabel" name="label_9">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                       <horstretch>0</horstretch>
@@ -1602,10 +1612,48 @@
                      <string/>
                     </property>
                     <property name="pixmap">
-                     <pixmap resource="content.qrc">:/resources/showNormal.png</pixmap>
+                     <pixmap resource="content.qrc">:/resources/showHeight.png</pixmap>
                     </property>
                     <property name="scaledContents">
                      <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QLineEdit" name="lineEditPostfixOcclusion">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Ambient occlusion postfix</string>
+                    </property>
+                    <property name="text">
+                     <string>_o</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="4">
+                   <widget class="QLineEdit" name="lineEditPostfixNormal">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Normal image postfix</string>
+                    </property>
+                    <property name="text">
+                     <string>_n</string>
                     </property>
                    </widget>
                   </item>
@@ -1634,70 +1682,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="1">
-                   <widget class="QLineEdit" name="lineEditPostfixOcclusion">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="toolTip">
-                     <string/>
-                    </property>
-                    <property name="statusTip">
-                     <string>Ambient occlusion postfix</string>
-                    </property>
-                    <property name="text">
-                     <string>_o</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="3">
-                   <widget class="QLineEdit" name="lineEditPostfixNormal">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="toolTip">
-                     <string/>
-                    </property>
-                    <property name="statusTip">
-                     <string>Normal image postfix</string>
-                    </property>
-                    <property name="text">
-                     <string>_n</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="2">
-                   <widget class="QLabel" name="label_9">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>26</width>
-                      <height>26</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="pixmap">
-                     <pixmap resource="content.qrc">:/resources/showHeight.png</pixmap>
-                    </property>
-                    <property name="scaledContents">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="3">
+                  <item row="1" column="4">
                    <widget class="QLineEdit" name="lineEditPostfixHeight">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1747,7 +1732,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="3">
+                  <item row="4" column="4">
                    <widget class="QLineEdit" name="lineEditPostfixRoughness">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -1760,6 +1745,23 @@
                     </property>
                     <property name="text">
                      <string>_r</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="2">
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="pixmap">
+                     <pixmap resource="content.qrc">:/resources/unity-logo.png</pixmap>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="4">
+                   <widget class="QLineEdit" name="lineEditPostfixUnityMetallic">
+                    <property name="text">
+                     <string>_um</string>
                     </property>
                    </widget>
                   </item>
@@ -2060,8 +2062,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>357</width>
-              <height>579</height>
+              <width>472</width>
+              <height>713</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -2638,6 +2640,22 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="tabUnity">
+        <attribute name="title">
+         <string>Unity3D PBS</string>
+        </attribute>
+        <widget class="QWidget" name="verticalLayoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>471</width>
+           <height>711</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayoutUnity"/>
+        </widget>
+       </widget>
       </widget>
       <widget class="QSplitter" name="splitter">
        <property name="orientation">
@@ -3024,8 +3042,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1529</width>
-     <height>25</height>
+     <width>1397</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -3246,7 +3264,7 @@
     <string>grabCorners</string>
    </property>
    <property name="toolTip">
-    <string>Apply perspective transformation by grabing the image corners</string>
+    <string>Apply perspective transformation by grabbing the image corners</string>
    </property>
   </action>
   <action name="actionScaleXY">

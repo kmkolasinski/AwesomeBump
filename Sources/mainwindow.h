@@ -7,6 +7,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QDir>
+#include <QColor>
 #include "glwidget.h"
 #include "glimageeditor.h"
 #include "formimageprop.h"
@@ -17,6 +18,7 @@
 #include "dialogshortcuts.h"
 #include "dockwidget3dsettings.h"
 #include "gpuinfo.h"
+#include "unitysupportgui.h"
 
 namespace Ui {
 class MainWindow;
@@ -122,11 +124,20 @@ public slots:
     void resetRandomPatches();
     void selectContrastInputImage(int mode);
 
+private slots:
+    void on_checkBoxSaveUnityMetallic_stateChanged(bool toggled);
+
 private:
     // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
     void saveImageSettings(QString abbr,FormImageProp* image);
     // saves all textures to given directory
     bool saveAllImages(const QString &dir);
+
+    // Support for Unity's metallic maps;
+    void saveMapToPng(const QString &dir, const QImage& map ) const;
+
+    // This method is called during the saving process.
+    void computeUnityMetallic(const QImage& metallic, const QImage& roughness, QImage& out) const;
 
     // Pointers
     Ui::MainWindow *ui;
@@ -147,6 +158,7 @@ private:
     FormImageProp* roughnessImageProp;
     FormImageProp* metallicImageProp;
     FormImageProp* grungeImageProp;
+    UnitySupportGui* unitySupport;
     // Material manager
     FormMaterialIndicesManager* materialManager;
 

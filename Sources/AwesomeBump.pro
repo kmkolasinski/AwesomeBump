@@ -50,7 +50,8 @@ HEADERS = glwidget.h \
     allaboutdialog.h \    
     formimagebase.h \
     dockwidget3dsettings.h \
-    gpuinfo.h
+    gpuinfo.h \
+    unitysupportgui.h
 
 SOURCES = glwidget.cpp \
     main.cpp \
@@ -73,7 +74,8 @@ SOURCES = glwidget.cpp \
     allaboutdialog.cpp \
     formimagebase.cpp \
     dockwidget3dsettings.cpp \
-    gpuinfo.cpp
+    gpuinfo.cpp \
+    unitysupportgui.cpp
 
 
 RESOURCES += content.qrc
@@ -91,7 +93,8 @@ FORMS += \
     formmaterialindicesmanager.ui \
     allaboutdialog.ui \
     dialogshortcuts.ui \
-    dockwidget3dsettings.ui
+    dockwidget3dsettings.ui \
+    unitysupportgui.ui
 
 ICON = resources/icon.icns
 

@@ -45,7 +45,7 @@ enum TextureTypes{
     METALLIC_TEXTURE,
     MATERIAL_TEXTURE,
     GRUNGE_TEXTURE,
-    MAX_TEXTURES_TYPE
+    MAX_TEXTURES_TYPE,
 };
 
 enum ConversionType{
@@ -194,6 +194,7 @@ public:
             case(METALLIC_TEXTURE  ):
                 return metallicName;
                 break;
+
             default: return diffuseName;
         }
     }
@@ -855,7 +856,7 @@ public:
      * @brief getImage convert FBO image to QImage
      * @return QImage
      */
-    QImage getImage(){
+     QImage getImage(){
         glWidget_ptr->makeCurrent();
         return fbo->toImage();
     }

@@ -5,8 +5,8 @@
 #include <QtCore/qdebug.h>
 
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-
 #include <QtOpenGL>
+
 
 QT_BEGIN_NAMESPACE
 
@@ -36,7 +36,7 @@ static void checkOpenGLError( const char* stmt, const char* function, const char
 #ifdef GL_TABLE_TOO_LARGE
       case GL_TABLE_TOO_LARGE:        error="TABLE_TOO_LARGE";   break;
 #endif
-    /* GLU */
+    // GLU
 #ifdef GLU_INVALID_ENUM
       case GLU_INVALID_ENUM:          error="GLU_INVALID_ENUM";  break;
       case GLU_INVALID_VALUE:         error="GLU_INVALID_VALUE"; break;
@@ -77,3 +77,4 @@ static void checkOpenGLError( const char* stmt, const char* function, const char
 #endif
 
 #endif // QOPENGLERRORCHECK_H
+

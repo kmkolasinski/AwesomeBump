@@ -67,5 +67,6 @@
         <file>resources/lensdirt.png</file>
         <file>resources/lensstar.png</file>
         <file>resources/showGrunge.png</file>
+        <file>resources/unity-logo.png</file>
     </qresource>
 </RCC>

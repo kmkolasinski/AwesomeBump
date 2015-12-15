@@ -48,6 +48,7 @@ public:
     void showGrungeSettingsGroup();
     void showGrungeMainImageWeightSlider();
     void hideGrungeBlendinModeComboBox();
+    bool isCheckedGrayScale();
 
 
     ~FormImageProp();

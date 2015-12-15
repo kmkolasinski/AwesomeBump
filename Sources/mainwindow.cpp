@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     roughnessImageProp= new FormImageProp(this,glImage);
     metallicImageProp = new FormImageProp(this,glImage);
     grungeImageProp   = new FormImageProp(this,glImage);
+    unitySupport = new UnitySupportGui(this);
 
 
     materialManager = new FormMaterialIndicesManager(this,glImage);
@@ -209,6 +210,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutMetallicImage ->addWidget(metallicImageProp);
     ui->verticalLayoutMaterialIndicesImage->addWidget(materialManager);
     ui->verticalLayoutGrungeImage   ->addWidget(grungeImageProp);
+    ui->verticalLayoutUnity->addWidget(unitySupport);
 
     ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
     
@@ -412,6 +414,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->spinBoxFontSize            ,SIGNAL(valueChanged(int)),this,SLOT(changeGUIFontSize(int)));
     connect(ui->checkBoxToggleMouseLoop    ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleMouseWrap(bool)));
     connect(ui->checkBoxToggleMouseLoop    ,SIGNAL(toggled(bool)),glImage ,SLOT(toggleMouseWrap(bool)));
+    connect(ui->checkBoxSaveUnityMetallic , SIGNAL(toggled(bool)), this, SLOT(on_checkBoxSaveUnityMetallic_stateChanged(bool)));
+
 
 
 
@@ -759,52 +763,69 @@ bool MainWindow::saveAllImages(const QString &dir){
     QCoreApplication::processEvents();
     ui->progressBar->setValue(0);
 
-    if(!bSaveCompressedFormImages){
-        ui->labelProgressInfo->setText("Saving diffuse image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveDiffuse->isChecked() || !bSaveCheckedImages ){
-            diffuseImageProp ->saveFileToDir(dir);
-        }
-        ui->progressBar->setValue(15);
+    if(ui->checkBoxSaveUnityMetallic->isChecked())
+    {
+        ui->labelProgressInfo->setText("Computing Unity's metallic map");
+        QImage metallic = metallicImageProp->getImageProporties()->getImage();
+        QImage rough = roughnessImageProp->getImageProporties()->getImage();
+        QImage unityMetallicMap(metallic.width(), metallic.height(), QImage::Format_ARGB32);
+
+        computeUnityMetallic(metallic, rough, unityMetallicMap);
+        ui->labelProgressInfo->setText("Saving Unity's metallic map...");
+        saveMapToPng(dir,unityMetallicMap);
+
+    }
+
+	if (!bSaveCompressedFormImages) {
+		ui->labelProgressInfo->setText("Saving diffuse image...");
+		if (bSaveCheckedImages*ui->checkBoxSaveDiffuse->isChecked() || !bSaveCheckedImages) {
+			diffuseImageProp->saveFileToDir(dir);
+		}
+		ui->progressBar->setValue(15);
 
 
-        ui->labelProgressInfo->setText("Saving normal image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveNormal->isChecked() || !bSaveCheckedImages ){
-            normalImageProp  ->saveFileToDir(dir);
+		ui->labelProgressInfo->setText("Saving normal image...");
+		if (bSaveCheckedImages*ui->checkBoxSaveNormal->isChecked() || !bSaveCheckedImages) {
+			normalImageProp->saveFileToDir(dir);
 
-        }
-        ui->progressBar->setValue(30);
-        ui->labelProgressInfo->setText("Saving specular image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveSpecular->isChecked() || !bSaveCheckedImages ){
-            specularImageProp->saveFileToDir(dir);
+		}
+		ui->progressBar->setValue(30);
+		ui->labelProgressInfo->setText("Saving specular image...");
+		if (bSaveCheckedImages*ui->checkBoxSaveSpecular->isChecked() || !bSaveCheckedImages) {
+			specularImageProp->saveFileToDir(dir);
 
-        }
-        ui->progressBar->setValue(45);
+		}
+		ui->progressBar->setValue(45);
 
-        ui->labelProgressInfo->setText("Saving height image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveHeight->isChecked() || !bSaveCheckedImages ){
-            occlusionImageProp  ->saveFileToDir(dir);
-        }
+		ui->labelProgressInfo->setText("Saving height image...");
+		if (bSaveCheckedImages*ui->checkBoxSaveHeight->isChecked() || !bSaveCheckedImages) {
+			occlusionImageProp->saveFileToDir(dir);
+		}
 
-        ui->progressBar->setValue(60);
-        ui->labelProgressInfo->setText("Saving occlusion image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveOcclusion->isChecked() || !bSaveCheckedImages ){
-            heightImageProp  ->saveFileToDir(dir);
-        }
+		ui->progressBar->setValue(60);
+		ui->labelProgressInfo->setText("Saving occlusion image...");
+		if (bSaveCheckedImages*ui->checkBoxSaveOcclusion->isChecked() || !bSaveCheckedImages) {
+			heightImageProp->saveFileToDir(dir);
+		}
 
-        ui->progressBar->setValue(75);
-        ui->labelProgressInfo->setText("Saving roughness image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveRoughness->isChecked() || !bSaveCheckedImages ){
-            roughnessImageProp  ->saveFileToDir(dir);
-        }
+		ui->progressBar->setValue(75);
+		ui->labelProgressInfo->setText("Saving roughness image...");
 
-        ui->progressBar->setValue(90);
-        ui->labelProgressInfo->setText("Saving metallic image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveMetallic->isChecked() || !bSaveCheckedImages ){
-            metallicImageProp ->saveFileToDir(dir);
-        }
+		if (bSaveCheckedImages*ui->checkBoxSaveRoughness->isChecked() || !bSaveCheckedImages) {
+			roughnessImageProp->saveFileToDir(dir);
+		}
+
+		ui->progressBar->setValue(90);
+		ui->labelProgressInfo->setText("Saving metallic image...");
+		if (bSaveCheckedImages*ui->checkBoxSaveMetallic->isChecked() || !bSaveCheckedImages) {
+			metallicImageProp->saveFileToDir(dir);
+		}
         ui->progressBar->setValue(100);
+    }
 
-    }else{ // if using compressed format
+
+
+    else{ // if using compressed format
         QCoreApplication::processEvents();
         glImage->makeCurrent();
 
@@ -884,7 +905,7 @@ bool MainWindow::saveAllImages(const QString &dir){
         diffuseImageProp->saveImageToDir(dir,newDiffuseImage);
 
         ui->progressBar->setValue(80);
-        ui->labelProgressInfo->setText("Saving diffuse image...");
+        ui->labelProgressInfo->setText("Saving diffuse image..."); // Shouldn't this be Saving normal image?
         normalImageProp->saveImageToDir(dir,newNormalImage);
 
     }// end of saveAsCompressedFormat
@@ -896,6 +917,44 @@ bool MainWindow::saveAllImages(const QString &dir){
 
 
     return true;
+}
+
+
+void MainWindow::computeUnityMetallic(const QImage& metallic, const QImage& roughness, QImage& out) const
+{
+
+    if(!metallicImageProp->isCheckedGrayScale())
+    {
+        return;
+    }
+
+	int height = metallic.height();
+	int width = metallic.width();
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+            QRgb* line_m = (QRgb *)metallic.scanLine(y);
+            QRgb* line_r = (QRgb *)roughness.scanLine(y);
+            QRgb* line_out = (QRgb *)out.scanLine(y);
+
+            line_m += x; line_r += x; line_out += x;
+            int m_value = qGreen(*line_m);
+
+            *line_out = qRgba(m_value, m_value,m_value, 255-qGreen(*line_r)); /*1.Since every pixel's channel value is the same, I take the green channel.
+                                                                                                    Unity needs the inversed roughness map (glossiness setup)
+                                                                                                 2. Unity is using Blinn–Phong shading model which produces different results. ):
+                                                                                                    But overall they look good*/
+
+
+		}
+	}
+}
+
+void MainWindow::saveMapToPng(const QString& dir, const QImage& map) const
+{
+    bool b = map.save(dir+"/"+ui->lineEditOutputName->text()+ui->lineEditPostfixUnityMetallic->text()+".png");
+    qDebug() << "Map saved to " << dir << ": " << b;
 }
 
 void MainWindow::saveCheckedImages(){
@@ -2033,4 +2092,15 @@ void MainWindow::about()
 void MainWindow::aboutQt()
 {
     QMessageBox::aboutQt(this, tr(AWESOME_BUMP_VERSION));
+}
+
+void MainWindow::on_checkBoxSaveUnityMetallic_stateChanged(bool toggled)
+{
+    if(toggled && !metallicImageProp->isCheckedGrayScale())
+    {
+        QMessageBox mgs(QMessageBox::Icon::Warning,"Warning","Unity can't make use of colored maps. Thus the metallic map has to be grayscaled."
+                                                             "\nBefore you save your images, please make sure to have checked the option 'Grayscale' in the metallic window,"
+                                                             "else the map won't be generated");
+        mgs.exec();
+    }
 }

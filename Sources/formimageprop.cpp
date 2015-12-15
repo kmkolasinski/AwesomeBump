@@ -909,6 +909,9 @@ void FormImageProp::hideGrayScaleControl(){
     ui->checkBoxGrayScale->hide();
 }
 
+bool FormImageProp::isCheckedGrayScale(){
+    return ui->checkBoxGrayScale->isChecked();
+}
 
 void FormImageProp::reloadSettings(){
     bLoading = true;
