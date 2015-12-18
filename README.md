@@ -36,7 +36,9 @@ Installation
 Since version 3.0
 -----------------
 
-Steps are almost the same as for earlier versions.
+The best place to start with compiling/installing would be to read the appropriate sections in the [wiki ](https://github.com/kmkolasinski/AwesomeBump/wiki).
+
+For using QTCreator, the steps are almost the same as for earlier versions.
 See the [pdf ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) for instructions.
 
 
