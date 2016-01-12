@@ -1211,9 +1211,7 @@ void GLImage::applyColorHueFilter(  QGLFramebufferObject* inputFBO,
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    GLCHK( program->setUniformValue("gui_hue"   , float(activeImage->colorHue)) );
-
-    qDebug() << activeImage->properties->Basic.ColorHue;
+    // old way to do it: GLCHK( program->setUniformValue("gui_hue"   , float(activeImage->colorHue)) );
     GLCHK( program->setUniformValue("gui_hue"   , float(activeImage->properties->Basic.ColorHue)) );
 
 

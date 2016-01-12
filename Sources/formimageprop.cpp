@@ -269,14 +269,14 @@ void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
         //
         if(dynamic_cast<const QtnPropertyBool*>(changedProperty))
         {
-            qDebug() << changedProperty << firedProperty;
+            //qDebug() << changedProperty << firedProperty;
             emit imageChanged();
 
         }
     }
 }
 void FormImageProp::propertyFinishedEditing(){
-    qDebug() << "asd";
+    //qDebug() << "asd";
     emit imageChanged();
 }
 

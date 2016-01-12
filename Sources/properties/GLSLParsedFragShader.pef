@@ -7,7 +7,7 @@ property_set GLSLParsedFragShader
 
     Int MaxParams
     {
-        value     = 10;
+        value     = 20;
         state = QtnPropertyStateInvisible; // by default not Used by user
     }
     Int LastShaderIndex // index of shader from combobox
