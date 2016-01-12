@@ -2,6 +2,30 @@ TEMPLATE      = app
 CONFIG       += c++11
 QT           += opengl gui widgets
 
+# QtnProperty project source files
+# open the QtnProperty project and
+# compile it. Then compile AB
+TOP_BUILD_DIR=utils/QtnProperty
+BIN_DIR = $$TOP_BUILD_DIR/bin
+LIBS += -L$$BIN_DIR -lQtnPropertyCore -lQtnPropertyWidget
+
+include($$TOP_BUILD_DIR/Common.pri)
+PEG_TOOL = $$BIN_DIR/QtnPEG
+include($$TOP_BUILD_DIR/PEG.pri)
+
+INCLUDEPATH += utils/QtnProperty/Core
+INCLUDEPATH += utils/QtnProperty/PropertyWidget
+
+
+PEG_SOURCES += properties/Filter3DDOF.pef \
+               properties/Filter3DBloom.pef \
+               properties/Filter3DLensFlares.pef \
+               properties/Filter3DToneMapping.pef \
+               properties/GLSLParsedFragShader.pef \
+               properties/ImageProperties.pef \
+               properties/Filters3D.pef
+
+
 DESTDIR = Build/Bin
 OBJECTS_DIR = Build/Obj
 MOC_DIR = Build/Ui
@@ -27,7 +51,8 @@ CONFIG(release_gl330) {
 DEFINES += RESOURCE_BASE=\\\"./\\\"
 
 VPATH += ../shared
-INCLUDEPATH += ../shared include
+INCLUDEPATH += ../shared include \
+               utils/
 
 HEADERS = glwidget.h \
     mainwindow.h \
@@ -50,7 +75,10 @@ HEADERS = glwidget.h \
     allaboutdialog.h \    
     formimagebase.h \
     dockwidget3dsettings.h \
-    gpuinfo.h
+    gpuinfo.h \
+    properties/Dialog3DGeneralSettings.h \
+    utils/glslshaderparser.h \
+    utils/glslparsedshadercontainer.h
 
 SOURCES = glwidget.cpp \
     main.cpp \
@@ -73,7 +101,10 @@ SOURCES = glwidget.cpp \
     allaboutdialog.cpp \
     formimagebase.cpp \
     dockwidget3dsettings.cpp \
-    gpuinfo.cpp
+    gpuinfo.cpp \
+    properties/Dialog3DGeneralSettings.cpp \
+    utils/glslshaderparser.cpp \
+    utils/glslparsedshadercontainer.cpp
 
 
 RESOURCES += content.qrc
@@ -91,12 +122,21 @@ FORMS += \
     formmaterialindicesmanager.ui \
     allaboutdialog.ui \
     dialogshortcuts.ui \
-    dockwidget3dsettings.ui
+    dockwidget3dsettings.ui \
+    properties/Dialog3DGeneralSettings.ui
 
 ICON = resources/icon.icns
 
 DISTFILES += \
-    resources/quad.obj
+    resources/quad.obj \
+    properties/Filter3DDOF.pef \
+    properties/Filter3DBloom.pef \
+    properties/Filter3DLensFlares.pef \
+    properties/Filter3DToneMapping.pef \
+    properties/Filters3D.pef \
+    properties/GLSLParsedFragShader.pef \
+    properties/ImageProperties.pef
+
 
 # install additional files into target destination
 # (require "make install")

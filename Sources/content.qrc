@@ -67,5 +67,7 @@
         <file>resources/lensdirt.png</file>
         <file>resources/lensstar.png</file>
         <file>resources/showGrunge.png</file>
+        <file>resources/recompileShader.png</file>
+        <file>resources/settings3d.png</file>
     </qresource>
 </RCC>

@@ -1,0 +1,59 @@
+#include "../Core/PropertyCore.h"
+#include "../Core/PropertyGUI.h"
+
+property_set Filter3DLensFlares
+{
+    Bool EnableEffect
+    {
+        description = "EnableEffect";
+        name      = "Enable Lens Flares";
+        value     = true;
+    }
+    Int NoSamples
+    {
+        description = "Number of samples";
+        name      = "Num. samples";
+        value     = 8;
+        minValue  = 1;
+        maxValue  = 20;
+        stepValue = 1;
+    }
+    Float Dispersal
+    {
+        description = "Dispersal";
+        name      = "Dispersal";
+        value     = 0.25;
+        minValue  = 0.0;
+        maxValue  = 5.0;
+        stepValue = 0.05;
+    }
+    Float HaloWidth
+    {
+        description = "Halo width";
+        name      = "Halo width";
+        value     = 0.5;
+        minValue  = 0.0;
+        maxValue  = 1.0;
+        stepValue = 0.05;
+    }
+    Float Distortion
+    {
+        description = "Distortion";
+        name      = "Distortion";
+        value     = 1.0;
+        minValue  = 0.0;
+        maxValue  = 10.0;
+        stepValue = 1.0;
+    }
+
+    Float weightLF
+    {
+        description = "Effect strength";
+        name      = "Strength";
+        value     =10.0;
+        minValue  = 0.0;
+        maxValue  =50.0;
+        stepValue = 0.5;
+
+    }
+}

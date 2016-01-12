@@ -222,7 +222,7 @@ float GGX_PartialGeometryTerm_OPT(float VdotH, float VdotN, float alpha2)
 
 vec3 Fresnel_Schlick(float cosT, vec3 F0)
 {
-  return F0 + (1-F0) * pow( 1 - cosT, 5);
+  return F0 + (1-F0)* pow( cosT, 4.0);
 }
 
 
@@ -294,13 +294,13 @@ vec4 PBR_Specular(float roughness,
          vec3 halfVector = normalize(lp + v);
 
 
-         float VdotH = max(dot( halfVector, v ),0.01);
+         float VdotH = clamp(dot( halfVector, v ),0.01,1.0);
          float HdotN = max(dot( halfVector, n ),0.01);
          float LdotN = max(dot( lp, n ),0.01);
          float LdotH = max(dot( lp, halfVector ),0.01);
 
 
-         vec3 fresnel   = Fresnel_Schlick( VdotH, F0 );
+         vec3 fresnel   = Fresnel_Schlick( (1-VdotH), F0 );
 
          // Geometry term
          float geometry = GGX_PartialGeometryTerm_OPT( VdotH, NdotV, r2)
@@ -318,7 +318,7 @@ vec4 PBR_Specular(float roughness,
 
          vec3 color = texture( texEnvMap, lp ).rgb * exp(-0.1*gui_LightPower) + gui_LightPower * light *0.4;
 
-         radiance +=  color  * geometry * fresnel / denominator;// * sinT;
+         radiance +=  color  * geometry/denominator * fresnel ;
 
     }
     // Scale back for the samples count

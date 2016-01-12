@@ -9,8 +9,6 @@ DockWidget3DSettings::DockWidget3DSettings(QWidget *parent, GLWidget* ptr_gl) :
     ui->setupUi(this);
     close();
     setContentsMargins(0,0,0,0);
-    //setWindowFlags(Qt::Widget);
-
 
     // Connect all the sliders and other widgets
     connect(ui->horizontalSliderDepthScale ,SIGNAL(valueChanged(int)),this,SLOT(updateSettings(int)));

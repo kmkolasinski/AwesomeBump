@@ -51,6 +51,13 @@
 #include "utils/qglbuffers.h"
 #include "glwidgetbase.h"
 #include "glimageeditor.h"
+#include "properties/Dialog3DGeneralSettings.h"
+#include "utils/glslshaderparser.h"
+
+#define settings3D      Dialog3DGeneralSettings::settings3D
+#define currentShader   Dialog3DGeneralSettings::currentRenderShader
+#define glslShadersList Dialog3DGeneralSettings::glslParsedShaders
+
 
 #ifdef USE_OPENGL_330
     #include <QOpenGLFunctions_3_3_Core>
@@ -97,7 +104,7 @@ public slots:
     // pbr functions
     void chooseSkyBox(QString cubeMapName, bool bFirstTime = false);
     void updatePerformanceSettings(Display3DSettings settings);
-
+    void recompileRenderShader(); // read and compile custom fragment shader again, can be called from 3D settings GUI.
 
 signals:
     void renderGL();
@@ -127,7 +134,7 @@ private:
                       QVector4D& objectCoordinate);
 
     void bakeEnviromentalMaps(); // calculate prefiltered enviromental map
-    QOpenGLShaderProgram *program;    
+
     QOpenGLShaderProgram *line_program; // same as "program" but instead of triangles lines are used
     QOpenGLShaderProgram *skybox_program;
     QOpenGLShaderProgram *env_program;
@@ -185,6 +192,8 @@ private:
     // glow FBOs
     GLFrameBufferObject* glowInputColor[4];
     GLFrameBufferObject* glowOutputColor[4];
+    // tone mapping mipmaps FBOS
+    GLFrameBufferObject* toneMipmaps[10];
 
     GLuint lensFlareColorsTexture;
     GLuint lensDirtTexture;

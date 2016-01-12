@@ -69,7 +69,7 @@ QString _find_data_dir(const QString& path)
 #else
     fpath = path;
 #endif
-    qDebug() << "fphath2:" << fpath;
+
     return fpath;
 }
 
@@ -193,9 +193,14 @@ int main(int argc, char *argv[])
 #endif
 
     QGLFormat::setDefaultFormat(glFormat);
+    QSurfaceFormat format;
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+    format.setVersion(4, 0);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+    QSurfaceFormat::setDefaultFormat(format);
 
-
-    qInstallMessageHandler(customMessageHandler);
+    //qInstallMessageHandler(customMessageHandler);
     qDebug() << "Starting application:";
 
     if(!checkOpenGL()){

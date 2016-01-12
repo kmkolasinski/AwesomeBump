@@ -71,10 +71,13 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     outputFBO= NULL;
     auxFBO   = NULL;
     for(int i = 0; i < 4; i++){
-       glowInputColor[i] = NULL;
+       glowInputColor[i]  = NULL;
        glowOutputColor[i] = NULL;
     }
-
+    // initializing tone mapping FBOs with nulls
+    for(int i = 0; i < 10; i++){
+       toneMipmaps[i] = NULL;
+    }
     cameraInterpolation = 1.0;
 
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -102,7 +105,7 @@ void GLWidget::cleanup()
     deleteTexture(lensStarTexture);
 
 
-    delete program;
+
     delete line_program;
     delete skybox_program;
     delete env_program;
@@ -180,6 +183,9 @@ void GLWidget::toggleMetallicView(bool enable){
 
 void GLWidget::initializeGL()
 {
+
+
+
     initializeOpenGLFunctions();
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     makeCurrent();
@@ -198,14 +204,6 @@ void GLWidget::initializeGL()
     QOpenGLShader *teshader = NULL;
     QOpenGLShader *gshader  = NULL;
 
-
-
-    qDebug() << "Loading quad (fragment shader)";
-    fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-    fshader->compileSourceFile(":/resources/plane.frag");
-    if (!fshader->log().isEmpty()) qDebug() << fshader->log();
-    else qDebug() << "done";
-
     qDebug() << "Loading quad (geometry shader)";
     gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
     QFile gFile(":/resources/plane.geom");
@@ -218,63 +216,85 @@ void GLWidget::initializeGL()
     if (!gshader->log().isEmpty()) qDebug() << gshader->log();
     else qDebug() << "done";
 
-    program = new QOpenGLShaderProgram(this);
+#ifndef USE_OPENGL_330
+    qDebug() << "Loading quad (vertex shader)";
+    vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
+    vshader->compileSourceFile(":/resources/plane.vert");
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    else qDebug() << "done";
+
+    qDebug() << "Loading quad (tessellation control shader)";
+    tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl, this);
+    tcshader->compileSourceFile(":/resources/plane.tcs.vert");
+    if (!tcshader->log().isEmpty()) qDebug() << tcshader->log();
+    else qDebug() << "done";
+
+    qDebug() << "Loading quad (tessellation evaluation shader)";
+    teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation, this);
+    teshader->compileSourceFile(":/resources/plane.tes.vert");
+    if (!teshader->log().isEmpty()) qDebug() << teshader->log();
+    else qDebug() << "done";
 
 
-    #ifndef USE_OPENGL_330
-        qDebug() << "Loading quad (vertex shader)";
-        vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-        vshader->compileSourceFile(":/resources/plane.vert");
-        if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+// setting shaders for 3.30 version of openGL
+#else
+    qDebug() << "Loading quad (vertex shader) for openGL 3.30";
+    vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
+    vshader->compileSourceFile(":/resources/plane_330.vert");
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    else qDebug() << "done";
+#endif
+    GLSLShaderParser* lastIndex = currentShader;
+    for(int ip = 0 ; ip < glslShadersList->glslParsedShaders.size();ip++){
+        currentShader = glslShadersList->glslParsedShaders[ip];
+        currentShader->program = new QOpenGLShaderProgram(this);
+
+        // -----------------------------------------
+        // Load custom fragment shader.
+        // -----------------------------------------
+        qDebug() << "Loading parsed glsl fragmend shader";
+        QOpenGLShader* pfshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
+        pfshader->compileSourceFile(currentShader->shaderPath);
+        if (!pfshader->log().isEmpty()) qDebug() << pfshader->log();
         else qDebug() << "done";
 
-        qDebug() << "Loading quad (tessellation control shader)";
-        tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl, this);
-        tcshader->compileSourceFile(":/resources/plane.tcs.vert");
-        if (!tcshader->log().isEmpty()) qDebug() << tcshader->log();
-        else qDebug() << "done";
 
-        qDebug() << "Loading quad (tessellation evaluation shader)";
-        teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation, this);
-        teshader->compileSourceFile(":/resources/plane.tes.vert");
-        if (!teshader->log().isEmpty()) qDebug() << teshader->log();
-        else qDebug() << "done";
+        #ifndef USE_OPENGL_330
+            currentShader->program->addShader(tcshader);
+            currentShader->program->addShader(teshader);
+        #endif
+        currentShader->program->addShader(vshader);
+        currentShader->program->addShader(pfshader);
+        currentShader->program->addShader(gshader);
+        currentShader->program->bindAttributeLocation("FragColor",0);
+        currentShader->program->bindAttributeLocation("FragNormal",1);
+        currentShader->program->bindAttributeLocation("FragGlowColor",2);
+        currentShader->program->bindAttributeLocation("FragPosition",3);
+        GLCHK(currentShader->program->link());
 
-        program->addShader(tcshader);
-        program->addShader(teshader);
-
-    // setting shaders for 3.30 version of openGL
-    #else
-        qDebug() << "Loading quad (vertex shader) for openGL 3.30";
-        vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-        vshader->compileSourceFile(":/resources/plane_330.vert");
-        if (!vshader->log().isEmpty()) qDebug() << vshader->log();
-        else qDebug() << "done";
-    #endif
-
-    program->addShader(vshader);
-    program->addShader(fshader);
-    program->addShader(gshader);
-    program->bindAttributeLocation("FragColor",0);
-    program->bindAttributeLocation("FragNormal",1);
-    program->bindAttributeLocation("FragGlowColor",2);
-    program->bindAttributeLocation("FragPosition",3);
-    GLCHK(program->link());
+        delete pfshader;
 
 
-    GLCHK(program->bind());
-    program->setUniformValue("texDiffuse"  , 0);
-    program->setUniformValue("texNormal"   , 1);
-    program->setUniformValue("texSpecular" , 2);
-    program->setUniformValue("texHeight"   , 3);
-    program->setUniformValue("texSSAO"     , 4);
-    program->setUniformValue("texRoughness", 5);
-    program->setUniformValue("texMetallic",  6);
-    program->setUniformValue("texMaterial",  7);
 
-    program->setUniformValue("texDiffuseEnvMap", 8);
-    program->setUniformValue("texEnvMap"       , 9);
+        GLCHK(currentShader->program->bind());
+        currentShader->program->setUniformValue("texDiffuse"  , 0);
+        currentShader->program->setUniformValue("texNormal"   , 1);
+        currentShader->program->setUniformValue("texSpecular" , 2);
+        currentShader->program->setUniformValue("texHeight"   , 3);
+        currentShader->program->setUniformValue("texSSAO"     , 4);
+        currentShader->program->setUniformValue("texRoughness", 5);
+        currentShader->program->setUniformValue("texMetallic",  6);
+        currentShader->program->setUniformValue("texMaterial",  7);
 
+        currentShader->program->setUniformValue("texPrefilteredEnvMap", 8);
+        currentShader->program->setUniformValue("texSourceEnvMap"     , 9);
+
+        GLCHK(currentShader->program->release());
+        Dialog3DGeneralSettings::updateParsedShaders();
+    } // end of loading parsed shaders
+
+    currentShader           = lastIndex;
+    Dialog3DGeneralSettings::updateParsedShaders();
 
 
     // lines shader
@@ -311,8 +331,8 @@ void GLWidget::initializeGL()
     line_program->setUniformValue("texMetallic",  6);
     line_program->setUniformValue("texMaterial",  7);
 
-    line_program->setUniformValue("texDiffuseEnvMap", 8);
-    line_program->setUniformValue("texEnvMap"       , 9);
+    line_program->setUniformValue("texPrefilteredEnvMap", 8);
+    line_program->setUniformValue("texSourceEnvMap"     , 9);
 
 
     if(vshader  != NULL) delete vshader;
@@ -489,7 +509,6 @@ void GLWidget::paintGL()
         double w = cameraInterpolation;
         camera.position = camera.position*(1-w) + newCamera.position * w;
         cameraInterpolation += 0.01;
-
     }
 
 
@@ -544,7 +563,7 @@ void GLWidget::paintGL()
     // ---------------------------------------------------------
     // Drawing model
     // ---------------------------------------------------------
-    QOpenGLShaderProgram* program_ptrs[2] = {program,line_program};
+    QOpenGLShaderProgram* program_ptrs[2] = {currentShader->program,line_program};
 
 
     GLCHK( glEnable(GL_CULL_FACE) );
@@ -557,6 +576,12 @@ void GLWidget::paintGL()
 
     QOpenGLShaderProgram* program_ptr = program_ptrs[pindex];
     GLCHK( program_ptr->bind() );
+
+    // Update uniforms from parsed file.
+    if(pindex == 0){
+        Dialog3DGeneralSettings::setUniforms();
+    }
+
 
     GLCHK( program_ptr->setUniformValue("ProjectionMatrix", projectionMatrix) );
 
@@ -681,16 +706,16 @@ void GLWidget::paintGL()
 
     // do post processing if materials are not shown
     if( keyPressed != KEY_SHOW_MATERIALS ){
+
+        copyTexToFBO(colorFBO->fbo->texture(),outputFBO->fbo);
+
         // -----------------------------------------------------------
         // Post processing:
         // 1. Bloom (can be disabled/enabled by gui)
         // -----------------------------------------------------------
-
         // enable of disable bloom effect
         if(display3Dparameters.bBloomEffect){
              applyGlowFilter(outputFBO->fbo);
-             copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
-
         }// end of if bloom effect
 
         // -----------------------------------------------------------
@@ -698,8 +723,7 @@ void GLWidget::paintGL()
         // 2. DOF (can be disabled/enabled by gui)
         // -----------------------------------------------------------
         if(display3Dparameters.bDofEffect){
-            applyDofFilter(colorFBO->fbo->texture(),outputFBO->fbo);
-            copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
+            applyDofFilter(colorFBO->fbo->texture(),outputFBO->fbo);            
         }
 
         // -----------------------------------------------------------
@@ -708,12 +732,11 @@ void GLWidget::paintGL()
         // -----------------------------------------------------------
         if(display3Dparameters.bLensFlares){
             applyLensFlaresFilter(colorFBO->fbo->texture(),outputFBO->fbo);
-            copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
         }
 
         applyToneFilter(colorFBO->fbo->texture(),outputFBO->fbo);
 
-        //copyTexToFBO(outputFBO->fbo->texture(),colorFBO->fbo);
+
         applyNormalFilter(outputFBO->fbo->texture());
 
     }else{ // end of if SHOW MATERIALS TEXTURE DISABLED
@@ -1027,12 +1050,109 @@ void GLWidget::chooseSkyBox(QString cubeMapName,bool bFirstTime){
 }
 
 void GLWidget::updatePerformanceSettings(Display3DSettings settings){
-    qDebug() << "Changing 3D settings";
+
     display3Dparameters = settings;
     updateGL();
 }
 
+void GLWidget::recompileRenderShader(){
 
+    makeCurrent();
+    currentShader->reparseShader();
+    currentShader->program->release();
+    delete currentShader->program;
+    currentShader->program = new QOpenGLShaderProgram(this);
+
+    QOpenGLShader *vshader  = NULL;
+    QOpenGLShader *tcshader = NULL;
+    QOpenGLShader *teshader = NULL;
+    QOpenGLShader *gshader  = NULL;
+
+    qDebug() << "Recompiling shaders:";
+    gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
+    QFile gFile(":/resources/plane.geom");
+    gFile.open(QFile::ReadOnly);
+    QTextStream in(&gFile);
+    QString shaderCode = in.readAll();
+    QString preambule = "#version 330 core\n"
+                        "layout(triangle_strip, max_vertices = 3) out;\n" ;
+    gshader->compileSourceCode(preambule+shaderCode);
+    if (!gshader->log().isEmpty()) qDebug() << gshader->log();
+    else qDebug() << "  Geometry shader: OK";
+
+#ifndef USE_OPENGL_330
+
+    vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
+    vshader->compileSourceFile(":/resources/plane.vert");
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    else qDebug() << "  Vertex shader (GLSL4.0): OK";
+
+    tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl, this);
+    tcshader->compileSourceFile(":/resources/plane.tcs.vert");
+    if (!tcshader->log().isEmpty()) qDebug() << tcshader->log();
+    else qDebug() << "  Tessellation control shader (GLSL4.0): OK";
+
+    teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation, this);
+    teshader->compileSourceFile(":/resources/plane.tes.vert");
+    if (!teshader->log().isEmpty()) qDebug() << teshader->log();
+    else qDebug() << "  Tessellation evaluation shader (GLSL4.0): OK";
+
+// setting shaders for 3.30 version of openGL
+#else
+    qDebug() << "Loading quad (vertex shader) for openGL 3.30";
+    vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
+    vshader->compileSourceFile(":/resources/plane_330.vert");
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    else qDebug() << "  Vertex shader (GLSL3.3): OK";
+#endif
+
+    // -----------------------------------------
+    // Load custom fragment shader.
+    // -----------------------------------------
+    QOpenGLShader* pfshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
+    pfshader->compileSourceFile(currentShader->shaderPath);
+    if (!pfshader->log().isEmpty()) qDebug() << pfshader->log();
+    else qDebug() << "  Custom Fragment Shader (GLSL3.3): OK";
+
+
+    #ifndef USE_OPENGL_330
+        currentShader->program->addShader(tcshader);
+        currentShader->program->addShader(teshader);
+    #endif
+    currentShader->program->addShader(vshader);
+    currentShader->program->addShader(pfshader);
+    currentShader->program->addShader(gshader);
+    currentShader->program->bindAttributeLocation("FragColor",0);
+    currentShader->program->bindAttributeLocation("FragNormal",1);
+    currentShader->program->bindAttributeLocation("FragGlowColor",2);
+    currentShader->program->bindAttributeLocation("FragPosition",3);
+    GLCHK(currentShader->program->link());
+
+    delete pfshader;
+    if(vshader  != NULL) delete vshader;
+    if(tcshader != NULL) delete tcshader;
+    if(teshader != NULL) delete teshader;
+    if(gshader  != NULL) delete gshader;
+
+
+    GLCHK(currentShader->program->bind());
+    currentShader->program->setUniformValue("texDiffuse"  , 0);
+    currentShader->program->setUniformValue("texNormal"   , 1);
+    currentShader->program->setUniformValue("texSpecular" , 2);
+    currentShader->program->setUniformValue("texHeight"   , 3);
+    currentShader->program->setUniformValue("texSSAO"     , 4);
+    currentShader->program->setUniformValue("texRoughness", 5);
+    currentShader->program->setUniformValue("texMetallic",  6);
+    currentShader->program->setUniformValue("texMaterial",  7);
+
+    currentShader->program->setUniformValue("texPrefilteredEnvMap", 8);
+    currentShader->program->setUniformValue("texSourceEnvMap"     , 9);
+
+    GLCHK(currentShader->program->release());
+    Dialog3DGeneralSettings::updateParsedShaders();
+    updateGL();
+
+}
 
 // ------------------------------------------------------------------------------- //
 //                          POST PROCESSING TOOLS
@@ -1050,13 +1170,18 @@ void GLWidget::resizeFBOs(){
 
     if(auxFBO != NULL) delete auxFBO;
     auxFBO = new GLFrameBufferObject(width(),height());
-
+    // initializing/resizing glow FBOS
     for(int i = 0; i < 4 ; i++){
 
         if(glowInputColor[i]  != NULL) delete glowInputColor[i];
         if(glowOutputColor[i] != NULL) delete glowOutputColor[i];
         glowInputColor[i]  = new GLFrameBufferObject(width()/pow(2.0,i+1),height()/pow(2.0,i+1));
         glowOutputColor[i] = new GLFrameBufferObject(width()/pow(2.0,i+1),height()/pow(2.0,i+1));
+    }
+    // initializing/resizing tone mapping FBOs
+    for(int i = 0; i < 10 ; i++){
+        if(toneMipmaps[i]  != NULL) delete toneMipmaps[i];
+        toneMipmaps[i]  = new GLFrameBufferObject(qMax(width()/pow(2.0,i+1),1.0),qMax(height()/pow(2.0,i+1),1.0));
     }
 
 }
@@ -1069,6 +1194,9 @@ void GLWidget::deleteFBOs(){
         if(glowInputColor[i]  != NULL) delete glowInputColor[i];
         if(glowOutputColor[i] != NULL) delete glowOutputColor[i];
     }
+    for(int i = 0; i < 10 ; i++){
+        if(toneMipmaps[i] != NULL) delete toneMipmaps[i];
+    }
 }
 
 void GLWidget::applyNormalFilter(GLuint input_tex){
@@ -1076,8 +1204,6 @@ void GLWidget::applyNormalFilter(GLuint input_tex){
     filter_program = post_processing_programs["NORMAL_FILTER"];
     filter_program->bind();
     GLCHK( glViewport(0,0,width(),height()) );
-    //GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
-
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
@@ -1094,7 +1220,6 @@ void GLWidget::copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst){
     filter_program->bind();
     dst->bind();
     GLCHK( glViewport(0,0,dst->width(),dst->height()) );
-  //  GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
@@ -1139,15 +1264,30 @@ void GLWidget::applyGaussFilter(  GLuint input_tex,
 void GLWidget::applyDofFilter(GLuint input_tex,
                 QGLFramebufferObject* outputFBO){
 
-    //applyGaussFilter(input_tex,auxFBO,outputFBO,15.0);
+    // Skip processing if effect is disabled
+    if(!settings3D->DOF.EnableEffect) return;
 
     filter_program = post_processing_programs["DOF_FILTER"];
     filter_program->bind();
 
     GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
-   // GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_dof_filter"]) );
+
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( filter_program->setUniformValue("dof_FocalLenght", settings3D->DOF.FocalLenght ) );
+    GLCHK( filter_program->setUniformValue("dof_FocalDepth" , settings3D->DOF.FocalDepth ) );
+    GLCHK( filter_program->setUniformValue("dof_FocalStop"  , settings3D->DOF.FocalStop ) );
+    GLCHK( filter_program->setUniformValue("dof_NoSamples"  , settings3D->DOF.NoSamples ) );
+    GLCHK( filter_program->setUniformValue("dof_NoRings"    , settings3D->DOF.NoRings ) );
+    GLCHK( filter_program->setUniformValue("dof_bNoise"     , settings3D->DOF.Noise ) );
+    GLCHK( filter_program->setUniformValue("dof_Coc"        , settings3D->DOF.Coc ) );
+    GLCHK( filter_program->setUniformValue("dof_Threshold"  , settings3D->DOF.Threshold ) );
+    GLCHK( filter_program->setUniformValue("dof_Gain"       , settings3D->DOF.Gain ) );
+    GLCHK( filter_program->setUniformValue("dof_BokehBias"  , settings3D->DOF.BokehBias ) );
+    GLCHK( filter_program->setUniformValue("dof_BokehFringe", settings3D->DOF.BokehFringe ) );
+    GLCHK( filter_program->setUniformValue("dof_DitherAmount", (float)settings3D->DOF.DitherAmount ) );
+
+
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
@@ -1157,21 +1297,20 @@ void GLWidget::applyDofFilter(GLuint input_tex,
     outputFBO->bind();
         quad_mesh->drawMesh(true);
     outputFBO->bindDefault();
+
+    copyTexToFBO(outputFBO->texture(),colorFBO->fbo);
     GLCHK( glActiveTexture(GL_TEXTURE0) );
-
-
 }
 
 
 
 void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
-
-
+    // Skip processing if effect is disabled
+    if(!settings3D->Bloom.EnableEffect) return;
 
 
     applyGaussFilter(colorFBO->getAttachedTexture(1),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
     applyGaussFilter(glowOutputColor[0]->fbo->texture(),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
-
 
     applyGaussFilter(glowOutputColor[0]->fbo->texture(),glowInputColor[1]->fbo,glowOutputColor[1]->fbo);
     applyGaussFilter(glowOutputColor[1]->fbo->texture(),glowInputColor[1]->fbo,glowOutputColor[1]->fbo);
@@ -1187,9 +1326,16 @@ void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
 
     outputFBO->bind();
         GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
-     //   GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_bloom_filter"]) );
+
         GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
         GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+        GLCHK( filter_program->setUniformValue("bloom_WeightA"    , settings3D->Bloom.WeightA ) );
+        GLCHK( filter_program->setUniformValue("bloom_WeightB"    , settings3D->Bloom.WeightB ) );
+        GLCHK( filter_program->setUniformValue("bloom_WeightB"    , settings3D->Bloom.WeightC ) );
+        GLCHK( filter_program->setUniformValue("bloom_WeightC"    , settings3D->Bloom.WeightD ) );
+        GLCHK( filter_program->setUniformValue("bloom_Vignette"   , settings3D->Bloom.Vignette ) );
+        GLCHK( filter_program->setUniformValue("bloom_VignetteAtt", settings3D->Bloom.VignetteAtt ) );
+
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, colorFBO->fbo->texture()) );
         GLCHK( glActiveTexture(GL_TEXTURE1) );
@@ -1204,31 +1350,79 @@ void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
 
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     outputFBO->bindDefault();
+    // copy obtained result to main FBO
+    copyTexToFBO(outputFBO->texture(),colorFBO->fbo);
 }
 
 
 void GLWidget::applyToneFilter(GLuint input_tex,QGLFramebufferObject* outputFBO){
 
+    // Skip processing if effect is disabled
+    if(!settings3D->ToneMapping.EnableEffect) return;
 
     filter_program = post_processing_programs["TONE_MAPPING_FILTER"];
     filter_program->bind();
+
+    // 1. Step calculate luminance of each pixel
+    outputFBO->bind();
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+    GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );    
+    GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( filter_program->setUniformValue("tm_step", 1 ) );
+
+    GLCHK( filter_program->setUniformValue("tm_Delta"   , settings3D->ToneMapping.Delta ) );
+    GLCHK( filter_program->setUniformValue("tm_Scale"   , settings3D->ToneMapping.Scale ) );
+    GLCHK( filter_program->setUniformValue("tm_LumMaxWhite"      , settings3D->ToneMapping.LumMaxWhite ) );
+    GLCHK( filter_program->setUniformValue("tm_GammaCorrection"  , settings3D->ToneMapping.GammaCorrection ) );
+    GLCHK( filter_program->setUniformValue("tm_BlendingWeight"   , settings3D->ToneMapping.BlendingWeight ) );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
+
+    quad_mesh->drawMesh(true);
+    outputFBO->bindDefault();
+
+    // 2. Caclulating averaged luminance of image
+    GLuint averagedTexID = outputFBO->texture();
+    GLCHK( filter_program->setUniformValue("tm_step", 2 ) );
+    for(int i = 0 ; i < 10 ; i++){
+
+        toneMipmaps[i]->fbo->bind();
+        GLCHK( glViewport(0,0,toneMipmaps[i]->fbo->width(),toneMipmaps[i]->fbo->height()) );
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, averagedTexID) );
+
+        quad_mesh->drawMesh(true);
+        averagedTexID = toneMipmaps[i]->fbo->texture();
+    }
+
+    // 3. Step.
     outputFBO->bind();
     GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    GLCHK( filter_program->setUniformValue("tm_step", 3 ) );
+
     GLCHK( glActiveTexture(GL_TEXTURE0) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, averagedTexID) );
+
     GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[3]->fbo->texture()) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
+
     quad_mesh->drawMesh(true);
     outputFBO->bindDefault();
     GLCHK( glActiveTexture(GL_TEXTURE0) );
+    // Copy result to Color FBO
+    copyTexToFBO(outputFBO->texture(),colorFBO->fbo);
 }
 
 void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outputFBO){
+
+    // Skip processing if effect is disabled
+    if(!settings3D->Flares.EnableEffect) return;
+
     // Based on: http://john-chapman-graphics.blogspot.com/2013/02/pseudo-lens-flare.html
     // prepare mask image
-    if(!display3Dparameters.bBloomEffect){
+    if(!display3Dparameters.bBloomEffect || !settings3D->Bloom.EnableEffect){
         applyGaussFilter(colorFBO->getAttachedTexture(1),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
         applyGaussFilter(glowOutputColor[0]->fbo->texture(),glowInputColor[0]->fbo,glowOutputColor[0]->fbo);
     }
@@ -1237,6 +1431,12 @@ void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outp
     filter_program->bind();
 
     // First step -- prepare treshold image
+    GLCHK( filter_program->setUniformValue("lf_NoSamples"   , settings3D->Flares.NoSamples  ) );
+    GLCHK( filter_program->setUniformValue("lf_Dispersal"   , settings3D->Flares.Dispersal  ) );
+    GLCHK( filter_program->setUniformValue("lf_HaloWidth"   , settings3D->Flares.HaloWidth  ) );
+    GLCHK( filter_program->setUniformValue("lf_Distortion"  , settings3D->Flares.Distortion ) );
+    GLCHK( filter_program->setUniformValue("lf_weightLF"    , settings3D->Flares.weightLF   ) );
+
 
     glowInputColor[0]->fbo->bind();
     GLCHK( glViewport(0,0,glowInputColor[0]->fbo->width(),glowInputColor[0]->fbo->height()) );
@@ -1314,6 +1514,6 @@ void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outp
     GLCHK( glActiveTexture(GL_TEXTURE4) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[3]->fbo->texture()) ); // exposure reference
     quad_mesh->drawMesh(true);
-
+    copyTexToFBO(outputFBO->texture(),colorFBO->fbo);
     GLCHK( glActiveTexture(GL_TEXTURE0) );
 }

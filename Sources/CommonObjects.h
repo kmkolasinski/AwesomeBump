@@ -7,7 +7,7 @@
 #include <iostream>
 #include "qopenglerrorcheck.h"
 #include <QOpenGLFunctions_3_3_Core>
-
+#include "properties/ImageProperties.peg.h"
 #define TAB_SETTINGS 9
 #define TAB_TILING   10
 
@@ -21,7 +21,9 @@
 
 
 
+//#define TEXTURE_FORMAT GL_RGB16F
 #define TEXTURE_FORMAT GL_RGB16F
+#define TEXTURE_3DRENDER_FORMAT GL_RGB16F
 
 #define KEY_SHOW_MATERIALS Qt::Key_S
 
@@ -411,6 +413,7 @@ struct BaseMapConvLevelProperties{
 // Main object. Contains information about Image and the post process parameters
 class FBOImageProporties{
 public:
+    QtnPropertySetFormImageProp* properties;
     bool bSkipProcessing;
     QGLFramebufferObject *fbo     ; // output image
 
@@ -831,7 +834,9 @@ public:
                 break;
         }
         */
-        GLCHK(FBOImages::create(fbo , image.width(), image.height()));
+        GLuint internal_format = TEXTURE_FORMAT;
+        if(imageType == HEIGHT_TEXTURE) internal_format = TEXTURE_3DRENDER_FORMAT;
+        GLCHK(FBOImages::create(fbo , image.width(), image.height(),internal_format));
 
     }
 
@@ -845,9 +850,9 @@ public:
 
     void resizeFBO(int width, int height){
 
-        GLCHK(FBOImages::resize(fbo     ,width,height));
-       // double memUsage = width * height * 4 * 16 / (1024.0*1024.0*8);
-       // qDebug() << "Resized image memory usage:" << memUsage << "[MB]";
+        GLuint internal_format = TEXTURE_FORMAT;
+        if(imageType == HEIGHT_TEXTURE) internal_format = TEXTURE_3DRENDER_FORMAT;
+        GLCHK(FBOImages::resize(fbo,width,height,internal_format));
         bFirstDraw = true;
     }
 

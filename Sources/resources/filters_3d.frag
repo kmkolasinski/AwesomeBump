@@ -88,55 +88,86 @@ vec4 ffilter(){
 
 
 #ifdef BLOOM_FILTER
+uniform float bloom_WeightA;
+uniform float bloom_WeightB;
+uniform float bloom_WeightC;
+uniform float bloom_WeightD;
+uniform float bloom_Vignette;
+uniform float bloom_VignetteAtt;
 vec4 ffilter(){
 
    vec3 color = texture(layerA, v2QuadCoords.st).rgb;
-   vec3 b1    = texture(layerB, v2QuadCoords.st).rgb;
-   vec3 b2    = texture(layerC, v2QuadCoords.st).rgb;
-   vec3 b3    = texture(layerD, v2QuadCoords.st).rgb;
-   vec3 b4    = texture(layerE, v2QuadCoords.st).rgb;
+   vec3 b1    = texture(layerB, v2QuadCoords.st).rgb*bloom_WeightA;
+   vec3 b2    = texture(layerC, v2QuadCoords.st).rgb*bloom_WeightB;
+   vec3 b3    = texture(layerD, v2QuadCoords.st).rgb*bloom_WeightC;
+   vec3 b4    = texture(layerE, v2QuadCoords.st).rgb*bloom_WeightD;
 
-   vec3 bloom =  (b1*0.4f + b2*0.8f + b3*0.6f + b4*0.8f)/2.5;
+   vec3 bloom =  (b1 + b2 + b3 + b4);
    float x = v2QuadCoords.x;
    float y = v2QuadCoords.y;
-   float attenuateX = 1.0 - 0.8*(1 - smoothstep(0.0,0.4,x) + smoothstep(0.6,1.0,x));
-   float attenuateY = 1.0 - 0.8*(1 - smoothstep(0.0,0.4,y) + smoothstep(0.6,1.0,y));
+   float attenuateX = 1.0 - bloom_VignetteAtt*(1 - smoothstep(0.0,bloom_Vignette,x) + smoothstep(1-bloom_Vignette,1.0,x));
+   float attenuateY = 1.0 - bloom_VignetteAtt*(1 - smoothstep(0.0,bloom_Vignette,y) + smoothstep(1-bloom_Vignette,1.0,y));
 
    return vec4(  color + bloom * attenuateX * attenuateY  ,1);
 }
 #endif
 
 #ifdef TONE_MAPPING_FILTER
+uniform int tm_step; // 1-calculate luminance,2-integrate image,3-tone mapping
 
-float A = 0.15;
-float B = 0.50;
-float C = 0.10;
-float D = 0.20;
-float E = 0.02;
-float F = 0.30;
-float W = 1.2;
+// Reinhard tone mapping based on article from Nutty shell company:
+// url: http://www.nutty.ca/?page_id=2
+// article-url: http://www.nutty.ca/?page_id=352&link=hdr
 
-vec3 Uncharted2Tonemap(vec3 x)
-{
-   return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
-}
+uniform float tm_Delta;
+uniform float tm_Scale;
+uniform float tm_LumMaxWhite;
+uniform float tm_GammaCorrection;
+uniform float tm_BlendingWeight;
+
+float delta = tm_Delta;
+float alpha = tm_Scale;
+float Lwhite= tm_LumMaxWhite;
+float gamma = tm_GammaCorrection;
+
+const mat3 RGBtoXYZ = mat3(  0.4124,0.3576,0.1805,
+                             0.2126,0.7152,0.0722,
+                             0.0193,0.1192,0.9505);
+
+const mat3 XYZtoRGB = mat3(  3.2406,-1.5372,-0.4986,
+                            -0.9689, 1.8758, 0.0415,
+                             0.0557,-0.2040, 1.0570);
 
 vec4 ffilter(){
+   if(tm_step == 1){
+       vec3 texColor   = texture(layerA, v2QuadCoords.st).rgb;
+       float luminance = log(delta + dot(texColor.rgb,vec3(0.2126,0.7152,0.0722)));
+       return vec4(vec3(luminance),1)/2;
+   }else if(tm_step == 2){
+       return texture(layerA, v2QuadCoords.st);
+   }else{ // step 3
+       float N = width*height;
+       vec3  texColor = texture(layerB, v2QuadCoords.st).rgb;
+       vec3  orgColor = texColor;
+       // Calulate luminance from Reinhard model
+       float Lwxy       = dot(texColor.rgb,vec3(0.2126,0.7152,0.0722));
+       float aveLxy     = exp(texture(layerA, v2QuadCoords.st).r-delta);
+       float Lxy = alpha * Lwxy / aveLxy;
+       float Ld = Lxy*(1+Lxy/(Lwhite*Lwhite))/(1+Lxy);
 
-   vec3 texColor = texture(layerA, v2QuadCoords.st).rgb;
-   vec3 bloom = texture(layerB, vec2(0.5,0.5)).rgb;
-
-
-   float ExposureBias = 1+0.5*length(bloom);
-   vec3 curr = Uncharted2Tonemap(ExposureBias*texColor);
-
-   vec3 whiteScale = 1.0f/Uncharted2Tonemap(vec3(W));
-   vec3 color = curr*whiteScale;
-
-   vec3 retColor = pow(color,vec3(2.5/2.2));
-
-   return vec4(retColor,1);
-
+       vec3 XYZ   = RGBtoXYZ*texColor;
+       float sXYZ = XYZ.x + XYZ.y + XYZ.z;
+       vec3 xyY   = vec3(XYZ.x/sXYZ,XYZ.y/sXYZ,XYZ.y);
+       // Apply luminance
+       float x = xyY.x;
+       float y = xyY.y;
+       float Y = xyY.z*Ld;
+       // Go back to RGB
+       XYZ      = vec3(Y/y*x,Y,Y/y*(1-x-y));
+       texColor = XYZtoRGB*XYZ;
+       texColor = pow(texColor, vec3(gamma));
+       return vec4(mix(orgColor,texColor,tm_BlendingWeight),1);
+   }
 
 }
 #endif
@@ -144,11 +175,18 @@ vec4 ffilter(){
 
 #ifdef LENS_FLARES_FILTER
 
-int uSamples = 8;
-float uDispersal  = 0.25;
-float uHaloWidth  = 0.5;
-float uDistortion = 1.0;
 
+uniform int   lf_NoSamples;
+uniform float lf_Dispersal;
+uniform float lf_HaloWidth;
+uniform float lf_Distortion;
+uniform float lf_weightLF;
+
+int uSamples      = lf_NoSamples;
+float uDispersal  = lf_Dispersal;
+float uHaloWidth  = lf_HaloWidth;
+float uDistortion = lf_Distortion;
+float weightLF    = lf_weightLF;
 /**
 
 Lens flares effect based on:
@@ -256,7 +294,7 @@ vec4 ffilter() {
 
         float exposureBias = max(1-0.5*length(exposureColor),0.0);
         //return lensColor;
-        return texture(layerA, v2QuadCoords.st) + 10*(starColor+dirtColor)*lensColor*exposureBias;
+        return texture(layerA, v2QuadCoords.st) + weightLF*(starColor+dirtColor)*lensColor*exposureBias;
     }
 }
 
@@ -311,33 +349,42 @@ changelog:
 
 #ifdef DOF_FILTER
 
-const float focalDepth = 10.0;  //focal distance value in meters, but you may use autofocus option below
-const float focalLength = 25.0; //focal length in mm
-const float fstop = 140.0;       //f-stop value
+uniform float dof_FocalLenght;
+uniform float dof_FocalDepth;
+uniform float dof_FocalStop;
+
+uniform float dof_Coc;
+uniform float dof_Threshold;
+uniform float dof_Gain;
+uniform float dof_BokehBias;
+uniform float dof_BokehFringe;
+uniform float dof_DitherAmount;
+uniform int   dof_NoSamples;
+uniform int   dof_NoRings;
+uniform bool  dof_bNoise;
 
 #define PI 3.14159265
 
 //------------------------------------------
-//user variables
+// User variables
+//------------------------------------------
+int samples     = dof_NoSamples; //samples on the first ring
+int rings       = dof_NoRings;   //ring count
+float CoC       = dof_Coc;       //circle of confusion size in mm (35mm film = 0.03mm)
 
-const int samples = 4; //samples on the first ring
-const int rings   = 7; //ring count
+float focalDepth  = dof_FocalDepth;  //focal distance value in meters, but you may use autofocus option below
+float focalLength = dof_FocalLenght; //focal length in mm
+float fstop       = dof_FocalStop;   //f-stop value
 
-
-const float CoC = 0.03;//circle of confusion size in mm (35mm film = 0.03mm)
+float threshold     = dof_Threshold; //highlight threshold;
+float gain          = dof_Gain; //highlight gain;
+float bias          = dof_BokehBias; //bokeh edge bias 0.5
+float fringe        = dof_BokehFringe; //bokeh chromatic aberration/fringing
+bool  noise         = dof_bNoise; //use noise instead of pattern for sample dithering
+float namount       = dof_DitherAmount; //dither amount
 
 const vec2 focus     = vec2(0.5,0.5); // autofocus point on screen (0.0,0.0 - left lower corner, 1.0,1.0 - upper right)
 const float maxblur  = 1.0; //clamp value of max blur (0.0 = no blur,1.0 default)
-
-const float threshold = 0.25; //highlight threshold;
-const float gain      = 1.0; //highlight gain;
-
-const float bias   = 0.25; //bokeh edge bias 0.5
-const float fringe = 0.7; //bokeh chromatic aberration/fringing
-
-const bool noise = false; //use noise instead of pattern for sample dithering
-const float namount = 0.0001; //dither amount
-
 
 
 

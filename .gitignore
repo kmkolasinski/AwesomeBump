@@ -14,9 +14,10 @@ local.properties
 .classpath
 .settings/
 .loadpath
-
+*.peg.*
+*.so*
 .externalToolBuilders/
-
+Bin/AwesomeBump
 *.launch
 
 .cproject

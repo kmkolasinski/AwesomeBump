@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
+
     connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
 
     diffuseImageProp  = new FormImageProp(this,glImage);
@@ -58,7 +59,17 @@ MainWindow::MainWindow(QWidget *parent) :
     glWidget->setPointerToTexture(&roughnessImageProp->getImageProporties()->fbo,ROUGHNESS_TEXTURE);
     glWidget->setPointerToTexture(&metallicImageProp->getImageProporties()->fbo ,METALLIC_TEXTURE);
     glWidget->setPointerToTexture(&materialManager->getImageProporties()->fbo,MATERIAL_TEXTURE);
-    //glWidget->setPointerToTexture(&grungeImageProp->getImageProporties()->fbo,GRUNGE_TEXTURE);
+
+
+//    ab3dRendererWidget->setPointerToTexture(&diffuseImageProp->getImageProporties()  ->fbo,DIFFUSE_TEXTURE);
+//    ab3dRendererWidget->setPointerToTexture(&normalImageProp->getImageProporties()   ->fbo,NORMAL_TEXTURE);
+//    ab3dRendererWidget->setPointerToTexture(&specularImageProp->getImageProporties() ->fbo,SPECULAR_TEXTURE);
+//    ab3dRendererWidget->setPointerToTexture(&heightImageProp->getImageProporties()   ->fbo,HEIGHT_TEXTURE);
+//    ab3dRendererWidget->setPointerToTexture(&occlusionImageProp->getImageProporties()->fbo,OCCLUSION_TEXTURE);
+//    ab3dRendererWidget->setPointerToTexture(&roughnessImageProp->getImageProporties()->fbo,ROUGHNESS_TEXTURE);
+//    ab3dRendererWidget->setPointerToTexture(&metallicImageProp->getImageProporties() ->fbo,METALLIC_TEXTURE);
+//    ab3dRendererWidget->setPointerToTexture(&materialManager->getImageProporties()   ->fbo,MATERIAL_TEXTURE);
+
 
     // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
@@ -187,12 +198,17 @@ MainWindow::MainWindow(QWidget *parent) :
     // 3D settings widget
     // -------------------------------------------------------
     dock3Dsettings = new DockWidget3DSettings(this,glWidget);
+
     ui->verticalLayout3DImage->addWidget(dock3Dsettings);
     setDockNestingEnabled(true);
     connect(dock3Dsettings,SIGNAL(signalSelectedShadingModel(int)),this,SLOT(selectShadingModel(int)));
     // show hide 3D settings
     connect(ui->pushButton3DSettings ,SIGNAL(toggled(bool)),dock3Dsettings,SLOT(setVisible(bool)));
 
+    dialog3dGeneralSettings = new Dialog3DGeneralSettings(this);
+    connect(ui->pushButton3DGeneralSettings,SIGNAL(released()),dialog3dGeneralSettings,SLOT(show()));
+    connect(dialog3dGeneralSettings,SIGNAL(signalPropertyChanged()),glWidget,SLOT(repaint()));
+    connect(dialog3dGeneralSettings,SIGNAL(signalRecompileCustomShader()),glWidget,SLOT(recompileRenderShader()));
 
     ui->verticalLayout3DImage->addWidget(glWidget);
     ui->verticalLayout2DImage->addWidget(glImage);
@@ -475,7 +491,7 @@ MainWindow::MainWindow(QWidget *parent) :
     logAction = new QAction("Show log file",this);
     dialogLogger    = new DialogLogger(this);
     dialogShortcuts = new DialogShortcuts(this);
-    dialogLogger->setModal(true);
+    //dialogLogger->setModal(true);
     dialogShortcuts->setModal(true);
 
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
@@ -502,6 +518,7 @@ MainWindow::~MainWindow()
     delete materialManager;
     delete settingsContainer;
     delete dock3Dsettings;
+    delete dialog3dGeneralSettings;
     delete diffuseImageProp;
     delete normalImageProp;
     delete specularImageProp;
@@ -513,6 +530,7 @@ MainWindow::~MainWindow()
 
     delete statusLabel;
     delete glImage;
+
     delete glWidget;
     delete ui;
 
@@ -1369,8 +1387,8 @@ void MainWindow::updateSpinBoxes(int){
 
 void MainWindow::selectShadingModel(int i){
 
-      if(i == 0) ui->tabWidget->setTabText(5,"Roughness");
-      if(i == 1) ui->tabWidget->setTabText(5,"Glossiness");
+      if(i == 0) ui->tabWidget->setTabText(5,"Rgnss");
+      if(i == 1) ui->tabWidget->setTabText(5,"Gloss");
 }
 
 
@@ -1826,6 +1844,7 @@ void MainWindow::loadImageSettings(TextureTypes type){
 void MainWindow::showSettingsManager(){
     settingsContainer->show();
 }
+
 
 void MainWindow::saveSettings(){
     qDebug() << "Calling" << Q_FUNC_INFO << "Saving to :"<< QString(AB_INI);

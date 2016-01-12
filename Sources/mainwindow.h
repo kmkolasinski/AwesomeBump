@@ -8,6 +8,7 @@
 #include <QDropEvent>
 #include <QDir>
 #include "glwidget.h"
+
 #include "glimageeditor.h"
 #include "formimageprop.h"
 #include "formsettingscontainer.h"
@@ -16,7 +17,10 @@
 #include "dialoglogger.h"
 #include "dialogshortcuts.h"
 #include "dockwidget3dsettings.h"
+
 #include "gpuinfo.h"
+#include "Property.h"
+#include "properties/Dialog3DGeneralSettings.h"
 
 namespace Ui {
 class MainWindow;
@@ -56,7 +60,6 @@ public slots:
     // the same as above but Image is choosen by proper switch using the given type
     void loadImageSettings(TextureTypes type);
     void showSettingsManager();
-
     void setOutputFormat(int index);
     void replotAllImages();
 
@@ -131,6 +134,7 @@ private:
     // Pointers
     Ui::MainWindow *ui;
     GLWidget* glWidget;
+
     GLImage* glImage;
     
     bool bSaveCheckedImages;
@@ -154,6 +158,9 @@ private:
     FormSettingsContainer *settingsContainer;
     // 3D settings manager
     DockWidget3DSettings *dock3Dsettings;
+
+    // 3D shading & display settings dialog
+    Dialog3DGeneralSettings* dialog3dGeneralSettings;
 
     QAction *aboutQtAction;
     QAction *aboutAction;

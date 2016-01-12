@@ -116,7 +116,7 @@ void GLImage::cleanup()
 
 QSize GLImage::minimumSizeHint() const
 {
-    return QSize(360, 360);
+    return QSize(100, 100);
 
 }
 
@@ -438,7 +438,14 @@ void GLImage::render(){
         break;
     }
 
-
+//    GLuint internal_format = TEXTURE_FORMAT;
+//    if(conversionType != CONVERT_NONE || activeImage->bConversionBaseMap){
+//        internal_format = TEXTURE_3DRENDER_FORMAT;
+//        FBOImages::create(auxFBO1,activeFBO->width(),activeFBO->height(),internal_format);
+//        FBOImages::create(auxFBO2,activeFBO->width(),activeFBO->height(),internal_format);
+//        FBOImages::create(auxFBO3,activeFBO->width(),activeFBO->height(),internal_format);
+//        FBOImages::create(auxFBO4,activeFBO->width(),activeFBO->height(),internal_format);
+//    }
     // create or resize when image was changed
     FBOImages::resize(auxFBO1,activeFBO->width(),activeFBO->height());
     FBOImages::resize(auxFBO2,activeFBO->width(),activeFBO->height());
@@ -1205,6 +1212,10 @@ void GLImage::applyColorHueFilter(  QGLFramebufferObject* inputFBO,
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( program->setUniformValue("gui_hue"   , float(activeImage->colorHue)) );
+
+    qDebug() << activeImage->properties->Basic.ColorHue;
+    GLCHK( program->setUniformValue("gui_hue"   , float(activeImage->properties->Basic.ColorHue)) );
+
 
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );

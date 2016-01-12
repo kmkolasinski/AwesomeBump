@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>AwesomeBump log </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="leftMargin">
@@ -43,7 +43,7 @@
           <x>0</x>
           <y>0</y>
           <width>796</width>
-          <height>277</height>
+          <height>269</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">

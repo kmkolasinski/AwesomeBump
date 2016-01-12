@@ -9,6 +9,14 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     ui(new Ui::FormImageProp)
 {
     ui->setupUi(this);
+    imageProp.properties = new QtnPropertySetFormImageProp(this);
+    ui->widgetProperty->setParts(QtnPropertyWidgetPartsDescriptionPanel);
+    ui->widgetProperty->setPropertySet(imageProp.properties);
+
+    connect(imageProp.properties,SIGNAL(propertyDidChange(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)),
+                        this,SLOT(propertyChanged(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)));
+
+    connect(imageProp.properties,SIGNAL(propertyDidFinishEditing()),this,SLOT(propertyFinishedEditing()));
 
     bOpenNormalMapMixer   = false;
 
@@ -253,6 +261,25 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     setFocus();
     setFocusPolicy(Qt::ClickFocus);
 }
+
+void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
+                                              const QtnPropertyBase* firedProperty,
+                                             QtnPropertyChangeReason reason){
+    if (reason & QtnPropertyChangeReasonValue){
+        //
+        if(dynamic_cast<const QtnPropertyBool*>(changedProperty))
+        {
+            qDebug() << changedProperty << firedProperty;
+            emit imageChanged();
+
+        }
+    }
+}
+void FormImageProp::propertyFinishedEditing(){
+    qDebug() << "asd";
+    emit imageChanged();
+}
+
 
 FormImageProp::~FormImageProp()
 {

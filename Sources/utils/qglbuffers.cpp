@@ -352,7 +352,7 @@ GLFrameBufferObject::GLFrameBufferObject(int width, int height)
     fbo = NULL;
     attachments.clear();
     QGLFramebufferObjectFormat format;
-    format.setInternalTextureFormat(TEXTURE_FORMAT);
+    format.setInternalTextureFormat(TEXTURE_3DRENDER_FORMAT);
     format.setTextureTarget(GL_TEXTURE_2D);
     format.setMipmap(true);
     format.setAttachment(QGLFramebufferObject::Depth);
@@ -404,7 +404,7 @@ bool GLFrameBufferObject::addTexture(GLenum COLOR_ATTACHMENTn){
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_FORMAT, fbo->width(), fbo->height(), 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_3DRENDER_FORMAT, fbo->width(), fbo->height(), 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
     if(!glIsTexture(tex[0])){
         qDebug() << "Error: Cannot create additional texture. Process stopped." << endl;

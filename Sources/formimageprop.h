@@ -16,6 +16,8 @@
 #include "formbasemapconversionlevels.h"
 
 
+
+
 namespace Ui {
 class FormImageProp;
 }
@@ -54,7 +56,10 @@ public:
 
 public slots:
 
-
+    void propertyChanged(const QtnPropertyBase* changedProperty,
+                         const QtnPropertyBase* firedProperty,
+                         QtnPropertyChangeReason reason);
+    void propertyFinishedEditing();
     void reloadImageSettings();
     void pasteFromClipboard();
     void copyToClipboard();

@@ -6,6 +6,7 @@ DialogLogger::DialogLogger(QWidget *parent) :
     ui(new Ui::DialogLogger)
 {
     ui->setupUi(this);
+
 }
 
 DialogLogger::~DialogLogger()
