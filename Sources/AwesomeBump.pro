@@ -2,6 +2,10 @@ TEMPLATE      = app
 CONFIG       += c++11
 QT           += opengl gui widgets
 
+isEmpty(TOP_DIR) {
+	ERROR("Run build process from the top directory")
+}
+
 QTN=utils/QtnProperty
 include($$QTN/Common.pri)
 include($$QTN/PEG.pri)
@@ -13,6 +17,7 @@ PEG_SOURCES += properties/Filter3DDOF.pef \
                properties/GLSLParsedFragShader.pef \
                properties/ImageProperties.pef \
                properties/Filters3D.pef
+
 
 release_gl330 {
     DEFINES += USE_OPENGL_330
@@ -26,13 +31,13 @@ GL = -gl4
 release_gl330: GL = -gl3
 
 SPEC=$$[QMAKE_SPEC]$$DBG$$GL
-DESTDIR = workdir/$$SPEC/bin
-OBJECTS_DIR = workdir/$$SPEC/obj
-MOC_DIR = workdir/$$SPEC/moc
-UI_DIR = workdir/$$SPEC/obj
-RCC_DIR = workdir/$$SPEC/obj
+DESTDIR = $$TOP_DIR/workdir/$$SPEC/bin
+OBJECTS_DIR = $$TOP_DIR/workdir/$$SPEC/obj
+MOC_DIR = $$TOP_DIR/workdir/$$SPEC/moc
+UI_DIR = $$TOP_DIR/workdir/$$SPEC/obj
+RCC_DIR = $$TOP_DIR/workdir/$$SPEC/obj
 
-write_file("workdir/current", SPEC)
+write_file("$$TOP_DIR/workdir/current", SPEC)
 
 
 # It's now required to define the path for resource files
@@ -44,8 +49,7 @@ write_file("workdir/current", SPEC)
 DEFINES += RESOURCE_BASE=\\\"./\\\"
 
 VPATH += ../shared
-INCLUDEPATH += ../shared include \
-               utils/
+INCLUDEPATH += ../shared include utils
 
 HEADERS = glwidget.h \
     mainwindow.h \
@@ -133,13 +137,13 @@ DISTFILES += \
 
 # install additional files into target destination
 # (require "make install")
-config.path = $$OUT_PWD/$$DESTDIR
-config.files += ../Bin/Configs ../Bin/Core
+config.path = $$DESTDIR
+config.files += $$TOP_DIR/Bin/Configs $$TOP_DIR/Bin/Core
 INSTALLS += config
 
 exists("utils/QtnProperty/QtnProperty.pri") {
   DEFINES += HAVE_QTNPROP
   include("utils/QtnProperty/QtnProperty.pri")
 } else {
-  MESSAGE(FATAL "QtnProperty not found. Did you forgot to 'git submodule init/update'")
+  ERROR("QtnProperty not found. Did you forgot to 'git submodule init/update'")
 }
