@@ -1,5 +1,5 @@
-#include "../Core/PropertyCore.h"
-#include "../Core/PropertyGUI.h"
+#include "Core/PropertyCore.h"
+#include "Core/PropertyGUI.h"
 
 #include_cpp <QFileDialog>
 
@@ -184,7 +184,7 @@ property_set FormImageProp
         extern property_set BasicProperty Basic
         {
             description = "Basic ";
-            state = !QtnPropertyStateCollapsed;
+            // state = QtnPropertyStateCollapsed;
         }
 /*
         Int GrungeRadius {
