@@ -149,5 +149,5 @@ exists("utils/QtnProperty/QtnProperty.pri") {
   DEFINES += HAVE_QTNPROP
   include("utils/QtnProperty/QtnProperty.pri")
 } else {
-  ERROR("QtnProperty not found. Did you forgot to 'git submodule init/update'")
+  error("QtnProperty not found. Did you forget to 'git submodule init/update'")
 }
