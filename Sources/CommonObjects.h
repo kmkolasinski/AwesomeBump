@@ -391,7 +391,7 @@ struct BaseMapConvLevelProperties{
     float conversionBaseMapAmplitude;
     float conversionBaseMapFlatness;
     int   conversionBaseMapNoIters;
-    int   conversionBaseMapFilterRadius;
+    float conversionBaseMapFilterRadius;
     float conversionBaseMapMixNormals;
     float conversionBaseMapPreSmoothRadius;
     float conversionBaseMapBlending;
@@ -406,6 +406,16 @@ struct BaseMapConvLevelProperties{
         conversionBaseMapPreSmoothRadius= 0;
         conversionBaseMapBlending       = 1.0;
         conversionBaseMapWeight         = 0.0;
+    }
+    void fromProperty(QtnPropertySetConvertsionBaseMapLevelProperty& level){
+        conversionBaseMapAmplitude      = level.Amplitude;
+        conversionBaseMapFlatness       = level.Flatness;
+        conversionBaseMapNoIters        = level.NumIters;
+        conversionBaseMapFilterRadius   = level.FilterRadius;
+        conversionBaseMapMixNormals     = level.Edges;
+        conversionBaseMapPreSmoothRadius= level.PreSmoothRadius;
+        conversionBaseMapBlending       = level.Blending;
+        conversionBaseMapWeight         = level.Weight;
     }
 
 };
@@ -548,6 +558,7 @@ public:
     unsigned int grungeBlendingMode;
     // global settings seamless parameters
 
+    static QString normalMixerFileName;
     static SeamlessMode seamlessMode;
     static float seamlessSimpleModeRadius;
     static int seamlessMirroModeType; // values: 2 - x repear, 1 - y  repeat, 0 - xy  repeat

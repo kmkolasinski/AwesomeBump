@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "CommonObjects.h"
-#include "properties/ImageProperties.peg.h"
+
 // Manages all the input/output operations
 // like : open & save from/to file
 // paste & copy from/to clipboard
@@ -23,6 +23,7 @@ public:
     virtual void saveImageToDir(const QString &dir,QImage& image);
 
     FBOImageProporties imageProp; // for simplicity I made this public, why not...
+    // some properties are visible or hiden for given texture type
 
 protected:
 

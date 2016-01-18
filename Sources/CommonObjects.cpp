@@ -17,7 +17,7 @@ bool FBOImageProporties::bGrungeEnableRandomTranslations  = false; //
 bool FBOImageProporties::bGrungeReplotAllWhenChanged = false;
 int   FBOImageProporties::grungeSeed = 0;          // grunge randomization seed (if = 0 no randomization)
 float FBOImageProporties::grungeNormalWarp = 0.0;
-
+QString FBOImageProporties::normalMixerFileName = "";
 map<QString,int>  FBOImageProporties::materialIndices;
 int FBOImageProporties::currentMaterialIndeks = MATERIALS_DISABLED;
 

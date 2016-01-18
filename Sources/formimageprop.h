@@ -31,12 +31,15 @@ public:
     void setImage(QImage image);
     void setPtrToGLWidget(QGLWidget* ptr){ imageProp.glWidget_ptr = ptr;  }
 
+    void setupPopertiesGUI();
+
 
     void hideHeightInputGroup();
     void hideBMGroupBox();
     void hideSpecularGroupBox();
     void hideNormalStepBar();
     void hideOcclusionInputGroup();
+    void hideGeneralGroup();
     void hideHeightProcessingBox();
     void hideSelectiveBlurBox();
     void hideGrayScaleControl();
@@ -87,6 +90,7 @@ public slots:
     void togglePreviewSelectiveBlurMask(bool toggle);
     void colorPicked(QVector4D);
     void cancelColorPicking();
+    void pickColorFromImage(const QtnPropertyBase *property);
 
     // normal mixer
     void openNormalMixerImage();
@@ -107,6 +111,7 @@ signals:
     void conversionHeightNormalToOcclusionApplied();
     void recalculateOcclusion();
     void toggleColorPickingApplied(bool toggle);
+    void pickImageColor(const QtnPropertyBase* property);
     void toggleGrungeSettings(bool toggle);
 
 

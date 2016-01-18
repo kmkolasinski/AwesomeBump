@@ -59,6 +59,17 @@
     #define OPENGL_FUNCTIONS QOpenGLFunctions_4_0_Core
 #endif
 
+#define BasicProp activeImage->properties->Basic
+#define RemoveShadingProp activeImage->properties->RemoveShading
+#define ColorLevelsProp activeImage->properties->ColorLevels
+#define SurfaceDetailsProp activeImage->properties->SurfaceDetails
+#define AOProp activeImage->properties->AO
+#define GrungeProp targetImageGrunge->properties->Grunge
+#define GrungeOnImageProp activeImage->properties->GrungeOnImage
+#define NormalMixerProp activeImage->properties->NormalsMixer
+#define BaseMapToOthersProp activeImage->properties->BaseMapToOthers
+
+
 //! [0]
 class GLImage : public GLWidgetBase , protected OPENGL_FUNCTIONS
 {
@@ -98,6 +109,7 @@ public slots:
     void updateCornersWeights(float w1, float w2, float w3, float w4);
     void selectSeamlessMode(SeamlessMode mode);
     void toggleColorPicking(bool toggle);
+    void pickImageColor(const QtnPropertyBase* property);
 
     void copyRenderToPaintFBO(); // when image is rendered copy it to paintFBO in order to display result
 signals:

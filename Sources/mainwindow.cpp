@@ -39,6 +39,29 @@ MainWindow::MainWindow(QWidget *parent) :
 
     materialManager = new FormMaterialIndicesManager(this,glImage);
 
+    // Selecting type of image for each texture
+    diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
+    normalImageProp   ->getImageProporties()->imageType = NORMAL_TEXTURE;
+    specularImageProp ->getImageProporties()->imageType = SPECULAR_TEXTURE;
+    heightImageProp   ->getImageProporties()->imageType = HEIGHT_TEXTURE;
+    occlusionImageProp->getImageProporties()->imageType = OCCLUSION_TEXTURE;
+    roughnessImageProp->getImageProporties()->imageType = ROUGHNESS_TEXTURE;
+    metallicImageProp ->getImageProporties()->imageType = METALLIC_TEXTURE;
+
+    materialManager->getImageProporties()   ->imageType = MATERIAL_TEXTURE;
+    grungeImageProp->getImageProporties()   ->imageType = GRUNGE_TEXTURE;
+
+    diffuseImageProp->setupPopertiesGUI();
+    normalImageProp->setupPopertiesGUI();
+    specularImageProp->setupPopertiesGUI();
+    heightImageProp->setupPopertiesGUI();
+    occlusionImageProp->setupPopertiesGUI();
+    roughnessImageProp->setupPopertiesGUI();
+    metallicImageProp->setupPopertiesGUI();
+//    materialManager->setupPopertiesGUI();
+    grungeImageProp->setupPopertiesGUI();
+
+
     // setting pointers to images
 
     materialManager->imagesPointers[0]  = diffuseImageProp;
@@ -48,6 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
     materialManager->imagesPointers[4]  = occlusionImageProp;
     materialManager->imagesPointers[5]  = roughnessImageProp;
     materialManager->imagesPointers[6]  = metallicImageProp;
+
+
 
 
     // Setting pointers to 3D view (this pointer are used to bindTextures).
@@ -71,17 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    ab3dRendererWidget->setPointerToTexture(&materialManager->getImageProporties()   ->fbo,MATERIAL_TEXTURE);
 
 
-    // Selecting type of image for each texture
-    diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
-    normalImageProp   ->getImageProporties()->imageType = NORMAL_TEXTURE;
-    specularImageProp ->getImageProporties()->imageType = SPECULAR_TEXTURE;
-    heightImageProp   ->getImageProporties()->imageType = HEIGHT_TEXTURE;
-    occlusionImageProp->getImageProporties()->imageType = OCCLUSION_TEXTURE;
-    roughnessImageProp->getImageProporties()->imageType = ROUGHNESS_TEXTURE;
-    metallicImageProp ->getImageProporties()->imageType = METALLIC_TEXTURE;
 
-    materialManager->getImageProporties()   ->imageType = MATERIAL_TEXTURE;
-    grungeImageProp->getImageProporties()   ->imageType = GRUNGE_TEXTURE;
 
 
     // disabling some options for each texture
@@ -104,6 +119,7 @@ MainWindow::MainWindow(QWidget *parent) :
     diffuseImageProp->hideOcclusionInputGroup();
     diffuseImageProp->hideSelectiveBlurBox();
     diffuseImageProp->hideRoughnessInputGroup();
+    diffuseImageProp->hideBMGroupBox();
 
 
     normalImageProp->hideSpecularInputGroup();
@@ -115,7 +131,7 @@ MainWindow::MainWindow(QWidget *parent) :
     normalImageProp->hideSelectiveBlurBox();
     normalImageProp->hideHeightInputGroup();
     normalImageProp->hideRoughnessInputGroup();
-    normalImageProp->showNormalMixerGroup();
+   // normalImageProp->showNormalMixerGroup();
     normalImageProp->hideGrungeBlendinModeComboBox();
     normalImageProp->showGrungeMainImageWeightSlider();
 
@@ -127,6 +143,7 @@ MainWindow::MainWindow(QWidget *parent) :
     heightImageProp->hideOcclusionInputGroup();
     heightImageProp->hideGrayScaleControl();
     heightImageProp->hideRoughnessInputGroup();
+    heightImageProp->hideSelectiveBlurBox();
 
 
     occlusionImageProp->hideSpecularInputGroup();
@@ -138,6 +155,9 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp->hideGrayScaleControl();
     occlusionImageProp->hideSelectiveBlurBox();
     occlusionImageProp->hideRoughnessInputGroup();
+    occlusionImageProp->hideHeightProcessingBox();
+    occlusionImageProp->hideSpecularGroupBox();
+    occlusionImageProp->hideGeneralGroup();
 
     
     roughnessImageProp->hideSpecularInputGroup();
@@ -167,7 +187,7 @@ MainWindow::MainWindow(QWidget *parent) :
     grungeImageProp->hideBMGroupBox();
     grungeImageProp->hideSelectiveBlurBox();
     grungeImageProp->hideSpecularGroupBox();
-    grungeImageProp->showGrungeSettingsGroup();
+//    grungeImageProp->showGrungeSettingsGroup();
 
 
 
@@ -225,6 +245,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutMetallicImage ->addWidget(metallicImageProp);
     ui->verticalLayoutMaterialIndicesImage->addWidget(materialManager);
     ui->verticalLayoutGrungeImage   ->addWidget(grungeImageProp);
+
 
     ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
     
@@ -1061,8 +1082,7 @@ void MainWindow::updateMetallicImage(){
 
 void MainWindow::updateGrungeImage(){
 
-    bool test = (grungeImageProp->getImageProporties()->bGrungeReplotAllWhenChanged == true);
-    //test *= (grungeImageProp->getImageProporties()->grungeOverallWeight > 0.0);
+    bool test = (grungeImageProp->getImageProporties()->properties->Grunge.ReplotAll == true);
 
     //if replot enabled and grunge weight > 0 then replot all textures
     if(test){

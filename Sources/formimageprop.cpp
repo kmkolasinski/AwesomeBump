@@ -13,10 +13,13 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     ui->widgetProperty->setParts(QtnPropertyWidgetPartsDescriptionPanel);
     ui->widgetProperty->setPropertySet(imageProp.properties);
 
+
     connect(imageProp.properties,SIGNAL(propertyDidChange(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)),
                         this,SLOT(propertyChanged(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)));
 
     connect(imageProp.properties,SIGNAL(propertyDidFinishEditing()),this,SLOT(propertyFinishedEditing()));
+
+
 
     bOpenNormalMapMixer   = false;
 
@@ -260,20 +263,141 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     setMouseTracking(true);
     setFocus();
     setFocusPolicy(Qt::ClickFocus);
+
 }
+
+
+void FormImageProp::setupPopertiesGUI(){
+
+    imageProp.properties->ImageType.setValue((imageProp.imageType));
+    switch(imageProp.imageType){
+        case(DIFFUSE_TEXTURE):
+        imageProp.properties->Basic.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.GrayScale.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorComponents.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorHue.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->RemoveShading.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->EnableRemoveShading.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->ColorLevels.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->BaseMapToOthers.switchState(QtnPropertyStateInvisible,false);
+
+
+        break;
+        case(NORMAL_TEXTURE):
+        imageProp.properties->Basic.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorComponents.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.NormalsStep.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->GrungeOnImage.BlendingMode.switchState(QtnPropertyStateInvisible,true);
+        imageProp.properties->GrungeOnImage.ImageWeight.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->NormalsMixer.switchState(QtnPropertyStateInvisible,false);
+
+        break;
+        case(SPECULAR_TEXTURE):
+        imageProp.properties->Basic.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.GrayScale.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorComponents.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorHue.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->ColorLevels.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->SurfaceDetails.switchState(QtnPropertyStateInvisible,false);
+        break;
+        case(HEIGHT_TEXTURE):
+        imageProp.properties->Basic.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorComponents.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->ColorLevels.switchState(QtnPropertyStateInvisible,false);
+        break;
+        case(OCCLUSION_TEXTURE):
+        imageProp.properties->Basic.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorComponents.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->ColorLevels.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->AO.switchState(QtnPropertyStateInvisible,false);
+
+        break;
+        case(ROUGHNESS_TEXTURE):
+        imageProp.properties->Basic.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorComponents.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->ColorLevels.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->SurfaceDetails.switchState(QtnPropertyStateInvisible,false);
+        break;
+        case(METALLIC_TEXTURE):
+        imageProp.properties->Basic.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorComponents.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.GrayScale.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorHue.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->ColorLevels.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->SurfaceDetails.switchState(QtnPropertyStateInvisible,false);
+        break;
+        case(MATERIAL_TEXTURE):
+        break;
+        case(GRUNGE_TEXTURE):
+        imageProp.properties->Basic.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.GrayScale.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorComponents.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Basic.ColorHue.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->ColorLevels.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->SurfaceDetails.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->Grunge.switchState(QtnPropertyStateInvisible,false);
+
+
+        break;
+        default:
+        break;
+    }
+
+}
+
+
 
 void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
                                               const QtnPropertyBase* firedProperty,
                                              QtnPropertyChangeReason reason){
     if (reason & QtnPropertyChangeReasonValue){
-        //
-        if(dynamic_cast<const QtnPropertyBool*>(changedProperty))
-        {
-            //qDebug() << changedProperty << firedProperty;
-            emit imageChanged();
-
+        // Grunge Load predefined pattern
+        if(dynamic_cast<const QtnPropertyQString*>(changedProperty)
+                == &imageProp.properties->Grunge.Patterns){
+            loadPredefinedGrunge(imageProp.properties->Grunge.Patterns.value());
         }
-    }
+        // Enable Grunge
+        if(imageProp.properties->Grunge.OverallWeight.value() == 0){
+            emit  toggleGrungeSettings(false);
+        }else{
+            emit  toggleGrungeSettings(true);
+        }
+        // Open Normal mixer
+        if(dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->NormalsMixer.NormalImage){
+            loadFile(imageProp.properties->NormalsMixer.NormalImage);
+        }
+        // Bool activated, enum changed
+        if(dynamic_cast<const QtnPropertyBool*>(changedProperty)
+                || dynamic_cast<const QtnPropertyEnum*>(changedProperty))
+        {
+            // Enable BaseMapToOthers Conversion Tool
+            if( dynamic_cast<const QtnPropertyBool*>(changedProperty) ==
+                    &imageProp.properties->BaseMapToOthers.EnableConversion){
+                FBOImageProporties::bConversionBaseMap = imageProp.properties->BaseMapToOthers.EnableConversion;
+            }
+            // Enable BaseMapToOthers Conversion Tool Height Preview
+            if( dynamic_cast<const QtnPropertyBool*>(changedProperty) ==
+                    &imageProp.properties->BaseMapToOthers.EnableHeightPreview){
+                FBOImageProporties::bConversionBaseMapShowHeightTexture = imageProp.properties->BaseMapToOthers.EnableHeightPreview;
+            }
+            emit imageChanged();
+        }
+
+        // Apply conversion from BaseMap to others
+        if(dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->BaseMapToOthers.Convert){
+            emit conversionBaseConversionApplied();
+        }
+
+        // Pick min or max color from diffuse image
+        if(dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->BaseMapToOthers.MaxColor
+           || dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->BaseMapToOthers.MinColor ){
+            pickColorFromImage(changedProperty);
+        }
+
+
+
+    }// end of if reason value
+
 }
 void FormImageProp::propertyFinishedEditing(){
     //qDebug() << "asd";
@@ -310,13 +434,14 @@ bool FormImageProp::loadFile(const QString &fileName)
                                  tr("Cannot load %1.").arg(QDir::toNativeSeparators(fileName)));
         return false;
     }
-    if(bOpenNormalMapMixer){
+    if(imageProp.properties->NormalsMixer.EnableMixer){
         qDebug() << "<FormImageProp> Open normal mixer image:" << fileName;
 
         imageProp.glWidget_ptr->makeCurrent();
         if(glIsTexture(imageProp.normalMixerInputTexId)) imageProp.glWidget_ptr->deleteTexture(imageProp.normalMixerInputTexId);
         imageProp.normalMixerInputTexId = imageProp.glWidget_ptr->bindTexture(_image,GL_TEXTURE_2D);
         ui->labelNormalMixerInfo->setText("Current image:"+ fileInfo.baseName());
+        FBOImageProporties::normalMixerFileName = fileName;
         emit imageChanged();
 
     }else{
@@ -802,6 +927,11 @@ void FormImageProp::cancelColorPicking(){
 
 }
 
+void FormImageProp::pickColorFromImage(const QtnPropertyBase* property){
+    // Some customizations here
+    emit pickImageColor(property);
+}
+
 void FormImageProp::openNormalMixerImage(){
     bOpenNormalMapMixer = true;
     open();
@@ -845,6 +975,7 @@ void FormImageProp::hideNormalInputGroup(){
 }
 void FormImageProp::hideSpecularInputGroup(){
     ui->groupBoxSpecularInputImage->hide();
+
 }
 
 void FormImageProp::hideRoughnessInputGroup(){
@@ -886,8 +1017,8 @@ void FormImageProp::hideGrungeBlendinModeComboBox(){
 }
 
 void FormImageProp::toggleGrungeImageSettingsGroup(bool toggle){
-    if(toggle) ui->groupBoxGrungeImageSettings->show();
-    else ui->groupBoxGrungeImageSettings->hide();
+
+    imageProp.properties->GrungeOnImage.switchState(QtnPropertyStateInvisible,!toggle);
 }
 
 void FormImageProp::invertGrunge(bool toggle){
@@ -904,6 +1035,18 @@ void FormImageProp::loadPredefinedGrunge(QString image){
 
 void FormImageProp::hideOcclusionInputGroup(){
     ui->groupBoxOcclusionInputImage->hide();
+    ui->groupBoxGeneral->hide();
+    ui->groupBoxSpecular->hide();
+    ui->groupBoxHeightProcessing->hide();
+    ui->groupBoxGrungeSettings->hide();
+    ui->groupBoxNormalMixer->hide();
+    ui->groupBoxBaseToOthersProcessing->hide();
+}
+
+void FormImageProp::hideGeneralGroup(){
+
+    ui->groupBoxGeneral->hide();
+    ui->groupBoxSSAO->hide();
 }
 
 void FormImageProp::hideHeightInputGroup(){

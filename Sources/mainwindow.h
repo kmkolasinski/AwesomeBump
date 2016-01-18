@@ -22,6 +22,7 @@
 #include "Property.h"
 #include "properties/Dialog3DGeneralSettings.h"
 
+
 namespace Ui {
 class MainWindow;
 }

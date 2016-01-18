@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>304</width>
-    <height>4309</height>
+    <height>4491</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -218,22 +218,6 @@
     <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QtnPropertyWidget" name="widgetProperty" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>400</height>
-      </size>
      </property>
     </widget>
    </item>
@@ -773,7 +757,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Recalculate the normal map from the current output height texture. Orginal image is replaced.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Recalculate from Normal (output)</string>
+            <string>Recalculate from Height (output)</string>
            </property>
           </widget>
          </item>
@@ -1162,6 +1146,16 @@
        </layout>
       </item>
       <item>
+       <widget class="QPushButton" name="pushButtonConvertOcclusionFromHN">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calculates AO map from Height (output) and Normal (output) maps according the presets below. After that original AO image is replaced by new one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Recalculate From Heigh and Normal (output)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QGroupBox" name="groupBoxSSAO">
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This parameters are to control the Screen space ambient occlusion (SSAO) calculations.&lt;/p&gt;&lt;p&gt;For more information see: &lt;a href=&quot;http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;SSAO&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1185,16 +1179,6 @@
          <property name="bottomMargin">
           <number>2</number>
          </property>
-         <item>
-          <widget class="QPushButton" name="pushButtonConvertOcclusionFromHN">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calculates AO map from Height (output) and Normal (output) maps according the presets below. After that original AO image is replaced by new one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Recalculate From Heigh and Normal (output)</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <layout class="QGridLayout" name="gridLayout_9">
            <item row="0" column="0">
@@ -2227,6 +2211,22 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QtnPropertyWidget" name="widgetProperty" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
     </widget>
    </item>
    <item>
@@ -4923,19 +4923,6 @@
       </item>
      </layout>
     </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

@@ -34,7 +34,7 @@ uniform float gui_normals_step;
 uniform float gui_basemap_amp;
 uniform int gui_sobel_combine;
 uniform float gui_normal_flatting;
-uniform int gui_filter_radius;
+uniform float gui_filter_radius;
 uniform int gui_combine_normals;
 uniform float gui_mix_normals;
 uniform float gui_smooth_radius;
@@ -956,7 +956,7 @@ vec4 ffilter(){
 
         newTexCoords = newTexCoords + 0.5;
 
-        float ndepth = gui_normal_mixer_depth/50;
+        float ndepth = gui_normal_mixer_depth;
         vec3 normalA = 2*(texture( layerA, v2QuadCoords.xy).xyz - 0.5);
         vec3 normalB = 2*(texture( layerB, newTexCoords.xy).xyz - 0.5);
         // rotate normals
@@ -1103,7 +1103,7 @@ vec4 ffilter(){
 
     vec3 filt  = vec3(0);
     float wtotal = 0.0;
-    int radius   = gui_filter_radius;
+    int radius   = int(gui_filter_radius);
 
     // normal expansion
     if(gui_combine_normals == 0){
@@ -1469,7 +1469,7 @@ vec4 mode_grunge_randomization_filter(){
 vec4 ffilter(){
 #endif
 
-    float rand_scale = gui_grunge_radius/25.0;
+    float rand_scale = gui_grunge_radius;
 
     if(!gui_grunge_brandomize){
            return texture( layerA, v2QuadCoords.xy*rand_scale);
