@@ -1,5 +1,5 @@
-#include "../Core/PropertyCore.h"
-#include "../Core/PropertyGUI.h"
+#include "Core/PropertyCore.h"
+#include "Core/PropertyGUI.h"
 
 #include_cpp <QFileDialog>
 #include_cpp "propertyconstructor.h"
@@ -330,8 +330,213 @@ property_set GrungeMapProperty{
     }
 }
 
+} // end of BasicProperty
 
+property_set FormImageProp
+{
 
+        extern property_set BasicProperty Basic
+        {
+            description = "Basic ";
+            state = !QtnPropertyStateCollapsed;
+        }
+/*
+        Int GrungeRadius {
+                description = "<html><head/><body><p>It scales the UVs of generated random image. Value 1 is 	neutral.</p></body></html>";
+                minValue=1;
+                maxValue=100;
+                stepValue=0;
+                value=1;
+        }
+        Int GrungeOverallWeight {
+                description = "<html><head/><body><p>Set common blending weight factor for all textures 	blending.</p></body></html>";
+                minValue=0;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int GrungeSeed {
+                description = "<html><head/><body><p>When 0 - use orginal image, otherwise generate random 	seamless image. </p></body></html>";
+                minValue=0;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int GrungeNormalWarp {
+                description = "<html><head/><body><p>Warps grunge texture pixels along normals of normal 	texture.</p></body></html>";
+                minValue=-100;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int GrungeImageWeight {
+                description = "<html><head/><body><p>This is blending factor for grunge image. 0 - no grunge.</p	></body></html>";
+                minValue=0;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int GrungeMainImageWeight {
+                description = "<html><head/><body><p>This is blending factor for this image. 0 - no grunge.</p><	/body></html>";
+                minValue=0;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int ConversionHNDepth {
+                description = "<html><head/><body><p>It changes the depth of the calculated normal map in pixels 	unit.</p><p>For example: lets assume that you have picture of wall of size 1x1 m<span style=\" 	vertical-align:super;\">2 </span> in real world with bricks pattern and your image has size 	1024x1024 pixels. Then you want to generate normals for texture which depth is 3cm = 0.03 m. So the 	depth in pixels is 0.03*1024 = 30.72 ~ 31 pixels. </p></body></html>";
+                minValue=0;
+                maxValue=500;
+                stepValue=1;
+                value=20;
+        }
+        Int NormalMixerAngle {
+                description = "";
+                minValue=-180;
+                maxValue=99;
+                stepValue=0;
+                value=0;
+        }
+        Int NormalMixerScale {
+                description = "";
+                minValue=0;
+                maxValue=100;
+                stepValue=0;
+                value=10;
+        }
+        Int NormalMixerPosX {
+                description = "";
+                minValue=-100;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int NormalMixerPosY {
+                description = "";
+                minValue=-100;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int NormalMixerDepth {
+                description = "";
+                minValue=-200;
+                maxValue=200;
+                stepValue=0;
+                value=0;
+        }
+        Int SSAONoIters {
+                description = "<html><head/><body><p>Radius of the mask. Large number will lead to poor 	performance. For small images (about 1024x1024) this should not be a problem, but for larger you 	should use this parameter carefully.</p></body></html>";
+                minValue=1;
+                maxValue=50;
+                stepValue=0;
+                value=4;
+        }
+        Int SSAODepth {
+                description = "It changes the scale of the effect. ";
+                minValue=1;
+                maxValue=100;
+                stepValue=0;
+                value=1;
+        }
+        Int SSAOIntensity {
+                description = "It changes the contrast of the image. ";
+                minValue=0;
+                maxValue=500;
+                stepValue=0;
+                value=100;
+        }
+        Int SSAOBias {
+                description = "This again allows you to control the contrast of the image.";
+                minValue=-400;
+                maxValue=400;
+                stepValue=0;
+                value=0;
+        }
+        Int RoughnessDepth {
+                description = "<html><head/><body><p>Changes range of the effect.</p></body></html>";
+                minValue=0;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int RoughnessTreshold {
+                description = "<html><head/><body><p>Basically it sets the cutoff level of roughness. Lower 	values will lead to higher rgouhness level.</p></body></html>";
+                minValue=-255;
+                maxValue=255;
+                stepValue=0;
+                value=0;
+        }
+        Int RoughnessAmplifier {
+                description = "<html><head/><body><p>Amplifies the effect.</p></body></html>";
+                minValue=-100;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int RoughnessColorOffset {
+                description = "Offset value of color comparison test";
+                minValue=-100;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int RoughnessColorAmplifier {
+                description = "Amplify effect";
+                minValue=-100;
+                maxValue=100;
+                stepValue=0;
+                value=0;
+        }
+        Int RoughnessColorGlobalOffset {
+                description = "";
+                minValue=-255;
+                maxValue=255;
+                stepValue=0;
+                value=0;
+        }
+        Int NormalToHeightItersLarge {
+                description = "Number of iterations done on large grid.";
+                minValue=0;
+                maxValue=99;
+                stepValue=10;
+                value=0;
+        }
+        Int NormalToHeightItersVerySmall {
+                description = "Number of iterations done on very small grid (nearest neighbours).";
+                minValue=0;
+                maxValue=99;
+                stepValue=10;
+                value=0;
+        }
+        Int NormalToHeightItersSmall {
+                description = "Number of iterations done on  small grid (second nearest neighbours).";
+                minValue=0;
+                maxValue=99;
+                stepValue=10;
+                value=0;
+        }
+        Int NormalToHeightItersVeryLarge {
+                description = "Number of iterations done on very large grid.";
+                minValue=0;
+                maxValue=100;
+                stepValue=10;
+                value=4;
+        }
+        Int NormalToHeightItersMedium {
+                description = "Number of iterations done on medium grid.";
+                minValue=0;
+                maxValue=99;
+                stepValue=10;
+                value=0;
+        }
+        Int NormalToHeightItersHuge {
+                description = "<html><head/><body><p>Number of iterations done on huge grid.</p></body></html>";
+                minValue=0;
+                maxValue=99;
+                stepValue=10;
+                value=0;
+        }
 
 property_set GrungeOnImageProperty{
 
@@ -431,6 +636,7 @@ property_set NormalsMixerProperty{
             value=0.0;
     }
 
+*/
 }
 
 property_set ConvertsionBaseMapLevelProperty
@@ -733,6 +939,7 @@ property_set FormImageProp
         description = "Surface details tools";
         state = QtnPropertyStateInvisible;
     }
+  } // end group
 
 
     extern property_set AOProperty AO
@@ -752,6 +959,74 @@ property_set FormImageProp
         description = "Convert to other images";
         state = QtnPropertyStateInvisible;
     }
+  } // GrungePattern
 
+  // UV&Tiling settings
+  property_set UVSettingsType UVSettings
+  {
+    description = "UV/Tiling Settings";
+        Int SeamlessContrastPower {
+                description = "<html><head/><body><p>Another parameter which allows you to control blending weights  between two colors.</p></body></html>";
+                minValue=0;
+                maxValue=99;
+                stepValue=10;
+                value=0;
+        }
+        Int SeamlessContrastStrenght {
+                description = "<html><head/><body><p>It corrects the blending equation according to contrast between two mixed colors. When slider is set to <span style=\" font-weight:600;\">zero</span> standard linear interpolation is applied. This tool works best with <span style=\" font-weight:600;\">simple tilling</span> algorithm.</p><p><br/></p></body></html>";
+                minValue=0;
+                maxValue=100;
+                stepValue=10;
+                value=0;
+        }
+        Int MakeSeamlessRadius {
+                description = "";
+                minValue=0;
+                maxValue=100;
+                stepValue=10;
+                value=50;
+        }
+        Int RandomPatchesInnerRadius {
+                description = "";
+                minValue=0;
+                maxValue=100;
+                stepValue=10;
+                value=20;
+        }
+        Int RandomPatchesRotate {
+                description = "";
+                minValue=-180;
+                maxValue=180;
+                stepValue=10;
+                value=0;
+        }
+        Int RandomPatchesOuterRadius {
+                description = "";
+                minValue=0;
+                maxValue=100;
+                stepValue=10;
+                value=40;
+        }
+  }
 
+  // Input image
+  Enum InputImage
+  {
+      description = "Choose the input image for further processing. Warning: when current image is selected and UV transformation are applied then output normal image may not by transformed properly.";
+      enumInfo = &INPUTIMAGE::info();
+      value = INPUTIMAGE::inputCurrent;
+  }
+
+  Float DepthInPixels
+  {
+    description = "It changes the depth of the calculated normal map in pixels unit. For example: lets assume that you have picture of wall of size 1x1 m2 in real world with bricks pattern and your image has size 1024x1024 pixels. Then you want to generate normals for texture which depth is 3cm = 0.03 m. So the depth in pixels is 0.03*1024 = 30.72 ~ 31 pixels.";
+    value = 20;
+    minValue = 0;
+    maxValue = 1000;
+    stepValue = 1;
+  }
+
+  //Action RecalculateFromNormals {
+  //  description = "";
+  //}
 }

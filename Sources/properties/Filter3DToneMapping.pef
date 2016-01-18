@@ -1,5 +1,5 @@
-#include "../Core/PropertyCore.h"
-#include "../Core/PropertyGUI.h"
+#include "Core/PropertyCore.h"
+#include "Core/PropertyGUI.h"
 
 
 property_set Filter3DToneMapping
