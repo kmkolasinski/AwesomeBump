@@ -754,14 +754,6 @@ void GLImage::render(){
 
 
 
-    // both metallic and roughness are almost the same
-    // so use same filters for them
-    if( (activeImage->imageType == ROUGHNESS_TEXTURE ||  activeImage->imageType == METALLIC_TEXTURE )
-        && activeImage->bRoughnessSurfaceEnable ){
-        // processing surface
-        applyRoughnessFilter(activeFBO,auxFBO2,auxFBO1);
-        copyFBO(auxFBO1,activeFBO);
-    }
 
 
 
@@ -875,9 +867,21 @@ void GLImage::render(){
     // -------------------------------------------------------- //
     // roughness color mapping
     // -------------------------------------------------------- //
+
+    // both metallic and roughness are almost the same
+    // so use same filters for them
+    if( (activeImage->imageType == ROUGHNESS_TEXTURE ||
+         activeImage->imageType == METALLIC_TEXTURE )
+        && RMFilterProp.Filter == COLOR_FILTER::Noise ){
+        // processing surface
+        applyRoughnessFilter(activeFBO,auxFBO2,auxFBO1);
+        copyFBO(auxFBO1,activeFBO);
+    }
+
+
     if(activeImage->imageType == ROUGHNESS_TEXTURE ||
        activeImage->imageType == METALLIC_TEXTURE){
-        if(activeImage->bRoughnessEnableColorPicking && !activeImage->bRoughnessColorPickingToggled){
+        if(RMFilterProp.Filter == COLOR_FILTER::Color && !activeImage->bRoughnessColorPickingToggled){
             applyRoughnessColorFilter(activeFBO,auxFBO1);
             copyFBO(auxFBO1,activeFBO);
         }
@@ -1976,13 +1980,18 @@ void GLImage::applyGrayScaleFilter(QGLFramebufferObject* inputFBO,
     GLCHK( program->setUniformValue("gui_gray_scale_min_color_defined",false) );
 
     if(activeImage->bConversionBaseMap){
-        if(activeImage->conversionBaseMapheightMax.x() >= 0.0){
+        if(QColor(BaseMapToOthersProp.MaxColor.value()).red() >= 0){
+
+            QColor color = QColor(BaseMapToOthersProp.MaxColor.value());
+            QVector3D dcolor(color.redF(),color.greenF(),color.blueF());
             GLCHK( program->setUniformValue("gui_gray_scale_max_color_defined",true) );
-            GLCHK( program->setUniformValue("gui_gray_scale_max_color",activeImage->conversionBaseMapheightMax) );
+            GLCHK( program->setUniformValue("gui_gray_scale_max_color",dcolor) );
         }
-        if(activeImage->conversionBaseMapheightMin.x() >= 0.0){
+        if(QColor(BaseMapToOthersProp.MinColor.value()).red() >= 0){
+            QColor color = QColor(BaseMapToOthersProp.MinColor.value());
+            QVector3D dcolor(color.redF(),color.greenF(),color.blueF());
             GLCHK( program->setUniformValue("gui_gray_scale_min_color_defined",true) );
-            GLCHK( program->setUniformValue("gui_gray_scale_min_color",activeImage->conversionBaseMapheightMin) );
+            GLCHK( program->setUniformValue("gui_gray_scale_min_color",dcolor) );
         }
         GLCHK( program->setUniformValue("gui_gray_scale_range_tol",float(BaseMapToOthersProp.ColorBalance*10)) );
     }
@@ -2645,9 +2654,9 @@ void GLImage::applyRoughnessFilter(QGLFramebufferObject* inputFBO,
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    GLCHK( program->setUniformValue("gui_roughness_depth"     ,  activeImage->roughnessDepth ) );
-    GLCHK( program->setUniformValue("gui_roughness_treshold"  ,  activeImage->roughnessTreshold) );
-    GLCHK( program->setUniformValue("gui_roughness_amplifier"  ,  activeImage->roughnessAmplifier) );
+    GLCHK( program->setUniformValue("gui_roughness_depth"     ,  RMFilterProp.NoiseFilter.Depth ) );
+    GLCHK( program->setUniformValue("gui_roughness_treshold"  ,  RMFilterProp.NoiseFilter.Treshold) );
+    GLCHK( program->setUniformValue("gui_roughness_amplifier"  , RMFilterProp.NoiseFilter.Amplifier) );
 
 
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
@@ -2676,13 +2685,17 @@ void GLImage::applyRoughnessColorFilter(QGLFramebufferObject* inputFBO,
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    GLCHK( program->setUniformValue("gui_roughness_picked_color"  , activeImage->pickedColor ) );
-    GLCHK( program->setUniformValue("gui_roughness_color_method"  , activeImage->colorPickerMethod) );
-    GLCHK( program->setUniformValue("gui_roughness_color_offset"  , activeImage->roughnessColorOffset) );
-    GLCHK( program->setUniformValue("gui_roughness_color_global_offset"  , activeImage->roughnessColorGlobalOffset) );
 
-    GLCHK( program->setUniformValue("gui_roughness_invert_mask"   , activeImage->bRoughnessInvertColorMask) );
-    GLCHK( program->setUniformValue("gui_roughness_color_amplifier", activeImage->roughnessColorAmplifier) );
+    QColor color = QColor(RMFilterProp.ColorFilter.PickColor);
+    QVector3D dcolor(color.redF(),color.greenF(),color.blueF());
+
+    GLCHK( program->setUniformValue("gui_roughness_picked_color"  , dcolor ) );
+    GLCHK( program->setUniformValue("gui_roughness_color_method"  , (int)RMFilterProp.ColorFilter.Method) );
+    GLCHK( program->setUniformValue("gui_roughness_color_offset"  , RMFilterProp.ColorFilter.Bias ) );
+    GLCHK( program->setUniformValue("gui_roughness_color_global_offset"  , RMFilterProp.ColorFilter.Offset) );
+
+    GLCHK( program->setUniformValue("gui_roughness_invert_mask"   , RMFilterProp.ColorFilter.InvertColors ) );
+    GLCHK( program->setUniformValue("gui_roughness_color_amplifier", RMFilterProp.ColorFilter.Amplifier ) );
 
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );

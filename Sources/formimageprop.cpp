@@ -17,10 +17,18 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(imageProp.properties,SIGNAL(propertyDidChange(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)),
                         this,SLOT(propertyChanged(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)));
 
-    connect(imageProp.properties,SIGNAL(propertyDidFinishEditing()),this,SLOT(propertyFinishedEditing()));
+    //connect(imageProp.properties,SIGNAL(propertyDidFinishEditing()),this,SLOT(propertyFinishedEditing()));
+
+    QObject::connect(&imageProp.properties->BaseMapToOthers.Convert,
+                     SIGNAL(click(const QtnPropertyButton*)), this,
+                     SLOT(applyBaseConversion(const QtnPropertyButton*)));
+
+    QObject::connect(&imageProp.properties->NormalsMixer.PasteFromClipboard,
+                     SIGNAL(click(const QtnPropertyButton*)), this,
+                     SLOT(pasteNormalFromClipBoard(const QtnPropertyButton*)));
 
 
-
+    ui->groupBoxConvertToHeightSettings->hide();
     bOpenNormalMapMixer   = false;
 
     imageProp.glWidget_ptr = qlW_ptr;
@@ -317,6 +325,8 @@ void FormImageProp::setupPopertiesGUI(){
         imageProp.properties->Basic.ColorComponents.switchState(QtnPropertyStateInvisible,false);
         imageProp.properties->ColorLevels.switchState(QtnPropertyStateInvisible,false);
         imageProp.properties->SurfaceDetails.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->RMFilter.switchState(QtnPropertyStateInvisible,false);
+
         break;
         case(METALLIC_TEXTURE):
         imageProp.properties->Basic.switchState(QtnPropertyStateInvisible,false);
@@ -325,6 +335,7 @@ void FormImageProp::setupPopertiesGUI(){
         imageProp.properties->Basic.ColorHue.switchState(QtnPropertyStateInvisible,false);
         imageProp.properties->ColorLevels.switchState(QtnPropertyStateInvisible,false);
         imageProp.properties->SurfaceDetails.switchState(QtnPropertyStateInvisible,false);
+        imageProp.properties->RMFilter.switchState(QtnPropertyStateInvisible,false);
         break;
         case(MATERIAL_TEXTURE):
         break;
@@ -350,6 +361,7 @@ void FormImageProp::setupPopertiesGUI(){
 void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
                                               const QtnPropertyBase* firedProperty,
                                              QtnPropertyChangeReason reason){
+
     if (reason & QtnPropertyChangeReasonValue){
         // Grunge Load predefined pattern
         if(dynamic_cast<const QtnPropertyQString*>(changedProperty)
@@ -383,18 +395,13 @@ void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
             emit imageChanged();
         }
 
-        // Apply conversion from BaseMap to others
-        if(dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->BaseMapToOthers.Convert){
-            emit conversionBaseConversionApplied();
-        }
+//        // Pick min or max color from diffuse image
+//        if(dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->BaseMapToOthers.MaxColor
+//           || dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->BaseMapToOthers.MinColor ){
+//            pickColorFromImage(changedProperty);
+//        }
 
-        // Pick min or max color from diffuse image
-        if(dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->BaseMapToOthers.MaxColor
-           || dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->BaseMapToOthers.MinColor ){
-            pickColorFromImage(changedProperty);
-        }
-
-
+          emit imageChanged();
 
     }// end of if reason value
 
@@ -402,6 +409,13 @@ void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
 void FormImageProp::propertyFinishedEditing(){
     //qDebug() << "asd";
     emit imageChanged();
+}
+
+void FormImageProp::applyBaseConversion(const QtnPropertyButton* button){
+    emit conversionBaseConversionApplied();
+}
+void FormImageProp::pasteNormalFromClipBoard(const QtnPropertyButton*){
+    emit pasteNormalFromClipBoard();
 }
 
 
@@ -1041,6 +1055,7 @@ void FormImageProp::hideOcclusionInputGroup(){
     ui->groupBoxGrungeSettings->hide();
     ui->groupBoxNormalMixer->hide();
     ui->groupBoxBaseToOthersProcessing->hide();
+    ui->groupBoxRoguhnessSurfaceFilter->hide();
 }
 
 void FormImageProp::hideGeneralGroup(){
@@ -1050,7 +1065,9 @@ void FormImageProp::hideGeneralGroup(){
 }
 
 void FormImageProp::hideHeightInputGroup(){
-    ui->groupBoxHeightInputImage->hide();
+    ui->pushButtonConvertToHeight->hide();
+    ui->pushButtonConvToHeightSettings->hide();
+    ui->groupBoxConvertToHeightSettings->hide();
 }
 void FormImageProp::hideBMGroupBox(){
     ui->groupBoxBM->hide();

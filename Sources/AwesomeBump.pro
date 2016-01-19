@@ -76,7 +76,6 @@ HEADERS = glwidget.h \
     properties/Dialog3DGeneralSettings.h \
     utils/glslshaderparser.h \
     utils/glslparsedshadercontainer.h \
-    formabimageprop.h \
     properties/propertyconstructor.h
 
 SOURCES = glwidget.cpp \
@@ -103,8 +102,7 @@ SOURCES = glwidget.cpp \
     gpuinfo.cpp \
     properties/Dialog3DGeneralSettings.cpp \
     utils/glslshaderparser.cpp \
-    utils/glslparsedshadercontainer.cpp \
-    formabimageprop.cpp
+    utils/glslparsedshadercontainer.cpp
 
 
 RESOURCES += content.qrc
@@ -123,8 +121,7 @@ FORMS += \
     allaboutdialog.ui \
     dialogshortcuts.ui \
     dockwidget3dsettings.ui \
-    properties/Dialog3DGeneralSettings.ui \
-    formabimageprop.ui
+    properties/Dialog3DGeneralSettings.ui
 
 ICON = resources/icon.icns
 

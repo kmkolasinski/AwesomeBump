@@ -68,7 +68,7 @@
 #define GrungeOnImageProp activeImage->properties->GrungeOnImage
 #define NormalMixerProp activeImage->properties->NormalsMixer
 #define BaseMapToOthersProp activeImage->properties->BaseMapToOthers
-
+#define RMFilterProp activeImage->properties->RMFilter
 
 //! [0]
 class GLImage : public GLWidgetBase , protected OPENGL_FUNCTIONS

@@ -34,6 +34,7 @@ public:
     void setupPopertiesGUI();
 
 
+
     void hideHeightInputGroup();
     void hideBMGroupBox();
     void hideSpecularGroupBox();
@@ -63,6 +64,9 @@ public slots:
                          const QtnPropertyBase* firedProperty,
                          QtnPropertyChangeReason reason);
     void propertyFinishedEditing();
+    void applyBaseConversion(const QtnPropertyButton* button); // convert Basemap to other textures
+    void pasteNormalFromClipBoard(const QtnPropertyButton*);
+
     void reloadImageSettings();
     void pasteFromClipboard();
     void copyToClipboard();
