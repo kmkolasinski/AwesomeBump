@@ -17,7 +17,12 @@ MainWindow::MainWindow(QWidget *parent) :
     FormImageProp::recentDir    = &recentDir;
     GLWidget::recentMeshDir     = &recentMeshDir;
 
+    ui->setupUi(this);
+
     statusLabel = new QLabel("Memory left:");
+#ifdef Q_OS_MAC
+    if(!statusLabel->testAttribute(Qt::WA_MacNormalSize)) statusLabel->setAttribute(Qt::WA_MacSmallSize);
+#endif
 
     glImage          = new GLImage(this);
     glWidget         = new GLWidget(this,glImage);
@@ -200,10 +205,10 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage ->targetImageMetallic  = metallicImageProp ->getImageProporties();
     glImage ->targetImageMaterial  = materialManager   ->getImageProporties();
     glImage ->targetImageGrunge    = grungeImageProp   ->getImageProporties();
+
     // ------------------------------------------------------
     //                      GUI setup
     // ------------------------------------------------------
-    ui->setupUi(this);
     ui->statusbar->addWidget(statusLabel);
 
     // Settings container
