@@ -150,10 +150,14 @@ bool checkOpenGL(){
     return true;
 
 }
+// register delegates
+//void regABSliderFloatDelegate();
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    //regABSliderFloatDelegate();
 
     qDebug() << "Application dir:" << QApplication::applicationDirPath();
     qDebug() << "Data dir:" << _find_data_dir("");

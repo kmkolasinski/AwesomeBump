@@ -4,6 +4,7 @@
 #include_cpp <QFileDialog>
 #include_cpp "propertyconstructor.h"
 #include_cpp "../CommonObjects.h"
+//#include_cpp "propertydelegateabfloatslider.h"
 
 enum COLOR
 {
@@ -761,7 +762,14 @@ property_set BasicProperty
             stepValue=0.01;
             value=0;
             state = QtnPropertyStateInvisible;
+//            delegate ABFloatSlider
+//            {
+//                fillColor = QColor::fromRgb(170, 170, 255);
+//            }
+
     }
+
+
     Int EnhanceDetails {
             description = "The same as above.";
             minValue=0;
@@ -775,6 +783,10 @@ property_set BasicProperty
             maxValue=1;
             stepValue=0.01;
             value=0;
+            delegate ABFloatSlider
+            {
+                fillColor = QColor::fromRgb(170, 170, 255);
+            }
     }
     Float MediumDetails {
             description = "The same as above.";
@@ -782,6 +794,10 @@ property_set BasicProperty
             maxValue=1;
             stepValue=0.01;
             value=0;
+            delegate ABFloatSlider
+            {
+                fillColor = QColor::fromRgb(170, 170, 255);
+            }
     }
 
     Float DetailDepth {

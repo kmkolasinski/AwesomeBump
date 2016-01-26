@@ -76,7 +76,8 @@ HEADERS = glwidget.h \
     properties/Dialog3DGeneralSettings.h \
     utils/glslshaderparser.h \
     utils/glslparsedshadercontainer.h \
-    properties/propertyconstructor.h
+    properties/propertyconstructor.h \
+    properties/propertydelegateabfloatslider.h
 
 SOURCES = glwidget.cpp \
     main.cpp \
@@ -102,7 +103,8 @@ SOURCES = glwidget.cpp \
     gpuinfo.cpp \
     properties/Dialog3DGeneralSettings.cpp \
     utils/glslshaderparser.cpp \
-    utils/glslparsedshadercontainer.cpp
+    utils/glslparsedshadercontainer.cpp \
+    properties/propertydelegateabfloatslider.cpp
 
 
 RESOURCES += content.qrc
