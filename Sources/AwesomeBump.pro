@@ -10,6 +10,7 @@ QTN=utils/QtnProperty
 include($$QTN/Common.pri)
 include($$QTN/PEG.pri)
 
+
 PEG_SOURCES += properties/Filter3DDOF.pef \
                properties/Filter3DBloom.pef \
                properties/Filter3DLensFlares.pef \
@@ -49,7 +50,7 @@ write_file("$$TOP_DIR/workdir/current", SPEC)
 DEFINES += RESOURCE_BASE=\\\"./\\\"
 
 VPATH += ../shared
-INCLUDEPATH += ../shared include utils
+INCLUDEPATH += ../shared include utils utils/QtnProperty
 
 HEADERS = glwidget.h \
     mainwindow.h \
