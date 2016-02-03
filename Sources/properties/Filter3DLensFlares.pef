@@ -22,38 +22,38 @@ property_set Filter3DLensFlares
     {
         description = "Dispersal";
         name      = "Dispersal";
-        value     = 0.25;
-        minValue  = 0.0;
-        maxValue  = 5.0;
-        stepValue = 0.05;
+        value     = 0.25f;
+        minValue  = 0.0f;
+        maxValue  = 5.0f;
+        stepValue = 0.05f;
     }
     Float HaloWidth
     {
         description = "Halo width";
         name      = "Halo width";
-        value     = 0.5;
-        minValue  = 0.0;
-        maxValue  = 1.0;
-        stepValue = 0.05;
+        value     = 0.5f;
+        minValue  = 0.0f;
+        maxValue  = 1.0f;
+        stepValue = 0.05f;
     }
     Float Distortion
     {
         description = "Distortion";
         name      = "Distortion";
-        value     = 1.0;
-        minValue  = 0.0;
-        maxValue  = 10.0;
-        stepValue = 1.0;
+        value     = 1.0f;
+        minValue  = 0.0f;
+        maxValue  = 10.0f;
+        stepValue = 1.0f;
     }
 
     Float weightLF
     {
         description = "Effect strength";
         name      = "Strength";
-        value     =10.0;
-        minValue  = 0.0;
-        maxValue  =50.0;
-        stepValue = 0.5;
+        value     =10.0f;
+        minValue  = 0.0f;
+        maxValue  =50.0f;
+        stepValue = 0.5f;
 
     }
 }

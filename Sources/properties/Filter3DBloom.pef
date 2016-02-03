@@ -14,57 +14,57 @@ property_set Filter3DBloom
     {
         description = "Weight of Layer A.";
         name      = "Layer A";
-        value     = 0.25;
-        minValue  = 0.0;
-        maxValue  = 1.0;
-        stepValue = 0.01;
+        value     = 0.25f;
+        minValue  = 0.0f;
+        maxValue  = 1.0f;
+        stepValue = 0.01f;
     }
     Float WeightB
     {
         description = "Weight of Layer B";
         name      = "Layer B";
-        value     = 0.25;
-        minValue  = 0.0;
-        maxValue  = 1.0;
-        stepValue = 0.01;
+        value     = 0.25f;
+        minValue  = 0.0f;
+        maxValue  = 1.0f;
+        stepValue = 0.01f;
     }
     Float WeightC
     {
         description = "Weight of Layer C";
         name      = "Layer C";
-        value     = 0.25;
-        minValue  = 0.0;
-        maxValue  = 1.0;
-        stepValue = 0.01;
+        value     = 0.25f;
+        minValue  = 0.0f;
+        maxValue  = 1.0f;
+        stepValue = 0.01f;
     }
     Float WeightD
     {
         description = "Weight of Layer  D";
         name      = "Layer D";
-        value     = 0.25;
-        minValue  = 0.0;
-        maxValue  = 1.0;
-        stepValue = 0.01;
+        value     = 0.25f;
+        minValue  = 0.0f;
+        maxValue  = 1.0f;
+        stepValue = 0.01f;
     }
 
     Float Vignette
     {
         description = "Vignette size";
         name      = "Vignette size";
-        value     = 0.4;
-        minValue  = 0.0;
-        maxValue  = 1.0;
-        stepValue = 0.01;
+        value     = 0.4f;
+        minValue  = 0.0f;
+        maxValue  = 1.0f;
+        stepValue = 0.01f;
     }
 
     Float VignetteAtt
     {
         description = "Vignette attenuation";
         name      = "Vignette attenuation";
-        value     = 0.8;
-        minValue  = 0.0;
-        maxValue  = 1.0;
-        stepValue = 0.01;
+        value     = 0.8f;
+        minValue  = 0.0f;
+        maxValue  = 1.0f;
+        stepValue = 0.01f;
     }
 
 }

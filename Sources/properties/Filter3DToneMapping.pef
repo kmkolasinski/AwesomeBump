@@ -15,47 +15,47 @@ property_set Filter3DToneMapping
     {
         description = "Logarithm offset";
         name      = "Delta";
-        value     = 1.0;
-        minValue  = 0.01;
-        maxValue  = 1.0;
-        stepValue = 0.01;
+        value     = 1.0f;
+        minValue  = 0.01f;
+        maxValue  = 1.0f;
+        stepValue = 0.01f;
     }
     Float Scale
     {
         description = "Parameter that scales the exposure of the pixel. Small values (0.0 to 0.2) will underexpose the image and higher values (0.5 to 1.0) will tend to overexpose the image.";
         name      = "Scale";
-        value     = 0.5;
-        minValue  = 0.0;
-        maxValue  = 2.0;
-        stepValue = 0.01;
+        value     = 0.5f;
+        minValue  = 0.0f;
+        maxValue  = 2.0f;
+        stepValue = 0.01f;
     }
     Float LumMaxWhite
     {
         description = "It is the smallest luminance that will be mapped to pure white.";
         name      = "Max. white";
-        value     = 1.0;
-        minValue  = 0.0;
-        maxValue  = 5.0;
-        stepValue = 0.01;
+        value     = 1.0f;
+        minValue  = 0.0f;
+        maxValue  = 5.0f;
+        stepValue = 0.01f;
     }
 
     Float GammaCorrection
     {
         description = "Gamma correction";
         name      = "Gamma";
-        value     = 0.6;
-        minValue  = 0.0;
-        maxValue  = 1.5;
-        stepValue = 0.01;
+        value     = 0.6f;
+        minValue  = 0.0f;
+        maxValue  = 1.5f;
+        stepValue = 0.01f;
     }
 
     Float BlendingWeight
     {
         description = "Performe mixing between oryginal image and tonned one. Weight=0 restores oryginal image.";
         name      = "Weight";
-        value     = 0.8;
-        minValue  = 0.0;
-        maxValue  = 1.0;
-        stepValue = 0.01;
+        value     = 0.8f;
+        minValue  = 0.0f;
+        maxValue  = 1.0f;
+        stepValue = 0.01f;
     }
 }

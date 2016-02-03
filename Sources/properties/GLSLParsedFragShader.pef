@@ -18,200 +18,200 @@ property_set GLSLParsedFragShader
     Float fParam1
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 1;
     }
     Float fParam2
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 2;
     }
     Float fParam3
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 3;
     }
     Float fParam4
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 4;
     }
     Float fParam5
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 5;
     }
     Float fParam6
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 6;
     }
     Float fParam7
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 7;
     }
     Float fParam8
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 8;
     }
     Float fParam9
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 9;
     }
     Float fParam10
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 10;
     }
     Float fParam11
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 11;
     }
     Float fParam12
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 12;
     }
     Float fParam13
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 13;
     }
     Float fParam14
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 14;
     }
     Float fParam15
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 15;
     }
     Float fParam16
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 16;
     }
     Float fParam17
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 17;
     }
     Float fParam18
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 18;
     }
     Float fParam19
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 19;
     }
     Float fParam20
     {
         description = "None";
-        value     = 50.0;
-        minValue  = 0.0;
-        maxValue  = 100.0;
-        stepValue = 1.0;
+        value     = 50.0f;
+        minValue  = 0.0f;
+        maxValue  = 100.0f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // by default
         id = 20;
     }
