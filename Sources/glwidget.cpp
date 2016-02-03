@@ -1274,7 +1274,7 @@ void GLWidget::applyDofFilter(GLuint input_tex,
 
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    GLCHK( filter_program->setUniformValue("dof_FocalLenght", settings3D->DOF.FocalLenght ) );
+    GLCHK( filter_program->setUniformValue("dof_FocalLength", settings3D->DOF.FocalLength ) );
     GLCHK( filter_program->setUniformValue("dof_FocalDepth" , settings3D->DOF.FocalDepth ) );
     GLCHK( filter_program->setUniformValue("dof_FocalStop"  , settings3D->DOF.FocalStop ) );
     GLCHK( filter_program->setUniformValue("dof_NoSamples"  , settings3D->DOF.NoSamples ) );

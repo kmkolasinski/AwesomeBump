@@ -10,24 +10,24 @@ property_set Filter3DDOF
         name      = "Enable DOF";
         value     = true;
     }
-    Float FocalLenght
+    Float FocalLength
     {
         description = "Focal length in mm";
         name = "Focal Lenght";
-        value = 25.0;
+        value = 25.0f;
         minValue = 0;
-        maxValue = 100;
-        stepValue = 1.0;
+        maxValue = 100.f;
+        stepValue = 1.0f;
 
     }
 
     Float FocalDepth
     {
         description = "Focal distance value in meters, but you may use autofocus option below";
-        value = 10.0;
+        value = 10.0f;
         minValue = 0;
-        maxValue = 100;
-        stepValue = 1.0;
+        maxValue = 100.f;
+        stepValue = 1.0f;
         state = QtnPropertyStateInvisible; // not used in GUI
     }
 
@@ -35,10 +35,10 @@ property_set Filter3DDOF
     {
         description = "f-stop value";
         name = "f-stop";
-        value = 140.0;
+        value = 140.0f;
         minValue = 0;
-        maxValue = 400;
-        stepValue = 2.0;
+        maxValue = 400.f;
+        stepValue = 2.0f;
     }
 
     Int NoSamples
@@ -71,48 +71,48 @@ property_set Filter3DDOF
     {
         description = "Circle of confusion size in mm (35mm film = 0.03mm)";
         name = "Confusion circle";
-        value = 0.03;
-        minValue = 0.0;
-        maxValue = 0.1;
-        stepValue = 0.001;
+        value = 0.03f;
+        minValue = 0.0f;
+        maxValue = 0.1f;
+        stepValue = 0.001f;
     }
 
     Float Threshold
     {
         description = "Highlight threshold";
-        value = 0.25;
-        minValue = 0.0;
-        maxValue = 2.0;
-        stepValue = 0.01;
+        value = 0.25f;
+        minValue = 0.0f;
+        maxValue = 2.0f;
+        stepValue = 0.01f;
     }
 
     Float Gain
     {
         description = "Highlight gain";
-        value       = 1.0;
-        minValue    = 0.0;
-        maxValue    = 1.0;
-        stepValue   = 0.01;
+        value       = 1.0f;
+        minValue    = 0.0f;
+        maxValue    = 1.0f;
+        stepValue   = 0.01f;
     }
 
     Float BokehBias
     {
         description = "Bokeh edge bias";
         name        = "Bokeh bias";
-        value       = 0.25;
-        minValue    = 0.0;
-        maxValue    = 5.0;
-        stepValue   = 0.01;
+        value       = 0.25f;
+        minValue    = 0.0f;
+        maxValue    = 5.0f;
+        stepValue   = 0.01f;
     }
 
     Float BokehFringe
     {
         description = "Bokeh chromatic aberration/fringing";
         name        = "Fringing";
-        value       = 0.7;
-        minValue    = 0.0;
-        maxValue    = 5.0;
-        stepValue   = 0.01;
+        value       = 0.7f;
+        minValue    = 0.0f;
+        maxValue    = 5.0f;
+        stepValue   = 0.01f;
     }
 
     Double DitherAmount
