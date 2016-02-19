@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     bSaveCompressedFormImages   = false;
     FormImageProp::recentDir    = &recentDir;
     GLWidget::recentMeshDir     = &recentMeshDir;
-
+    abSettings                  = new QtnPropertySetAwesomeBump(this);
     ui->setupUi(this);
 
     statusLabel = new QLabel("Memory left:");
@@ -429,16 +429,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     // color picking
-    connect(metallicImageProp ,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
-    connect(glImage           ,SIGNAL(colorPicked(QVector4D)),metallicImageProp,SLOT(colorPicked(QVector4D)));
+//    connect(metallicImageProp ,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
+//    connect(glImage           ,SIGNAL(colorPicked(QVector4D)),metallicImageProp,SLOT(colorPicked(QVector4D)));
 
-    connect(roughnessImageProp ,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
-    connect(glImage           ,SIGNAL(colorPicked(QVector4D)),roughnessImageProp,SLOT(colorPicked(QVector4D)));
+//    connect(roughnessImageProp,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
+//    connect(glImage           ,SIGNAL(colorPicked(QVector4D)),roughnessImageProp,SLOT(colorPicked(QVector4D)));
 
-    connect(diffuseImageProp  ,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
-    connect(glImage           ,SIGNAL(colorPicked(QVector4D)),diffuseImageProp,SLOT(colorPicked(QVector4D)));
+//    connect(diffuseImageProp  ,SIGNAL(toggleColorPickingApplied(bool)),glImage,SLOT(toggleColorPicking(bool)));
+//    connect(glImage           ,SIGNAL(colorPicked(QVector4D)),diffuseImageProp,SLOT(colorPicked(QVector4D)));
 
-
+    connect(diffuseImageProp    ,SIGNAL(pickImageColor( QtnPropertyABColor*)),glImage,SLOT(pickImageColor( QtnPropertyABColor*)));
+    connect(roughnessImageProp  ,SIGNAL(pickImageColor( QtnPropertyABColor*)),glImage,SLOT(pickImageColor( QtnPropertyABColor*)));
+    connect(metallicImageProp   ,SIGNAL(pickImageColor( QtnPropertyABColor*)),glImage,SLOT(pickImageColor( QtnPropertyABColor*)));
     // 2D imate tool box settings
     QActionGroup *group = new QActionGroup( this );
     group->addAction( ui->actionTranslateUV );
@@ -556,8 +558,8 @@ MainWindow::~MainWindow()
 
     delete statusLabel;
     delete glImage;
-
     delete glWidget;
+    delete abSettings;
     delete ui;
 
 }
@@ -1877,12 +1879,8 @@ void MainWindow::saveSettings(){
     QSettings settings(QString(AB_INI), QSettings::IniFormat);
     settings.setValue("d_win_w",this->width());
     settings.setValue("d_win_h",this->height());
-
     settings.setValue("tab_win_w",ui->tabWidget->width());
     settings.setValue("tab_win_h",ui->tabWidget->height());
-
-
-
     settings.setValue("recent_dir",recentDir.absolutePath());
     settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
 
@@ -1953,6 +1951,31 @@ void MainWindow::saveSettings(){
     saveImageSettings("m",metallicImageProp);
     saveImageSettings("g",grungeImageProp);
 
+//    abSettings->Diffuse.copyValues(diffuseImageProp->imageProp.properties);
+//    abSettings->Specular.copyValues(specularImageProp->imageProp.properties);
+
+
+////    QTextStream stream(&file);
+////    QString data;
+////    abSettings->toStr(data);
+////    abSettings->Specular.toStr(data);
+////    stream << data;
+
+    QtnPropertySet* superPropertySet = new QtnPropertySet(this);
+    superPropertySet->addChildProperty(diffuseImageProp->imageProp.properties, false /*don't move ownership*/);
+    superPropertySet->addChildProperty(specularImageProp->imageProp.properties, false /*don't move ownership*/);
+    QFile file( "test.txt" );
+    if( !file.open( QIODevice::WriteOnly ) )
+         return;
+//    QDataStream stream( &file );
+//    superPropertySet->save(stream);
+    QTextStream stream(&file);
+    QString data;
+    abSettings->toStr(data);
+    stream << data;
+
+
+    delete superPropertySet;
 }
 
 void MainWindow::changeGUIFontSize(int value){

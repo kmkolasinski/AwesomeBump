@@ -109,7 +109,7 @@ public slots:
     void updateCornersWeights(float w1, float w2, float w3, float w4);
     void selectSeamlessMode(SeamlessMode mode);
     void toggleColorPicking(bool toggle);
-    void pickImageColor(const QtnPropertyBase* property);
+    void pickImageColor(QtnPropertyABColor *property);
 
     void copyRenderToPaintFBO(); // when image is rendered copy it to paintFBO in order to display result
 signals:
@@ -332,6 +332,7 @@ private:
     int gui_seamless_mode; // if 0 standard blending, if 1 mirror mode
 
     bool bToggleColorPicking;
+    QtnPropertyABColor* ptr_ABColor;
 
     // uv manipulations method
     UVManipulationMethods uvManilupationMethod;

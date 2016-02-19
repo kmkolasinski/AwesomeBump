@@ -21,7 +21,7 @@
 #include "gpuinfo.h"
 #include "Property.h"
 #include "properties/Dialog3DGeneralSettings.h"
-
+#include <PropertySet.h>
 
 namespace Ui {
 class MainWindow;
@@ -157,6 +157,7 @@ private:
 
     // Settings container
     FormSettingsContainer *settingsContainer;
+    QtnPropertySetAwesomeBump* abSettings;// use qtn to keep all settings in one place
     // 3D settings manager
     DockWidget3DSettings *dock3Dsettings;
 
