@@ -19,4 +19,5 @@ fi
 
 qmake \
 	&& make \
-	&& cp -r Sources/Build/Bin/AwesomeBump$exe ./Bin
+	&& echo "*** Copying binary from `cat workdir/current` ..." \
+	&& cp -vr workdir/`cat workdir/current`/Bin/AwesomeBump$exe ./Bin
