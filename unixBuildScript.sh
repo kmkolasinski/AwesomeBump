@@ -9,9 +9,15 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 # Add your QT path here
-MY_QT_PATH=~/Qt/5.4/$tool/bin/
+MY_QT_PATH=~/Qt/5.5/$tool/bin/
 export PATH=$MY_QT_PATH:$PATH
 
-( cd Sources && qmake && make ) \
-	&& cp -r Sources/Build/Bin/AwesomeBump$exe ./Bin \
-	&& open ./Bin/AwesomeBump$exe
+if [ ! -e "$MY_QT_PATH" ]; then
+	echo "Qt not found at $MY_QT_PATH"
+	exit 1
+fi
+
+qmake \
+	&& make \
+	&& echo "*** Copying binary from `cat workdir/current` ..." \
+	&& cp -vr workdir/`cat workdir/current`/Bin/AwesomeBump$exe ./Bin

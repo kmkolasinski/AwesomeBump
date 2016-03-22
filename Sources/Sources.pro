@@ -157,3 +157,8 @@ exists("utils/QtnProperty/QtnProperty.pri") {
 } else {
   error("QtnProperty not found. Did you forget to 'git submodule init/update'")
 }
+
+exists("utils/quazip/quazip.pri") {
+	CONFIG += quazip_include_zip quazip_include_unzip
+	include("utils/quazip/quazip.pri")
+}
