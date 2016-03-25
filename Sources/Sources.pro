@@ -112,7 +112,7 @@ SOURCES = glwidget.cpp \
 
 RESOURCES += content.qrc
 
-RC_FILE = icon.rc
+RC_FILE = resources/icon.rc
 
 FORMS += \
     mainwindow.ui \
@@ -128,7 +128,7 @@ FORMS += \
     dockwidget3dsettings.ui \
     properties/Dialog3DGeneralSettings.ui
 
-ICON = resources/icon.icns
+ICON = resources/icons/icon.icns
 
 DISTFILES += \
     resources/quad.obj \
