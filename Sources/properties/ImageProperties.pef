@@ -1,12 +1,11 @@
 #include "Core/PropertyCore.h"
 #include "Core/PropertyGUI.h"
-//#include "PropertyABColor.h"
+#include "PropertyABColor.h"
+
 #include_cpp <QFileDialog>
 #include_cpp "propertyconstructor.h"
 #include_cpp "../CommonObjects.h"
 
-//#include "../utils/QtnProperty/Demo/AB/PropertyABColor.h"
-//#include_cpp "propertydelegateabfloatslider.h"
 
 enum COLOR
 {
@@ -117,7 +116,7 @@ property_set GrayScaleProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.333f;
-        delegate ABFloatSlider{}
+        ////delegate ABFloatSlider{}
     }
     Float GrayScaleG {
             description = "";
@@ -125,7 +124,7 @@ property_set GrayScaleProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.333f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float GrayScaleB {
             description = "";
@@ -133,7 +132,7 @@ property_set GrayScaleProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.333f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
 }
@@ -146,7 +145,7 @@ property_set RemoveShadingProperty{
             maxValue=100;
             stepValue=1;
             value=0.0;
-            delegate ABIntSlider{}
+            //delegate ABIntSlider{}
     }
     Float AOCancellation {
             description = "";
@@ -154,7 +153,7 @@ property_set RemoveShadingProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float LowFrequencyFilterBlending {
             description = "";
@@ -162,7 +161,7 @@ property_set RemoveShadingProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float LowFrequencyFilterRadius {
             description = "";
@@ -170,7 +169,7 @@ property_set RemoveShadingProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 }
 
@@ -188,7 +187,7 @@ property_set ColorLevelsProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float MaxValue {
             description = "";
@@ -196,7 +195,7 @@ property_set ColorLevelsProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=1.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float DetailsRadius {
             description = "";
@@ -204,7 +203,7 @@ property_set ColorLevelsProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float Offset {
             description = "";
@@ -212,7 +211,7 @@ property_set ColorLevelsProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
 }
@@ -238,7 +237,7 @@ property_set SurfaceDetailsProperty{
             maxValue=40.0f;
             stepValue=0.1f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float WeightB {
             description = "";
@@ -246,7 +245,7 @@ property_set SurfaceDetailsProperty{
             maxValue=40.0f;
             stepValue=0.1f;
             value=30.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Int Radius {
             description = "";
@@ -254,7 +253,7 @@ property_set SurfaceDetailsProperty{
             maxValue=40;
             stepValue=1;
             value=30;
-            delegate ABIntSlider{}
+            //delegate ABIntSlider{}
     }
     Float Contrast {
             description = "";
@@ -262,7 +261,7 @@ property_set SurfaceDetailsProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float Amplifier {
             description = "";
@@ -270,7 +269,7 @@ property_set SurfaceDetailsProperty{
             maxValue=10.0f;
             stepValue=0.1f;
             value=1.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 }
 
@@ -283,7 +282,7 @@ property_set AOProperty{
             maxValue=50;
             stepValue=1;
             value=10;
-            delegate ABIntSlider{}
+            //delegate ABIntSlider{}
     }
     Float Intensity {
             description = "";
@@ -291,7 +290,7 @@ property_set AOProperty{
             maxValue=5.0f;
             stepValue=0.01f;
             value=0.5f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float Bias {
             description = "";
@@ -299,7 +298,7 @@ property_set AOProperty{
             maxValue=4.0f;
             stepValue=0.01f;
             value=-1.5f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float Depth {
             description = "";
@@ -307,7 +306,7 @@ property_set AOProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.2f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 }
 
@@ -320,7 +319,7 @@ property_set GrungeMapProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-            delegate ABFloatSlider{}
+            //delegate ABFloatSlider{}
     }
     Int Randomize {
             description = "";
@@ -328,7 +327,7 @@ property_set GrungeMapProperty{
             maxValue=100;
             stepValue=1;
             value=0;
-            delegate ABIntSlider{}
+            //delegate ABIntSlider{}
     }
     Float Scale {
             description = "";
@@ -336,7 +335,7 @@ property_set GrungeMapProperty{
             maxValue=4.0f;
             stepValue=0.01f;
             value=1.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float NormalWarp {
             description = "";
@@ -344,7 +343,7 @@ property_set GrungeMapProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     QString Patterns{
        description = "";
@@ -383,7 +382,7 @@ property_set GrungeOnImageProperty{
             stepValue=0.01f;
             value=0.5f;
             state = QtnPropertyStateInvisible;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float GrungeWeight {
             description = "";
@@ -391,7 +390,7 @@ property_set GrungeOnImageProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
 }
@@ -439,7 +438,7 @@ property_set NormalsMixerProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float Scale{
             description = "";
@@ -447,7 +446,7 @@ property_set NormalsMixerProperty{
             maxValue=5.0f;
             stepValue=0.01f;
             value=1.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float Angle{
             description = "";
@@ -455,7 +454,7 @@ property_set NormalsMixerProperty{
             maxValue=360.0f;
             stepValue=1.0f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float PosX{
             description = "";
@@ -463,7 +462,7 @@ property_set NormalsMixerProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float PosY{
             description = "";
@@ -471,7 +470,7 @@ property_set NormalsMixerProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
 }
@@ -484,7 +483,7 @@ property_set ConvertsionBaseMapLevelProperty
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.3f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float PreSmoothRadius{
             description = "";
@@ -492,7 +491,7 @@ property_set ConvertsionBaseMapLevelProperty
             maxValue=10.0f;
             stepValue=1.0f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float FilterRadius{
             description = "";
@@ -500,7 +499,7 @@ property_set ConvertsionBaseMapLevelProperty
             maxValue=10.0f;
             stepValue=1.0f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Int NumIters{
             description = "";
@@ -508,7 +507,7 @@ property_set ConvertsionBaseMapLevelProperty
             maxValue=20;
             stepValue=1;
             value=1;
-            delegate ABIntSlider{}
+            //delegate ABIntSlider{}
     }
     Float Amplitude{
             description = "";
@@ -516,7 +515,7 @@ property_set ConvertsionBaseMapLevelProperty
             maxValue=5.0f;
             stepValue=0.1f;
             value=-1.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float Flatness{
             description = "";
@@ -524,7 +523,7 @@ property_set ConvertsionBaseMapLevelProperty
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float Edges{
             description = "";
@@ -532,7 +531,7 @@ property_set ConvertsionBaseMapLevelProperty
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
     Float Blending{
             description = "";
@@ -540,7 +539,7 @@ property_set ConvertsionBaseMapLevelProperty
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.5f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
 }
@@ -631,7 +630,7 @@ property_set BaseMapToOthersProperty{
             maxValue=5.0f;
             stepValue=0.1f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
     Float AngleCorrection{
@@ -640,33 +639,28 @@ property_set BaseMapToOthersProperty{
             maxValue=360.0f;
             stepValue=1.0f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
-    QColor MinColor
+    ABColor MinColor
     {
-        description = "QColor property with RGB components";
+        description = "ABColor property with RGB components";
         value = QColor(0, 0, 0);
+        resetCallback = [this](QtnPropertyBase&){
+            MinColor = Qt::black;
+        };
         delegate { rgbSubItems = true; }
     }
-//    ABColor MinColor
-//    {
-//        description = "ABColor property with RGB components";
-//        value = QColor(0, 0, 0);
-
-//        clickHandler = [](const QtnPropertyABColor* color) {
-//            qDebug() << Q_FUNC_INFO << "Color has clicked: " << color;
-//        };
-
-//        delegate { rgbSubItems = false; }
-//    }
-
-    QColor MaxColor
+    ABColor MaxColor
     {
-        description = "QColor property with RGB components";
-        value = QColor(0, 0, 0);
+        description = "ABColor property with RGB components";
+        value = QColor(255, 255, 255);
+        resetCallback = [this](QtnPropertyBase&){
+            MaxColor = Qt::white;
+        };
         delegate { rgbSubItems = true; }
     }
+
 
     Float ColorBalance{
             description = "";
@@ -674,7 +668,7 @@ property_set BaseMapToOthersProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
     Button Convert
@@ -689,10 +683,13 @@ property_set RMColorFilterProperty{
             description = "Invert Colors";
             value = false;
     }
-    QColor PickColor
+    ABColor PickColor
     {
-        description = "QColor property with RGB components";
+        description = "ABColor property with RGB components";
         value = QColor(0, 0, 0);
+        resetCallback = [this](QtnPropertyBase&){
+            PickColor = Qt::black;
+        };
         delegate { rgbSubItems = true; }
     }
     Enum Method
@@ -708,7 +705,7 @@ property_set RMColorFilterProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=-0.2f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
     Float Amplifier{
@@ -717,7 +714,7 @@ property_set RMColorFilterProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.1f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
     Float Offset{
@@ -726,7 +723,7 @@ property_set RMColorFilterProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 }
 
@@ -738,7 +735,7 @@ property_set RMNoiseFilterProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.2f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
     Float Treshold{
@@ -747,7 +744,7 @@ property_set RMNoiseFilterProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
     Float Amplifier{
@@ -756,7 +753,7 @@ property_set RMNoiseFilterProperty{
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.1f;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 }
 
@@ -824,10 +821,10 @@ property_set BasicProperty
             stepValue=0.01f;
             value=0;
             state = QtnPropertyStateInvisible;
-            delegate ABFloatSlider
-            {
-                fillColor = QColor::fromRgb(170, 170, 255);
-            }
+//            delegate ABFloatSlider
+//            {
+//                fillColor = QColor::fromRgb(170, 170, 255);
+//            }
 
     }
 
@@ -838,7 +835,7 @@ property_set BasicProperty
             maxValue=10;
             stepValue=1;
             value=0;
-            delegate ABIntSlider{}
+            //delegate ABIntSlider{}
     }
     Float SmallDetails {
             description = "<html><head/><body><p>Enhance small details. This option is connected with <span 	style=\" font-weight:600;\">Depth</span> scroll bar. </p><p>Note that if <span style=\" font-	weight:600;\">Depth</span> scroll bar is set to zero, this parameter does not affect the image.</p><	/body></html>";
@@ -846,7 +843,7 @@ property_set BasicProperty
             maxValue=1.f;
             stepValue=0.01f;
             value=0;
-            delegate ABFloatSlider{}
+            //delegate ABFloatSlider{}
     }
     Float MediumDetails {
             description = "The same as above.";
@@ -854,10 +851,10 @@ property_set BasicProperty
             maxValue=1.f;
             stepValue=0.01f;
             value=0;
-            delegate ABFloatSlider
-            {
-                fillColor = QColor::fromRgb(170, 170, 255);
-            }
+//            delegate ABFloatSlider
+//            {
+//                fillColor = QColor::fromRgb(170, 170, 255);
+//            }
     }
 
     Float DetailDepth {
@@ -866,10 +863,10 @@ property_set BasicProperty
             maxValue=1.f;
             stepValue=0.01f;
             value=0.1f;
-            delegate ABFloatSlider
-            {
-                fillColor = QColor::fromRgb(170, 170, 255);
-            }
+//            delegate ABFloatSlider
+//            {
+//                fillColor = QColor::fromRgb(170, 170, 255);
+//            }
     }
 
     Int SharpenBlur {
@@ -878,7 +875,7 @@ property_set BasicProperty
             maxValue=20;
             stepValue=1;
             value=0;
-            delegate ABIntSlider{}
+            //delegate ABIntSlider{}
     }
     Float NormalsStep {
             description = "";
@@ -887,7 +884,7 @@ property_set BasicProperty
             stepValue=0.05f;
             value=1.0f;
             state = QtnPropertyStateInvisible;
-        delegate ABFloatSlider{}
+        //delegate ABFloatSlider{}
     }
 
 } // end of BasicProperty
@@ -967,7 +964,11 @@ property_set FormImageProp
         description = "Roughness/Mettalic processing";
         state = QtnPropertyStateInvisible;
     }
+}
 
-
-
+// Collect all settings in one place to save them into file
+property_set AwesomeBump
+{
+    extern property_set FormImageProp Diffuse{}
+    extern property_set FormImageProp Specular{}
 }

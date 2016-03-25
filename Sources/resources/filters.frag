@@ -1357,18 +1357,18 @@ vec4 ffilter(){
     float amp = (1+5*gui_roughness_color_amplifier);
     float offset = gui_roughness_color_offset*2;
 
-    if(gui_roughness_color_method == 0){ // angle based A
+    if(gui_roughness_color_method == 1){ // angle based A
         // treat colors like normals
         vec3 colorA     = normalize(texture( layerA, v2QuadCoords.xy).rgb-0.5);
         vec3 maskColor  = normalize(gui_roughness_picked_color-0.5); // normalized value of picked color
         angle           = clamp(dot(colorA,maskColor)*amp+offset,0.0,1.0);
 
-    }else if(gui_roughness_color_method == 1){ // angle based B
+    }else if(gui_roughness_color_method == 2){ // angle based B
         vec3 colorA     = normalize(texture( layerA, v2QuadCoords.xy).rgb);
         vec3 maskColor  = normalize(gui_roughness_picked_color); // normalized value of picked color
         angle           = clamp(dot(colorA,maskColor)*amp+offset,0.0,1.0);
 
-    }else if(gui_roughness_color_method == 2){ // distance based
+    }else if(gui_roughness_color_method == 3){ // distance based
         vec3 colorA     = (texture( layerA, v2QuadCoords.xy).rgb);
         vec3 maskColor  = (gui_roughness_picked_color);
         angle           = clamp((1-distance(colorA,maskColor)/sqrt(3.0))*amp + offset,0.0,1.0);

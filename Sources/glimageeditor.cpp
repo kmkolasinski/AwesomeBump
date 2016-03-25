@@ -48,6 +48,7 @@ GLImage::GLImage(QWidget *parent)
     bShadowRender         = false;
     bSkipProcessing       = false;
     bRendering            = false;
+    bToggleColorPicking   = false;
     conversionType        = CONVERT_NONE;
     uvManilupationMethod  = UV_TRANSLATE;
     cornerWeights         = QVector4D(0,0,0,0);
@@ -414,6 +415,8 @@ void GLImage::render(){
 
 
     if((activeImage->bSkipProcessing) && (activeImage->imageType != MATERIAL_TEXTURE)) bSkipProcessing = true;// do not process images when is disabled
+    if(bToggleColorPicking) bSkipStandardProcessing = true;
+
 
     if(!bSkipProcessing == true){
     // resizing the FBOs in case of convertion procedure
@@ -881,8 +884,8 @@ void GLImage::render(){
 
     if(activeImage->imageType == ROUGHNESS_TEXTURE ||
        activeImage->imageType == METALLIC_TEXTURE){
-        if(RMFilterProp.Filter == COLOR_FILTER::Color && !activeImage->bRoughnessColorPickingToggled){
-            applyRoughnessColorFilter(activeFBO,auxFBO1);
+        if(RMFilterProp.Filter == COLOR_FILTER::Color){
+            applyRoughnessColorFilter(activeFBO,auxFBO1);            
             copyFBO(auxFBO1,activeFBO);
         }
     }
@@ -3219,7 +3222,9 @@ void GLImage::mousePressEvent(QMouseEvent *event)
         glReadPixels(event->pos().x(), height()-event->pos().y(), 1, 1,GL_RGBA, GL_UNSIGNED_BYTE, &pixels[0]);
         QVector4D color(pixels[0],pixels[1],pixels[2],pixels[3]);
         qDebug() << "Picked pixel (" << event->pos().x() << " , " << height()-event->pos().y() << ") with color:" << color;
-        emit colorPicked(color);
+//        emit colorPicked(color);
+        QColor qcolor = QColor(pixels[0],pixels[1],pixels[2]);
+        if(ptr_ABColor != NULL) ptr_ABColor->setValue(qcolor);
         toggleColorPicking(false);
     }
 
@@ -3234,21 +3239,24 @@ void GLImage::mouseReleaseEvent(QMouseEvent *event){
 
 void GLImage::toggleColorPicking(bool toggle){
     bToggleColorPicking = toggle;
-
+    ptr_ABColor = NULL;
     if(toggle){
         setCursor(Qt::UpArrowCursor);
     }else
         setCursor(Qt::PointingHandCursor);
 }
 
-void GLImage::pickImageColor(const QtnPropertyBase* property){
+void GLImage::pickImageColor( QtnPropertyABColor* property) {
     bool toggle = true;
     bToggleColorPicking = toggle;
+    qDebug() << "asd";
 
+    ptr_ABColor = property;
     if(toggle){
         setCursor(Qt::UpArrowCursor);
     }else
         setCursor(Qt::PointingHandCursor);
+    repaint();
 }
 
 

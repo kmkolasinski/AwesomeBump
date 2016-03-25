@@ -350,7 +350,7 @@ changelog:
 #ifdef DOF_FILTER
 
 uniform float dof_FocalLenght;
-uniform float dof_FocalDepth;
+uniform float dof_FocalDepht;
 uniform float dof_FocalStop;
 
 uniform float dof_Coc;
@@ -372,7 +372,7 @@ int samples     = dof_NoSamples; //samples on the first ring
 int rings       = dof_NoRings;   //ring count
 float CoC       = dof_Coc;       //circle of confusion size in mm (35mm film = 0.03mm)
 
-float focalDepth  = dof_FocalDepth;  //focal distance value in meters, but you may use autofocus option below
+float focalDepth  = dof_FocalDepht;  //focal distance value in meters, but you may use autofocus option below
 float focalLength = dof_FocalLenght; //focal length in mm
 float fstop       = dof_FocalStop;   //f-stop value
 
@@ -446,8 +446,8 @@ vec4 ffilter(){
 
 
         float f = focalLength; //focal length in mm
-        float d = fDepth*1000.0; //focal plane in mm
-        float o = depth*1000.0; //depth in mm
+        float d = fDepth*1000; //focal plane in mm
+        float o = depth*1000; //depth in mm
 
         float a = (o*f)/(o-f);
         float b = (d*f)/(d-f);
@@ -505,7 +505,7 @@ vec4 ffilter(){
         }
 
 
-        return vec4(col,1);
+        return vec4(col,1);// + dof_FocalLenght/100.0;
 
 }
 

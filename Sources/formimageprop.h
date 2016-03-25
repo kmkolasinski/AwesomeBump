@@ -94,7 +94,7 @@ public slots:
     void togglePreviewSelectiveBlurMask(bool toggle);
     void colorPicked(QVector4D);
     void cancelColorPicking();
-    void pickColorFromImage(const QtnPropertyBase *property);
+    void pickColorFromImage(QtnPropertyABColor *property);
 
     // normal mixer
     void openNormalMixerImage();
@@ -115,7 +115,7 @@ signals:
     void conversionHeightNormalToOcclusionApplied();
     void recalculateOcclusion();
     void toggleColorPickingApplied(bool toggle);
-    void pickImageColor(const QtnPropertyBase* property);
+    void pickImageColor( QtnPropertyABColor* property);
     void toggleGrungeSettings(bool toggle);
 
 

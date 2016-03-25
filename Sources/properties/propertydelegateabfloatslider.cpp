@@ -21,16 +21,30 @@ void regABSliderDelegates()
                                 , "ABIntSlider");
 */
 
-    QtnPropertyDelegateFactory::staticInstance()
-            .registerDelegate(&QtnPropertyFloatBase::staticMetaObject
-                                    , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyFloatBase>, QtnPropertyFloatBase>
-                                    , "ABFloatSlider");
+//    QtnPropertyDelegateFactory::staticInstance()
+//            .registerDelegate(&QtnPropertyFloatBase::staticMetaObject
+//                                    , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyFloatBase>, QtnPropertyFloatBase>
+//                                    , "ABFloatSlider");
+
+//    QtnPropertyDelegateFactory::staticInstance()
+//            .registerDelegate(&QtnPropertyIntBase::staticMetaObject
+//                                    , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyIntBase>, QtnPropertyIntBase>
+//                                    , "ABIntSlider");
+//    QtnPropertyDelegateFactory::staticInstance()
+//        .registerDelegate(&QtnPropertyFloatBase::staticMetaObject
+//                                , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyFloatBase>, QtnPropertyFloatBase>
+//                                , "SliderBox");
+
 
     QtnPropertyDelegateFactory::staticInstance()
-            .registerDelegate(&QtnPropertyIntBase::staticMetaObject
-                                    , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyIntBase>, QtnPropertyIntBase>
-                                    , "ABIntSlider");
+        .registerDelegateDefault(&QtnPropertyFloatBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyFloatBase>, QtnPropertyFloatBase>
+                                , "SliderBox");
 
+    QtnPropertyDelegateFactory::staticInstance()
+        .registerDelegateDefault(&QtnPropertyIntBase::staticMetaObject
+                                , &qtnCreateDelegate<QtnPropertyDelegateSlideBoxTyped<QtnPropertyIntBase>, QtnPropertyIntBase>
+                                , "SliderBox");
 }
 
 

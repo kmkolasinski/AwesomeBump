@@ -152,12 +152,13 @@ bool checkOpenGL(){
 }
 // register delegates
 void regABSliderDelegates();
-
+void regABColorDelegates();
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
     regABSliderDelegates();
+    regABColorDelegates();
 
     qDebug() << "Application dir:" << QApplication::applicationDirPath();
     qDebug() << "Data dir:" << _find_data_dir("");

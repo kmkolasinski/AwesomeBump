@@ -28,6 +28,20 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
                      SLOT(pasteNormalFromClipBoard(const QtnPropertyButton*)));
 
 
+    QObject::connect(&imageProp.properties->BaseMapToOthers.MinColor,
+                     SIGNAL(click( QtnPropertyABColor*)), this,
+                     SLOT(pickColorFromImage( QtnPropertyABColor*)));
+
+    QObject::connect(&imageProp.properties->BaseMapToOthers.MaxColor,
+                     SIGNAL(click( QtnPropertyABColor*)), this,
+                     SLOT(pickColorFromImage( QtnPropertyABColor*)));
+
+
+    QObject::connect(&imageProp.properties->RMFilter.ColorFilter.PickColor,
+                     SIGNAL(click( QtnPropertyABColor*)), this,
+                     SLOT(pickColorFromImage( QtnPropertyABColor*)));
+
+
     ui->groupBoxConvertToHeightSettings->hide();
     bOpenNormalMapMixer   = false;
 
@@ -424,6 +438,7 @@ FormImageProp::~FormImageProp()
 
     delete heightCalculator;
     for(int i = 0; i < 4 ; i++) delete baseMapConvLevels[i];
+    delete imageProp.properties;
     delete ui;
 }
 
@@ -941,9 +956,10 @@ void FormImageProp::cancelColorPicking(){
 
 }
 
-void FormImageProp::pickColorFromImage(const QtnPropertyBase* property){
+void FormImageProp::pickColorFromImage( QtnPropertyABColor* property){
     // Some customizations here
     emit pickImageColor(property);
+    qDebug() << "Picking:";
 }
 
 void FormImageProp::openNormalMixerImage(){

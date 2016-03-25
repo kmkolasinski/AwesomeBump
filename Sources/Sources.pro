@@ -80,7 +80,9 @@ HEADERS = glwidget.h \
     utils/glslshaderparser.h \
     utils/glslparsedshadercontainer.h \
     properties/propertyconstructor.h \
-    properties/propertydelegateabfloatslider.h
+    properties/propertydelegateabfloatslider.h \
+    properties/PropertyABColor.h \
+    properties/PropertyDelegateABColor.h
 
 SOURCES = glwidget.cpp \
     main.cpp \
@@ -107,7 +109,9 @@ SOURCES = glwidget.cpp \
     properties/Dialog3DGeneralSettings.cpp \
     utils/glslshaderparser.cpp \
     utils/glslparsedshadercontainer.cpp \
-    properties/propertydelegateabfloatslider.cpp
+    properties/propertydelegateabfloatslider.cpp \
+    properties/PropertyABColor.cpp \
+    properties/PropertyDelegateABColor.cpp
 
 
 RESOURCES += content.qrc
