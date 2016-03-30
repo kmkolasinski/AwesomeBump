@@ -211,7 +211,7 @@ int main(int argc, char *argv[])
     if(!checkOpenGL()){
 
         AllAboutDialog msgBox;
-        msgBox.setPixmap(":/resources/icon-off.png");
+        msgBox.setPixmap(":/resources/icons/icon-off.png");
         msgBox.setText("Fatal Error!");
 
         msgBox.setInformativeText(QString("Sorry but it seems that your graphics card does not support openGL %1.%2.\n"

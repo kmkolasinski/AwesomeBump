@@ -18,7 +18,7 @@ GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget *
     connect(this, &GLWidgetBase::handleAccumulatedMouseMovementLater, this, &GLWidgetBase::handleAccumulatedMouseMovement, Qt::QueuedConnection);
     setMouseTracking(true);
     setFocusPolicy(Qt::ClickFocus);
-    centerCamCursor = QCursor(QPixmap(":/resources/centerCamCursor.png"));
+    centerCamCursor = QCursor(QPixmap(":/resources/cursors/centerCamCursor.png"));
     wrapMouse = true;
 }
 

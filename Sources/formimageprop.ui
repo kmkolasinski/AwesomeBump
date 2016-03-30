@@ -114,7 +114,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/resources/save.png</normaloff>:/resources/save.png</iconset>
+         <normaloff>:/resources/actions/actions/save.png</normaloff>:/resources/actions/actions/save.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -140,7 +140,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/resources/open.png</normaloff>:/resources/open.png</iconset>
+         <normaloff>:/resources/actions/open.png</normaloff>:/resources/actions/open.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -179,7 +179,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/resources/pasteFromCB.png</normaloff>:/resources/pasteFromCB.png</iconset>
+         <normaloff>:/resources/actions/pasteFromCB.png</normaloff>:/resources/actions/pasteFromCB.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -202,7 +202,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/resources/copyToCB.png</normaloff>:/resources/copyToCB.png</iconset>
+         <normaloff>:/resources/actions/copyToCB.png</normaloff>:/resources/actions/copyToCB.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -2255,7 +2255,7 @@
          </property>
          <property name="icon">
           <iconset resource="content.qrc">
-           <normaloff>:/resources/settings3d.png</normaloff>:/resources/settings3d.png</iconset>
+           <normaloff>:/resources/actions/settings3d.png</normaloff>:/resources/actions/settings3d.png</iconset>
          </property>
          <property name="iconSize">
           <size>

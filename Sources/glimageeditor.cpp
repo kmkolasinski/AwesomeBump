@@ -68,10 +68,10 @@ GLImage::GLImage(QWidget *parent)
     gui_perspective_mode =  0;
     gui_seamless_mode    =  0;
     setCursor(Qt::OpenHandCursor);
-    cornerCursors[0] = QCursor(QPixmap(":/resources/corner1.png"));
-    cornerCursors[1] = QCursor(QPixmap(":/resources/corner2.png"));
-    cornerCursors[2] = QCursor(QPixmap(":/resources/corner3.png"));
-    cornerCursors[3] = QCursor(QPixmap(":/resources/corner4.png"));
+    cornerCursors[0] = QCursor(QPixmap(":/resources/cursors/corner1.png"));
+    cornerCursors[1] = QCursor(QPixmap(":/resources/cursors/corner2.png"));
+    cornerCursors[2] = QCursor(QPixmap(":/resources/cursors/corner3.png"));
+    cornerCursors[3] = QCursor(QPixmap(":/resources/cursors/corner4.png"));
 
     connect(this,SIGNAL(rendered()),this,SLOT(copyRenderToPaintFBO()));
 }
@@ -181,11 +181,11 @@ void GLImage::initializeGL()
 
     qDebug() << "Loading filters (fragment shader)";
     QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/resources/filters.vert");
+    vshader->compileSourceFile(":/resources/shaders/filters.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
-    QFile fFile(":/resources/filters.frag");
+    QFile fFile(":/resources/shaders/filters.frag");
     fFile.open(QFile::ReadOnly);
     QTextStream inf(&fFile);
     QString shaderCode = inf.readAll();

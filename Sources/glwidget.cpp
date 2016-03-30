@@ -62,7 +62,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
     m_env_map               = NULL;
 
     setCursor(Qt::PointingHandCursor);
-    lightCursor = QCursor(QPixmap(":/resources/lightCursor.png"));
+    lightCursor = QCursor(QPixmap(":/resources/cursors/lightCursor.png"));
 
 
     glImagePtr = (GLImage*)shareWidget;
@@ -206,7 +206,7 @@ void GLWidget::initializeGL()
 
     qDebug() << "Loading quad (geometry shader)";
     gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
-    QFile gFile(":/resources/plane.geom");
+    QFile gFile(":/resources/shaders/plane.geom");
     gFile.open(QFile::ReadOnly);
     QTextStream in(&gFile);
     QString shaderCode = in.readAll();
@@ -219,19 +219,19 @@ void GLWidget::initializeGL()
 #ifndef USE_OPENGL_330
     qDebug() << "Loading quad (vertex shader)";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/resources/plane.vert");
+    vshader->compileSourceFile(":/resources/shaders/plane.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading quad (tessellation control shader)";
     tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl, this);
-    tcshader->compileSourceFile(":/resources/plane.tcs.vert");
+    tcshader->compileSourceFile(":/resources/shaders/plane.tcs.vert");
     if (!tcshader->log().isEmpty()) qDebug() << tcshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading quad (tessellation evaluation shader)";
     teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation, this);
-    teshader->compileSourceFile(":/resources/plane.tes.vert");
+    teshader->compileSourceFile(":/resources/shaders/plane.tes.vert");
     if (!teshader->log().isEmpty()) qDebug() << teshader->log();
     else qDebug() << "done";
 
@@ -240,7 +240,7 @@ void GLWidget::initializeGL()
 #else
     qDebug() << "Loading quad (vertex shader) for openGL 3.30";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/resources/plane_330.vert");
+    vshader->compileSourceFile(":/resources/shaders/plane_330.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 #endif
@@ -347,13 +347,13 @@ void GLWidget::initializeGL()
     // loading sky box shader
     qDebug() << "Loading skybox shader (vertex shader)";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/resources/skybox.vert.glsl");
+    vshader->compileSourceFile(":/resources/shaders/skybox.vert.glsl");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading skybox shader (fragment shader)";
     fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-    fshader->compileSourceFile(":/resources/skybox.frag.glsl");
+    fshader->compileSourceFile(":/resources/shaders/skybox.frag.glsl");
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
     else qDebug() << "done";
 
@@ -372,19 +372,19 @@ void GLWidget::initializeGL()
     // loading enviromental shader
     qDebug() << "Loading enviromental shader (vertex shader)";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/resources/env.vert");
+    vshader->compileSourceFile(":/resources/shaders/env.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading enviromental shader (geometry shader)";
     gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
-    gshader->compileSourceFile(":/resources/env.geom");
+    gshader->compileSourceFile(":/resources/shaders/env.geom");
     if (!gshader->log().isEmpty()) qDebug() << gshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading enviromental shader (fragment shader)";
     fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-    fshader->compileSourceFile(":/resources/env.frag");
+    fshader->compileSourceFile(":/resources/shaders/env.frag");
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
     else qDebug() << "done";
 
@@ -408,7 +408,7 @@ void GLWidget::initializeGL()
 
     qDebug() << "Loading post-processing shader (vertex shader)";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/resources/filters_3d.vert");
+    vshader->compileSourceFile(":/resources/shaders/filters_3d.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
@@ -416,7 +416,7 @@ void GLWidget::initializeGL()
     qDebug() << "Loading post-processing shaders (fragment shader)";
 
 
-    QFile fFile(":/resources/filters_3d.frag");
+    QFile fFile(":/resources/shaders/filters_3d.frag");
     fFile.open(QFile::ReadOnly);
     QTextStream inf(&fFile);
     shaderCode = inf.readAll();
@@ -464,11 +464,11 @@ void GLWidget::initializeGL()
     if(vshader  != NULL) delete vshader;
 
 
-    GLCHK( lensFlareColorsTexture = bindTexture(QImage(":/resources/lenscolor.png"),GL_TEXTURE_2D) );
+    GLCHK( lensFlareColorsTexture = bindTexture(QImage(":/resources/textures/lenscolor.png"),GL_TEXTURE_2D) );
     qDebug() << "Loading lensColors texture: (id=" << lensFlareColorsTexture << ")";
-    GLCHK( lensDirtTexture = bindTexture(QImage(":/resources/lensdirt.png"),GL_TEXTURE_2D) );
+    GLCHK( lensDirtTexture = bindTexture(QImage(":/resources/textures/lensdirt.png"),GL_TEXTURE_2D) );
     qDebug() << "Loading lensDirt texture: (id=" << lensDirtTexture << ")";
-    GLCHK( lensStarTexture = bindTexture(QImage(":/resources/lensstar.png"),GL_TEXTURE_2D) );
+    GLCHK( lensStarTexture = bindTexture(QImage(":/resources/textures/lensstar.png"),GL_TEXTURE_2D) );
     qDebug() << "Loading lensDirt texture: (id=" << lensStarTexture << ")";
 
 
@@ -1070,7 +1070,7 @@ void GLWidget::recompileRenderShader(){
 
     qDebug() << "Recompiling shaders:";
     gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
-    QFile gFile(":/resources/plane.geom");
+    QFile gFile(":/resources/shaders/plane.geom");
     gFile.open(QFile::ReadOnly);
     QTextStream in(&gFile);
     QString shaderCode = in.readAll();
@@ -1083,17 +1083,17 @@ void GLWidget::recompileRenderShader(){
 #ifndef USE_OPENGL_330
 
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/resources/plane.vert");
+    vshader->compileSourceFile(":/resources/shaders/plane.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "  Vertex shader (GLSL4.0): OK";
 
     tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl, this);
-    tcshader->compileSourceFile(":/resources/plane.tcs.vert");
+    tcshader->compileSourceFile(":/resources/shaders/plane.tcs.vert");
     if (!tcshader->log().isEmpty()) qDebug() << tcshader->log();
     else qDebug() << "  Tessellation control shader (GLSL4.0): OK";
 
     teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation, this);
-    teshader->compileSourceFile(":/resources/plane.tes.vert");
+    teshader->compileSourceFile(":/resources/shaders/plane.tes.vert");
     if (!teshader->log().isEmpty()) qDebug() << teshader->log();
     else qDebug() << "  Tessellation evaluation shader (GLSL4.0): OK";
 
@@ -1101,7 +1101,7 @@ void GLWidget::recompileRenderShader(){
 #else
     qDebug() << "Loading quad (vertex shader) for openGL 3.30";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/resources/plane_330.vert");
+    vshader->compileSourceFile(":/resources/shaders/plane_330.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "  Vertex shader (GLSL3.3): OK";
 #endif

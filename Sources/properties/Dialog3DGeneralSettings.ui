@@ -73,7 +73,7 @@
        </property>
        <property name="icon">
         <iconset resource="../content.qrc">
-         <normaloff>:/resources/recompileShader.png</normaloff>:/resources/recompileShader.png</iconset>
+         <normaloff>:/resources/actions/recompileShader.png</normaloff>:/resources/actions/recompileShader.png</iconset>
        </property>
        <property name="iconSize">
         <size>

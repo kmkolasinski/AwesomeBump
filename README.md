@@ -1,6 +1,6 @@
 
 
-![Image](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/githubimage3.jpg)
+![Image](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/promo/githubimage3.jpg)
 
 
 
