@@ -62,7 +62,7 @@
         <enum>QTabWidget::East</enum>
        </property>
        <property name="currentIndex">
-        <number>10</number>
+        <number>9</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideMiddle</enum>
@@ -76,7 +76,7 @@
         </property>
         <attribute name="icon">
          <iconset resource="content.qrc">
-          <normaloff>:/resources/actions/actions/showDiffuse.png</normaloff>:/resources/actions/actions/showDiffuse.png</iconset>
+          <normaloff>:/resources/actions/showDiffuse.png</normaloff>:/resources/actions/showDiffuse.png</iconset>
         </attribute>
         <attribute name="title">
          <string/>
@@ -119,8 +119,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>457</width>
+              <height>768</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -154,7 +154,7 @@
         </property>
         <attribute name="icon">
          <iconset resource="content.qrc">
-          <normaloff>:/resources/actions/actions/showNormal.png</normaloff>:/resources/actions/showNormal.png</iconset>
+          <normaloff>:/resources/actions/showNormal.png</normaloff>:/resources/actions/showNormal.png</iconset>
         </attribute>
         <attribute name="title">
          <string/>
@@ -197,8 +197,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>457</width>
+              <height>768</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -232,7 +232,7 @@
         </property>
         <attribute name="icon">
          <iconset resource="content.qrc">
-          <normaloff>:/resources/actions/actions/showSpecular.png</normaloff>:/resources/actions/actions/showSpecular.png</iconset>
+          <normaloff>:/resources/actions/showSpecular.png</normaloff>:/resources/actions/showSpecular.png</iconset>
         </attribute>
         <attribute name="title">
          <string/>
@@ -278,8 +278,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>457</width>
+              <height>768</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -353,8 +353,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>457</width>
+              <height>768</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -428,8 +428,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>457</width>
+              <height>768</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -500,8 +500,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>457</width>
+              <height>768</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -578,8 +578,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>96</width>
-              <height>26</height>
+              <width>457</width>
+              <height>768</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -638,8 +638,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>94</width>
-              <height>24</height>
+              <width>455</width>
+              <height>766</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -707,8 +707,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>94</width>
-              <height>24</height>
+              <width>455</width>
+              <height>766</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_33">
@@ -812,8 +812,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>380</width>
-              <height>702</height>
+              <width>457</width>
+              <height>722</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -2817,7 +2817,7 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset resource="content.qrc">
+              <iconset>
                <normaloff>:/resources/actions/centerCamCursor.png</normaloff>:/resources/actions/centerCamCursor.png</iconset>
              </property>
              <property name="iconSize">

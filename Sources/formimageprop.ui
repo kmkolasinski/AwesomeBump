@@ -114,7 +114,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/resources/actions/actions/save.png</normaloff>:/resources/actions/actions/save.png</iconset>
+         <normaloff>:/resources/actions/open.png</normaloff>:/resources/actions/open.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -140,7 +140,7 @@
        </property>
        <property name="icon">
         <iconset resource="content.qrc">
-         <normaloff>:/resources/actions/open.png</normaloff>:/resources/actions/open.png</iconset>
+         <normaloff>:/resources/actions/save.png</normaloff>:/resources/actions/save.png</iconset>
        </property>
        <property name="iconSize">
         <size>

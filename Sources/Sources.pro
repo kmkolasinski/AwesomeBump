@@ -7,7 +7,7 @@ isEmpty(TOP_DIR) {
 }
 
 QTN=utils/QtnProperty
-include($$QTN/Common.pri)
+#include($$QTN/Common.pri)
 include($$QTN/PEG.pri)
 
 

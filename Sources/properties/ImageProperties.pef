@@ -969,6 +969,15 @@ property_set FormImageProp
 // Collect all settings in one place to save them into file
 property_set AwesomeBump
 {
-    extern property_set FormImageProp Diffuse{}
-    extern property_set FormImageProp Specular{}
+    QString presetName{
+        value = "Default";
+    }
+    extern property_set FormImageProp Diffuse;
+    extern property_set FormImageProp Specular;
+    extern property_set FormImageProp Normal;
+    extern property_set FormImageProp Height;
+    extern property_set FormImageProp Occlusion;
+    extern property_set FormImageProp Metallic;
+    extern property_set FormImageProp Roughness;
+    extern property_set FormImageProp Grunge;
 }

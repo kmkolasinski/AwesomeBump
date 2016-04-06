@@ -123,13 +123,13 @@ private:
     bool loadFile(const QString &fileName);
     void pasteImageFromClipboard(QImage& _image);
 
-    bool bLoading;
+
     Ui::FormImageProp *ui;
     DialogHeightCalculator      *heightCalculator;     // height calculator tool
     FormBaseMapConversionLevels* baseMapConvLevels[4]; // for levels of mipmaps
 
 public:
-
+    static bool bLoading;
     bool bOpenNormalMapMixer;
 
 

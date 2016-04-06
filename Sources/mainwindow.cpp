@@ -568,13 +568,14 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
     qDebug() << "calling" << Q_FUNC_INFO;
 
-    QSettings settings(QString(AB_INI), QSettings::IniFormat);
-    settings.setValue("d_win_w",this->width());
-    settings.setValue("d_win_h",this->height());
-    settings.setValue("recent_dir",recentDir.absolutePath());
-    settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
-    settings.setValue("gui_style",ui->comboBoxGUIStyle->currentText());
-    settings.setValue("font_size",ui->spinBoxFontSize->value());
+//    QSettings settings(QString(AB_INI), QSettings::IniFormat);
+//    settings.setValue("d_win_w",this->width());
+//    settings.setValue("d_win_h",this->height());
+//    settings.setValue("recent_dir",recentDir.absolutePath());
+//    settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
+//    settings.setValue("gui_style",ui->comboBoxGUIStyle->currentText());
+//    settings.setValue("font_size",ui->spinBoxFontSize->value());
+
     settingsContainer->close();
     glWidget->close();
     glImage->close();
@@ -648,8 +649,8 @@ void MainWindow::replotAllImages(){
     if(gpuMemTotal > 0)
     {
         menu_text = QString(" Memory Used:") + QString::number(float(gpuMemTotal - gpuMemAvail) / 1024.0f) + QString("[MB]")
-                      + QString(" Memory Free:") + QString::number(float(gpuMemAvail) / 1024.0f) + QString("[MB]")
-                      + QString(" Total Memory:") + QString::number(float(gpuMemTotal) / 1024.0f) + QString("[MB]");
+                  + QString(" Memory Free:") + QString::number(float(gpuMemAvail) / 1024.0f) + QString("[MB]")
+                  + QString(" Total Memory:") + QString::number(float(gpuMemTotal) / 1024.0f) + QString("[MB]");
     }
     else
     {
@@ -1530,8 +1531,9 @@ void MainWindow::setUVManipulationMethod(){
 
 QSize MainWindow::sizeHint() const
 {
-    QSettings settings(QString(AB_INI), QSettings::IniFormat);
-    return QSize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
+//    QSettings settings(QString(AB_INI), QSettings::IniFormat);
+//    return QSize(settings.value("d_win_w",800).toInt(),settings.value("d_win_h",600).toInt());
+    return QSize(800,800);
 }
 
 void MainWindow::saveImageSettings(QString abbr,FormImageProp* image){
@@ -1875,7 +1877,7 @@ void MainWindow::showSettingsManager(){
 
 void MainWindow::saveSettings(){
     qDebug() << "Calling" << Q_FUNC_INFO << "Saving to :"<< QString(AB_INI);
-  
+    /*
     QSettings settings(QString(AB_INI), QSettings::IniFormat);
     settings.setValue("d_win_w",this->width());
     settings.setValue("d_win_h",this->height());
@@ -1950,32 +1952,25 @@ void MainWindow::saveSettings(){
     saveImageSettings("r",roughnessImageProp);
     saveImageSettings("m",metallicImageProp);
     saveImageSettings("g",grungeImageProp);
+    */
 
-//    abSettings->Diffuse.copyValues(diffuseImageProp->imageProp.properties);
-//    abSettings->Specular.copyValues(specularImageProp->imageProp.properties);
+    abSettings->Diffuse  .copyValues(diffuseImageProp   ->imageProp.properties);
+    abSettings->Specular .copyValues(specularImageProp  ->imageProp.properties);
+    abSettings->Normal   .copyValues(normalImageProp    ->imageProp.properties);
+    abSettings->Occlusion.copyValues(occlusionImageProp ->imageProp.properties);
+    abSettings->Height   .copyValues(heightImageProp    ->imageProp.properties);
+    abSettings->Metallic .copyValues(metallicImageProp  ->imageProp.properties);
+    abSettings->Roughness.copyValues(roughnessImageProp ->imageProp.properties);
+    abSettings->Grunge   .copyValues(grungeImageProp    ->imageProp.properties);
 
-
-////    QTextStream stream(&file);
-////    QString data;
-////    abSettings->toStr(data);
-////    abSettings->Specular.toStr(data);
-////    stream << data;
-
-    QtnPropertySet* superPropertySet = new QtnPropertySet(this);
-    superPropertySet->addChildProperty(diffuseImageProp->imageProp.properties, false /*don't move ownership*/);
-    superPropertySet->addChildProperty(specularImageProp->imageProp.properties, false /*don't move ownership*/);
-    QFile file( "test.txt" );
+    QFile file( QString(AB_INI) );
     if( !file.open( QIODevice::WriteOnly ) )
          return;
-//    QDataStream stream( &file );
-//    superPropertySet->save(stream);
     QTextStream stream(&file);
     QString data;
     abSettings->toStr(data);
     stream << data;
 
-
-    delete superPropertySet;
 }
 
 void MainWindow::changeGUIFontSize(int value){
@@ -1993,7 +1988,7 @@ void MainWindow::setOutputFormat(int index){
 void MainWindow::loadSettings(){
     static bool bFirstTime = true;
     qDebug() << "Calling" << Q_FUNC_INFO << " loading from " << QString(AB_INI);
-
+/*
     QSettings settings(QString(AB_INI), QSettings::IniFormat);
 
     if(bFirstTime){
@@ -2009,7 +2004,9 @@ void MainWindow::loadSettings(){
     PostfixNames::occlusionName = settings.value("o_postfix","_o").toString();
     PostfixNames::roughnessName = settings.value("m_postfix","_m").toString();
     PostfixNames::metallicName  = settings.value("r_postfix","_r").toString();
+    */
 
+/*
     ui->checkBoxSaveDiffuse->setChecked( settings.value("d_enable",true).toBool());
     ui->checkBoxSaveNormal->setChecked( settings.value("n_enable",true).toBool());
     ui->checkBoxSaveSpecular->setChecked( settings.value("s_enable",true).toBool());
@@ -2017,9 +2014,9 @@ void MainWindow::loadSettings(){
     ui->checkBoxSaveHeight->setChecked( settings.value("h_enable",true).toBool());
     ui->checkBoxSaveMetallic->setChecked( settings.value("m_enable",true).toBool());
     ui->checkBoxSaveRoughness->setChecked( settings.value("r_enable",true).toBool());
-
+*/
     showHideTextureTypes(true);
-
+/*
     ui->lineEditPostfixDiffuse  ->setText(PostfixNames::diffuseName);
     ui->lineEditPostfixNormal   ->setText(PostfixNames::normalName);
     ui->lineEditPostfixSpecular ->setText(PostfixNames::specularName);
@@ -2035,8 +2032,8 @@ void MainWindow::loadSettings(){
     ui->checkBoxUseLinearTextureInterpolation->setChecked(settings.value("use_texture_interpolation",true).toBool());
     FBOImages::bUseLinearInterpolation = ui->checkBoxUseLinearTextureInterpolation->isChecked();
     ui->comboBoxGUIStyle->setCurrentText(settings.value("gui_style","default").toString());
-
-
+*/
+/*
     // UV Settings
     ui->comboBoxSeamlessMode->setCurrentIndex(settings.value("uv_tiling_type",0).toInt());
     selectSeamlessMode(ui->comboBoxSeamlessMode->currentIndex());
@@ -2055,18 +2052,19 @@ void MainWindow::loadSettings(){
     ui->checkBoxUVTranslationsFirst->setChecked(settings.value("uv_translations_first",true).toBool());
     ui->horizontalSliderSeamlessContrastStrenght->setValue(settings.value("uv_contrast_strength",0.0).toFloat()*100);
     ui->horizontalSliderSeamlessContrastPower->setValue(settings.value("uv_contrast_power",0.0).toFloat()*100);
-
     ui->comboBoxSeamlessContrastInputImage->setCurrentIndex(settings.value("uv_contrast_input_image",0).toInt());
-
+*/
     // other settings
+ /*
     ui->spinBoxMouseSensitivity->setValue(settings.value("mouse_sensitivity",50).toInt());
     ui->spinBoxFontSize->setValue(settings.value("font_size",10).toInt());
     ui->checkBoxToggleMouseLoop->setChecked(settings.value("mouse_loop",true).toBool());
-
+*/
     dock3Dsettings->loadSettings();
     updateSliders();
 
 
+/*
     loadImageSettings("d",diffuseImageProp);
     loadImageSettings("n",normalImageProp);
     loadImageSettings("s",specularImageProp);
@@ -2079,6 +2077,49 @@ void MainWindow::loadSettings(){
 
     QString name = settings.value("settings_name","Default").toString();
     ui->pushButtonProjectManager->setText("Project manager ("+name + ")");
+
+    */
+
+    diffuseImageProp->bLoading = true;
+
+    abSettings->Diffuse  .copyValues(diffuseImageProp   ->imageProp.properties);
+    abSettings->Specular .copyValues(specularImageProp  ->imageProp.properties);
+    abSettings->Normal   .copyValues(normalImageProp    ->imageProp.properties);
+    abSettings->Occlusion.copyValues(occlusionImageProp ->imageProp.properties);
+    abSettings->Height   .copyValues(heightImageProp    ->imageProp.properties);
+    abSettings->Metallic .copyValues(metallicImageProp  ->imageProp.properties);
+    abSettings->Roughness.copyValues(roughnessImageProp ->imageProp.properties);
+    abSettings->Grunge   .copyValues(grungeImageProp    ->imageProp.properties);
+
+    QFile file( QString(AB_INI) );
+    if( !file.open( QIODevice::ReadOnly ) )
+         return;
+
+    QTextStream stream(&file);
+    QString data;
+    stream >> data;
+    abSettings->fromStr(data);
+
+    QString tmpStr;
+    abSettings->Diffuse.toStr(tmpStr);
+    qDebug() << tmpStr;
+
+    QString name = abSettings->presetName.value();
+    ui->pushButtonProjectManager->setText("Project manager (" + name + ")");
+
+    qDebug() << "gray=" << abSettings->Diffuse.Basic.GrayScale.EnableGrayScale.value();
+
+
+    diffuseImageProp   ->imageProp.properties->copyValues(&abSettings->Diffuse);
+    specularImageProp   ->imageProp.properties->copyValues(&abSettings->Specular);
+    normalImageProp     ->imageProp.properties->copyValues(&abSettings->Normal);
+    occlusionImageProp  ->imageProp.properties->copyValues(&abSettings->Occlusion);
+    heightImageProp     ->imageProp.properties->copyValues(&abSettings->Height);
+    metallicImageProp   ->imageProp.properties->copyValues(&abSettings->Metallic);
+    roughnessImageProp  ->imageProp.properties->copyValues(&abSettings->Roughness);
+    grungeImageProp     ->imageProp.properties->copyValues(&abSettings->Grunge);
+
+    diffuseImageProp->bLoading = false;
     replotAllImages();
 
     glImage ->repaint();
@@ -2093,8 +2134,9 @@ void MainWindow::about()
                        tr("AwesomeBump is an open source program designed to generate normal, "
                           "height, specular or ambient occlusion, roughness and metallic textures from a single image. "
                           "Since the image processing is done in 99% on GPU  the program runs very fast "
-                          "and all the parameters can be changed in real time.\n \n"
-                          "Program written by: \n Krzysztof Kolasinski (Copyright 2015)\n"));
+                          "and all the parameters can be changed in real time.\n "
+                          "Program written by: \n Krzysztof Kolasinski (Copyright 2015-2016) with collaboration \n"
+                          "with many people! See project collaborators list on github. "));
 }
 
 void MainWindow::aboutQt()

@@ -2,7 +2,7 @@
 #include "ui_formimageprop.h"
 
 
-
+bool FormImageProp::bLoading = false;
 
 FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     FormImageBase(parent),
@@ -375,7 +375,7 @@ void FormImageProp::setupPopertiesGUI(){
 void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
                                               const QtnPropertyBase* firedProperty,
                                              QtnPropertyChangeReason reason){
-
+    if(bLoading) return;
     if (reason & QtnPropertyChangeReasonValue){
         // Grunge Load predefined pattern
         if(dynamic_cast<const QtnPropertyQString*>(changedProperty)

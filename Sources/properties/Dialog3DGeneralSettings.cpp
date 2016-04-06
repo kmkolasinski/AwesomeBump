@@ -104,6 +104,7 @@ void Dialog3DGeneralSettings::saveSettings(){
     QString property;
     settings3D->ParsedShader.LastShaderIndex.setValue(ui->comboBoxShadersList->currentIndex());
     settings3D->toStr(property);
+//    qDebug() << property;
     QTextStream outstream(&file);
     outstream << property;
 }
