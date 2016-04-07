@@ -6,6 +6,11 @@ isEmpty(TOP_DIR) {
 	ERROR("Run build process from the top directory")
 }
 
+VERSION_STRING = 4.0
+VERSION_FULL = 4.0.0
+
+DEFINES += VERSION_STRING=\\\"$$VERSION_STRING\\\"
+
 QTN=utils/QtnProperty
 #include($$QTN/Common.pri)
 include($$QTN/PEG.pri)
@@ -159,6 +164,13 @@ exists("utils/QtnProperty/QtnProperty.pri") {
 }
 
 exists("utils/quazip/quazip.pri") {
+	DEFINES += HAVE_QUAZIP
 	CONFIG += quazip_include_zip quazip_include_unzip
 	include("utils/quazip/quazip.pri")
+}
+
+exists("utils/fervor/Fervor.pri") {
+	DEFINES += HAVE_FERVOR
+	FV_APP_VERSION = $$VERSION_FULL
+	include("utils/fervor/Fervor.pri")
 }
