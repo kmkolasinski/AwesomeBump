@@ -7,13 +7,13 @@ property_set Filter3DBloom
     Bool EnableEffect
     {
         description = "EnableEffect";
-        name      = "Enable Bloom";
+        displayName      = "Enable Bloom";
         value     = true;
     }
     Float WeightA
     {
         description = "Weight of Layer A.";
-        name      = "Layer A";
+        displayName      = "Layer A";
         value     = 0.25f;
         minValue  = 0.0f;
         maxValue  = 1.0f;
@@ -22,7 +22,7 @@ property_set Filter3DBloom
     Float WeightB
     {
         description = "Weight of Layer B";
-        name      = "Layer B";
+        displayName      = "Layer B";
         value     = 0.25f;
         minValue  = 0.0f;
         maxValue  = 1.0f;
@@ -31,7 +31,7 @@ property_set Filter3DBloom
     Float WeightC
     {
         description = "Weight of Layer C";
-        name      = "Layer C";
+        displayName      = "Layer C";
         value     = 0.25f;
         minValue  = 0.0f;
         maxValue  = 1.0f;
@@ -40,7 +40,7 @@ property_set Filter3DBloom
     Float WeightD
     {
         description = "Weight of Layer  D";
-        name      = "Layer D";
+        displayName      = "Layer D";
         value     = 0.25f;
         minValue  = 0.0f;
         maxValue  = 1.0f;
@@ -50,7 +50,7 @@ property_set Filter3DBloom
     Float Vignette
     {
         description = "Vignette size";
-        name      = "Vignette size";
+        displayName      = "Vignette size";
         value     = 0.4f;
         minValue  = 0.0f;
         maxValue  = 1.0f;
@@ -60,7 +60,7 @@ property_set Filter3DBloom
     Float VignetteAtt
     {
         description = "Vignette attenuation";
-        name      = "Vignette attenuation";
+        displayName      = "Vignette attenuation";
         value     = 0.8f;
         minValue  = 0.0f;
         maxValue  = 1.0f;

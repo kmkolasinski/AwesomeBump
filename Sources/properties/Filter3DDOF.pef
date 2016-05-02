@@ -7,13 +7,13 @@ property_set Filter3DDOF
     Bool EnableEffect
     {
         description = "EnableEffect";
-        name      = "Enable DOF";
+        displayName      = "Enable DOF";
         value     = true;
     }
     Float FocalLength
     {
         description = "Focal length in mm";
-        name = "Focal Lenght";
+        displayName = "Focal Lenght";
         value = 25.0f;
         minValue = 0;
         maxValue = 100.f;
@@ -24,6 +24,7 @@ property_set Filter3DDOF
     Float FocalDepth
     {
         description = "Focal distance value in meters, but you may use autofocus option below";
+        displayName = "Focal Depth";
         value = 10.0f;
         minValue = 0;
         maxValue = 100.f;
@@ -34,7 +35,7 @@ property_set Filter3DDOF
     Float FocalStop
     {
         description = "f-stop value";
-        name = "f-stop";
+        displayName = "f-stop";
         value = 140.0f;
         minValue = 0;
         maxValue = 400.f;
@@ -44,7 +45,7 @@ property_set Filter3DDOF
     Int NoSamples
     {
         description = "Number of samples on the first ring";
-        name = "Num. samples";
+        displayName = "Num. samples";
         value = 4;
         minValue = 1;
         maxValue = 20;
@@ -54,7 +55,7 @@ property_set Filter3DDOF
     Int NoRings
     {
         description = "Number of rings";
-        name = "Num. rings";
+        displayName = "Num. rings";
         value = 7;
         minValue = 1;
         maxValue = 20;
@@ -70,7 +71,7 @@ property_set Filter3DDOF
     Float Coc
     {
         description = "Circle of confusion size in mm (35mm film = 0.03mm)";
-        name = "Confusion circle";
+        displayName = "Confusion circle";
         value = 0.03f;
         minValue = 0.0f;
         maxValue = 0.1f;
@@ -98,7 +99,7 @@ property_set Filter3DDOF
     Float BokehBias
     {
         description = "Bokeh edge bias";
-        name        = "Bokeh bias";
+        displayName        = "Bokeh bias";
         value       = 0.25f;
         minValue    = 0.0f;
         maxValue    = 5.0f;
@@ -108,7 +109,7 @@ property_set Filter3DDOF
     Float BokehFringe
     {
         description = "Bokeh chromatic aberration/fringing";
-        name        = "Fringing";
+        displayName        = "Fringing";
         value       = 0.7f;
         minValue    = 0.0f;
         maxValue    = 5.0f;
@@ -118,7 +119,7 @@ property_set Filter3DDOF
     Double DitherAmount
     {
         description = "Dither amount";
-        name        = "Dither amount";
+        displayName        = "Dither amount";
         value       = 0.0001;
         minValue    = 0.0;
         maxValue    = 0.001;

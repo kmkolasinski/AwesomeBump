@@ -416,7 +416,7 @@ void GLImage::render(){
 
     if((activeImage->bSkipProcessing) && (activeImage->imageType != MATERIAL_TEXTURE)) bSkipProcessing = true;// do not process images when is disabled
     if(bToggleColorPicking) bSkipStandardProcessing = true;
-
+//    qDebug() << conversionType << activeImage->bConversionBaseMapShowHeightTexture;
 
     if(!bSkipProcessing == true){
     // resizing the FBOs in case of convertion procedure
@@ -2239,7 +2239,7 @@ void GLImage::applyNormalToHeight(FBOImageProporties* image,QGLFramebufferObject
 
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
 
-    for(int i = 0; i < image->conversionNHItersHuge ; i++){
+    for(int i = 0; i < image->properties->NormalHeightConv.Huge ; i++){
         GLCHK( program->setUniformValue("hn_min_max_scale",QVector3D(-0.0,1.0,pow(2.0,5))) );
         GLCHK( heightFBO->bind() );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
@@ -2251,7 +2251,8 @@ void GLImage::applyNormalToHeight(FBOImageProporties* image,QGLFramebufferObject
         GLCHK( glBindTexture(GL_TEXTURE_2D, heightFBO->texture()) );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
     }
-    for(int i = 0; i < image->conversionNHItersVeryLarge ; i++){
+
+    for(int i = 0; i < image->properties->NormalHeightConv.VeryLarge ; i++){
         GLCHK( program->setUniformValue("hn_min_max_scale",QVector3D(-0.0,1.0,pow(2.0,4))) );
         GLCHK( heightFBO->bind() );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
@@ -2263,7 +2264,8 @@ void GLImage::applyNormalToHeight(FBOImageProporties* image,QGLFramebufferObject
         GLCHK( glBindTexture(GL_TEXTURE_2D, heightFBO->texture()) );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
     }
-    for(int i = 0; i < image->conversionNHItersLarge ; i++){
+
+    for(int i = 0; i < image->properties->NormalHeightConv.Large ; i++){
         GLCHK( program->setUniformValue("hn_min_max_scale",QVector3D(-0.0,1.0,pow(2.0,3))) );
         GLCHK( heightFBO->bind() );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
@@ -2274,8 +2276,10 @@ void GLImage::applyNormalToHeight(FBOImageProporties* image,QGLFramebufferObject
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, heightFBO->texture()) );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+
     }
-    for(int i = 0; i < image->conversionNHItersMedium; i++){
+
+    for(int i = 0; i < image->properties->NormalHeightConv.Medium; i++){
         GLCHK( program->setUniformValue("hn_min_max_scale",QVector3D(-0.0,1.0,pow(2.0,2))) );
         GLCHK( heightFBO->bind() );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
@@ -2287,7 +2291,7 @@ void GLImage::applyNormalToHeight(FBOImageProporties* image,QGLFramebufferObject
         GLCHK( glBindTexture(GL_TEXTURE_2D, heightFBO->texture()) );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
     }
-    for(int i = 0; i < image->conversionNHItersSmall; i++){
+    for(int i = 0; i < image->properties->NormalHeightConv.Small; i++){
         GLCHK( program->setUniformValue("hn_min_max_scale",QVector3D(-0.0,1.0,pow(2.0,1))) );
         GLCHK( heightFBO->bind() );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
@@ -2299,7 +2303,7 @@ void GLImage::applyNormalToHeight(FBOImageProporties* image,QGLFramebufferObject
         GLCHK( glBindTexture(GL_TEXTURE_2D, heightFBO->texture()) );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
     }
-    for(int i = 0; i < image->conversionNHItersVerySmall; i++){
+    for(int i = 0; i < image->properties->NormalHeightConv.VerySmall; i++){
         GLCHK( program->setUniformValue("hn_min_max_scale",QVector3D(-0.0,1.0,pow(2.0,0))) );
         GLCHK( heightFBO->bind() );
         GLCHK( glActiveTexture(GL_TEXTURE0) );

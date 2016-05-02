@@ -28,7 +28,8 @@ Dialog3DGeneralSettings::Dialog3DGeneralSettings(QWidget* parent) :
         QString property;
         QTextStream outstream(&file);
         property = outstream.readAll();
-        settings3D->fromStr(property);        
+//        qDebug() << property;
+        settings3D->fromStr(property);
     }
 
     connect(ui->pushButtonCancel,SIGNAL(pressed()),this,SLOT(cancelSettings()));
@@ -104,7 +105,6 @@ void Dialog3DGeneralSettings::saveSettings(){
     QString property;
     settings3D->ParsedShader.LastShaderIndex.setValue(ui->comboBoxShadersList->currentIndex());
     settings3D->toStr(property);
-//    qDebug() << property;
     QTextStream outstream(&file);
     outstream << property;
 }
@@ -139,7 +139,7 @@ void Dialog3DGeneralSettings::updateParsedShaders(){
         UniformData& uniform = parsedShader->uniforms[i];
         p->switchState(QtnPropertyStateInvisible,false);
         p->setDescription(uniform.description);
-        p->setName(uniform.name);
+        p->setDisplayName(uniform.name);
         p->setValue(uniform.value);
         p->setMaxValue(uniform.max);
         p->setMinValue(uniform.min);

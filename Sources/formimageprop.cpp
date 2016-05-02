@@ -678,12 +678,12 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
 
     imageProp.conversionHNDepth         = ui->doubleSpinBoxConversionHNDepth->value();
 
-    imageProp.conversionNHItersHuge     = ui->horizontalSliderNormalToHeightItersHuge->value();
-    imageProp.conversionNHItersVeryLarge= ui->horizontalSliderNormalToHeightItersVeryLarge->value();
-    imageProp.conversionNHItersLarge    = ui->horizontalSliderNormalToHeightItersLarge->value();
-    imageProp.conversionNHItersMedium   = ui->horizontalSliderNormalToHeightItersMedium->value();
-    imageProp.conversionNHItersSmall    = ui->horizontalSliderNormalToHeightItersSmall->value();
-    imageProp.conversionNHItersVerySmall= ui->horizontalSliderNormalToHeightItersVerySmall->value();
+    imageProp.properties->NormalHeightConv.Huge      = ui->horizontalSliderNormalToHeightItersHuge      ->value();
+    imageProp.properties->NormalHeightConv.VeryLarge = ui->horizontalSliderNormalToHeightItersVeryLarge ->value();
+    imageProp.properties->NormalHeightConv.Large     = ui->horizontalSliderNormalToHeightItersLarge     ->value();
+    imageProp.properties->NormalHeightConv.Medium    = ui->horizontalSliderNormalToHeightItersMedium    ->value();
+    imageProp.properties->NormalHeightConv.Small     = ui->horizontalSliderNormalToHeightItersSmall     ->value();
+    imageProp.properties->NormalHeightConv.VerySmall = ui->horizontalSliderNormalToHeightItersVerySmall ->value();
 
     // update conversion levels
     if(imageProp.imageType == DIFFUSE_TEXTURE){
@@ -1115,6 +1115,7 @@ void FormImageProp::hideGrayScaleControl(){
 
 void FormImageProp::reloadSettings(){
     bLoading = true;
+    /*
     ui->horizontalSliderGrayScaleR->setValue(imageProp.grayScalePreset.R*255);
     ui->horizontalSliderGrayScaleG->setValue(imageProp.grayScalePreset.G*255);
     ui->horizontalSliderGrayScaleB->setValue(imageProp.grayScalePreset.B*255);
@@ -1161,14 +1162,14 @@ void FormImageProp::reloadSettings(){
 
     ui->horizontalSliderConversionHNDepth           ->setValue(imageProp.conversionHNDepth*5);
     ui->doubleSpinBoxConversionHNDepth              ->setValue(imageProp.conversionHNDepth);
-
-    ui->horizontalSliderNormalToHeightItersHuge     ->setValue(imageProp.conversionNHItersHuge);
-    ui->horizontalSliderNormalToHeightItersVeryLarge->setValue(imageProp.conversionNHItersVeryLarge);
-    ui->horizontalSliderNormalToHeightItersLarge    ->setValue(imageProp.conversionNHItersLarge);
-    ui->horizontalSliderNormalToHeightItersMedium   ->setValue(imageProp.conversionNHItersMedium);
-    ui->horizontalSliderNormalToHeightItersVerySmall->setValue(imageProp.conversionNHItersVerySmall);
-    ui->horizontalSliderNormalToHeightItersSmall    ->setValue(imageProp.conversionNHItersSmall);
-
+*/
+    ui->horizontalSliderNormalToHeightItersHuge     ->setValue(imageProp.properties->NormalHeightConv.Huge);
+    ui->horizontalSliderNormalToHeightItersVeryLarge->setValue(imageProp.properties->NormalHeightConv.VeryLarge);
+    ui->horizontalSliderNormalToHeightItersLarge    ->setValue(imageProp.properties->NormalHeightConv.Large);
+    ui->horizontalSliderNormalToHeightItersMedium   ->setValue(imageProp.properties->NormalHeightConv.Medium);
+    ui->horizontalSliderNormalToHeightItersVerySmall->setValue(imageProp.properties->NormalHeightConv.Small);
+    ui->horizontalSliderNormalToHeightItersSmall    ->setValue(imageProp.properties->NormalHeightConv.VerySmall);
+/*
     // update conversion levels
     if(imageProp.imageType == DIFFUSE_TEXTURE){
         for(int i = 0; i < 4 ; i++){
@@ -1263,7 +1264,7 @@ void FormImageProp::reloadSettings(){
     }
 
 
-
+*/
     // input image case study
     switch(imageProp.imageType){
         case(NORMAL_TEXTURE):
@@ -1350,7 +1351,7 @@ void FormImageProp::reloadSettings(){
 
 
     bLoading = false;
-
+/*
     // forcing gray scale for specular image
     if(imageProp.imageType == SPECULAR_TEXTURE){
         ui->checkBoxGrayScale->setChecked(true);
@@ -1371,7 +1372,7 @@ void FormImageProp::reloadSettings(){
     if(imageProp.imageType == DIFFUSE_TEXTURE ){
         ui->checkBoxRemoveShading->show();
     }
-
+*/
 }
 
 void FormImageProp::reloadImageSettings(){

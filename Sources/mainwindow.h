@@ -56,8 +56,6 @@ public slots:
     void changeGUIFontSize(int);
     // loading the application setting from ini file
     void loadSettings();
-    // the same but loading configs
-    void loadImageSettings(QString abbr,FormImageProp* image);
     // the same as above but Image is choosen by proper switch using the given type
     void loadImageSettings(TextureTypes type);
     void showSettingsManager();
@@ -126,9 +124,7 @@ public slots:
     void resetRandomPatches();
     void selectContrastInputImage(int mode);
 
-private:
-    // saves current settings of given image to config file. The param: abbr is e.g for diffuse image: "d"
-    void saveImageSettings(QString abbr,FormImageProp* image);
+private:    
     // saves all textures to given directory
     bool saveAllImages(const QString &dir);
 

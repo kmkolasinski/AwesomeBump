@@ -216,6 +216,28 @@ property_set ColorLevelsProperty{
 
 }
 
+// Number of iterations during conversion from Normal to Height
+property_set NormalHeightConvProperty{
+    Int Huge{
+        value = 35;
+    }
+    Int VeryLarge{
+        value = 30;
+    }
+    Int Large{
+        value = 25;
+    }
+    Int Medium{
+        value = 20;
+    }
+    Int Small{
+        value = 15;
+    }
+    Int VerySmall{
+        value = 10;
+    }
+}
+
 
 property_set SurfaceDetailsProperty{
 
@@ -964,6 +986,10 @@ property_set FormImageProp
         description = "Roughness/Mettalic processing";
         state = QtnPropertyStateInvisible;
     }
+
+    extern property_set NormalHeightConvProperty NormalHeightConv{
+        state = QtnPropertyStateInvisible;
+    }
 }
 
 // Collect all settings in one place to save them into file
@@ -972,6 +998,141 @@ property_set AwesomeBump
     QString presetName{
         value = "Default";
     }
+    QString settings_name{
+        value = "Default";
+    }
+    QString settings_description{
+        value = "...";
+    }
+    QString settings_path{
+        value = "";
+    }
+
+    Int d_win_w{
+        value = 800;
+    }
+    Int d_win_h{
+        value = 600;
+    }
+    Int tab_win_w{
+        value = 200;
+    }
+    Int tab_win_h{
+        value = 600;
+    }
+    QString d_postfix{
+        value = "_d";
+    }
+    QString n_postfix{
+        value = "_n";
+    }
+    QString s_postfix{
+        value = "_s";
+    }
+    QString h_postfix{
+        value = "_h";
+    }
+    QString o_postfix{
+        value = "_o";
+    }
+    QString m_postfix{
+        value = "_m";
+    }
+    QString r_postfix{
+        value = "_r";
+    }
+    QString recent_dir{
+        value = "";
+    }
+    QString recent_mesh_dir{
+        value = "";
+    }
+    Bool use_texture_interpolation{
+        value = true;
+    }
+    QString gui_style{
+        value = "default";
+    }
+    Int uv_tiling_type{
+        value = 0;
+    }
+    Int uv_tiling_radius{
+        value = 50;
+    }
+    Bool uv_tiling_mirror_x{
+        value = false;
+    }
+    Bool uv_tiling_mirror_y{
+        value = false;
+    }
+    Bool uv_tiling_mirror_xy{
+        value = true;
+    }
+    Int uv_tiling_random_inner_radius{
+        value = 50;
+    }
+    Int uv_tiling_random_outer_radius{
+        value = 50;
+    }
+    Int uv_tiling_random_rotate{
+        value = 0;
+    }
+    Bool uv_tiling_simple_dir_xy{
+        value = true;
+    }
+    Bool uv_tiling_simple_dir_x{
+        value = false;
+    }
+    Bool uv_tiling_simple_dir_y{
+        value = false;
+    }
+    Bool uv_translations_first{
+        value = true;
+    }
+    Float uv_contrast_strength{
+        value = 0.0;
+    }
+    Float uv_contrast_power{
+        value = 0.0;
+    }
+    Int uv_contrast_input_image{
+        value = 0;
+    }
+    Int mouse_sensitivity{
+        value = 50;
+    }
+    Int font_size{
+        value = 10;
+    }
+    Bool mouse_loop{
+        value = true;
+    }
+
+    Float depth_3d{
+        value = 0.25;
+    }
+    Bool bUseCullFace{
+        value = false;
+    }
+    Bool bUseSimplePBR{
+        value = false;
+    }
+    Bool bBloomEffect{
+        value = true;
+    }
+    Bool bDofEffect{
+        value = true;
+    }
+    Bool bLensFlaresEffect{
+        value = true;
+    }
+    Int noPBRRays{
+        value = 5;
+    }
+    Int noTessSubdivision{
+        value = 8;
+    }
+
     extern property_set FormImageProp Diffuse;
     extern property_set FormImageProp Specular;
     extern property_set FormImageProp Normal;

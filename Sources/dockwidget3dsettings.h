@@ -32,8 +32,8 @@ public slots:
 
     void updateSettings(int i = 0);
     void selectShadingModel(int i);// This one sends special signal to change the names of the tabs in the MainWindow
-    void saveSettings();//save currents states to   config file
-    void loadSettings();//load currents states from config file
+    void saveSettings(QtnPropertySetAwesomeBump* settings);//save currents states to   config file
+    void loadSettings(QtnPropertySetAwesomeBump* settings);//load currents states from config file
 signals:
     void signalSelectedShadingModel(int i);// this signal change Tab name in mainWindow
     void signalSettingsChanged(Display3DSettings settings);

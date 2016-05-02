@@ -1924,7 +1924,7 @@
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_41">
+                <widget class="QLabel" name="labelFontSize">
                  <property name="text">
                   <string>Font size (in pixels)</string>
                  </property>
@@ -2817,8 +2817,8 @@
               <string/>
              </property>
              <property name="icon">
-              <iconset>
-               <normaloff>:/resources/actions/centerCamCursor.png</normaloff>:/resources/actions/centerCamCursor.png</iconset>
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/cursors/centerCamCursor.png</normaloff>:/resources/cursors/centerCamCursor.png</iconset>
              </property>
              <property name="iconSize">
               <size>
