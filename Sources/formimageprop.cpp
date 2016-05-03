@@ -13,6 +13,8 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     ui->widgetProperty->setParts(QtnPropertyWidgetPartsDescriptionPanel);
     ui->widgetProperty->setPropertySet(imageProp.properties);
 
+    ui->widgetProperty->layout()->setMargin(0);
+    ui->widgetProperty->layout()->setSpacing(0);
 
     connect(imageProp.properties,SIGNAL(propertyDidChange(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)),
                         this,SLOT(propertyChanged(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)));
@@ -62,7 +64,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 
 
     // normal convertion buttons and sliders
-
+    connect(ui->horizontalSliderNormalToHeightNoiseLevel    ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderNormalToHeightItersHuge     ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderNormalToHeightItersVeryLarge,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
     connect(ui->horizontalSliderNormalToHeightItersLarge    ,SIGNAL(sliderReleased()),this,SLOT(updateSlidersOnRelease()));
@@ -420,6 +422,7 @@ void FormImageProp::updateGuiSpinBoxesAndLabes(int){
 
     imageProp.conversionHNDepth         = ui->doubleSpinBoxConversionHNDepth->value();
 
+    imageProp.properties->NormalHeightConv.NoiseLevel= ui->horizontalSliderNormalToHeightNoiseLevel     ->value();
     imageProp.properties->NormalHeightConv.Huge      = ui->horizontalSliderNormalToHeightItersHuge      ->value();
     imageProp.properties->NormalHeightConv.VeryLarge = ui->horizontalSliderNormalToHeightItersVeryLarge ->value();
     imageProp.properties->NormalHeightConv.Large     = ui->horizontalSliderNormalToHeightItersLarge     ->value();
@@ -502,6 +505,7 @@ void FormImageProp::loadPredefinedGrunge(QString image){
 void FormImageProp::reloadSettings(){
     bLoading = true;
 
+    ui->horizontalSliderNormalToHeightNoiseLevel    ->setValue(imageProp.properties->NormalHeightConv.NoiseLevel);
     ui->horizontalSliderNormalToHeightItersHuge     ->setValue(imageProp.properties->NormalHeightConv.Huge);
     ui->horizontalSliderNormalToHeightItersVeryLarge->setValue(imageProp.properties->NormalHeightConv.VeryLarge);
     ui->horizontalSliderNormalToHeightItersLarge    ->setValue(imageProp.properties->NormalHeightConv.Large);
@@ -582,6 +586,7 @@ void FormImageProp::reloadSettings(){
          // end of case Metallic
         default:break; // do nothing
     };
+
 
     bLoading = false;
 

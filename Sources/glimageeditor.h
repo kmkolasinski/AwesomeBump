@@ -157,6 +157,9 @@ public:
     void applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* outputFBO);
 
+    void applyAddNoiseFilter(QGLFramebufferObject* inputFBO,
+                             QGLFramebufferObject* outputFBO);
+
     void applyGaussFilter(QGLFramebufferObject* sourceFBO, QGLFramebufferObject *auxFBO,
                           QGLFramebufferObject* outputFBO, int no_iter, float w =0);
 

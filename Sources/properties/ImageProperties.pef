@@ -235,6 +235,9 @@ property_set ColorLevelsProperty{
 
 // Number of iterations during conversion from Normal to Height
 property_set NormalHeightConvProperty{
+    Int NoiseLevel{
+        value = 0;
+    }
     Int Huge{
         value = 35;
     }
@@ -530,14 +533,7 @@ property_set NormalsMixerProperty{
 property_set ConvertsionBaseMapLevelProperty
 {
 
-    Float Weight{
-            description = "Weight of current Detail";
-            displayName = "Weight";
-            minValue=0.0f;
-            maxValue=1.0f;
-            stepValue=0.01f;
-            value=0.3f;
-    }
+
     Float PreSmoothRadius{
             description = "Apply presmoothing of the diffuse image.";
             displayName = "Blur radius";
@@ -609,6 +605,12 @@ property_set BaseMapToOthersProperty{
                 ImageDetails.switchState(QtnPropertyStateInvisible, !EnableConversion);
                 //CurrentLevel.switchState(QtnPropertyStateInvisible, !EnableConversion);
                 EnableHeightPreview.switchState(QtnPropertyStateInvisible, !EnableConversion);
+
+                WeightSmall.switchState(QtnPropertyStateInvisible, !EnableConversion);
+                WeightMedium.switchState(QtnPropertyStateInvisible, !EnableConversion);
+                WeightBig.switchState(QtnPropertyStateInvisible, !EnableConversion);
+                WeightHuge.switchState(QtnPropertyStateInvisible, !EnableConversion);
+
                 AngleWeight.switchState(QtnPropertyStateInvisible, !EnableConversion);
                 AngleCorrection.switchState(QtnPropertyStateInvisible, !EnableConversion);
                 MinColor.switchState(QtnPropertyStateInvisible, !EnableConversion);
@@ -623,6 +625,40 @@ property_set BaseMapToOthersProperty{
             description = "Show height texture instead of normal texture. Calculation of height texture is quite demanding so this option is not suggested for large images.";
             value = false;
     }
+
+    Float WeightSmall{
+            description = "Weight of Small details. Change Details size to change settings for Small details.";
+            displayName = "Small details";
+            minValue=0.0f;
+            maxValue=1.0f;
+            stepValue=0.01f;
+            value=1.0f;
+    }
+    Float WeightMedium{
+            description = "Weight of Medium details. Change Details size to change settings for Medium details.";
+            displayName = "Medium details";
+            minValue=0.0f;
+            maxValue=1.0f;
+            stepValue=0.01f;
+            value=0.0f;
+    }
+    Float WeightBig{
+            description = "Weight of Big details. Change Details size to change settings for Big details.";
+            displayName = "Big details";
+            minValue=0.0f;
+            maxValue=1.0f;
+            stepValue=0.01f;
+            value=0.0f;
+    }
+    Float WeightHuge{
+            description = "Weight of Huge details. Change Details size to change settings for Huge details.";
+            displayName = "Huge details";
+            minValue=0.0f;
+            maxValue=1.0f;
+            stepValue=0.01f;
+            value=0.0f;
+    }
+
     Enum ImageDetails
     {
             displayName = "Details size";

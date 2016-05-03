@@ -1514,6 +1514,10 @@ void MainWindow::saveSettings(){
     abSettings->Roughness.copyValues(roughnessImageProp ->imageProp.properties);
     abSettings->Grunge   .copyValues(grungeImageProp    ->imageProp.properties);
 
+
+    // Disable possibility to save conversion status ???
+//    abSettings->Diffuse.BaseMapToOthers.EnableConversion.setValue(false);
+
     QFile file( QString(AB_INI) );
     if( !file.open( QIODevice::WriteOnly ) )
          return;

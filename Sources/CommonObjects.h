@@ -361,7 +361,7 @@ struct BaseMapConvLevelProperties{
     float conversionBaseMapMixNormals;
     float conversionBaseMapPreSmoothRadius;
     float conversionBaseMapBlending;
-    float conversionBaseMapWeight;
+
 
     BaseMapConvLevelProperties(){
         conversionBaseMapAmplitude      = 0;
@@ -371,7 +371,7 @@ struct BaseMapConvLevelProperties{
         conversionBaseMapMixNormals     = 1.0;
         conversionBaseMapPreSmoothRadius= 0;
         conversionBaseMapBlending       = 1.0;
-        conversionBaseMapWeight         = 0.0;
+
     }
     void fromProperty(QtnPropertySetConvertsionBaseMapLevelProperty& level){
         conversionBaseMapAmplitude      = level.Amplitude;
@@ -381,7 +381,7 @@ struct BaseMapConvLevelProperties{
         conversionBaseMapMixNormals     = level.Edges;
         conversionBaseMapPreSmoothRadius= level.PreSmoothRadius;
         conversionBaseMapBlending       = level.Blending;
-        conversionBaseMapWeight         = level.Weight;
+
     }
 
 };

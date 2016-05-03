@@ -706,7 +706,7 @@
         <item>
          <widget class="QGroupBox" name="groupBoxConvertToHeightSettings">
           <property name="title">
-           <string>Number of iterations</string>
+           <string>Conversion settings</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_34">
            <property name="spacing">
@@ -724,6 +724,53 @@
            <property name="bottomMargin">
             <number>2</number>
            </property>
+           <item>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Noise level</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSlider" name="horizontalSliderNormalToHeightNoiseLevel">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add random noise to the height texture in order to remove possible aliasing resulting from numerical calculation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="maximum">
+                <number>100</number>
+               </property>
+               <property name="pageStep">
+                <number>0</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_2">
+               <property name="minimumSize">
+                <size>
+                 <width>30</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Number of iterations&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <layout class="QGridLayout" name="gridLayout_6">
              <item row="2" column="1">
@@ -935,12 +982,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>260</x>
-     <y>1826</y>
+     <x>239</x>
+     <y>616</y>
     </hint>
     <hint type="destinationlabel">
-     <x>296</x>
-     <y>1826</y>
+     <x>275</x>
+     <y>616</y>
     </hint>
    </hints>
   </connection>
@@ -951,12 +998,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>260</x>
-     <y>1791</y>
+     <x>239</x>
+     <y>581</y>
     </hint>
     <hint type="destinationlabel">
-     <x>296</x>
-     <y>1791</y>
+     <x>275</x>
+     <y>581</y>
     </hint>
    </hints>
   </connection>
@@ -967,12 +1014,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>260</x>
-     <y>1861</y>
+     <x>239</x>
+     <y>651</y>
     </hint>
     <hint type="destinationlabel">
-     <x>296</x>
-     <y>1861</y>
+     <x>275</x>
+     <y>651</y>
     </hint>
    </hints>
   </connection>
@@ -983,12 +1030,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>260</x>
-     <y>1896</y>
+     <x>239</x>
+     <y>686</y>
     </hint>
     <hint type="destinationlabel">
-     <x>296</x>
-     <y>1896</y>
+     <x>275</x>
+     <y>686</y>
     </hint>
    </hints>
   </connection>
@@ -999,12 +1046,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>260</x>
-     <y>1931</y>
+     <x>239</x>
+     <y>721</y>
     </hint>
     <hint type="destinationlabel">
-     <x>296</x>
-     <y>1931</y>
+     <x>275</x>
+     <y>721</y>
     </hint>
    </hints>
   </connection>
@@ -1015,12 +1062,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>260</x>
-     <y>1966</y>
+     <x>239</x>
+     <y>756</y>
     </hint>
     <hint type="destinationlabel">
-     <x>296</x>
-     <y>1966</y>
+     <x>275</x>
+     <y>756</y>
     </hint>
    </hints>
   </connection>
@@ -1031,12 +1078,28 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>283</x>
-     <y>1722</y>
+     <x>276</x>
+     <y>490</y>
     </hint>
     <hint type="destinationlabel">
-     <x>153</x>
-     <y>1754</y>
+     <x>164</x>
+     <y>761</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderNormalToHeightNoiseLevel</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>label_2</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>250</x>
+     <y>526</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>271</x>
+     <y>532</y>
     </hint>
    </hints>
   </connection>

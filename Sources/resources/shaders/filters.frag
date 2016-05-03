@@ -812,6 +812,9 @@ vec4 ffilter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
+
+
+
 #ifndef mode_normalize_filter_330
 #ifndef USE_OPENGL_330
 subroutine(filterModeType)
@@ -820,12 +823,42 @@ vec4 mode_normalize_filter(){
 #else
 vec4 ffilter(){
 #endif
-
     vec4 color = texture( layerA, v2QuadCoords.xy);
     color.rgb =  ( color.rgb - min_color )/(max_color-min_color) ;
     color.a = 1;
     return color;
 }
+
+
+float rand(){
+    return fract(sin(dot(v2QuadCoords.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+
+// Adding random number to height image to remove aliasing problem,
+// resulting from numerics.
+uniform float gui_add_noise_amp;
+
+#ifndef mode_add_noise_filter_330
+#ifndef USE_OPENGL_330
+subroutine(filterModeType)
+#endif
+vec4 mode_add_noise_filter(){
+#else
+vec4 ffilter(){
+#endif
+
+    vec4 color = texture( layerA, v2QuadCoords.xy);
+
+    float r = (rand()-0.5)*gui_add_noise_amp/100;
+    if(color.r + r < 0 ) color = color - vec4(r);
+    else if(color.r + r > 1 ) color = color - vec4(r);
+    else color = color + vec4(r);
+
+    color.a = 1;
+    return color;
+}
+
 
 // ----------------------------------------------------------------
 //
@@ -978,6 +1011,9 @@ vec4 ffilter(){
 // ----------------------------------------------------------------
 //
 // ----------------------------------------------------------------
+
+
+
 #ifndef mode_normal_to_height_330
 #ifndef USE_OPENGL_330
 subroutine(filterModeType)
@@ -1005,6 +1041,8 @@ vec4 ffilter(){
 
         float h = (nxp-nxm+nyp-nym)/8.0*scale + (hxp + hxm + hyp + hym)/4.0;
 
+
+//        h = (h + hxp + hxm + hyp + hym)/5;
         return vec4(h);
 	
 }
@@ -1025,15 +1063,42 @@ vec4 ffilter(){
 
     const vec2 size = vec2(1.0,0.0);
     const ivec3 off = ivec3(-1,0,1);
+    const ivec2 dx  = ivec2(1,0);
+    const ivec2 dy  = ivec2(0,1);
     vec2 tex_coord =  v2QuadCoords.st;
+    highp float R0  = texture(layerA, tex_coord).x;
 
-    vec4 hc   = texture(layerA, tex_coord);
-    highp float s11 = hc.x;
-    highp float s21 = textureOffset(layerA, tex_coord, off.zy).x;
-    highp float s12 = textureOffset(layerA, tex_coord, off.yz).x;
-    highp vec3 va   = normalize(vec3(size.xy,gui_hn_conversion_depth*(s21-s11)));
-    highp vec3 vb   = normalize(vec3(size.yx,gui_hn_conversion_depth*(s12-s11)));
-    highp vec3 bump = normalize( cross(va,vb) );
+    // (dx,dy)
+    highp float Rx  = textureOffset(layerA, tex_coord, dx).x;
+    highp float Ry  = textureOffset(layerA, tex_coord, dy).x;
+    highp vec3 dRx  = normalize(vec3(size.xy,gui_hn_conversion_depth*(Rx-R0)));
+    highp vec3 dRy  = normalize(vec3(size.yx,gui_hn_conversion_depth*(Ry-R0)));
+    highp vec3 bump = normalize( cross(dRx,dRy) );
+
+    // (-dx,-dy)
+    Rx  = textureOffset(layerA, tex_coord, -dx).x;
+    Ry  = textureOffset(layerA, tex_coord, -dy).x;
+    dRx  = normalize(vec3(-size.xy,gui_hn_conversion_depth*(Rx-R0)));
+    dRy  = normalize(vec3(-size.yx,gui_hn_conversion_depth*(Ry-R0)));
+    bump = bump + normalize( cross(dRx,dRy) );
+
+//    // (-dx,dy)
+//    Rx  = textureOffset(layerA, tex_coord, -dx).x;
+//    Ry  = textureOffset(layerA, tex_coord,  dy).x;
+//    dRx  = normalize(vec3(-size.xy,gui_hn_conversion_depth*(Rx-R0)));
+//    dRy  = normalize(vec3( size.yx,gui_hn_conversion_depth*(Ry-R0)));
+//    bump = bump - normalize( cross(dRx,dRy) );
+
+//    // (dx,-dy)
+//    Rx  = textureOffset(layerA, tex_coord,  dx).x;
+//    Ry  = textureOffset(layerA, tex_coord, -dy).x;
+//    dRx  = normalize(vec3( size.xy,gui_hn_conversion_depth*(Rx-R0)));
+//    dRy  = normalize(vec3(-size.yx,gui_hn_conversion_depth*(Ry-R0)));
+//    bump = bump - normalize( cross(dRx,dRy) );
+
+
+
+    bump = normalize(bump);
     return vec4(clamp(bump*0.5 + 0.5,vec3(0),vec3(1)),1);
 }
 

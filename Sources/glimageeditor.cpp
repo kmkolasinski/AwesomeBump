@@ -174,6 +174,7 @@ void GLImage::initializeGL()
     filters_list.push_back("mode_grunge_randomization_filter");
     filters_list.push_back("mode_grunge_normal_warp_filter");
     filters_list.push_back("mode_normal_angle_correction_filter");
+    filters_list.push_back("mode_add_noise_filter");
 
 
 
@@ -287,6 +288,7 @@ void GLImage::initializeGL()
     GLCHK( subroutines["mode_grunge_randomization_filter"] = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_grunge_randomization_filter" ) );
     GLCHK( subroutines["mode_grunge_normal_warp_filter"]   = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_grunge_normal_warp_filter" ) );
     GLCHK( subroutines["mode_normal_angle_correction_filter"]   = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_normal_angle_correction_filter" ) );
+    GLCHK( subroutines["mode_add_noise_filter"]            = glGetSubroutineIndex(program->programId(),GL_FRAGMENT_SHADER,"mode_add_noise_filter" ) );
 
 
 #endif
@@ -614,8 +616,8 @@ void GLImage::render(){
         if(conversionType == CONVERT_FROM_N_TO_H){
             applyNormalToHeight(activeImage,targetImageNormal->fbo,activeFBO,auxFBO1);
             applyCPUNormalizationFilter(auxFBO1,activeFBO);
-            applyGaussFilter(activeFBO,auxFBO1,auxFBO2,1,0.5); // small blur
-            copyFBO(auxFBO2,activeFBO);
+            applyAddNoiseFilter(activeFBO,auxFBO1);
+            copyFBO(auxFBO1,activeFBO);
 
             targetImageHeight->updateSrcTexId(activeFBO);
             if(!targetImageNormal->bSkipProcessing)  bTransformUVs = false;
@@ -885,6 +887,9 @@ void GLImage::render(){
         if(conversionType == CONVERT_FROM_D_TO_O){
             applyNormalToHeight(targetImageHeight,activeFBO,auxFBO1,auxFBO2);
             applyCPUNormalizationFilter(auxFBO2,auxFBO1);
+            applyAddNoiseFilter(auxFBO1,auxFBO2);
+            copyFBO(auxFBO2,auxFBO1);
+
         }else if(activeImage->bConversionBaseMapShowHeightTexture){
             applyNormalToHeight(targetImageHeight,activeFBO,auxFBO1,auxFBO2);
             applyCPUNormalizationFilter(auxFBO2,activeFBO);
@@ -2203,10 +2208,10 @@ void GLImage::applyMixNormalLevels(GLuint level0,
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
 
-    GLCHK( program->setUniformValue("gui_base_map_w0"  , activeImage->baseMapConvLevels[0].conversionBaseMapWeight ) );
-    GLCHK( program->setUniformValue("gui_base_map_w1"  , activeImage->baseMapConvLevels[1].conversionBaseMapWeight ) );
-    GLCHK( program->setUniformValue("gui_base_map_w2"  , activeImage->baseMapConvLevels[2].conversionBaseMapWeight ) );
-    GLCHK( program->setUniformValue("gui_base_map_w3"  , activeImage->baseMapConvLevels[3].conversionBaseMapWeight ) );
+    GLCHK( program->setUniformValue("gui_base_map_w0"  , activeImage->properties->BaseMapToOthers.WeightSmall ) );
+    GLCHK( program->setUniformValue("gui_base_map_w1"  , activeImage->properties->BaseMapToOthers.WeightMedium ) );
+    GLCHK( program->setUniformValue("gui_base_map_w2"  , activeImage->properties->BaseMapToOthers.WeightBig) );
+    GLCHK( program->setUniformValue("gui_base_map_w3"  , activeImage->properties->BaseMapToOthers.WeightHuge ) );
 
     GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
     GLCHK( outputFBO->bind() );
@@ -2280,6 +2285,17 @@ void GLImage::applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
         }
     }// end of if materials are enables
 
+/*
+    QFile file("asd.txt");
+    file.open(QIODevice::ReadWrite);
+    QTextStream stream(&file);
+    for(int i = 0 ; i < textureWidth ; i++){
+        for(int j = 0 ; j < textureHeight ; j++){
+            stream << i << "\t" << j << "\t" << img[3*(i+textureWidth*j)+0] << endl;
+        }
+        stream << endl;
+    }
+*/
     // prevent from singularities
     for(int k = 0; k < 3 ; k ++)
     if(qAbs(min[k] - max[k]) < 0.0001) max[k] += 0.1;
@@ -2315,6 +2331,32 @@ void GLImage::applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
     GLCHK( outputFBO->bindDefault() );
 
 }
+
+void GLImage::applyAddNoiseFilter(QGLFramebufferObject* inputFBO,
+                                  QGLFramebufferObject* outputFBO){
+
+#ifdef USE_OPENGL_330
+    program = filter_programs["mode_add_noise_filter"];
+    program->bind();
+    updateProgramUniforms(0);
+#else
+    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_add_noise_filter"]) );
+#endif
+
+    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    qDebug() << "aaa=" << targetImageHeight->properties->NormalHeightConv.NoiseLevel;
+    GLCHK( program->setUniformValue("gui_add_noise_amp"  , float(targetImageHeight->properties->NormalHeightConv.NoiseLevel/100.0) ));
+
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    GLCHK( outputFBO->bind() );
+    GLCHK( glActiveTexture(GL_TEXTURE0) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( outputFBO->bindDefault() );
+
+}
+
 
 void GLImage::applyBaseMapConversion(QGLFramebufferObject* baseMapFBO,
                                      QGLFramebufferObject *auxFBO,

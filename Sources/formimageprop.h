@@ -13,9 +13,6 @@
 
 #include "formimagebase.h"
 #include "dialogheightcalculator.h"
-#include "formbasemapconversionlevels.h"
-
-
 
 
 namespace Ui {
