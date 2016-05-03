@@ -162,6 +162,7 @@ void Dialog3DGeneralSettings::setUniforms(){
 
 Dialog3DGeneralSettings::~Dialog3DGeneralSettings()
 {
+    qDebug() << "calling" << Q_FUNC_INFO;
     settings3D = NULL;
     delete glslParsedShaders;
     glslParsedShaders = NULL;

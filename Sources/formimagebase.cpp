@@ -73,6 +73,10 @@ QString FormImageBase::getImageName(){
     return imageName;
 }
 
+void  FormImageBase::setImageType(TextureTypes imageType){
+     imageProp.imageType = imageType;
+}
+
 void FormImageBase::save(){
 
 

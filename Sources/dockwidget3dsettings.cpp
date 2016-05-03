@@ -134,5 +134,6 @@ void DockWidget3DSettings::loadSettings(QtnPropertySetAwesomeBump* settings){
 
 DockWidget3DSettings::~DockWidget3DSettings()
 {
+    qDebug() << "calling" << Q_FUNC_INFO;
     delete ui;
 }

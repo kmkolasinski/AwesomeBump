@@ -21,7 +21,7 @@ public:
     virtual QString getImageName();
     virtual void saveFileToDir(const QString &dir);
     virtual void saveImageToDir(const QString &dir,QImage& image);
-
+    virtual void setImageType(TextureTypes imageType);
     FBOImageProporties imageProp; // for simplicity I made this public, why not...
     // some properties are visible or hiden for given texture type
 

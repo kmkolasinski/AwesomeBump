@@ -91,110 +91,6 @@ MainWindow::MainWindow(QWidget *parent) :
     glWidget->setPointerToTexture(&materialManager->getImageProporties()->fbo,MATERIAL_TEXTURE);
 
 
-//    ab3dRendererWidget->setPointerToTexture(&diffuseImageProp->getImageProporties()  ->fbo,DIFFUSE_TEXTURE);
-//    ab3dRendererWidget->setPointerToTexture(&normalImageProp->getImageProporties()   ->fbo,NORMAL_TEXTURE);
-//    ab3dRendererWidget->setPointerToTexture(&specularImageProp->getImageProporties() ->fbo,SPECULAR_TEXTURE);
-//    ab3dRendererWidget->setPointerToTexture(&heightImageProp->getImageProporties()   ->fbo,HEIGHT_TEXTURE);
-//    ab3dRendererWidget->setPointerToTexture(&occlusionImageProp->getImageProporties()->fbo,OCCLUSION_TEXTURE);
-//    ab3dRendererWidget->setPointerToTexture(&roughnessImageProp->getImageProporties()->fbo,ROUGHNESS_TEXTURE);
-//    ab3dRendererWidget->setPointerToTexture(&metallicImageProp->getImageProporties() ->fbo,METALLIC_TEXTURE);
-//    ab3dRendererWidget->setPointerToTexture(&materialManager->getImageProporties()   ->fbo,MATERIAL_TEXTURE);
-
-
-
-
-
-    // disabling some options for each texture
-    specularImageProp->setSpecularControlChecked();
-    specularImageProp->getImageProporties()->bSpeclarControl = true;
-    specularImageProp->hideBMGroupBox();
-    specularImageProp->hideNormalInputGroup();
-    specularImageProp->hideHeightInputGroup();
-    specularImageProp->hideOcclusionInputGroup();
-    specularImageProp->hideNormalStepBar();
-    specularImageProp->hideSelectiveBlurBox();
-    specularImageProp->hideRoughnessInputGroup();
-
-
-    diffuseImageProp->hideNormalInputGroup();
-    diffuseImageProp->hideSpecularInputGroup();
-    diffuseImageProp->hideHeightInputGroup();
-    diffuseImageProp->hideSpecularGroupBox();
-    diffuseImageProp->hideNormalStepBar();
-    diffuseImageProp->hideOcclusionInputGroup();
-    diffuseImageProp->hideSelectiveBlurBox();
-    diffuseImageProp->hideRoughnessInputGroup();
-    diffuseImageProp->hideBMGroupBox();
-
-
-    normalImageProp->hideSpecularInputGroup();
-    normalImageProp->hideBMGroupBox();
-    normalImageProp->hideSpecularGroupBox();
-    normalImageProp->hideOcclusionInputGroup();
-    normalImageProp->hideHeightProcessingBox();
-    normalImageProp->hideGrayScaleControl();
-    normalImageProp->hideSelectiveBlurBox();
-    normalImageProp->hideHeightInputGroup();
-    normalImageProp->hideRoughnessInputGroup();
-   // normalImageProp->showNormalMixerGroup();
-    normalImageProp->hideGrungeBlendinModeComboBox();
-    normalImageProp->showGrungeMainImageWeightSlider();
-
-    heightImageProp->hideSpecularInputGroup();
-    heightImageProp->hideNormalInputGroup();
-    heightImageProp->hideBMGroupBox();
-    heightImageProp->hideSpecularGroupBox();
-    heightImageProp->hideNormalStepBar();
-    heightImageProp->hideOcclusionInputGroup();
-    heightImageProp->hideGrayScaleControl();
-    heightImageProp->hideRoughnessInputGroup();
-    heightImageProp->hideSelectiveBlurBox();
-
-
-    occlusionImageProp->hideSpecularInputGroup();
-    occlusionImageProp->hideSpecularGroupBox();
-    occlusionImageProp->hideBMGroupBox();
-    occlusionImageProp->hideNormalInputGroup();
-    occlusionImageProp->hideHeightInputGroup();
-    occlusionImageProp->hideNormalStepBar();
-    occlusionImageProp->hideGrayScaleControl();
-    occlusionImageProp->hideSelectiveBlurBox();
-    occlusionImageProp->hideRoughnessInputGroup();
-    occlusionImageProp->hideHeightProcessingBox();
-    occlusionImageProp->hideSpecularGroupBox();
-    occlusionImageProp->hideGeneralGroup();
-
-    
-    roughnessImageProp->hideSpecularInputGroup();
-    roughnessImageProp->hideNormalStepBar();
-    roughnessImageProp->hideNormalInputGroup();
-    roughnessImageProp->hideHeightInputGroup();
-    roughnessImageProp->hideOcclusionInputGroup();
-    roughnessImageProp->hideBMGroupBox();
-    roughnessImageProp->hideSelectiveBlurBox();
-
-    roughnessImageProp->hideGrayScaleControl();
-
-    metallicImageProp->hideSpecularInputGroup();
-    metallicImageProp->hideNormalStepBar();
-    metallicImageProp->hideNormalInputGroup();
-    metallicImageProp->hideHeightInputGroup();
-    metallicImageProp->hideOcclusionInputGroup();
-    metallicImageProp->hideBMGroupBox();
-    metallicImageProp->hideSelectiveBlurBox();
-
-    grungeImageProp->hideRoughnessInputGroup();
-    grungeImageProp->hideSpecularInputGroup();
-    grungeImageProp->hideNormalStepBar();
-    grungeImageProp->hideNormalInputGroup();
-    grungeImageProp->hideHeightInputGroup();
-    grungeImageProp->hideOcclusionInputGroup();
-    grungeImageProp->hideBMGroupBox();
-    grungeImageProp->hideSelectiveBlurBox();
-    grungeImageProp->hideSpecularGroupBox();
-//    grungeImageProp->showGrungeSettingsGroup();
-
-
 
     glImage ->targetImageNormal    = normalImageProp   ->getImageProporties();
     glImage ->targetImageHeight    = heightImageProp   ->getImageProporties();
@@ -258,6 +154,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
     
     // imageChange and imageLoaded signals
+    connect(diffuseImageProp    ,SIGNAL(imageChanged()),glImage,SLOT(imageChanged()));
+    connect(roughnessImageProp  ,SIGNAL(imageChanged()),glImage,SLOT(imageChanged()));
+    connect(metallicImageProp   ,SIGNAL(imageChanged()),glImage,SLOT(imageChanged()));
+
     connect(diffuseImageProp    ,SIGNAL(imageChanged()),this,SLOT(updateDiffuseImage()));
     connect(normalImageProp     ,SIGNAL(imageChanged()),this,SLOT(updateNormalImage()));
     connect(specularImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateSpecularImage()));
@@ -266,6 +166,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(roughnessImageProp  ,SIGNAL(imageChanged()),this,SLOT(updateRoughnessImage()));
     connect(metallicImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateMetallicImage()));
     connect(grungeImageProp     ,SIGNAL(imageChanged()),this,SLOT(updateGrungeImage()));
+
+
+
+
     // grunge
     connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),diffuseImageProp     ,SLOT(toggleGrungeImageSettingsGroup(bool)));
     connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),normalImageProp      ,SLOT(toggleGrungeImageSettingsGroup(bool)));
@@ -530,6 +434,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    qDebug() << "calling" << Q_FUNC_INFO;
     delete dialogLogger;
     delete dialogShortcuts;
     delete materialManager;
@@ -556,15 +461,6 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     QWidget::closeEvent( event );
 
     qDebug() << "calling" << Q_FUNC_INFO;
-
-//    QSettings settings(QString(AB_INI), QSettings::IniFormat);
-//    settings.setValue("d_win_w",this->width());
-//    settings.setValue("d_win_h",this->height());
-//    settings.setValue("recent_dir",recentDir.absolutePath());
-//    settings.setValue("recent_mesh_dir",recentMeshDir.absolutePath());
-//    settings.setValue("gui_style",ui->comboBoxGUIStyle->currentText());
-//    settings.setValue("font_size",ui->spinBoxFontSize->value());
-
     settingsContainer->close();
     glWidget->close();
     glImage->close();
@@ -1150,40 +1046,31 @@ void MainWindow::initializeImages(){
 void MainWindow::updateImage(int tType){
     switch(tType){
         case(DIFFUSE_TEXTURE ):
-            glImage->setActiveImage(diffuseImageProp->getImageProporties());
-            diffuseImageProp->cancelColorPicking();
+            glImage->setActiveImage(diffuseImageProp->getImageProporties());            
             break;
         case(NORMAL_TEXTURE  ):
-            glImage->setActiveImage(normalImageProp->getImageProporties());
-            normalImageProp->cancelColorPicking();
+            glImage->setActiveImage(normalImageProp->getImageProporties());            
             break;
         case(SPECULAR_TEXTURE):
-            glImage->setActiveImage(specularImageProp->getImageProporties());
-            specularImageProp->cancelColorPicking();
+            glImage->setActiveImage(specularImageProp->getImageProporties());            
             break;
         case(HEIGHT_TEXTURE  ):
-            glImage->setActiveImage(heightImageProp->getImageProporties());
-            heightImageProp->cancelColorPicking();
+            glImage->setActiveImage(heightImageProp->getImageProporties());            
             break;
         case(OCCLUSION_TEXTURE  ):
-            glImage->setActiveImage(occlusionImageProp->getImageProporties());
-            occlusionImageProp->cancelColorPicking();
+            glImage->setActiveImage(occlusionImageProp->getImageProporties());            
             break;
         case(ROUGHNESS_TEXTURE  ):
-            glImage->setActiveImage(roughnessImageProp->getImageProporties());
-            roughnessImageProp->cancelColorPicking();
+            glImage->setActiveImage(roughnessImageProp->getImageProporties());            
             break;
         case(METALLIC_TEXTURE  ):
-            glImage->setActiveImage(metallicImageProp->getImageProporties());
-            metallicImageProp->cancelColorPicking();
+            glImage->setActiveImage(metallicImageProp->getImageProporties());            
             break;
         case(MATERIAL_TEXTURE  ):
-            glImage->setActiveImage(materialManager->getImageProporties());
-            metallicImageProp->cancelColorPicking();
+            glImage->setActiveImage(materialManager->getImageProporties());            
             break;
         case(GRUNGE_TEXTURE  ):
-            glImage->setActiveImage(grungeImageProp->getImageProporties());
-            grungeImageProp->cancelColorPicking();
+            glImage->setActiveImage(grungeImageProp->getImageProporties());            
             break;
         default: // Settings
             return;
@@ -1192,13 +1079,13 @@ void MainWindow::updateImage(int tType){
     glWidget->repaint();
 }
 
-void MainWindow::changeWidth (int size){
+void MainWindow::changeWidth (int size=0){
 
     if(ui->pushButtonResizePropTo->isChecked()){
         ui->comboBoxResizeHeight->setCurrentText(ui->comboBoxResizeWidth->currentText());
     }
 }
-void MainWindow::changeHeight(int size){
+void MainWindow::changeHeight(int size=0){
 
     if(ui->pushButtonResizePropTo->isChecked()){
         ui->comboBoxResizeWidth->setCurrentText(ui->comboBoxResizeHeight->currentText());
@@ -1644,7 +1531,7 @@ void MainWindow::changeGUIFontSize(int value){
     QApplication::setFont(font);
 }
 
-void MainWindow::setOutputFormat(int index){
+void MainWindow::setOutputFormat(int index=0){
 
     PostfixNames::outputFormat = ui->comboBoxImageOutputFormat->currentText();
 }

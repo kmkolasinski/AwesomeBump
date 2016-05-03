@@ -67,9 +67,10 @@ enum INPUTIMAGE
 }
 
 property_set ColorComponentsProperty{
-
+displayName = "Color components";
 Bool InvertAll {
         description = "Invert all components";
+        displayName = "Invert all";
         value=false;
 
         slot propertyDidChange
@@ -81,25 +82,37 @@ Bool InvertAll {
 }
 
 Bool InvertRed {
-        description = "Invert red";
+        description = "Invert Red";
+        displayName = "Invert Red";
         value=false;
 }
 
+
+
 Bool InvertBlue {
-        description = "Invert red";
+        description = "Invert Blue";
+        displayName = "Invert Blue";
         value=false;
 }
 
 Bool InvertGreen {
-        description = "Invert red";
+        description = "Invert Green";
+        displayName = "Invert Green";
         value=false;
 }
 
 } // end of color property
 
+
+
 property_set GrayScaleProperty{
+
+    description = "Gray scale filter. Final color is computed as a weighted average: C=wr*R+wg*G+wb*B";
+    displayName = "Gray scale filter";
+
     Bool EnableGrayScale {
-           description = "Enable";
+           description = "Enable gray scale filter";
+           displayName = "Enable";
            value=false;
 
            slot propertyDidChange
@@ -111,107 +124,111 @@ property_set GrayScaleProperty{
     }
 
     Float GrayScaleR {
-            description = "";
+            description = "Set value of weight for the Red component.";
+            displayName = "Red";
             minValue=0;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.333f;
-        ////delegate ABFloatSlider{}
     }
     Float GrayScaleG {
-            description = "";
+            description = "Set value of weight for the Green component.";
+            displayName = "Green";
             minValue=0;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.333f;
-        //delegate ABFloatSlider{}
     }
     Float GrayScaleB {
-            description = "";
+            description = "Set value of weight for the Blue component.";
+            displayName = "Blue";
             minValue=0;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.333f;
-        //delegate ABFloatSlider{}
     }
 
 }
 
 property_set RemoveShadingProperty{
-
+    description = "Remove dark regions from image.";
+    displayName = "Remove shading";
     Int RemoveShadingByGaussian {
-            description = "";
+            description = "The number of iterations to be performed.";
+            displayName = "Num. iterations.";
             minValue=0;
             maxValue=100;
             stepValue=1;
             value=0.0;
-            //delegate ABIntSlider{}
     }
     Float AOCancellation {
-            description = "";
+            description = "Remove dark regions using calculated AO map.";
+            displayName = "AO cancellation";
             minValue=0;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float LowFrequencyFilterBlending {
-            description = "";
+            description = "Low Frequency Even filter weight. If 0 the effect is disabled.";
+            displayName = "LFE: Weight";
             minValue=0;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float LowFrequencyFilterRadius {
-            description = "";
+            description = "Set the mask radius: larger values remove lower frequencies, lower values - higher frequencies. This tool is a analogical to Low Frequency Even GIMP plugin.";
+            displayName = "LFE: Radius";
             minValue=0;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
 }
 
 
 
 property_set ColorLevelsProperty{
-
+    description = "Sets the minimum and maximum values for pixels components.";
+    displayName = "Levels";
     Bool EnableNormalization {
-           description = "Enable";
+           description = "Enable color normalization. If enabled, then pixel color is clamped by min/max values and then scaled with formula (color-min)/(max-min), otherwise only clamping is performed.";
+           displayName = "Levels";
            value=false;
     }
     Float MinValue {
-            description = "";
+            description = "Set minimum value for RGB components.";
+            displayName = "Min. value";
             minValue=0;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float MaxValue {
-            description = "";
+            description = "Set maximum value for RGB components.";
+            displayName = "Max. value";
             minValue=0;
             maxValue=1.0f;
             stepValue=0.01f;
             value=1.0f;
-        //delegate ABFloatSlider{}
     }
     Float DetailsRadius {
-            description = "";
+            description = "This parameter helps to restore some of the details from clamped colors in the image. This tool works if Min. Value is greater than 0 or Max. Value is smaller than 1.";
+            displayName = "Details";
             minValue=0;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
+
     }
     Float Offset {
-            description = "";
+            description = "Shifts current color by constant number.";
+            displayName = "Offset";
             minValue=-1.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
 
 }
@@ -242,7 +259,8 @@ property_set NormalHeightConvProperty{
 property_set SurfaceDetailsProperty{
 
     Bool EnableSurfaceDetails {
-           description = "Enable";
+           description = "Applies difference of gaussian filter (gimp DOG filter). This tool can be used to generated Specular, Roughness or Metallic maps.";
+           displayName = "Enable";
            value=false;
            slot propertyDidChange
            {
@@ -254,44 +272,44 @@ property_set SurfaceDetailsProperty{
            }
     }
     Float WeightA {
-            description = "";
+            description = "Radius of the first gaussian";
+            displayName = "Radius A";
             minValue=0;
             maxValue=40.0f;
             stepValue=0.1f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float WeightB {
-            description = "";
+            description = "Radius of the second gaussian";
+            displayName = "Radius B";
             minValue=0;
             maxValue=40.0f;
             stepValue=0.1f;
             value=30.0f;
-        //delegate ABFloatSlider{}
     }
     Int Radius {
-            description = "";
+            description = "Maximal blur radius. Usually it is greater than Radius A and Weight B. But here you can choose any value.";
+            displayName = "Max. radius";
             minValue=0;
             maxValue=40;
             stepValue=1;
-            value=30;
-            //delegate ABIntSlider{}
+            value=30;            
     }
     Float Contrast {
-            description = "";
+            description = "It changes the contrast of the image.";
+            displayName = "Contrast";
             minValue=-1.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float Amplifier {
-            description = "";
+            description = "Scale the current value of the color by a number Scale";
+            displayName = "Amplifier";
             minValue=-10.0f;
             maxValue=10.0f;
             stepValue=0.1f;
             value=1.0f;
-        //delegate ABFloatSlider{}
     }
 }
 
@@ -299,88 +317,92 @@ property_set SurfaceDetailsProperty{
 property_set AOProperty{
 
     Int NumIters {
-            description = "";
+            description = "Radius of the mask. Large number will lead to poor performance. For small images (about 1024x1024) this should not be a problem, but for larger you should use this parameter carefully.";
+            displayName = "Radius";
             minValue=0;
             maxValue=50;
             stepValue=1;
             value=10;
-            //delegate ABIntSlider{}
     }
     Float Intensity {
-            description = "";
+            displayName = "Intensity";
+            description = "Intensity of the AO effect.";
             minValue=0;
             maxValue=5.0f;
             stepValue=0.01f;
             value=0.5f;
-        //delegate ABFloatSlider{}
     }
     Float Bias {
-            description = "";
+            displayName = "Bias";
+            description = "This is another parameter which allows you to control the contrast of the image.";
             minValue=-4.0f;
             maxValue=4.0f;
             stepValue=0.01f;
             value=-1.5f;
-        //delegate ABFloatSlider{}
     }
     Float Depth {
-            description = "";
+            description = "It changes the scale of the effect. ";
+            displayName = "Depth";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.2f;
-        //delegate ABFloatSlider{}
     }
 }
 
-// ambient occlusion settings
+
 property_set GrungeMapProperty{
 
-    Float OverallWeight {
-            description = "";
+    Float OverallWeight {            
+            description = "Set common blending weight factor for all textures blending. If zero the effect is disabled.";
+            displayName = "Grunge weight";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-            //delegate ABFloatSlider{}
     }
     Int Randomize {
-            description = "";
+            description = "When 0 - uses orginal image, otherwise generate random seamless image.";
+            displayName = "Randomize";
             minValue=0;
             maxValue=100;
             stepValue=1;
             value=0;
-            //delegate ABIntSlider{}
     }
     Float Scale {
-            description = "";
+            description = "It scales the UVs of generated image. Value 1 is neutral.";
+            displayName = "Scale";
             minValue=0.0f;
             maxValue=4.0f;
             stepValue=0.01f;
             value=1.0f;
-        //delegate ABFloatSlider{}
     }
     Float NormalWarp {
-            description = "";
+            description = "Warps grunge texture pixels along normals of normal texture.";
+            displayName = "Normal warp";
             minValue=-1.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     QString Patterns{
-       description = "";
-       value = "";
+       description = "<p>Load predefined grunge map from list. <span style='font-weight:600;'>Note</span> that predefined grunge textures are located in <span style='font-weight:600;'>Core/2D/grunge</span> folder. You can paste there your own images in oder to make your own list of grunge images.</p>";
+       displayName = "Patterns";
+       value = first_grunge_map();
+
        delegate List
        {
            items = init_grunge_maps();
        }
     }
     Bool RandomTranslations {
-            description = "";
+            description = "Add random translations when randomization is enabled. ";
+            displayName = "Rand. Translations";
             value=false;
     }
     Bool ReplotAll {
-            description = "";
+            description = "Compute all the texture is one of the Grunge parameters was changed. For large images this will slow down the program. Otherwise each time you change something here you have to click Replot All to apply these changes to other textures.";
+            displayName = "Replot All";
             value=false;
     }
 }
@@ -392,27 +414,30 @@ property_set GrungeOnImageProperty{
 
     Enum BlendingMode
     {
+
+      displayName = "Blending mode";
       description = "Blending modes are same as in GIMP program.";
       enumInfo = &BLENDINGMODE::info();
       value = BLENDINGMODE::blendNormal;
     }
 
     Float ImageWeight {
-            description = "";
+            description = "Choose image weight";
+            displayName = "Image weight";
+
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.5f;
             state = QtnPropertyStateInvisible;
-        //delegate ABFloatSlider{}
     }
     Float GrungeWeight {
-            description = "";
+            description = "Choose grunge texture weight";
+            displayName = "Grunge weight";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
 
 }
@@ -421,7 +446,9 @@ property_set NormalsMixerProperty{
 
     Bool EnableMixer
     {
-      description = "Enable mixer";
+
+      description = "It allows to blend normal compoments between current normal image and another one.";
+      displayName = "Enable";
       value = false;
         slot propertyDidChange
         {
@@ -437,11 +464,13 @@ property_set NormalsMixerProperty{
     }
     QString NormalImage
     {
-        description = "Open normal image";
+
+        displayName = "Image path";
+        description = "Click and open the normal image.";
         value = "";
         delegate File
         {
-            directory = FBOImageProporties::normalMixerFileName;
+            directory = "";
             invalidColor = QColor(Qt::red);
             acceptMode = QFileDialog::AcceptOpen;
             nameFilters = QStringList() << "All Images (*.png *.jpg  *.tga *.jpeg *.bmp  *.tif);; Images (*.png);; Images (*.jpg);; Images (*.tga);; Images (*.jpeg);; Images (*.bmp);; Images (*.tif);; All files (*.*)";
@@ -450,127 +479,130 @@ property_set NormalsMixerProperty{
 
     Button PasteFromClipboard
     {
-       description = "Paste from";
-       delegate { title = "PasteFromClipboard"; }
+       displayName = "Paste from Clipboard";
+       description = "Paste from Clipboard";
+
+       delegate { title = "Paste from Clipboard"; }
     }
 
     Float Depth {
-            description = "";
+            displayName = "Weight";
+            description = "If Weight is equal to zero, the image is not affected. For greater values the linear mixing is applied between original normal map and seleted.";
             minValue=-1.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float Scale{
-            description = "";
+            description = "Loaded texture UV scale factor.";
+            displayName = "Scale";
             minValue=0.0f;
             maxValue=5.0f;
             stepValue=0.01f;
             value=1.0f;
-        //delegate ABFloatSlider{}
     }
     Float Angle{
-            description = "";
+            description = "Rotates the normal map by angle";
+            displayName = "Angle";
             minValue=0.0f;
             maxValue=360.0f;
             stepValue=1.0f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float PosX{
-            description = "";
+            description = "Shifts the image in X direction.";
+            displayName = "X position";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float PosY{
-            description = "";
+            description = "Shifts the image in Y direction.";
+            displayName = "Y position";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
-
 }
 
 property_set ConvertsionBaseMapLevelProperty
 {
+
     Float Weight{
-            description = "";
+            description = "Weight of current Detail";
+            displayName = "Weight";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.3f;
-        //delegate ABFloatSlider{}
     }
     Float PreSmoothRadius{
-            description = "";
+            description = "Apply presmoothing of the diffuse image.";
+            displayName = "Blur radius";
             minValue=0.0f;
             maxValue=10.0f;
             stepValue=1.0f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float FilterRadius{
-            description = "";
+            description = "Radius of blur operation for generated normal texture.";
+            displayName = "Normal blur";
             minValue=0.0f;
             maxValue=10.0f;
             stepValue=1.0f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Int NumIters{
-            description = "";
+            description = "Number of iterations for Normal Blur operation. If zero pure Sobel operator is used.";
+            displayName = "Num. repeats";
             minValue=0;
             maxValue=20;
             stepValue=1;
             value=1;
-            //delegate ABIntSlider{}
     }
     Float Amplitude{
-            description = "";
-            minValue=-5.0f;
-            maxValue=5.0f;
+            description = "Set the amplitude of the normals. Sometimes very small value of the amplitude parameter helps to obtain better image. Don't worry if the image you see is totally blue. You can change the normal step parameter after conversion in the normal tab.";
+            displayName = "Scale";
+            minValue=-10.0f;
+            maxValue=10.0f;
             stepValue=0.1f;
             value=-1.0f;
-        //delegate ABFloatSlider{}
     }
     Float Flatness{
-            description = "";
+            description = "Makes rounded shapes more flaten. If 0 the image is not affected.";
+            displayName = "Flatness";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float Edges{
-            description = "";
+            description = "Set the blending with the non processed normal image (ie. base image after sobel operator applied). This parameter changes the weight of the blending on edges. ";
+            displayName = "Edges";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
     Float Blending{
-            description = "";
+            description = "Set the blending with the non processed normal image (ie. base image after sobel operator applied) but here standart mixing is applied.";
+            displayName = "Blending";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.5f;
-        //delegate ABFloatSlider{}
     }
-
 }
 
 property_set BaseMapToOthersProperty{
-
+    description = "Enable this tool to convert current Diffuse image to other textures. Remember to disable it each time you do not want to use it.";
+    displayName = "Convert Diffuse to Other";
     Bool EnableConversion
     {
-            description = "Enable Conversion";
+            description = "Enable conversion. If enabled, you have to click Convert button to generate all the textures.";
+            displayName = "Enable preview";
             value = false;
             slot propertyDidChange
             {
@@ -587,12 +619,14 @@ property_set BaseMapToOthersProperty{
     }
     Bool EnableHeightPreview
     {
-            description = "Enable Conversion";
+            displayName = "Preview Height";
+            description = "Show height texture instead of normal texture. Calculation of height texture is quite demanding so this option is not suggested for large images.";
             value = false;
     }
     Enum ImageDetails
     {
-            description = "Blending modes are same as in GIMP program.";
+            displayName = "Details size";
+            description = "Select from the list to edit conversion parameters for different details size. For example, small means high frequency details. Big and Huge details settings are usefull for large images i.e. bigger than 2048x2048.";
             enumInfo = &BASEMAPDETAIL::info();
             value    = BASEMAPDETAIL::Small;
             slot propertyDidChange
@@ -628,45 +662,59 @@ property_set BaseMapToOthersProperty{
 
     extern property_set ConvertsionBaseMapLevelProperty LevelSmall
     {
+            displayName = "Small details";
             description = "Small details";
             state = QtnPropertyStateInvisible;
     }
     extern property_set ConvertsionBaseMapLevelProperty LevelMedium
     {
+            displayName = "Medium details";
             description = "Medium details";
             state = QtnPropertyStateInvisible;
     }
     extern property_set ConvertsionBaseMapLevelProperty LevelBig
     {
+            displayName = "Big details";
             description = "Big details";
             state = QtnPropertyStateInvisible;
     }
     extern property_set ConvertsionBaseMapLevelProperty LevelHuge
     {
+            displayName = "Huge details";
             description = "Huge details";
             state = QtnPropertyStateInvisible;
     }
     Float AngleWeight{
-            description = "";
+            displayName = "AC: Weight";
+            description = "Angle Correction (AC) weight parameter. If 0 the image is not affected. if > 0 it rotates the component of normal map by AC: Light Angle in order to compensate the effect of directional lightning present in the image.";
             minValue=-5.0f;
             maxValue=5.0f;
             stepValue=0.1f;
-            value=0.0f;
-        //delegate ABFloatSlider{}
+            value=0.0f;        
     }
 
     Float AngleCorrection{
-            description = "";
+            displayName = "AC: Light angle";
+            description = "Points the direction of the which cause the shadows in the image. It does not affect the texture if AC: Weight is equal to 0.";
             minValue=0.0f;
             maxValue=360.0f;
             stepValue=1.0f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
 
+    Float ColorBalance{
+            description = "Color Balance (CB) tool, uses selected colors (Min. and Max. parameters) to force height texture to be zero around Min. Color and one around Max. Color. If Weight is equal to zero the image is not affected by CB tool.";
+            displayName = "CB: Weight";
+            minValue=0.0f;
+            maxValue=1.0f;
+            stepValue=0.01f;
+            value=0.0f;
+
+    }
     ABColor MinColor
     {
-        description = "ABColor property with RGB components";
+        description = "Select the color which can be interpreted as the minumum height (elevation) in the image.";
+        displayName = "CB: Min.";
         value = QColor(0, 0, 0);
         resetCallback = [this](QtnPropertyBase&){
             MinColor = Qt::black;
@@ -675,7 +723,8 @@ property_set BaseMapToOthersProperty{
     }
     ABColor MaxColor
     {
-        description = "ABColor property with RGB components";
+        description = "Select the color which can be interpreted as the maximum height (elevation) in the image.";
+        displayName = "CB: Max.";
         value = QColor(255, 255, 255);
         resetCallback = [this](QtnPropertyBase&){
             MaxColor = Qt::white;
@@ -683,18 +732,9 @@ property_set BaseMapToOthersProperty{
         delegate { rgbSubItems = true; }
     }
 
-
-    Float ColorBalance{
-            description = "";
-            minValue=0.0f;
-            maxValue=1.0f;
-            stepValue=0.01f;
-            value=0.0f;
-        //delegate ABFloatSlider{}
-    }
-
     Button Convert
     {
+       description = "Create all the textures based on current diffuse image.";
        delegate { title = "Convert"; }
     }
 }
@@ -703,11 +743,13 @@ property_set RMColorFilterProperty{
     Bool InvertColors
     {
             description = "Invert Colors";
+            displayName = "Invert color";
             value = false;
     }
     ABColor PickColor
     {
-        description = "ABColor property with RGB components";
+        displayName = "Pick Color";
+        description = "Pick pixel from the image. Selected color is then used to affect Roughness/Metallic texture.";
         value = QColor(0, 0, 0);
         resetCallback = [this](QtnPropertyBase&){
             PickColor = Qt::black;
@@ -716,66 +758,68 @@ property_set RMColorFilterProperty{
     }
     Enum Method
     {
-            description = "Method";
+
+            description = "Choose between available color comparison methods.";
+            displayName = "Method";
             enumInfo = &COLOR_FILTER_METHOD::info();
             value    = COLOR_FILTER_METHOD::Distance;
     }
 
     Float Bias{
-            description = "";
+            description = "Offset pixel color before comparison test.";
+            displayName = "Bias";
             minValue=-1.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=-0.2f;
-        //delegate ABFloatSlider{}
     }
 
     Float Amplifier{
-            description = "";
+            description = "Amplify the effect";
+            displayName = "Amplifier";
             minValue=-1.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.1f;
-        //delegate ABFloatSlider{}
     }
 
     Float Offset{
-            description = "";
+            description = "Shift obtained image by a constant number.";
+            displayName = "Offset";
             minValue=-1.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
 }
 
 property_set RMNoiseFilterProperty{
 
     Float Depth{
-            description = "";
+            description = "Changes range of the effect.";
+            displayName = "Depth";
             minValue=0.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.2f;
-        //delegate ABFloatSlider{}
     }
 
     Float Treshold{
-            description = "";
+            description = "It sets the cutoff level of roughness. Lower values will lead to higher rgouhness level.";
+            displayName = "Treshold";
             minValue=-1.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.0f;
-        //delegate ABFloatSlider{}
     }
 
     Float Amplifier{
-            description = "";
+            description = "Amplifies the effect.";
+            displayName = "Amplifier";
             minValue=-1.0f;
             maxValue=1.0f;
             stepValue=0.01f;
             value=0.1f;
-        //delegate ABFloatSlider{}
     }
 }
 
@@ -784,7 +828,8 @@ property_set RMFilterProperty{
 
     Enum Filter
     {
-            description = "Color filter.";
+            description = "Choose filter type";
+            displayName = "Filter";
             enumInfo = &COLOR_FILTER::info();
             value    = COLOR_FILTER::None;
 
@@ -809,12 +854,14 @@ property_set RMFilterProperty{
 
     extern property_set RMNoiseFilterProperty NoiseFilter
     {
-            description = "Noise Filter";
+            description = "Noise Filter: Calculates the noise in the image and as a result flat areas become dark.";
+            displayName = "Noise Filter";
             state = QtnPropertyStateInvisible;
     }
     extern property_set RMColorFilterProperty ColorFilter
     {
-            description = "Color Filter";
+            description = "Color Filter: Estimate Roughness/Metallic based on selected pixel color";
+            displayName = "Color Filter";
             state = QtnPropertyStateInvisible;
     }
 
@@ -824,89 +871,80 @@ property_set BasicProperty
 {
     extern property_set GrayScaleProperty GrayScale
     {
-        description = "Gray scale ";
-//        state = QtnPropertyStateCollapsed;
+        description = "Gray scale";
+        displayName = "Gray Scale";
         state = QtnPropertyStateInvisible;
     }
 
     extern property_set ColorComponentsProperty ColorComponents
     {
-        description = "Components ";
+        description = "Components";
+        displayName = "Components";
         state = QtnPropertyStateCollapsed;
     }
 
 
     Float ColorHue {
-            description = "Change color Hue";
+            description = "Change color hue";
+            displayName = "Hue";
             minValue=0;
             maxValue=1.f;
             stepValue=0.01f;
             value=0;
             state = QtnPropertyStateInvisible;
-//            delegate ABFloatSlider
-//            {
-//                fillColor = QColor::fromRgb(170, 170, 255);
-//            }
-
     }
 
 
     Int EnhanceDetails {
-            description = "The same as above.";
+            description = "Enhance colors";
+            displayName = "Enhance details";
             minValue=0;
             maxValue=10;
             stepValue=1;
             value=0;
-            //delegate ABIntSlider{}
     }
-    Float SmallDetails {
-            description = "<html><head/><body><p>Enhance small details. This option is connected with <span 	style=\" font-weight:600;\">Depth</span> scroll bar. </p><p>Note that if <span style=\" font-	weight:600;\">Depth</span> scroll bar is set to zero, this parameter does not affect the image.</p><	/body></html>";
+    Float SmallDetails {            
+            displayName = "Small details";
+            description = "Enhance small details. This option is connected with <span 	style=\" font-weight:600;\">Depth</span> scroll bar. </p><p>Note that if <span style=\" font-	weight:600;\">Depth</span> scroll bar is set to zero, this parameter does not affect the image.</p>";
             minValue=0;
             maxValue=1.f;
             stepValue=0.01f;
             value=0;
-            //delegate ABFloatSlider{}
     }
-    Float MediumDetails {
+    Float MediumDetails {        
+            displayName = "Medium details";
             description = "The same as above.";
             minValue=0;
             maxValue=1.f;
             stepValue=0.01f;
             value=0;
-//            delegate ABFloatSlider
-//            {
-//                fillColor = QColor::fromRgb(170, 170, 255);
-//            }
     }
 
-    Float DetailDepth {
-            description = "<html><head/><body><p>It changes the depth of the <span style=\" font-weight:600;	\">Small details</span> and <span style=\" font-weight:600;\">Medium details</span> effect.</p></	body></html>";
+    Float DetailDepth {        
+            displayName = "Details depth";
+            description = "<p>It changes the depth of the <span style=\" font-weight:600;	\">Small details</span> and <span style=\" font-weight:600;\">Medium details</span> effect.</p>";
             minValue=0;
             maxValue=1.f;
             stepValue=0.01f;
             value=0.1f;
-//            delegate ABFloatSlider
-//            {
-//                fillColor = QColor::fromRgb(170, 170, 255);
-//            }
     }
 
-    Int SharpenBlur {
-            description = "<html><head/><body><p>Smooth or sharpen the image (it uses the gaussian 	distribution  in both cases).</p></body></html>";
+    Int SharpenBlur {            
+            displayName = "Sharpen/Blur";
+            description = "<p>Smooth or sharpen the image (it uses the gaussian 	distribution  in both cases).</p>";
             minValue=-20;
             maxValue=20;
             stepValue=1;
             value=0;
-            //delegate ABIntSlider{}
     }
     Float NormalsStep {
-            description = "";
+            displayName = "Normal step";
+            description = "It changes the steepness of the normal image. For example 1 means that the image is not changed. 0 means that the image is completely flat.";
             minValue=-5.0f;
             maxValue=5.0f;
             stepValue=0.05f;
             value=1.0f;
             state = QtnPropertyStateInvisible;
-        //delegate ABFloatSlider{}
     }
 
 } // end of BasicProperty
@@ -914,29 +952,33 @@ property_set BasicProperty
 property_set FormImageProp
 {
     Int ImageType {
-           description = "ImageTyp";
+           description = "ImageTyp";        
            value = MAX_TEXTURES_TYPE;
            state = QtnPropertyStateInvisible;
 
     }
     extern property_set GrungeOnImageProperty GrungeOnImage
     {
-        description = "Grunge blending";
+        description = "Grunge settings";
+        displayName = "Grunge";
         state = QtnPropertyStateInvisible;
     }
     extern property_set GrungeMapProperty Grunge
     {
-        description = "Grunge ";
+        description = "Grunge";
+        displayName = "Grunge";
         state = QtnPropertyStateInvisible;
     }
     extern property_set BasicProperty Basic
     {
-        description = "Basic ";
+        description = "Basic";
+        displayName = "Basic";
         state = QtnPropertyStateInvisible;
     }
 
     Bool EnableRemoveShading {
-           description = "Enable";
+           description = "Enable filter";
+           displayName = "Remove Shading";
            value=false;
            state = QtnPropertyStateInvisible;
 
@@ -947,12 +989,14 @@ property_set FormImageProp
     }
     extern property_set RemoveShadingProperty RemoveShading
     {
-        description = "Components ";
+        description = "";
+        displayName = "Remove Shading";
         state = QtnPropertyStateInvisible;
     }
     extern property_set ColorLevelsProperty ColorLevels
     {
         description = "Color levels ";
+        displayName = "Color levels";
         state = QtnPropertyStateInvisible;
     }
 
@@ -960,6 +1004,7 @@ property_set FormImageProp
     extern property_set SurfaceDetailsProperty SurfaceDetails
     {
         description = "Surface details tools";
+        displayName = "Surface details";
         state = QtnPropertyStateInvisible;
     }
 
@@ -967,23 +1012,27 @@ property_set FormImageProp
     extern property_set AOProperty AO
     {
         description = "Ambient occlusion";
+        displayName = "Ambient Occlusion";
         state = QtnPropertyStateInvisible;
     }
 
     extern property_set NormalsMixerProperty NormalsMixer
     {
         description = "Normal mixer";
+        displayName = "Normal Mixer";
         state = QtnPropertyStateInvisible;
     }
 
     extern property_set BaseMapToOthersProperty BaseMapToOthers
     {
         description = "Convert to other images";
+        displayName = "Diffuse to Others";
         state = QtnPropertyStateInvisible;
     }
     extern property_set RMFilterProperty RMFilter
     {
         description = "Roughness/Mettalic processing";
+        displayName = "Surface Filter";
         state = QtnPropertyStateInvisible;
     }
 

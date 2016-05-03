@@ -233,40 +233,6 @@ public:
 
 };
 
-struct GrayScalePreset{
-    float R;
-    float G;
-    float B;
-    int grayScaleMode;
-    void mode1(){
-        R = 1.0;
-        G = 1.0;
-        B = 1.0;        
-        normalize();
-        grayScaleMode = 0;
-    }
-    void mode2(){
-        R = 0.3;
-        G = 0.59;
-        B = 0.11;
-        normalize();
-        grayScaleMode = 1;
-    }
-    void mode(){
-        if(grayScaleMode == 0) mode1();
-        if(grayScaleMode == 1) mode2();
-    }
-    QVector3D toQVector3D(){        
-        return QVector3D(R,G,B);
-    }
-    void normalize(){
-        float sum = R + G + B;
-        if(fabs(sum) < 0.0001) sum = 1;
-        R /= sum;
-        G /= sum;
-        B /= sum;
-    }
-};
 
 
 struct RandomTilingMode{
@@ -435,130 +401,17 @@ public:
     TextureTypes imageType;  // This will define what kind of preprocessing will be applied to image
 
 
-
-    // Variables used  to control the image processing (most of them are controlled from GUI)
     bool bFirstDraw;
-    bool bGrayScale;
-    GrayScalePreset grayScalePreset;
-
-    bool bInvertR,bInvertG,bInvertB;
-    bool bRemoveShading;
-
-    // Specular settings
-    int  noRemoveShadingGaussIter;
-    float aoCancellation;
-    float removeShadingLFBlending;
-    float removeShadingLFRadius;
-
-    int  noBlurPasses;
-    bool bSpeclarControl;
-    int  specularRadius;
-    float specularW1,specularW2,specularContrast,specularAmplifier;
-    float specularBrightness;
-    // General processing
-    float colorHue;
-    float smallDetails;
-    float mediumDetails;
-    float detailDepth;
-    int sharpenBlurAmount;
-    float normalsStep;
     // Conversion settings
     float conversionHNDepth;
-    bool bConversionHN;
-    // Normal to Height conversion settings
-    bool bConversionNH;
-    int  conversionNHItersHuge;
-    int  conversionNHItersVeryLarge;
-    int  conversionNHItersLarge;
-    int  conversionNHItersMedium;
-    int  conversionNHItersSmall;
-    int  conversionNHItersVerySmall;
     // Base to others settings
     static bool bConversionBaseMap;
     static bool bConversionBaseMapShowHeightTexture;
-    float baseMapAngleCorrection;
-    float baseMapAngleWeight;
     BaseMapConvLevelProperties baseMapConvLevels[4];
-    // Base map height levels variables
-    QVector3D conversionBaseMapheightMin; // User defined color of height=0
-    QVector3D conversionBaseMapheightMax; // User defined color of height=1 if one compoment is < 0 there will be no action applied
-    float conversionBaseMapHeightMinMaxTolerance; // defines the smoothnes of the filter
-
-    // ambient occlusion settings
-    int ssaoNoIters;
-    float ssaoIntensity;
-    float ssaoBias;
-    float ssaoDepth;
-
-    // height settings
-    float heightMinValue;
-    float heightMaxValue;
-    int   heightAveragingRadius;
-    float heightOffsetValue;
-    bool  bHeightEnableNormalization;
-
-
-    // selective blur variables
-    SelectiveBlurType selectiveBlurType;
-    bool bSelectiveBlurPreviewMask;
-    bool bSelectiveBlurInvertMask;
-    bool bSelectiveBlurEnable;
-
-    float selectiveBlurBlending;
-    int   selectiveBlurMaskRadius;
-    int selectiveBlurDOGRadius;
-    float selectiveBlurDOGConstrast;
-    float selectiveBlurDOGAmplifier;
-    float selectiveBlurDOGOffset;
-
-    float selectiveBlurMinValue;
-    float selectiveBlurMaxValue;
-    int   selectiveBlurDetails;
-    float selectiveBlurOffsetValue;
-
     // Input image type
     SourceImageType inputImageType;
 
-    // roughness settings
-    float roughnessDepth;
-    float roughnessTreshold;
-    float roughnessAmplifier;
-    bool bRoughnessSurfaceEnable;
 
-    bool bRoughnessEnableColorPicking;
-    bool bRoughnessColorPickingToggled;
-    QVector3D pickedColor;
-    ColorPickerMethod colorPickerMethod;
-    bool bRoughnessInvertColorMask;
-    float roughnessColorOffset;
-    float roughnessColorAmplifier;
-    SourceImageType selectiveBlurMaskInputImageType;
-
-    int selectiveBlurNoIters;
-    float roughnessColorGlobalOffset;
-
-    // normal map mixer
-    bool bNormalMixerEnabled;
-    bool bNormalMixerApplyNormals;
-    float normalMixerDepth;
-    float normalMixerScale;
-    float normalMixerAngle;
-    float normalMixerPosX;
-    float normalMixerPosY;
-
-    // grunge settings
-    static float grungeOverallWeight; // general weight for all images
-    static int   grungeSeed;          // grunge randomization seed (if = 0 no randomization)
-    static float grungeRadius;        // random radius
-    static bool bGrungeReplotAllWhenChanged;
-    static bool bGrungeEnableRandomTranslations;
-    static float grungeNormalWarp; // warp grunge image according to normal texture
-    float grungeImageWeight;   // per image additional weight
-    float grungeMainImageWeight; // used for normal blending only
-    unsigned int grungeBlendingMode;
-    // global settings seamless parameters
-
-    static QString normalMixerFileName;
     static SeamlessMode seamlessMode;
     static float seamlessSimpleModeRadius;
     static int seamlessMirroModeType; // values: 2 - x repear, 1 - y  repeat, 0 - xy  repeat
@@ -568,260 +421,29 @@ public:
     static int seamlessSimpleModeDirection;
     static SourceImageType seamlessContrastInputType;
     static bool bSeamlessTranslationsFirst;
-
-    static map<QString,int> materialIndices;
     static int currentMaterialIndeks;
 
 
 
      FBOImageProporties(){
-        bSkipProcessing = false;
-        //ref_fbo      = NULL;
-        fbo          = NULL;
-        //aux_fbo      = NULL;
-        //aux2_fbo     = NULL;
+        bSkipProcessing = false;        
+        fbo             = NULL;
         normalMixerInputTexId = 0;
         glWidget_ptr = NULL;
         bFirstDraw   = true;
-        bGrayScale   = false;
-        grayScalePreset.mode2();
-        bInvertR = bInvertG = bInvertB = false;
-
-        scr_tex_id     = 0;
-        bRemoveShading = false;
-        noRemoveShadingGaussIter = 10;
-        aoCancellation   = 0.0;
-
-        removeShadingLFBlending = 0.0;
-        removeShadingLFRadius   = 0.0;
-
-        bSpeclarControl    = false;
-        colorHue           = 0;
-        specularRadius     = 10;
-        specularW1         = 0.1;
-        specularW2         = 10.0;
-        specularContrast   = 0.05;
-        specularAmplifier  = 3.0;
-        specularBrightness = 0.0;
-        noBlurPasses       = 0;
-        smallDetails       = 0;
-        mediumDetails      = 0;
-        detailDepth        = 2.0;
-        sharpenBlurAmount  = 0;
-        normalsStep        = 0.0;
-
+        scr_tex_id   = 0;
         conversionHNDepth  = 2.0;
-        bConversionHN      = false;
-        bConversionNH      = false;
-
-        conversionNHItersHuge       = 10;
-        conversionNHItersVeryLarge  = 10;
-        conversionNHItersLarge      = 10;
-        conversionNHItersMedium     = 10;
-        conversionNHItersSmall      = 10;
-        conversionNHItersVerySmall  = 10;
-
-        bConversionBaseMap          = false;
-        baseMapAngleCorrection      = 0.0;
-        baseMapAngleWeight          = 0.0;
-
-        conversionBaseMapheightMin             = QVector3D(-1,0,0);
-        conversionBaseMapheightMax             = QVector3D(-1,0,0);
-        conversionBaseMapHeightMinMaxTolerance =  0;
-
-        ssaoNoIters   = 4;
-        ssaoIntensity = 1.0;
-        ssaoBias      = 0.0;
-        ssaoDepth     = 0.1;
-
-
-        heightMinValue        = 0.0;
-        heightMaxValue        = 1.0;
-        heightAveragingRadius = 1;
-        heightOffsetValue     = 0.0;
-        bHeightEnableNormalization = true;
-
-        // selective blur variables
-        selectiveBlurType = SELECTIVE_BLUR_DIFFERENCE_OF_GAUSSIANS;
-        bSelectiveBlurPreviewMask = false;
-        bSelectiveBlurInvertMask  = false;
-        bSelectiveBlurEnable      = false;
-        selectiveBlurBlending     = 0.0;
-        selectiveBlurMaskRadius   = 5 ;
-        selectiveBlurDOGRadius    = 5;
-        selectiveBlurDOGConstrast = 0.05;
-        selectiveBlurDOGAmplifier = 3.0;
-        selectiveBlurDOGOffset    = 0.0;
-
-        selectiveBlurMinValue        = 0.0;
-        selectiveBlurMaxValue        = 1.0;
-        selectiveBlurDetails         = 1.0;
-        selectiveBlurOffsetValue     = 0.0;
-
-
+        bConversionBaseMap = false;
         inputImageType = INPUT_NONE;
-
-        roughnessDepth = 0;
-        roughnessTreshold = 0.0;
-        roughnessAmplifier = 0.0;
-        bRoughnessSurfaceEnable = false;
-
-
-        bRoughnessEnableColorPicking  = false;
-        bRoughnessColorPickingToggled = false;
-        pickedColor                   = QVector3D(1.0,1.0,1.0);
-        colorPickerMethod             = COLOR_PICKER_METHOD_A;
-
-        bRoughnessInvertColorMask     = false;
-        roughnessColorOffset          = 0.0;
-        roughnessColorGlobalOffset    = 0.0;
-        roughnessColorAmplifier       = 0.0;
-        selectiveBlurMaskInputImageType = INPUT_FROM_HEIGHT_OUTPUT;
-        selectiveBlurNoIters            = 1;
-
         seamlessMode   = SEAMLESS_NONE;
-
-
-
-        // normal map mixer
-        bNormalMixerEnabled      = false;
-        bNormalMixerApplyNormals = false;
-        normalMixerDepth         = 0.0;
-
-        normalMixerScale = 1.0;
-        normalMixerAngle = 0.0;
-        normalMixerPosX  = 0.0;
-        normalMixerPosY  = 0.0;
-
-        // grunge settings
-        grungeImageWeight   = 0.0;
-        grungeBlendingMode  = 0;
-        grungeMainImageWeight = 0.0;
-
-
      }
 
      void copySettings(FBOImageProporties &src){
 
-        bFirstDraw   = src.bFirstDraw;
-        bGrayScale   = src.bGrayScale;
-        grayScalePreset = src.grayScalePreset;
-        bInvertR = src.bInvertR;
-        bInvertG = src.bInvertG;
-        bInvertB = src.bInvertB;
-
-
-        bRemoveShading = src.bRemoveShading;
-        noRemoveShadingGaussIter = src.noRemoveShadingGaussIter;
-        aoCancellation   = src.aoCancellation;
-
-        removeShadingLFBlending = src.removeShadingLFBlending;
-        removeShadingLFRadius   = src.removeShadingLFRadius;
-
-        bSpeclarControl    = src. bSpeclarControl;
-        colorHue           = src. colorHue;
-        specularRadius     = src. specularRadius;
-        specularW1         = src. specularW1;
-        specularW2         = src. specularW2;
-        specularContrast   = src. specularContrast;
-        specularAmplifier  = src. specularAmplifier;
-        specularBrightness = src. specularBrightness;
-        noBlurPasses       = src. noBlurPasses;
-        smallDetails       = src. smallDetails;
-        mediumDetails      = src. mediumDetails;
-        detailDepth        = src. detailDepth;
-        sharpenBlurAmount  = src. sharpenBlurAmount;
-        normalsStep        = src. normalsStep;
-
-        conversionHNDepth  = src. conversionHNDepth;
-        bConversionHN      = src. bConversionHN;
-        bConversionNH      = src. bConversionNH;
-
-        conversionNHItersHuge       = src.conversionNHItersHuge;
-        conversionNHItersVeryLarge  = src.conversionNHItersVeryLarge;
-        conversionNHItersLarge      = src.conversionNHItersLarge;
-        conversionNHItersMedium     = src.conversionNHItersMedium;
-        conversionNHItersSmall      = src.conversionNHItersSmall;
-        conversionNHItersVerySmall  = src.conversionNHItersVerySmall;
-        bConversionBaseMap          = src.bConversionBaseMap;
-        baseMapAngleCorrection      = src.baseMapAngleCorrection;
-        baseMapAngleWeight          = src.baseMapAngleWeight;
-
-
-        conversionBaseMapheightMin             = src.conversionBaseMapheightMin;
-        conversionBaseMapheightMax             = src.conversionBaseMapheightMax;
-        conversionBaseMapHeightMinMaxTolerance = src.conversionBaseMapHeightMinMaxTolerance;
-
-        ssaoNoIters   = src.ssaoNoIters;
-        ssaoIntensity = src.ssaoIntensity;
-        ssaoBias      = src.ssaoBias;
-        ssaoDepth     = src.ssaoDepth;
-
-
-        heightMinValue        = src.heightMinValue;
-        heightMaxValue        = src.heightMaxValue;
-        heightAveragingRadius = src.heightAveragingRadius;
-        heightOffsetValue     = src.heightOffsetValue;
-
-        // selective blur variables
-        selectiveBlurType = src.selectiveBlurType;
-        bSelectiveBlurPreviewMask = src.bSelectiveBlurPreviewMask;
-        bSelectiveBlurInvertMask  = src.bSelectiveBlurInvertMask;
-        bSelectiveBlurEnable      = src.bSelectiveBlurEnable;
-        selectiveBlurBlending     = src.selectiveBlurBlending;
-        selectiveBlurMaskRadius   = src.selectiveBlurMaskRadius ;
-        selectiveBlurDOGRadius    = src.selectiveBlurDOGRadius;
-        selectiveBlurDOGConstrast = src.selectiveBlurDOGConstrast;
-        selectiveBlurDOGAmplifier = src.selectiveBlurDOGAmplifier;
-        selectiveBlurDOGOffset    = src.selectiveBlurDOGOffset;
-
-        selectiveBlurMinValue        = src.selectiveBlurMinValue;
-        selectiveBlurMaxValue        = src.selectiveBlurMaxValue;
-        selectiveBlurDetails         = src.selectiveBlurDetails;
-        selectiveBlurOffsetValue     = src.selectiveBlurOffsetValue;
-
-
+        bFirstDraw   = src.bFirstDraw;        
+        conversionHNDepth  = src. conversionHNDepth;        
+        bConversionBaseMap = src.bConversionBaseMap;
         inputImageType = src.inputImageType;
-
-        roughnessDepth          = src.roughnessDepth;
-        roughnessTreshold       = src.roughnessTreshold;
-        roughnessAmplifier      = src.roughnessAmplifier;
-        bRoughnessSurfaceEnable = src.bRoughnessSurfaceEnable;
-
-
-        bRoughnessEnableColorPicking    = src.bRoughnessEnableColorPicking;
-        bRoughnessColorPickingToggled   = src.bRoughnessColorPickingToggled;
-        pickedColor                     = src.pickedColor;
-        colorPickerMethod               = src.colorPickerMethod;
-
-        bRoughnessInvertColorMask       = src.bRoughnessInvertColorMask;
-        roughnessColorOffset            = src.roughnessColorOffset;
-        roughnessColorGlobalOffset      = src.roughnessColorGlobalOffset;
-        roughnessColorAmplifier         = src.roughnessColorAmplifier;
-        selectiveBlurMaskInputImageType = src.selectiveBlurMaskInputImageType;
-        selectiveBlurNoIters            = src.selectiveBlurNoIters;
-
-        // normal map mixer
-        bNormalMixerEnabled      = src.bNormalMixerEnabled;
-        bNormalMixerApplyNormals = src.bNormalMixerApplyNormals;
-        normalMixerDepth         = src.normalMixerDepth;
-
-        normalMixerScale = src.normalMixerScale;
-        normalMixerAngle = src.normalMixerAngle;
-        normalMixerPosX  = src.normalMixerPosX;
-        normalMixerPosY  = src.normalMixerPosY;
-
-        // grunge
-        grungeOverallWeight             = src.grungeOverallWeight;      // general weight for all images
-        grungeSeed                      = src.grungeSeed;               // grunge randomization seed (if = 0 no randomization)
-        grungeRadius                    = src.grungeRadius;             // random radius
-        bGrungeReplotAllWhenChanged     = src.bGrungeReplotAllWhenChanged;
-        bGrungeEnableRandomTranslations = src.bGrungeEnableRandomTranslations;
-        grungeNormalWarp                = src.grungeNormalWarp;         // warp grunge image according to normal texture
-        grungeImageWeight               = src.grungeImageWeight;        // per image additional weight
-        grungeMainImageWeight           = src.grungeMainImageWeight;    // used for normal blending only
-        grungeBlendingMode              = src.grungeBlendingMode;
-
      }
 
     void init(QImage& image){

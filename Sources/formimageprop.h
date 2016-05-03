@@ -32,28 +32,7 @@ public:
     void setPtrToGLWidget(QGLWidget* ptr){ imageProp.glWidget_ptr = ptr;  }
 
     void setupPopertiesGUI();
-
-
-
-    void hideHeightInputGroup();
-    void hideBMGroupBox();
-    void hideSpecularGroupBox();
-    void hideNormalStepBar();
-    void hideOcclusionInputGroup();
-    void hideGeneralGroup();
-    void hideHeightProcessingBox();
-    void hideSelectiveBlurBox();
-    void hideGrayScaleControl();
-    void setSpecularControlChecked();
     void reloadSettings();
-    // hide input groups
-    void hideNormalInputGroup();
-    void hideSpecularInputGroup();
-    void hideRoughnessInputGroup();
-    void showNormalMixerGroup();
-    void showGrungeSettingsGroup();
-    void showGrungeMainImageWeightSlider();
-    void hideGrungeBlendinModeComboBox();
 
 
     ~FormImageProp();
@@ -75,10 +54,6 @@ public slots:
     void updateGuiSpinBoxesAndLabes(int);
     void updateSlidersOnRelease();
 
-    void updateGuiCheckBoxes();
-    void updateSlidersNow(int);
-
-
     void applyHeightToNormalConversion();
     void applyNormalToHeightConversion();
     void applyBaseConversionConversion();    
@@ -87,22 +62,15 @@ public slots:
     /**
      * Restore to default settings.
      */
-    void resetBaseMapMinMaxColors();
-    void showHeightCalculatorDialog();
 
-    void toggleColorPicking(bool toggle);
-    void togglePreviewSelectiveBlurMask(bool toggle);
-    void colorPicked(QVector4D);
-    void cancelColorPicking();
+    void showHeightCalculatorDialog();
     void pickColorFromImage(QtnPropertyABColor *property);
 
     // normal mixer
-    void openNormalMixerImage();
     void pasteNormalFromClipBoard();
 
     // grunge
-    void toggleGrungeImageSettingsGroup(bool toggle);
-    void invertGrunge(bool toggle);
+    void toggleGrungeImageSettingsGroup(bool toggle);    
     void loadPredefinedGrunge(QString);
 
 signals:
@@ -126,7 +94,7 @@ private:
 
     Ui::FormImageProp *ui;
     DialogHeightCalculator      *heightCalculator;     // height calculator tool
-    FormBaseMapConversionLevels* baseMapConvLevels[4]; // for levels of mipmaps
+
 
 public:
     static bool bLoading;
