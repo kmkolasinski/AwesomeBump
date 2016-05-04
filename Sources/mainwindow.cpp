@@ -2097,7 +2097,7 @@ void MainWindow::loadSettings(){
 
     QTextStream stream(&file);
     QString data;
-    stream >> data;
+    data = stream.readAll();
     abSettings->fromStr(data);
 
     QString tmpStr;
