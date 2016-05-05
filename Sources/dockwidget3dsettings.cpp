@@ -59,8 +59,6 @@ DockWidget3DSettings::DockWidget3DSettings(QWidget *parent, GLWidget* ptr_gl) :
     // setting cube map for glWidget
     ptr_glWidget->chooseSkyBox(ui->comboBoxSkyBox->currentText(),true);
 
-
-
 }
 QSize DockWidget3DSettings::sizeHint() const
 {
@@ -108,36 +106,34 @@ void DockWidget3DSettings::selectShadingModel(int i){
       updateSettings();
       emit signalSelectedShadingModel(i);
 }
-void DockWidget3DSettings::saveSettings(){
-    QSettings settings(QString(AB_INI), QSettings::IniFormat);
-    settings.setValue("3d_depth",ui->horizontalSliderDepthScale->value()/100.0);
+void DockWidget3DSettings::saveSettings(QtnPropertySetAwesomeBump* settings){
 
-    settings.setValue("bUseCullFace",ui->checkBoxPerformanceCullFace->isChecked());
-    settings.setValue("bUseSimplePBR",ui->checkBoxPerformanceSimplePBR->isChecked());
-    settings.setValue("noPBRRays",ui->comboBoxPerformanceNoRays->currentIndex());
-    settings.setValue("noTessSubdivision",ui->comboBoxPerformanceNoTessSub->currentIndex());
-    settings.setValue("bBloomEffect",ui->checkBoxBloomEffect->isChecked());
-    settings.setValue("bLensFlaresEffect",ui->checkBoxLensFlaresEffect->isChecked());
-    settings.setValue("bDofEffect",ui->checkBoxDOFEffect->isChecked());
+    settings->depth_3d=ui->horizontalSliderDepthScale->value()/100.0;
+    settings->bUseCullFace=ui->checkBoxPerformanceCullFace->isChecked();
+    settings->bUseSimplePBR=ui->checkBoxPerformanceSimplePBR->isChecked();
+    settings->noPBRRays=ui->comboBoxPerformanceNoRays->currentIndex();
+    settings->noTessSubdivision=ui->comboBoxPerformanceNoTessSub->currentIndex();
+    settings->bBloomEffect=ui->checkBoxBloomEffect->isChecked();
+    settings->bLensFlaresEffect=ui->checkBoxLensFlaresEffect->isChecked();
+    settings->bDofEffect=ui->checkBoxDOFEffect->isChecked();
     updateSettings();
 }
 
-void DockWidget3DSettings::loadSettings(){
-    QSettings settings(QString(AB_INI), QSettings::IniFormat);
-
+void DockWidget3DSettings::loadSettings(QtnPropertySetAwesomeBump* settings){
     // 3D settings:
-    ui->horizontalSliderDepthScale  ->setValue(settings.value("3d_depth","0.25").toFloat()*100);
-    ui->checkBoxPerformanceCullFace ->setChecked(settings.value("bUseCullFace",false).toBool());
-    ui->checkBoxPerformanceSimplePBR->setChecked(settings.value("bUseSimplePBR",false).toBool());
-    ui->checkBoxBloomEffect         ->setChecked(settings.value("bBloomEffect",true).toBool());
-    ui->checkBoxDOFEffect           ->setChecked(settings.value("bDofEffect",true).toBool());
-    ui->checkBoxLensFlaresEffect    ->setChecked(settings.value("bLensFlaresEffect",true).toBool());
-    ui->comboBoxPerformanceNoRays   ->setCurrentIndex(settings.value("noPBRRays",0).toInt());
-    ui->comboBoxPerformanceNoTessSub->setCurrentIndex(settings.value("noTessSubdivision",0).toInt());
+    ui->horizontalSliderDepthScale  ->setValue(settings->depth_3d*100);
+    ui->checkBoxPerformanceCullFace ->setChecked(settings->bUseCullFace);
+    ui->checkBoxPerformanceSimplePBR->setChecked(settings->bUseSimplePBR);
+    ui->checkBoxBloomEffect         ->setChecked(settings->bBloomEffect);
+    ui->checkBoxDOFEffect           ->setChecked(settings->bDofEffect);
+    ui->checkBoxLensFlaresEffect    ->setChecked(settings->bLensFlaresEffect);
+    ui->comboBoxPerformanceNoRays   ->setCurrentIndex(settings->noPBRRays);
+    ui->comboBoxPerformanceNoTessSub->setCurrentIndex(settings->noTessSubdivision);
     updateSettings();
 }
 
 DockWidget3DSettings::~DockWidget3DSettings()
 {
+    qDebug() << "calling" << Q_FUNC_INFO;
     delete ui;
 }

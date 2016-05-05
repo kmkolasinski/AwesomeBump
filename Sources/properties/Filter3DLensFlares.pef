@@ -6,13 +6,13 @@ property_set Filter3DLensFlares
     Bool EnableEffect
     {
         description = "EnableEffect";
-        name      = "Enable Lens Flares";
+        displayName      = "Enable Lens Flares";
         value     = true;
     }
     Int NoSamples
     {
         description = "Number of samples";
-        name      = "Num. samples";
+        displayName      = "Num. samples";
         value     = 8;
         minValue  = 1;
         maxValue  = 20;
@@ -21,7 +21,7 @@ property_set Filter3DLensFlares
     Float Dispersal
     {
         description = "Dispersal";
-        name      = "Dispersal";
+        displayName      = "Dispersal";
         value     = 0.25f;
         minValue  = 0.0f;
         maxValue  = 5.0f;
@@ -30,7 +30,7 @@ property_set Filter3DLensFlares
     Float HaloWidth
     {
         description = "Halo width";
-        name      = "Halo width";
+        displayName      = "Halo width";
         value     = 0.5f;
         minValue  = 0.0f;
         maxValue  = 1.0f;
@@ -39,7 +39,7 @@ property_set Filter3DLensFlares
     Float Distortion
     {
         description = "Distortion";
-        name      = "Distortion";
+        displayName      = "Distortion";
         value     = 1.0f;
         minValue  = 0.0f;
         maxValue  = 10.0f;
@@ -49,7 +49,7 @@ property_set Filter3DLensFlares
     Float weightLF
     {
         description = "Effect strength";
-        name      = "Strength";
+        displayName      = "Strength";
         value     =10.0f;
         minValue  = 0.0f;
         maxValue  =50.0f;

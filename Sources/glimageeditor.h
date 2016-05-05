@@ -90,6 +90,7 @@ public:
     void updateCornersPosition(QVector2D dc1,QVector2D dc2,QVector2D dc3,QVector2D dc4);
     void render();
 
+
     FBOImageProporties* targetImageDiffuse;
     FBOImageProporties* targetImageNormal;
     FBOImageProporties* targetImageHeight;
@@ -102,7 +103,7 @@ public:
     FBOImageProporties* targetImageMaterial;
 public slots:
     void resizeFBO(int width, int height);
-
+    void imageChanged();
     void resetView();
     void selectPerspectiveTransformMethod(int method);
     void selectUVManipulationMethod(UVManipulationMethods method);
@@ -156,6 +157,9 @@ public:
     void applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* outputFBO);
 
+    void applyAddNoiseFilter(QGLFramebufferObject* inputFBO,
+                             QGLFramebufferObject* outputFBO);
+
     void applyGaussFilter(QGLFramebufferObject* sourceFBO, QGLFramebufferObject *auxFBO,
                           QGLFramebufferObject* outputFBO, int no_iter, float w =0);
 
@@ -174,19 +178,13 @@ public:
 
     void applyDGaussiansFilter(QGLFramebufferObject* inputFBO,
                              QGLFramebufferObject *auxFBO,
-                             QGLFramebufferObject* outputFBO, bool bUseSelectiveBlur = false);
+                             QGLFramebufferObject* outputFBO);
 
     void applyContrastFilter(QGLFramebufferObject* inputFBO,
-                             QGLFramebufferObject* outputFBO, bool bUseSelectiveBlur = false);
+                             QGLFramebufferObject* outputFBO);
 
     void applyHeightProcessingFilter( QGLFramebufferObject* inputFBO,
-                                      QGLFramebufferObject* outputFBO,
-                                      bool bUseSelectiveBlur = false);
-
-    void applyMaskedGaussFilter(QGLFramebufferObject* sourceFBO,
-                                QGLFramebufferObject* maskFBO,
-                                QGLFramebufferObject *auxFBO, QGLFramebufferObject *aux2FBO,
-                                QGLFramebufferObject* outputFBO);
+                                      QGLFramebufferObject* outputFBO);
 
     void applyRemoveLowFreqFilter(QGLFramebufferObject* inputFBO,
                                   QGLFramebufferObject* auxFBO,

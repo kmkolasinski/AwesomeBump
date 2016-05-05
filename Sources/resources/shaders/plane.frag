@@ -243,6 +243,10 @@ vec2 wang_hash()
     return seed*(1.0 / 4294967296.0);
 }
 
+//float rand(){
+//    return fract(sin(dot(v2QuadCoords.xy ,vec2(12.9898,78.233))) * 43758.5453);
+//}
+
 vec3 calc_random_vec(float roughness,vec3 up,vec3 right,vec3 dir){
 
     vec2 fseed = clamp(wang_hash(),vec2(0),vec2(1));

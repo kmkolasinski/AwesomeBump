@@ -7,14 +7,14 @@ property_set Filter3DToneMapping
     Bool EnableEffect
     {
         description = "EnableEffect";
-        name      = "Enable Reinhard tone mapping.";
+        displayName      = "Enable Reinhard tone mapping.";
         value     = true;
     }
 
     Float Delta
     {
         description = "Logarithm offset";
-        name      = "Delta";
+        displayName      = "Delta";
         value     = 1.0f;
         minValue  = 0.01f;
         maxValue  = 1.0f;
@@ -23,7 +23,7 @@ property_set Filter3DToneMapping
     Float Scale
     {
         description = "Parameter that scales the exposure of the pixel. Small values (0.0 to 0.2) will underexpose the image and higher values (0.5 to 1.0) will tend to overexpose the image.";
-        name      = "Scale";
+        displayName      = "Scale";
         value     = 0.5f;
         minValue  = 0.0f;
         maxValue  = 2.0f;
@@ -32,7 +32,7 @@ property_set Filter3DToneMapping
     Float LumMaxWhite
     {
         description = "It is the smallest luminance that will be mapped to pure white.";
-        name      = "Max. white";
+        displayName      = "Max. white";
         value     = 1.0f;
         minValue  = 0.0f;
         maxValue  = 5.0f;
@@ -42,7 +42,7 @@ property_set Filter3DToneMapping
     Float GammaCorrection
     {
         description = "Gamma correction";
-        name      = "Gamma";
+        displayName      = "Gamma";
         value     = 0.6f;
         minValue  = 0.0f;
         maxValue  = 1.5f;
@@ -52,7 +52,7 @@ property_set Filter3DToneMapping
     Float BlendingWeight
     {
         description = "Performe mixing between oryginal image and tonned one. Weight=0 restores oryginal image.";
-        name      = "Weight";
+        displayName      = "Weight";
         value     = 0.8f;
         minValue  = 0.0f;
         maxValue  = 1.0f;
