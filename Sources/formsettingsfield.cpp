@@ -54,6 +54,7 @@ FormSettingsField::FormSettingsField(QString config_name, QWidget *parent):
     connect(ui->pushButtonDelete,SIGNAL(released()),this,SLOT(deleteSettings()));
     connect(ui->pushButtonSave  ,SIGNAL(released()),this,SLOT(saveSettings()));
     connect(ui->pushButtonLoad  ,SIGNAL(released()),this,SLOT(loadSettings()));
+    connect(ui->pushButtonLoadAndConv  ,SIGNAL(released()),this,SLOT(loadAndConvert()));
 
     connect(ui->lineEditName        ,SIGNAL(textChanged(QString)),this,SLOT(nameChanged(QString)));
     connect(ui->textEditDescription ,SIGNAL(textChanged()),this,SLOT(dataChanged()));
@@ -108,6 +109,13 @@ void FormSettingsField::loadSettings(){
     setAutoFillBackground(true);
     setPalette(p);
 }
+
+void FormSettingsField::loadAndConvert(){
+    loadSettings();
+    emit emitLoadAndConvert();
+}
+
+
 void FormSettingsField::resetBackGroundColor(){
     QPalette p(palette());
     p.setColor(QPalette::Background, Qt::transparent);

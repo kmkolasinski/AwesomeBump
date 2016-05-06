@@ -9,7 +9,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     ui(new Ui::FormImageProp)
 {
     ui->setupUi(this);
-    imageProp.properties = new QtnPropertySetFormImageProp(this);
+
     ui->widgetProperty->setParts(QtnPropertyWidgetPartsDescriptionPanel);
     ui->widgetProperty->setPropertySet(imageProp.properties);
 
@@ -264,7 +264,7 @@ FormImageProp::~FormImageProp()
 {
     qDebug() << "calling" << Q_FUNC_INFO;
     delete heightCalculator;    
-    delete imageProp.properties;
+    //delete imageProp.properties;
     delete ui;
 }
 

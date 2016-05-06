@@ -128,7 +128,6 @@ FORMS += \
     formsettingsfield.ui \
     formsettingscontainer.ui \
     dialoglogger.ui \
-    formbasemapconversionlevels.ui \
     formmaterialindicesmanager.ui \
     allaboutdialog.ui \
     dialogshortcuts.ui \

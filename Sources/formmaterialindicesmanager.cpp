@@ -21,6 +21,7 @@ FormMaterialIndicesManager::FormMaterialIndicesManager(QMainWindow *parent, QGLW
 
 FormMaterialIndicesManager::~FormMaterialIndicesManager()
 {
+    qDebug() << "calling" << Q_FUNC_INFO;
     delete ui;
 }
 
@@ -97,12 +98,10 @@ bool FormMaterialIndicesManager::updateMaterials(QImage& image){
     qDebug() << "Updating material indices. Total indices count:" << ui->listWidgetMaterialIndices->count();
     for(int i = 0 ; i < METALLIC_TEXTURE ; i++){
         materialIndices[i].clear();
-        FBOImageProporties tmp;
-        tmp.copySettings(imagesPointers[i]->imageProp);
-
-
         for(int m = 0 ; m < ui->listWidgetMaterialIndices->count() ; m++){
             QString m_name = ui->listWidgetMaterialIndices->item(m)->text();
+            FBOImageProporties tmp;
+            tmp.copySettings(imagesPointers[i]->imageProp);
             materialIndices[i][m_name] = tmp;
         }
     }
@@ -128,28 +127,29 @@ void FormMaterialIndicesManager::changeMaterial(int index){
     // copy current settings
     ui->listWidgetMaterialIndices->item(lastMaterialIndex)->setText("Material"+QString::number(lastMaterialIndex+1));
 
-    for(int i = 0 ; i < METALLIC_TEXTURE ; i++){
-        QString m_name = ui->listWidgetMaterialIndices->item(lastMaterialIndex)->text();
+    QString m_name = ui->listWidgetMaterialIndices->item(lastMaterialIndex)->text();
+    for(int i = 0 ; i < METALLIC_TEXTURE ; i++){        
         materialIndices[i][m_name].copySettings(imagesPointers[i]->imageProp);
-
     }
 
     lastMaterialIndex = index;
-    // load different material
-    for(int i = 0 ; i < METALLIC_TEXTURE ; i++){
-        QString m_name = ui->listWidgetMaterialIndices->item(index)->text();
-
-        imagesPointers[i]->imageProp.copySettings(materialIndices[i][m_name]);
-
-        imagesPointers[i]->reloadSettings();
-    }
-
-    QString cText = ui->listWidgetMaterialIndices->item(lastMaterialIndex)->text();
-    ui->listWidgetMaterialIndices->item(lastMaterialIndex)->setText(cText+" (selected material)");
 
     // update current mask color
     QColor bgColor = ui->listWidgetMaterialIndices->item(lastMaterialIndex)->backgroundColor();
     FBOImageProporties::currentMaterialIndeks = bgColor.red()*255*255 + bgColor.green()*255 + bgColor.blue();
+
+    // load different material
+    m_name = ui->listWidgetMaterialIndices->item(index)->text();
+    for(int i = 0 ; i < METALLIC_TEXTURE ; i++){
+        imagesPointers[i]->imageProp.copySettings(materialIndices[i][m_name]);
+        imagesPointers[i]->reloadSettings();
+    }
+
+
+    QString cText = ui->listWidgetMaterialIndices->item(lastMaterialIndex)->text();
+    ui->listWidgetMaterialIndices->item(lastMaterialIndex)->setText(cText+" (selected material)");
+
+
 
     emit materialChanged();
 }

@@ -25,6 +25,7 @@ public slots:
     void deleteSettings();// remove files
     void saveSettings();  // copy config.ini file to current settings file
     void loadSettings();  // copy settings file to main config.ini file
+    void loadAndConvert(); // same as loadSettings but also convert images from diffuse
     void dataChanged();
     void nameChanged(QString text);
     void resetBackGroundColor();
@@ -34,7 +35,7 @@ signals:
     void emitDeleteSettings(FormSettingsField*);
     void emitSaveSettings();
     void emitLoadSettings(FormSettingsField*);
-
+    void emitLoadAndConvert();
 private:
 
     Ui::FormSettingsField *ui;
