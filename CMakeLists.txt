@@ -61,16 +61,15 @@ set(AwesomeBump_SRCS
     Sources/camera.cpp Sources/dialogheightcalculator.cpp Sources/camera.cpp
     Sources/dialogheightcalculator.cpp Sources/camera.cpp Sources/gpuinfo.cpp
     Sources/dialogheightcalculator.cpp Sources/dialoglogger.cpp Sources/dialogshortcuts.cpp
-    Sources/dialoglogger.cpp Sources/dialogshortcuts.cpp Sources/formimagebase.cpp
-    Sources/formbasemapconversionlevels.cpp Sources/formimagebase.cpp
-    Sources/formbasemapconversionlevels.cpp Sources/formimageprop.cpp
+    Sources/dialoglogger.cpp Sources/dialogshortcuts.cpp
+    Sources/formimagebase.cpp Sources/formimagebase.cpp Sources/formimageprop.cpp
     Sources/formmaterialindicesmanager.cpp Sources/formsettingscontainer.cpp
     Sources/formsettingsfield.cpp Sources/glimageeditor.cpp Sources/glwidget.cpp
     Sources/glwidgetbase.cpp Sources/mainwindow.cpp Sources/main.cpp
     Sources/dockwidget3dsettings.cpp) 
 
 # Configure the linker and finalize binary compilation
-add_executable(awesomebump ${AwesomeBump_SRCS} ${UI_HEADERS} ${UI_RESOURCES} Sources/resources/icon.icns)
+add_executable(awesomebump ${AwesomeBump_SRCS} ${UI_HEADERS} ${UI_RESOURCES} Sources/resources/icons/icon.icns)
 target_link_libraries(awesomebump Qt5::Core Qt5::DBus Qt5::Gui Qt5::Widgets Qt5::OpenGL
     GL)
 
