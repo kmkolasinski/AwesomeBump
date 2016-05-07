@@ -718,7 +718,7 @@ void GLImage::render(){
 
 
     // begin standart pipe-line (for each image)
-    //applyInvertComponentsFilter(activeFBO,auxFBO1);
+    applyInvertComponentsFilter(activeFBO,auxFBO1);
 
 
 
@@ -2285,17 +2285,6 @@ void GLImage::applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
         }
     }// end of if materials are enables
 
-/*
-    QFile file("asd.txt");
-    file.open(QIODevice::ReadWrite);
-    QTextStream stream(&file);
-    for(int i = 0 ; i < textureWidth ; i++){
-        for(int j = 0 ; j < textureHeight ; j++){
-            stream << i << "\t" << j << "\t" << img[3*(i+textureWidth*j)+0] << endl;
-        }
-        stream << endl;
-    }
-*/
     // prevent from singularities
     for(int k = 0; k < 3 ; k ++)
     if(qAbs(min[k] - max[k]) < 0.0001) max[k] += 0.1;

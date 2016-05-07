@@ -513,7 +513,7 @@ public:
             normalMixerInputTexId = 0;
             scr_tex_id = 0;
             glWidget_ptr = NULL;
-            qDebug() << "p=" << properties;
+            //qDebug() << "p=" << properties;
             if(properties != NULL ) delete properties;
             if(fbo        != NULL ) delete fbo;
             properties = NULL;
