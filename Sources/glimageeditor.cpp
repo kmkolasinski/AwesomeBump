@@ -719,6 +719,7 @@ void GLImage::render(){
 
     // begin standart pipe-line (for each image)
     applyInvertComponentsFilter(activeFBO,auxFBO1);
+    copyFBO(auxFBO1,activeFBO);
 
 
 
