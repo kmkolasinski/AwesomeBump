@@ -67,6 +67,12 @@ set(AwesomeBump_SRCS
     Sources/formsettingsfield.cpp Sources/glimageeditor.cpp Sources/glwidget.cpp
     Sources/glwidgetbase.cpp Sources/mainwindow.cpp Sources/main.cpp
     Sources/dockwidget3dsettings.cpp) 
+if(EXISTS ${CMAKE_SOURCE_DIR}/Sources/utils/QtnProperty/QtnPropertyUnity.cpp)
+ set(AwesomeBump_SRCS
+ 	Sources/utils/QtnProperty/QtnPropertyUnity.cpp)
+else()
+ message(FATAL_ERROR "Could not find QtnProperty.")
+endif()
 
 # Configure the linker and finalize binary compilation
 add_executable(awesomebump ${AwesomeBump_SRCS} ${UI_HEADERS} ${UI_RESOURCES} Sources/resources/icons/icon.icns)
