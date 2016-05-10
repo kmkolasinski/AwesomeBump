@@ -112,6 +112,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayout2DImage->addWidget(settingsContainer);
     settingsContainer->hide();
     connect(settingsContainer,SIGNAL(reloadConfigFile()),this,SLOT(loadSettings()));
+    connect(settingsContainer,SIGNAL(emitLoadAndConvert()),this,SLOT(convertFromBase()));
     connect(settingsContainer,SIGNAL(forceSaveCurrentConfig()),this,SLOT(saveSettings()));
     connect(ui->pushButtonProjectManager,SIGNAL(toggled(bool)),settingsContainer,SLOT(setVisible(bool)));
 
@@ -1329,6 +1330,8 @@ void MainWindow::convertFromNtoH(){
 
 
 void MainWindow::convertFromBase(){
+    FBOImageProporties* lastActive = glImage->getActiveImage();
+    glImage->setActiveImage(diffuseImageProp->getImageProporties());
     qDebug() << "Conversion from Base to others started";
     normalImageProp   ->setImageName(diffuseImageProp->getImageName());
     heightImageProp   ->setImageName(diffuseImageProp->getImageName());
@@ -1340,6 +1343,9 @@ void MainWindow::convertFromBase(){
     glImage->updateGLNow();
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
     replotAllImages();
+
+    glImage->setActiveImage(lastActive);
+    glWidget->update();
     qDebug() << "Conversion from Base to others applied";
 }
 

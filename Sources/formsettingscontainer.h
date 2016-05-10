@@ -25,10 +25,12 @@ public slots:
     void removeSetting(FormSettingsField* field); // destroys also files
     void reloadSettings(FormSettingsField* field);
     void saveSettings();
+    void loadAndConvert();
     void filterPresets(QString filter);
 signals:
     void reloadConfigFile(); // force main window to read config.ini again
     void forceSaveCurrentConfig(); // current configs will be save to config.ini file
+    void emitLoadAndConvert(); // load settings and convert images
 private:
 
     Ui::FormSettingsContainer *ui;

@@ -426,7 +426,8 @@ public:
 
 
      FBOImageProporties(){
-        bSkipProcessing = false;        
+        bSkipProcessing = false;
+        properties      = NULL;
         fbo             = NULL;
         normalMixerInputTexId = 0;
         glWidget_ptr = NULL;
@@ -436,14 +437,17 @@ public:
         bConversionBaseMap = false;
         inputImageType = INPUT_NONE;
         seamlessMode   = SEAMLESS_NONE;
+        properties     = new QtnPropertySetFormImageProp;
      }
 
      void copySettings(FBOImageProporties &src){
 
-        bFirstDraw   = src.bFirstDraw;        
-        conversionHNDepth  = src. conversionHNDepth;        
+        bFirstDraw         = src.bFirstDraw;
+        conversionHNDepth  = src.conversionHNDepth;
         bConversionBaseMap = src.bConversionBaseMap;
-        inputImageType = src.inputImageType;
+        inputImageType     = src.inputImageType;
+
+        if(properties != NULL && src.properties != NULL ) properties->copyValues(src.properties);
      }
 
     void init(QImage& image){
@@ -509,7 +513,11 @@ public:
             normalMixerInputTexId = 0;
             scr_tex_id = 0;
             glWidget_ptr = NULL;
+            //qDebug() << "p=" << properties;
+            if(properties != NULL ) delete properties;
             if(fbo        != NULL ) delete fbo;
+            properties = NULL;
+            fbo        = NULL;
         }
     }
 };

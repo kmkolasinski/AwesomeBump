@@ -494,9 +494,9 @@ void GLImage::render(){
     GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageMaterial->scr_tex_id) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
 
-
-    copyTex2FBO(activeImage->scr_tex_id,activeImage->fbo);
-
+//    if(int(activeImage->currentMaterialIndeks) < 0){
+        copyTex2FBO(activeImage->scr_tex_id,activeImage->fbo);
+//    }
 
 
     // in some cases the output image will be taken from other sources
@@ -711,6 +711,7 @@ void GLImage::render(){
     }
 
 
+
     // skip all processing and when mouse is dragged
     if(!bSkipStandardProcessing){
 
@@ -718,6 +719,7 @@ void GLImage::render(){
 
     // begin standart pipe-line (for each image)
     applyInvertComponentsFilter(activeFBO,auxFBO1);
+    copyFBO(auxFBO1,activeFBO);
 
 
 
@@ -727,9 +729,10 @@ void GLImage::render(){
        activeImage->imageType != ROUGHNESS_TEXTURE){
 
         // hue manipulation
-        applyColorHueFilter(auxFBO1,activeFBO);
-        copyFBO(activeFBO,auxFBO1);
+        applyColorHueFilter(activeFBO,auxFBO1);
+        copyFBO(auxFBO1,activeFBO);
     }
+
 
 
     if(BasicProp.GrayScale.EnableGrayScale ||
@@ -852,7 +855,8 @@ void GLImage::render(){
     // -------------------------------------------------------- //
 
     if(!bToggleColorPicking) // skip this step if the Color picking is enabled
-    if(activeImage->imageType == DIFFUSE_TEXTURE && activeImage->bConversionBaseMap){
+    if(activeImage->imageType == DIFFUSE_TEXTURE &&
+            (activeImage->bConversionBaseMap || conversionType == CONVERT_FROM_D_TO_O )){
 
         // create mipmaps
         copyTex2FBO(activeFBO->texture(),auxFBO0BMLevels[0]);
@@ -896,7 +900,6 @@ void GLImage::render(){
         }
     } // end of base map conversion
     }// end of skip standard processing
-
 
 
     // copying the conversion results to proper textures
@@ -962,12 +965,10 @@ void GLImage::render(){
 
     if(!bShadowRender){
         GLCHK(FBOImages::resize(renderFBO,activeFBO->width(),activeFBO->height()));
+        GLCHK( program->setUniformValue("material_id", int(-1)) );
         GLCHK(applyNormalFilter(activeFBO,renderFBO));
-
     }
     emit rendered();
-
-
 }
 
 void GLImage::showEvent(QShowEvent* event){
@@ -2285,17 +2286,6 @@ void GLImage::applyCPUNormalizationFilter(QGLFramebufferObject* inputFBO,
         }
     }// end of if materials are enables
 
-/*
-    QFile file("asd.txt");
-    file.open(QIODevice::ReadWrite);
-    QTextStream stream(&file);
-    for(int i = 0 ; i < textureWidth ; i++){
-        for(int j = 0 ; j < textureHeight ; j++){
-            stream << i << "\t" << j << "\t" << img[3*(i+textureWidth*j)+0] << endl;
-        }
-        stream << endl;
-    }
-*/
     // prevent from singularities
     for(int k = 0; k < 3 ; k ++)
     if(qAbs(min[k] - max[k]) < 0.0001) max[k] += 0.1;
@@ -2345,7 +2335,6 @@ void GLImage::applyAddNoiseFilter(QGLFramebufferObject* inputFBO,
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    qDebug() << "aaa=" << targetImageHeight->properties->NormalHeightConv.NoiseLevel;
     GLCHK( program->setUniformValue("gui_add_noise_amp"  , float(targetImageHeight->properties->NormalHeightConv.NoiseLevel/100.0) ));
 
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
@@ -3107,6 +3096,7 @@ void GLImage::pickImageColor( QtnPropertyABColor* property) {
 
 void GLImage::copyRenderToPaintFBO(){
      GLCHK(FBOImages::resize(paintFBO,renderFBO->width(),renderFBO->height()));
+     GLCHK( program->setUniformValue("material_id", int(-1)) );
      copyFBO(renderFBO,paintFBO);
      bRendering      = false;
 }
