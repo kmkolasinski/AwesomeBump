@@ -1,131 +1,24 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="127mm"
-   height="145.07507mm"
-   viewBox="0 0 450 514.04553"
-   id="svg2"
-   version="1.1"
-   inkscape:version="0.91pre3 r13670"
-   sodipodi:docname="pasteFromCB.svg">
-  <defs
-     id="defs4" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="-66.823085"
-     inkscape:cy="179.19063"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="true"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0"
-     inkscape:window-width="1600"
-     inkscape:window-height="838"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1">
-    <inkscape:grid
-       type="xygrid"
-       id="grid4169"
-       originx="-860px"
-       originy="397.1429px" />
-  </sodipodi:namedview>
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-860,-935.45954)">
-    <g
-       id="g4232">
-      <path
-         inkscape:connector-curvature="0"
-         id="path4171"
-         d="m 860,999.50506 0,450.00004 450,0 0,-450.00004 -60,0 0,100.00004 -320,0 0,-100.00004 z"
-         style="fill:#6a6a6a;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path4173"
-         d="m 960,999.50506 0,65.00004 255,0 0,-65.00004 -65,0 -55,50.00004 -15,0 -55,-50.00004 z"
-         style="fill:#6a6a6a;fill-opacity:1;fill-rule:evenodd;stroke:#6a6a6a;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <ellipse
-         ry="46.183804"
-         rx="49.801109"
-         cy="995.14795"
-         cx="1087.75"
-         id="path4179"
-         style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#6a6a6a;stroke-width:27.00920296;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="887.18506"
-       y="1236.9769"
-       id="text4196"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4198"
-         x="887.18506"
-         y="1236.9769"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:125px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">Paste</tspan></text>
-    <g
-       id="g4227">
-      <path
-         inkscape:connector-curvature="0"
-         id="path4171-9"
-         d="m 1524.0508,996.25629 0,450.00001 450,0 0,-450.00001 -60,0 0,100.00001 -320,0 0,-100.00001 z"
-         style="fill:#6a6a6a;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path4173-5"
-         d="m 1624.0508,996.25629 0,65.00001 255,0 0,-65.00001 -65,0 -55,50.00001 -15,0 -55,-50.00001 z"
-         style="fill:#6a6a6a;fill-opacity:1;fill-rule:evenodd;stroke:#6a6a6a;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <ellipse
-         ry="46.183804"
-         rx="49.801109"
-         cy="991.89911"
-         cx="1751.8008"
-         id="path4179-4"
-         style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#6a6a6a;stroke-width:27.00920296;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="1574.1851"
-       y="1222.986"
-       id="text4196-7"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4198-2"
-         x="1574.1851"
-         y="1222.986"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:125px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">Copy</tspan></text>
-  </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.4, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Tiny//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd">
+<svg version="1.1" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+	 x="0px" y="0px" width="65.334px" height="65.334px" viewBox="0 0 65.334 65.334" xml:space="preserve">
+<g>
+	<rect x="47.27" y="35.585" fill="#FFFFFF" width="8.584" height="23.48"/>
+	<rect x="6.354" y="25.834" fill="#FFFFFF" width="40.917" height="33.231"/>
+	<rect x="6.354" y="9.066" fill="#FFFFFF" width="36.917" height="16.769"/>
+	<path fill="#666766" d="M28.355,54.065H9.065h-1v-1v-38v-2h1h2v-4h-6c-1.104,0-2,0.895-2,2v46c0,1.105,0.896,2,2,2h26.038
+		C29.961,57.55,29.032,55.872,28.355,54.065z"/>
+	<path fill="#666766" d="M35.066,9.065c0-1.104-0.895-2-2-2h-3.1c-0.465-2.283-2.48-4-4.9-4c-2.418,0-4.436,1.717-4.898,4h-3.102
+		c-1.105,0-2,0.896-2,2v4h20V9.065z"/>
+	<path fill="#666766" d="M42.066,13.065v2v12.658c1.602-0.414,3.27-0.658,5-0.658v-16c0-1.105-0.895-2-2-2h-6v4h2H42.066z"/>
+	<path fill="#666766" d="M27.065,47.065c0-0.674,0.036-1.342,0.102-2h-8.102c-1.104,0-2-0.895-2-2c0-1.104,0.896-2,2-2h8.923
+		c0.69-2.191,1.764-4.209,3.117-6.004c-0.014,0-0.025,0.004-0.04,0.004h-12c-1.104,0-2-0.895-2-2c0-1.104,0.896-2,2-2h12
+		c1.022,0,1.857,0.771,1.976,1.764c1.47-1.447,3.166-2.658,5.025-3.6V17.065h-2h-22h-2v33h15.25
+		C27.167,49.085,27.065,48.089,27.065,47.065z M19.065,21.065h12c1.104,0,2,0.896,2,2c0,1.105-0.896,2-2,2h-12c-1.104,0-2-0.895-2-2
+		C17.065,21.962,17.961,21.065,19.065,21.065z"/>
+</g>
+<path fill="#666766" d="M47.066,31.065c-8.836,0-16,7.162-16,16s7.165,16,16,16s16-7.162,16-16S55.902,31.065,47.066,31.065z
+	 M54.488,50.474l-7.422,7.42l-7.422-7.42c-0.781-0.781-0.781-2.047,0-2.828c0.779-0.781,2.047-0.781,2.828,0l2.594,2.592V39.054
+	c0-1.104,0.895-2,2-2c1.104,0,2,0.896,2,2v11.184l2.594-2.592c0.781-0.781,2.047-0.781,2.828,0S55.269,49.692,54.488,50.474z"/>
 </svg>
