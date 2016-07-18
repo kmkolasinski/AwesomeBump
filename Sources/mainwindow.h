@@ -7,21 +7,21 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QDir>
-#include "glwidget.h"
 
-#include "glimageeditor.h"
-#include "formimageprop.h"
-#include "formsettingscontainer.h"
-#include "formmaterialindicesmanager.h"
 #include "CommonObjects.h"
-#include "dialoglogger.h"
-#include "dialogshortcuts.h"
-#include "dockwidget3dsettings.h"
 
-#include "gpuinfo.h"
-#include "Property.h"
-#include "properties/Dialog3DGeneralSettings.h"
-#include <PropertySet.h>
+class QAction;
+class QLabel;
+
+class GLWidget;
+class GLImage;
+class FormImageProp;
+class FormMaterialIndicesManager;
+class FormSettingsContainer;
+class DockWidget3DSettings;
+class Dialog3DGeneralSettings;
+class DialogLogger;
+class DialogShortcuts;
 
 namespace Ui {
 class MainWindow;
@@ -36,16 +36,25 @@ public:
 
     QSize sizeHint() const;
     ~MainWindow();
+
 protected:
+
      void closeEvent(QCloseEvent *event);
      void resizeEvent(QResizeEvent* event);
      void showEvent(QShowEvent* event);
+
+signals:
+
+	void initProgress(int perc);
+	void initMessage(const QString &msg);
 
 public slots:
 
     void aboutQt();
     void about();
   
+	void initializeApp();
+
     void initializeGL();
     void initializeImages();
 

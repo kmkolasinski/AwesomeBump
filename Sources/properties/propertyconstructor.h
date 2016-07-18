@@ -5,11 +5,14 @@
 #include <QDebug>
 #include <QString>
 
+extern QString _find_data_dir(const QString& resource);
+
+
 QStringList init_grunge_maps(){
     // ------------------------------------------------------- //
     //               Loading grunge maps folders
     // ------------------------------------------------------- //
-    qDebug() << "Loading Grunge maps:";
+    qDebug() << "Loading grunge maps:";
     QDir currentDir(QString(RESOURCE_BASE) + "Core/2D/grunge");
     currentDir.setFilter(QDir::Files);
     QStringList entries = currentDir.entryList();
@@ -34,9 +37,12 @@ QString first_grunge_map(){
         if(dirname != QString(".") && dirname != QString("..")){
             grungeMaps << dirname;
         }
-    }// end of for
-    qDebug() << "First grunge map:" << grungeMaps[0];
-    return grungeMaps[0];
+    } // end of for
+    if (grungeMaps.size()) {
+	    qDebug() << "First grunge map:" << grungeMaps[0];
+	    return grungeMaps[0];
+	} else
+		return ""; // TODO: Maybe some qrc placeholder ?
 }
 
 

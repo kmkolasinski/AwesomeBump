@@ -1,8 +1,23 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+#include "glwidget.h"
+#include "glimageeditor.h"
+#include "formimageprop.h"
+#include "formsettingscontainer.h"
+#include "formmaterialindicesmanager.h"
+#include "dialoglogger.h"
+#include "dialogshortcuts.h"
+#include "dockwidget3dsettings.h"
+
+#include "gpuinfo.h"
+#include <Property.h>
+#include <PropertySet.h>
+#include "properties/Dialog3DGeneralSettings.h"
+
 #include <iostream>
 
-extern QString _find_data_dir(const QString& path);
+extern QString _find_data_dir(const QString& resource);
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,20 +32,28 @@ MainWindow::MainWindow(QWidget *parent) :
     FormImageProp::recentDir    = &recentDir;
     GLWidget::recentMeshDir     = &recentMeshDir;
     abSettings                  = new QtnPropertySetAwesomeBump(this);
+    
     ui->setupUi(this);
 
-    statusLabel = new QLabel("Memory left:");
+    statusLabel = new QLabel("GPU memory status: n/a");
 #ifdef Q_OS_MAC
     if(!statusLabel->testAttribute(Qt::WA_MacNormalSize)) statusLabel->setAttribute(Qt::WA_MacSmallSize);
 #endif
 
     glImage          = new GLImage(this);
     glWidget         = new GLWidget(this,glImage);
+}
 
+#define INIT_PROGRESS(p,m) \
+	emit initProgress(p); \
+	emit initMessage(m); \
+	qApp->processEvents();
 
-
-
+void MainWindow::initializeApp()
+{
     connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
+
+	INIT_PROGRESS(10, "Build image properties");
 
     diffuseImageProp  = new FormImageProp(this,glImage);
     normalImageProp   = new FormImageProp(this,glImage);
@@ -41,8 +64,9 @@ MainWindow::MainWindow(QWidget *parent) :
     metallicImageProp = new FormImageProp(this,glImage);
     grungeImageProp   = new FormImageProp(this,glImage);
 
-
     materialManager = new FormMaterialIndicesManager(this,glImage);
+
+	INIT_PROGRESS(20, "Setup image properties");
 
     // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
@@ -63,9 +87,8 @@ MainWindow::MainWindow(QWidget *parent) :
     occlusionImageProp->setupPopertiesGUI();
     roughnessImageProp->setupPopertiesGUI();
     metallicImageProp->setupPopertiesGUI();
-//    materialManager->setupPopertiesGUI();
+	// materialManager->setupPopertiesGUI();
     grungeImageProp->setupPopertiesGUI();
-
 
     // setting pointers to images
 
@@ -76,8 +99,6 @@ MainWindow::MainWindow(QWidget *parent) :
     materialManager->imagesPointers[4]  = occlusionImageProp;
     materialManager->imagesPointers[5]  = roughnessImageProp;
     materialManager->imagesPointers[6]  = metallicImageProp;
-
-
 
 
     // Setting pointers to 3D view (this pointer are used to bindTextures).
@@ -91,7 +112,6 @@ MainWindow::MainWindow(QWidget *parent) :
     glWidget->setPointerToTexture(&materialManager->getImageProporties()->fbo,MATERIAL_TEXTURE);
 
 
-
     glImage ->targetImageNormal    = normalImageProp   ->getImageProporties();
     glImage ->targetImageHeight    = heightImageProp   ->getImageProporties();
     glImage ->targetImageSpecular  = specularImageProp ->getImageProporties();
@@ -101,6 +121,8 @@ MainWindow::MainWindow(QWidget *parent) :
     glImage ->targetImageMetallic  = metallicImageProp ->getImageProporties();
     glImage ->targetImageMaterial  = materialManager   ->getImageProporties();
     glImage ->targetImageGrunge    = grungeImageProp   ->getImageProporties();
+
+	INIT_PROGRESS(30, "GUI setup");
 
     // ------------------------------------------------------
     //                      GUI setup
@@ -135,8 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayout3DImage->addWidget(glWidget);
     ui->verticalLayout2DImage->addWidget(glImage);
 
-
-
+	INIT_PROGRESS(40, "Adding widgets.");
 
     ui->verticalLayoutDiffuseImage  ->addWidget(diffuseImageProp);
     ui->verticalLayoutNormalImage   ->addWidget(normalImageProp);
@@ -168,8 +189,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(metallicImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateMetallicImage()));
     connect(grungeImageProp     ,SIGNAL(imageChanged()),this,SLOT(updateGrungeImage()));
 
-
-
+	INIT_PROGRESS(50, "Connections and actions.");
 
     // grunge
     connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),diffuseImageProp     ,SLOT(toggleGrungeImageSettingsGroup(bool)));
@@ -246,7 +266,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButtonSaveCurrentSettings ,SIGNAL(released()),this,SLOT(saveSettings()));
     connect(ui->comboBoxImageOutputFormat     ,SIGNAL(activated(int)),this,SLOT(setOutputFormat(int)));
 
-
     // Other staff
 
     ui->progressBar->setValue(0);
@@ -263,7 +282,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowGrungeTexture  ,SIGNAL(triggered()),this,SLOT(selectGrungeTab()));
 
 
-
     connect(ui->checkBoxSaveDiffuse ,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
     connect(ui->checkBoxSaveNormal  ,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
     connect(ui->checkBoxSaveSpecular,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
@@ -273,17 +291,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->checkBoxSaveMetallic,SIGNAL(toggled(bool)),this,SLOT(showHideTextureTypes(bool)));
 
 
-
-
     connect(ui->actionShowSettingsImage ,SIGNAL(triggered()),this,SLOT(selectGeneralSettingsTab()));
     connect(ui->actionShowUVsTab        ,SIGNAL(triggered()),this,SLOT(selectUVsTab()));
     connect(ui->actionFitToScreen       ,SIGNAL(triggered()),this,SLOT(fitImage()));
+
+	INIT_PROGRESS(60, "Perspective tool connections.");
 
     // perspective tool
     connect(ui->pushButtonResetTransform            ,SIGNAL(released()),this,SLOT(resetTransform()));
     connect(ui->comboBoxPerspectiveTransformMethod  ,SIGNAL(activated(int)),glImage,SLOT(selectPerspectiveTransformMethod(int)));
     connect(ui->comboBoxSeamlessMode                ,SIGNAL(activated(int)),this,SLOT(selectSeamlessMode(int)));
     connect(ui->comboBoxSeamlessContrastInputImage  ,SIGNAL(activated(int)),this,SLOT(selectContrastInputImage(int)));
+
+	INIT_PROGRESS(70, "UV seamless connections.");
 
     // uv seamless algorithms
     connect(ui->checkBoxUVTranslationsFirst,SIGNAL(clicked()),this,SLOT(updateSliders()));
@@ -337,6 +357,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(diffuseImageProp    ,SIGNAL(pickImageColor( QtnPropertyABColor*)),glImage,SLOT(pickImageColor( QtnPropertyABColor*)));
     connect(roughnessImageProp  ,SIGNAL(pickImageColor( QtnPropertyABColor*)),glImage,SLOT(pickImageColor( QtnPropertyABColor*)));
     connect(metallicImageProp   ,SIGNAL(pickImageColor( QtnPropertyABColor*)),glImage,SLOT(pickImageColor( QtnPropertyABColor*)));
+
     // 2D imate tool box settings
     QActionGroup *group = new QActionGroup( this );
     group->addAction( ui->actionTranslateUV );
@@ -370,6 +391,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Now we can load settings
     loadSettings();
 
+	INIT_PROGRESS(80, "Loading default (initial) textures.");
 
     // Loading default (initial) textures
     diffuseImageProp   ->setImage(QImage(QString(":/resources/logo/logo_D.png")));
@@ -396,6 +418,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Setting the active image
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
+	INIT_PROGRESS(90, "Updating main menu items.");
 
     aboutAction = new QAction(QIcon(":/resources/icons/cube.png"), tr("&About %1").arg(qApp->applicationName()), this);
     aboutAction->setToolTip(tr("Show information about AwesomeBump"));
@@ -431,11 +454,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QAction *action = ui->toolBar->toggleViewAction();
     ui->menubar->addAction(action);
 
+	INIT_PROGRESS(100, tr("Done - UI ready."));
 }
 
 MainWindow::~MainWindow()
 {
-    qDebug() << "calling" << Q_FUNC_INFO;
     delete dialogLogger;
     delete dialogShortcuts;
     delete materialManager;
@@ -461,7 +484,6 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event) {
     QWidget::closeEvent( event );
 
-    qDebug() << "calling" << Q_FUNC_INFO;
     settingsContainer->close();
     glWidget->close();
     glImage->close();
@@ -472,12 +494,10 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 void MainWindow::resizeEvent(QResizeEvent* event){
   QWidget::resizeEvent( event );
   replotAllImages();
-  qDebug() << "calling " << Q_FUNC_INFO;
 }
 
 void MainWindow::showEvent(QShowEvent* event){
   QWidget::showEvent( event );
-  qDebug() << "calling" << Q_FUNC_INFO;
   replotAllImages();
 }
 
@@ -488,35 +508,18 @@ void MainWindow::replotAllImages(){
     // skip grunge map if conversion is enabled
     if(glImage->getConversionType() != CONVERT_FROM_D_TO_O){        
         updateImage(GRUNGE_TEXTURE);
-        //glImage->update();
     }
 
     updateImage(DIFFUSE_TEXTURE);
-    //glImage->update();
-
     updateImage(ROUGHNESS_TEXTURE);
-    //glImage->update();
-
     updateImage(METALLIC_TEXTURE);
-   // glImage->update();
-
     updateImage(HEIGHT_TEXTURE);
-   // glImage->update();
-
     // recalulate normal at the end
     updateImage(NORMAL_TEXTURE);
-   // glImage->update();
     // then ambient occlusion
     updateImage(OCCLUSION_TEXTURE);
-    //glImage->update();
-
     updateImage(SPECULAR_TEXTURE);
-   // glImage->update();
-
     updateImage(MATERIAL_TEXTURE);
-   // glImage->update();
-
-
 
     glImage->enableShadowRender(false);
 
@@ -534,13 +537,13 @@ void MainWindow::replotAllImages(){
     GLint gpuMemAvail = glGpu.getAvailMem();
     if(gpuMemTotal > 0)
     {
-        menu_text = QString(" Memory Used:") + QString::number(float(gpuMemTotal - gpuMemAvail) / 1024.0f) + QString("[MB]")
-                  + QString(" Memory Free:") + QString::number(float(gpuMemAvail) / 1024.0f) + QString("[MB]")
-                  + QString(" Total Memory:") + QString::number(float(gpuMemTotal) / 1024.0f) + QString("[MB]");
+        menu_text = QString("GPU memory used:") + QString::number(float(gpuMemTotal - gpuMemAvail) / 1024.0f) + QString("[MB]")
+                  + QString(" GPU memory free:") + QString::number(float(gpuMemAvail) / 1024.0f) + QString("[MB]")
+                  + QString(" GPU total memory:") + QString::number(float(gpuMemTotal) / 1024.0f) + QString("[MB]");
     }
     else
     {
-        menu_text = QString(" Memory Free:") + QString::number(float(gpuMemAvail) / 1024.0f) + QString("[MB]");
+        menu_text = QString("GPU memory free:") + QString::number(float(gpuMemAvail) / 1024.0f) + QString("[MB]");
     }
 
     statusLabel->setText(menu_text);
@@ -1076,8 +1079,7 @@ void MainWindow::updateImage(int tType){
         default: // Settings
             return;
     }
-    //glImage->toggleColorPicking(false);
-    glWidget->repaint();
+    glWidget->update();
 }
 
 void MainWindow::changeWidth (int size=0){
@@ -1413,7 +1415,7 @@ void MainWindow::setUVManipulationMethod(){
 
 QSize MainWindow::sizeHint() const
 {
-    return QSize(abSettings->d_win_w,abSettings->d_win_h);
+	return QSize(abSettings->d_win_w,abSettings->d_win_h);
 }
 
 void MainWindow::loadImageSettings(TextureTypes type){
