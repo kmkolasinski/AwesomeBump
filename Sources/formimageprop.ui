@@ -1089,13 +1089,13 @@
   </connection>
   <connection>
    <sender>horizontalSliderNormalToHeightNoiseLevel</sender>
-   <signal>sliderMoved(int)</signal>
+   <signal>valueChanged(int)</signal>
    <receiver>label_2</receiver>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>250</x>
-     <y>526</y>
+     <x>239</x>
+     <y>544</y>
     </hint>
     <hint type="destinationlabel">
      <x>271</x>
