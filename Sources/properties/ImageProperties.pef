@@ -1189,6 +1189,9 @@ property_set AwesomeBump
     Int font_size{
         value = 10;
     }
+    QColor slider_font_color{
+        value = QColor(0,0,0);
+    }
     Bool mouse_loop{
         value = true;
     }

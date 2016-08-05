@@ -454,7 +454,12 @@ void MainWindow::initializeApp()
     QAction *action = ui->toolBar->toggleViewAction();
     ui->menubar->addAction(action);
 
+
+    selectDiffuseTab();
+
 	INIT_PROGRESS(100, tr("Done - UI ready."));
+
+
 }
 
 MainWindow::~MainWindow()
