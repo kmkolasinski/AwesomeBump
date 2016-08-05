@@ -2,6 +2,7 @@
 #include <QGLWidget>
 #include <QtOpenGL>
 #include <QDebug>
+#include "contextwidget.h"
 #include "allaboutdialog.h"
 #include "ui_allaboutdialog.h"
 #include "CommonObjects.h"
@@ -11,7 +12,7 @@ AllAboutDialog::AllAboutDialog(QWidget *parent, QGLWidget *surface) :
 	ui(new Ui::allAboutDialog)
 {
 	ui->setupUi(this);
-  ui->groupBoxInfo->hide();
+  	ui->groupBoxInfo->hide();
 
 	ui->version->setText(AWESOME_BUMP_VERSION);
 

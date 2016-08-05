@@ -40,12 +40,15 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QMessageBox>
 #include <QGLFormat>
 #include <QtDebug>
+
 #include "mainwindow.h"
-#include "CommonObjects.h"
 #include "glimageeditor.h"
 #include "allaboutdialog.h"
+
+#include "CommonObjects.h"
 
 #ifdef USE_OPENGL_330
     #define GL_MAJOR 3
@@ -54,26 +57,28 @@
     #define GL_MAJOR 4
     #define GL_MINOR 1
 #endif
-    
+
+#define SplashImage ":/resources/logo/splash.png"
+
 // find data directory for each platform:
-QString _find_data_dir(const QString& path)
+QString _find_data_dir(const QString& resource)
 {
-   if (path.startsWith(":"))
-     return path; // resource
+   if (resource.startsWith(":"))
+     return resource; // resource
 
    QString fpath = QApplication::applicationDirPath();
 #if defined(Q_OS_MAC)
-    fpath += "/../../../"+path;
+    fpath += "/../../../"+resource;
 #elif defined(Q_OS_WIN32)
-    fpath = path;
+    fpath = resource;
 #else
-    fpath = path;
+    fpath = resource;
 #endif
 
     return fpath;
 }
 
-// Redirect qDebug() to file log.txt file.
+// Redirect qDebug() to file log file.
 void customMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
    Q_UNUSED(context);
@@ -112,6 +117,56 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
    textStream << txt << endl;
 }
 
+class SplashScreen : public QSplashScreen
+{
+    Q_OBJECT
+public:
+    explicit SplashScreen(QApplication *app, QWidget *parent = 0) : QSplashScreen(parent), app(app)
+	{
+	    setCursor(Qt::BusyCursor);
+	}
+    int m_progress;
+    QApplication *app;
+
+public slots:
+    void setProgress(int value)
+    {
+      m_progress = value;
+      if (m_progress > 100)
+        m_progress = 100;
+      if (m_progress < 0)
+        m_progress = 0;
+      update();
+      qApp->processEvents();
+    }
+    void setMessage(const QString &msg)
+    {
+      QSplashScreen:: showMessage(msg, Qt::AlignTop);
+      update();
+      qApp->processEvents();
+    }
+
+protected:
+    void drawContents(QPainter *painter)
+	{
+	  QSplashScreen::drawContents(painter);
+	
+	  // Set style for progressbar...
+	  QStyleOptionProgressBarV2 pbstyle;
+	  pbstyle.initFrom(this);
+	  pbstyle.state = QStyle::State_Enabled;
+	  pbstyle.textVisible = false;
+	  pbstyle.minimum = 0;
+	  pbstyle.maximum = 100;
+	  pbstyle.progress = m_progress;
+	  pbstyle.invertedAppearance = false;
+	  pbstyle.rect = QRect(0, height()-19, width(), 19); // Where is it.
+	
+	  // Draw it...
+	  style()->drawControl(QStyle::CE_ProgressBar, &pbstyle, painter, this);
+	}
+};
+
 bool checkOpenGL(){
 
     QGLWidget *glWidget = new QGLWidget;
@@ -125,7 +180,7 @@ bool checkOpenGL(){
     glMinorVersion = glContext->format().minorVersion();
 
     qDebug() << "Running the " + QString(AWESOME_BUMP_VERSION);
-    qDebug() << "Checking OpenGL version...";
+    qDebug() << "Checking OpenGL widget:";
     qDebug() << "Widget OpenGL:" << QString("%1.%2").arg(glMajorVersion).arg(glMinorVersion);
     qDebug() << "Context valid:" << glContext->isValid() ;
     qDebug() << "OpenGL information:" ;
@@ -138,21 +193,19 @@ bool checkOpenGL(){
 
     delete glWidget;
 
-    qDebug() << QString("Version: %1.%2").arg(glMajorVersion).arg(glMinorVersion);
-
     // check openGL version
     if( glMajorVersion < GL_MAJOR || (glMajorVersion == GL_MAJOR && glMinorVersion < GL_MINOR))
     {
-
-        qDebug() << QString("Error: This version of AwesomeBump does not support openGL versions lower than %1.%2 :(").arg(GL_MAJOR).arg(GL_MINOR) ;
-           return false;
+        qWarning() << QString("Error: This version of AwesomeBump does not support openGL versions lower than %1.%2 :(").arg(GL_MAJOR).arg(GL_MINOR) ;
+        return false;
     }
     return true;
-
 }
+
 // register delegates
-void regABSliderDelegates();
-void regABColorDelegates();
+extern void regABSliderDelegates();
+extern void regABColorDelegates();
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -160,28 +213,46 @@ int main(int argc, char *argv[])
     regABSliderDelegates();
     regABColorDelegates();
 
+    //qInstallMessageHandler(customMessageHandler);
+
+    qDebug() << "Starting application:";
     qDebug() << "Application dir:" << QApplication::applicationDirPath();
-    qDebug() << "Data dir:" << _find_data_dir("");
+    qDebug() << "Data dir:" << _find_data_dir(RESOURCE_BASE);
+
+	SplashScreen sp(&app);
+	QPixmap szpx = QPixmap(SplashImage);
+ 	QSize sz = szpx.size() * float(QApplication::desktop()->screenGeometry().width()) / 4.0 / float(szpx.size().width()); // 1/4 of the screen
+    sp.resize(sz);
+	sp.setPixmap(szpx.scaled(sz));
+	sp.setMessage(VERSION_STRING "|Starting ...");
+	sp.show(); app.processEvents();
+
+	// Check for resource directory:
+	QString resDir = _find_data_dir(RESOURCE_BASE);
+	if (!QFileInfo(resDir+"Configs").isDir() || !QFileInfo(resDir+"Core").isDir()) {
+#ifdef Q_OS_MAC
+		return QMessageBox::critical(0, "Missing runtime files", QString("Missing runtime files\n\nCannot find runtime assets required to run the application (resource path: %1).").arg(resDir));
+#else
+		return QMessageBox::critical(0, "Missing runtime files", QString("Cannot find runtime assets required to run the application (resource path: %1).").arg(resDir));
+#endif
+	}
 
     // Chossing proper GUI style from config.ini file.
     QSettings settings("config.ini", QSettings::IniFormat);
-    // Dude, this default style is really amazing...
-    // Seriously?
-    // No...
-    QString guiStyle = settings.value("gui_style","DefaultAwesomeStyle").toString();
-    app.setStyle(QStyleFactory::create( guiStyle ));
+    QString guiStyle = settings.value("gui_style").toString();
+    if (!guiStyle.isEmpty())
+	    app.setStyle(QStyleFactory::create( guiStyle ));
 
     // Customize some elements:
     app.setStyleSheet("QGroupBox { font-weight: bold; } ");
 
     QFont font;
     font.setFamily(font.defaultFamily());
-    font.setPixelSize(10);
+    font.setPixelSize(settings.value("gui_font_size",10).toInt());
     app.setFont(font);
 
     // removing old log file
     QFile::remove(AB_LOG);
-
 
     QGLFormat glFormat(QGL::SampleBuffers);
 
@@ -192,7 +263,7 @@ int main(int argc, char *argv[])
      * The full solution is to replace all depreciated OpenGL functions with their current implements.
     */
 # if defined(Q_OS_MAC)
-	glFormat.setProfile( QGLFormat::CoreProfile );
+    glFormat.setProfile( QGLFormat::CoreProfile );
 # endif
     glFormat.setVersion( GL_MAJOR, GL_MINOR );
 #endif
@@ -204,9 +275,6 @@ int main(int argc, char *argv[])
     format.setVersion(4, 0);
     format.setProfile(QSurfaceFormat::CoreProfile);
     QSurfaceFormat::setDefaultFormat(format);
-
-    //qInstallMessageHandler(customMessageHandler);
-    qDebug() << "Starting application:";
 
     if(!checkOpenGL()){
 
@@ -224,6 +292,9 @@ int main(int argc, char *argv[])
     }else{
 
         MainWindow window;
+    	QObject::connect(&window,SIGNAL(initProgress(int)),&sp,SLOT(setProgress(int)));
+    	QObject::connect(&window,SIGNAL(initMessage(const QString&)),&sp,SLOT(setMessage(const QString&)));
+        window.initializeApp();
         window.setWindowTitle(AWESOME_BUMP_VERSION);
         window.resize(window.sizeHint());
         int desktopArea = QApplication::desktop()->width() *
@@ -233,11 +304,10 @@ int main(int argc, char *argv[])
             window.show();
         else
             window.showMaximized();
-
+		sp.finish(&window);
+ 
         return app.exec();
-
     }
-
-
-
 }
+
+#include "main.moc"

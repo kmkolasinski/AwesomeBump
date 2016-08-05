@@ -1,3 +1,5 @@
+TARGET        = AwesomeBump
+
 TEMPLATE      = app
 CONFIG       += c++11
 QT           += opengl gui widgets
@@ -24,26 +26,20 @@ PEG_SOURCES += properties/Filter3DDOF.pef \
                properties/ImageProperties.pef \
                properties/Filters3D.pef
 
-
-release_gl330 {
-    DEFINES += USE_OPENGL_330
-    TARGET = AwesomeBumpGL330
-} else {
-    TARGET = AwesomeBump
-}
+gl330: DEFINES += USE_OPENGL_330
 
 debug: DBG = -dgb
 GL = -gl4
-release_gl330: GL = -gl3
+gl330: GL = -gl3
 
 win32: LIBS += Opengl32.lib
 
 SPEC=$$[QMAKE_SPEC]$$DBG$$GL
 DESTDIR = $$TOP_DIR/workdir/$$SPEC/bin
 OBJECTS_DIR = $$TOP_DIR/workdir/$$SPEC/obj
-MOC_DIR = $$TOP_DIR/workdir/$$SPEC/moc
-UI_DIR = $$TOP_DIR/workdir/$$SPEC/obj
-RCC_DIR = $$TOP_DIR/workdir/$$SPEC/obj
+MOC_DIR = $$TOP_DIR/workdir/$$SPEC/gen
+UI_DIR = $$TOP_DIR/workdir/$$SPEC/gen
+RCC_DIR = $$TOP_DIR/workdir/$$SPEC/gen
 
 write_file("$$TOP_DIR/workdir/current", SPEC)
 
@@ -57,7 +53,7 @@ write_file("$$TOP_DIR/workdir/current", SPEC)
 DEFINES += RESOURCE_BASE=\\\"./\\\"
 
 VPATH += ../shared
-INCLUDEPATH += ../shared include utils utils/QtnProperty
+INCLUDEPATH += ../shared include utils utils/QtnProperty utils/contextinfo
 
 HEADERS = glwidget.h \
     mainwindow.h \
@@ -67,11 +63,8 @@ HEADERS = glwidget.h \
     camera.h \
     dialogheightcalculator.h \
     qopenglerrorcheck.h \
-    utils/Mesh.hpp \
-    utils/tinyobj/tiny_obj_loader.h \
     formsettingsfield.h \
     formsettingscontainer.h \
-    utils/qglbuffers.h \
     dialoglogger.h \
     glwidgetbase.h \
     formmaterialindicesmanager.h \
@@ -80,13 +73,19 @@ HEADERS = glwidget.h \
     formimagebase.h \
     dockwidget3dsettings.h \
     gpuinfo.h \
-    properties/Dialog3DGeneralSettings.h \
-    utils/glslshaderparser.h \
-    utils/glslparsedshadercontainer.h \
     properties/propertyconstructor.h \
     properties/propertydelegateabfloatslider.h \
     properties/PropertyABColor.h \
-    properties/PropertyDelegateABColor.h
+    properties/PropertyDelegateABColor.h \
+    properties/Dialog3DGeneralSettings.h \
+	utils/DebugMetricsMonitor.h \
+    utils/Mesh.hpp \
+    utils/qglbuffers.h \
+    utils/tinyobj/tiny_obj_loader.h \
+    utils/glslshaderparser.h \
+    utils/glslparsedshadercontainer.h \
+	utils/contextinfo/contextwidget.h \
+    utils/contextinfo/renderwindow.h
 
 SOURCES = glwidget.cpp \
     main.cpp \
@@ -110,14 +109,26 @@ SOURCES = glwidget.cpp \
     dockwidget3dsettings.cpp \
     gpuinfo.cpp \
     properties/Dialog3DGeneralSettings.cpp \
+	utils/DebugMetricsMonitor.cpp \
     utils/glslshaderparser.cpp \
     utils/glslparsedshadercontainer.cpp \
     properties/propertydelegateabfloatslider.cpp \
     properties/PropertyABColor.cpp \
-    properties/PropertyDelegateABColor.cpp
+    properties/PropertyDelegateABColor.cpp \
+	utils/contextinfo/contextwidget.cpp \
+    utils/contextinfo/renderwindow.cpp
 
 
 RESOURCES += content.qrc
+
+exists("runtime.qrc") {
+	# build runtime archive
+	runtimeTarget.target = runtime.rcc
+	runtimeTarget.depends = $$PWD/runtime.qrc
+	runtimeTarget.commands = $$[QT_INSTALL_PREFIX]/bin/rcc -binary $$PWD/runtime.qrc -o $$OUT_PWD/runtime.rcc
+	QMAKE_EXTRA_TARGETS += runtimeTarget
+	PRE_TARGETDEPS += runtime.rcc
+}
 
 RC_FILE = resources/icon.rc
 
@@ -153,7 +164,14 @@ config.path = $$DESTDIR
 config.files += $$TOP_DIR/Bin/Configs $$TOP_DIR/Bin/Core
 INSTALLS += config
 
+exists("utils/qtcopydialog/qtcopydialog.pri") {
+	message("*** Adding 'copydialog' module.")
+	DEFINES += HAVE_RTCOPY
+	include("utils/qtcopydialog/qtcopydialog.pri")
+}
+
 exists("utils/QtnProperty/QtnProperty.pri") {
+  message("*** Adding 'qtnproperty' module.")
   DEFINES += HAVE_QTNPROP
   include("utils/QtnProperty/QtnProperty.pri")
 } else {
@@ -161,12 +179,14 @@ exists("utils/QtnProperty/QtnProperty.pri") {
 }
 
 exists("utils/quazip/quazip.pri") {
+	message("*** Adding 'quazip' module.")
 	DEFINES += HAVE_QUAZIP
 	CONFIG += quazip_include_zip quazip_include_unzip
 	include("utils/quazip/quazip.pri")
 }
 
 exists("utils/fervor/Fervor.pri") {
+	message("*** Adding 'fervor' module.")
 	DEFINES += HAVE_FERVOR
 	FV_APP_VERSION = $$VERSION_FULL
 	include("utils/fervor/Fervor.pri")
