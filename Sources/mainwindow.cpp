@@ -1708,8 +1708,8 @@ void MainWindow::about()
                           "height, specular or ambient occlusion, roughness and metallic textures from a single image. "
                           "Since the image processing is done in 99% on GPU  the program runs very fast "
                           "and all the parameters can be changed in real time.\n "
-                          "Program written by: \n Krzysztof Kolasinski (Copyright 2015-2016) with collaboration \n"
-                          "with many people! See project collaborators list on github. "));
+                          "Program written by: \n Krzysztof Kolasinski and Pawel Piecuch (Copyright 2015-2016) with collaboration \n"
+                          "with other people! See project collaborators list on github. "));
 }
 
 void MainWindow::aboutQt()
