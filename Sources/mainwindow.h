@@ -70,6 +70,9 @@ public slots:
     void showSettingsManager();
     void setOutputFormat(int index);
     void replotAllImages();
+    void materialsToggled(bool toggle);
+    void checkWarnings();
+
 
     // repaint views after selecting tab
     void selectDiffuseTab();
@@ -175,6 +178,7 @@ private:
     QAction *shortcutsAction; // show key shortcuts
 
     QLabel  *statusLabel;
+
     DialogLogger* dialogLogger;
     DialogShortcuts* dialogShortcuts;
     QSettings defaults;

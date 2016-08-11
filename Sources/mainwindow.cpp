@@ -129,6 +129,8 @@ void MainWindow::initializeApp()
     // ------------------------------------------------------
     ui->statusbar->addWidget(statusLabel);
 
+
+
     // Settings container
     settingsContainer = new FormSettingsContainer;
     ui->verticalLayout2DImage->addWidget(settingsContainer);
@@ -176,6 +178,11 @@ void MainWindow::initializeApp()
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
     
     // imageChange and imageLoaded signals
+    connect(diffuseImageProp    ,SIGNAL(imageChanged()),this,SLOT(checkWarnings()));
+    connect(grungeImageProp     ,SIGNAL(imageChanged()),this,SLOT(checkWarnings()));
+    connect(occlusionImageProp  ,SIGNAL(imageChanged()),this,SLOT(checkWarnings()));
+
+
     connect(diffuseImageProp    ,SIGNAL(imageChanged()),glImage,SLOT(imageChanged()));
     connect(roughnessImageProp  ,SIGNAL(imageChanged()),glImage,SLOT(imageChanged()));
     connect(metallicImageProp   ,SIGNAL(imageChanged()),glImage,SLOT(imageChanged()));
@@ -203,6 +210,7 @@ void MainWindow::initializeApp()
     // Material Manager slots
     connect(materialManager,SIGNAL(materialChanged()),this,SLOT(replotAllImages()));   
     connect(materialManager,SIGNAL(materialsToggled(bool)),ui->tabTilling,SLOT(setDisabled(bool)));
+    connect(materialManager,SIGNAL(materialsToggled(bool)),this,SLOT(materialsToggled(bool))); // disable conversion tool
     connect(glWidget,SIGNAL(materialColorPicked(QColor)),materialManager,SLOT(chooseMaterialByColor(QColor)));
 
 
@@ -457,6 +465,13 @@ void MainWindow::initializeApp()
 
     selectDiffuseTab();
 
+    // Hide warning icons
+    ui->pushButtonMaterialWarning  ->setVisible(false);
+    ui->pushButtonConversionWarning->setVisible(false);
+    ui->pushButtonGrungeWarning->setVisible(false);
+    ui->pushButtonUVWarning->setVisible(false);
+    ui->pushButtonOccWarning->setVisible(false);
+
 	INIT_PROGRESS(100, tr("Done - UI ready."));
 
 
@@ -478,7 +493,6 @@ MainWindow::~MainWindow()
     delete roughnessImageProp;
     delete grungeImageProp;
     delete metallicImageProp;
-
     delete statusLabel;
     delete glImage;
     delete glWidget;
@@ -553,6 +567,34 @@ void MainWindow::replotAllImages(){
 
     statusLabel->setText(menu_text);
 #endif
+}
+
+void MainWindow::materialsToggled(bool toggle){
+    static bool bLastValue;
+    ui->pushButtonMaterialWarning->setVisible(toggle);
+    ui->pushButtonUVWarning->setVisible(FBOImageProporties::seamlessMode != SEAMLESS_NONE);
+    if(toggle){
+
+        bLastValue = diffuseImageProp->imageProp.properties->BaseMapToOthers.EnableConversion;
+        diffuseImageProp->imageProp.properties->BaseMapToOthers.EnableConversion = false;
+        ui->pushButtonUVWarning->setVisible(false);
+        if(bLastValue) replotAllImages();
+    }else{
+        diffuseImageProp->imageProp.properties->BaseMapToOthers.EnableConversion = bLastValue;
+    }
+    diffuseImageProp->imageProp.properties->BaseMapToOthers.switchState(QtnPropertyStateInvisible,toggle);
+
+}
+
+
+void MainWindow::checkWarnings(){
+    ui->pushButtonConversionWarning->setVisible(FBOImageProporties::bConversionBaseMap);
+    ui->pushButtonGrungeWarning->setVisible(grungeImageProp->imageProp.properties->Grunge.OverallWeight.value() > 0);
+    ui->pushButtonUVWarning->setVisible(FBOImageProporties::seamlessMode != SEAMLESS_NONE);
+
+    bool bOccTest = (occlusionImageProp->imageProp.inputImageType == INPUT_FROM_HO_NO) ||
+                (occlusionImageProp->imageProp.inputImageType == INPUT_FROM_HI_NI);
+    ui->pushButtonOccWarning->setVisible(bOccTest);
 }
 
 
@@ -1245,7 +1287,7 @@ void MainWindow::selectSeamlessMode(int mode){
         break;
     }
     glImage->selectSeamlessMode((SeamlessMode)mode);
-
+    checkWarnings();
     replotAllImages();
 }
 

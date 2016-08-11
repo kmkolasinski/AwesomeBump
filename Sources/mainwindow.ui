@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1486</width>
-    <height>841</height>
+    <width>1289</width>
+    <height>764</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -119,8 +119,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>457</width>
-              <height>768</height>
+              <width>369</width>
+              <height>691</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -197,8 +197,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>457</width>
-              <height>768</height>
+              <width>369</width>
+              <height>691</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -278,8 +278,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>457</width>
-              <height>768</height>
+              <width>369</width>
+              <height>691</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -353,8 +353,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>457</width>
-              <height>768</height>
+              <width>369</width>
+              <height>691</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -428,8 +428,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>457</width>
-              <height>768</height>
+              <width>369</width>
+              <height>691</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -500,8 +500,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>457</width>
-              <height>768</height>
+              <width>369</width>
+              <height>691</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -578,8 +578,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>457</width>
-              <height>768</height>
+              <width>369</width>
+              <height>691</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -638,8 +638,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>455</width>
-              <height>766</height>
+              <width>367</width>
+              <height>689</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -707,8 +707,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>455</width>
-              <height>766</height>
+              <width>367</width>
+              <height>689</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_33">
@@ -812,8 +812,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>457</width>
-              <height>722</height>
+              <width>380</width>
+              <height>702</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -2112,8 +2112,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>457</width>
-              <height>768</height>
+              <width>369</width>
+              <height>691</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -3078,6 +3078,185 @@
        <widget class="QWidget" name="layoutWidget">
         <layout class="QVBoxLayout" name="verticalLayout2DImage">
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayoutWarnings">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMinimumSize</enum>
+           </property>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonOccWarning">
+             <property name="maximumSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Occlusion from input/output selected.&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;br/&gt;Once this option is selected each time you change Normal or Height map the Occlusion texture is recalculated. Since this operation is computationally demanding it is recommended to work with this option selected at the end of processing.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/actions/showOcclusionWarning.png</normaloff>:/resources/actions/showOcclusionWarning.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonUVWarning">
+             <property name="maximumSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Tilling is enabled.&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Tip:&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; In some cases (like &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-style:italic;&quot;&gt;Random&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; mode) it is recommented to set &amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-style:italic;&quot;&gt;Height (Output)&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&amp;quot; in the &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Normal&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; tab.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/actions/UVwarning.png</normaloff>:/resources/actions/UVwarning.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonGrungeWarning">
+             <property name="maximumSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Grunge texture is enabled.&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/actions/grungeWarning.png</normaloff>:/resources/actions/grungeWarning.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonConversionWarning">
+             <property name="maximumSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#000000;&quot;&gt;C&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;onversion from diffuse is enabled.&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Click &amp;quot;Convert&amp;quot; button in the Diffuse tab and disable &amp;quot;Enable preview&amp;quot; in order to work with the textures.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/actions/ConversionWarning.png</normaloff>:/resources/actions/ConversionWarning.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="default">
+              <bool>false</bool>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonMaterialWarning">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#000000;&quot;&gt;M&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;aterials are enabled. &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Conversion from Base to Other and tilling tools are &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;blocked&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;. Loading new image will overwrite current texture. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/actions/warnMaterials.png</normaloff>
+               <normalon>:/resources/actions/warnMaterials.png</normalon>
+               <activeoff>:/resources/actions/warnMaterials.png</activeoff>:/resources/actions/warnMaterials.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="autoExclusive">
+              <bool>false</bool>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButtonProjectManager">
            <property name="text">
             <string>Project manager</string>
@@ -3099,7 +3278,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1486</width>
+     <width>1289</width>
      <height>25</height>
     </rect>
    </property>

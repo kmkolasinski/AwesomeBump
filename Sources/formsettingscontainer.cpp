@@ -24,6 +24,7 @@ FormSettingsContainer::FormSettingsContainer(QWidget *parent) :
     qDebug() << "Reading the list of available configs settings:";
     // reading configs
     for (int i = 0; i < iniFiles.size(); ++i){
+        if(iniFiles[i] == "gui.ini") continue;
         FormSettingsField* sfield = new FormSettingsField("Configs/"+iniFiles[i],this);
         connect(sfield,SIGNAL(emitDeleteSettings(FormSettingsField*)),this,SLOT(removeSetting(FormSettingsField*)));
         connect(sfield,SIGNAL(emitLoadSettings(FormSettingsField*))  ,this,SLOT(reloadSettings(FormSettingsField*)));

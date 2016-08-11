@@ -72,5 +72,10 @@
         <file>resources/actions/grungeL.png</file>
         <file>resources/actions/recompileShader.png</file>
         <file>resources/actions/settings3d.png</file>
+        <file>resources/actions/warnMaterials.png</file>
+        <file>resources/actions/ConversionWarning.png</file>
+        <file>resources/actions/grungeWarning.png</file>
+        <file>resources/actions/UVwarning.png</file>
+        <file>resources/actions/showOcclusionWarning.png</file>
     </qresource>
 </RCC>
