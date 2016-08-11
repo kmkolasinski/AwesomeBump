@@ -19,9 +19,8 @@ Binary packages for selected system can be found at [link](https://github.com/km
 
 Building from source
 ============
-* Since version 5.0 you can use UNIX build script sh unixBuildScript.sh (see description below)
-* Always run AwesomeBump file from Bin directory. 
-
+* Since version 5.0 you can use UNIX build script sh **unixBuildScript.sh** (see description below)
+ 
 
 Since version 3.0
 -----------------
@@ -43,14 +42,10 @@ Unix (bash) automated script
 -------------------------
 
 1. Open terminal and unzip or untar downloaded source code.
-
 2. Enter to created folder
-
-3. Open unixBuildScript.sh file and set the propper Qt5 path. Save and close.
-
-4. Run script with command: sh unixBuildScript.sh
-
-5. If everything gone well AB should start after compilation process. See Bin/ folder. There should be an AwesomeBump file now.
+3. Open **unixBuildScript.sh** file and set the propper Qt5 path. Save and close.
+4. Run script with command: `sh unixBuildScript.sh`
+5. If everything gone well AB should start after compilation process. See **Bin/** folder. There should be an AwesomeBump file now.
 
 ### OpenGL 3.30 support
 
@@ -59,9 +54,9 @@ You can now build AB to run all openGL instructions with 3.30 compatibility (not
 License
 =======
 
-AB is using tinyobjloader for loading the OBJ files: https://github.com/syoyo/tinyobjloader
-
-Cube maps textures were taken from Humus page [link](http://www.humus.name/index.php?page=Textures)
+ * AB is using tinyobjloader for loading the OBJ files: https://github.com/syoyo/tinyobjloader
+ * Cube maps textures were taken from Humus page [link](http://www.humus.name/index.php?page=Textures)
+ * Most of the GUI controls are done with  [QtnProperty](https://github.com/lexxmark/QtnProperty) framework.
 
 
 This program is free software: you can redistribute it and/or modify
