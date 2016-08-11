@@ -3,15 +3,7 @@
 ![Image](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/promo/githubimage3.jpg)
 
 
-
-Info
-====
-
-Since I have a lot of work now I have no more time for AB programming. During this time you (AB users) could help other users to solve thier problems reported in the Issues tab. I will also try to do my best.
-
-
-
-AwesomeBump 4.0 Beta
+AwesomeBump 5.0 
 ====================
 
 AwesomeBump is a free and open source program written using Qt library designed to generate normal, height, specular or ambient occlusion, metallic, roughness textures from a single image. Additional features like material textures or grunge maps are available. Since the image processing is done in 99% on GPU the program runs very fast and all the parameters can be changed in real time. AB was made to be a new alternative to known gimp plugin called Insane Bump or commercial tool: Crazy Bump.
@@ -20,18 +12,14 @@ Feel free to contact me if you find any bugs and problems: <awesomebump.help@gma
 
 If you want to fix or improve something, please fork my repository and send me the pull-request with changes.
 
-AB is using tinyobjloader for loading the OBJ files: https://github.com/syoyo/tinyobjloader
-
-Cube maps textures were taken from Humus page [link](http://www.humus.name/index.php?page=Textures)
-
-Project Webpage: http://awesomebump.besaba.com/
-
-### Download binaries from [here](https://github.com/kmkolasinski/AwesomeBump/releases) (.zip or .tar.gz files).
 
 
-
-Installation
+Installation & Building
 ============
+There are two ways to make AB run on your computer. 
+
+1. Look for a dedicated release binary packages [here](https://github.com/kmkolasinski/AwesomeBump/releases)
+
 
 Since version 3.0
 -----------------
@@ -59,18 +47,21 @@ Command-line instructions
 
 2. Enter to created folder
 
-3. Open linuxBuildScript.sh file and set the propper Qt5 path. Save and close.
+3. Open unixBuildScript.sh file and set the propper Qt5 path. Save and close.
 
-4. Run script with command: sh linuxBuildScript.sh
+4. Run script with command: sh unixBuildScript.sh
 
 5. If everything gone well AB should start after compilation process. See Bin/ folder. There should be an AwesomeBump file now.
 
 ### OpenGL 3.30 support
 
-You can now build AB to run all openGL instructions with 3.30 compatibility (note that tessellation will not work with 3.30). See [PDF ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) file and "Step 8" for more datails. Basically you just have to add `CONFIG+=release_gl330` command in the qmake settings in order to build 3.30-supported version of AwesomeBump.
+You can now build AB to run all openGL instructions with 3.30 compatibility (note that tessellation will not work with 3.30). See [PDF ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) file and "Step 8" for more datails. Basically you just have to add `CONFIG+=gl330` command in the qmake settings in order to build 3.30-supported version of AwesomeBump.
 
 License
 =======
+
+AB is using tinyobjloader for loading the OBJ files: https://github.com/syoyo/tinyobjloaderCube maps textures were taken from Humus page [link](http://www.humus.name/index.php?page=Textures)
+
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
