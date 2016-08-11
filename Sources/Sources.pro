@@ -8,8 +8,8 @@ isEmpty(TOP_DIR) {
 	ERROR("Run build process from the top directory")
 }
 
-VERSION_STRING = 4.0
-VERSION_FULL = 4.0.0
+VERSION_STRING = 5.0
+VERSION_FULL = 5.0.0
 
 DEFINES += VERSION_STRING=\\\"$$VERSION_STRING\\\"
 

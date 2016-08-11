@@ -454,7 +454,12 @@ void MainWindow::initializeApp()
     QAction *action = ui->toolBar->toggleViewAction();
     ui->menubar->addAction(action);
 
+
+    selectDiffuseTab();
+
 	INIT_PROGRESS(100, tr("Done - UI ready."));
+
+
 }
 
 MainWindow::~MainWindow()
@@ -1550,6 +1555,7 @@ void MainWindow::setOutputFormat(int index=0){
 
 void MainWindow::loadSettings(){
     static bool bFirstTime = true;
+
     qDebug() << "Calling" << Q_FUNC_INFO << " loading from " << QString(AB_INI);
 
     diffuseImageProp->bLoading = true;
@@ -1636,8 +1642,10 @@ void MainWindow::loadSettings(){
     ui->checkBoxToggleMouseLoop->setChecked(abSettings->mouse_loop);
 
 
-    dock3Dsettings->loadSettings(abSettings);
+
     updateSliders();
+
+    dock3Dsettings->loadSettings(abSettings);
 
     heightImageProp->reloadSettings();
 

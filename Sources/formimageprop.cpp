@@ -505,14 +505,16 @@ void FormImageProp::loadPredefinedGrunge(QString image){
 void FormImageProp::reloadSettings(){
     bLoading = true;
 
-    ui->horizontalSliderNormalToHeightNoiseLevel    ->setValue(imageProp.properties->NormalHeightConv.NoiseLevel);
-    ui->horizontalSliderNormalToHeightItersHuge     ->setValue(imageProp.properties->NormalHeightConv.Huge);
-    ui->horizontalSliderNormalToHeightItersVeryLarge->setValue(imageProp.properties->NormalHeightConv.VeryLarge);
-    ui->horizontalSliderNormalToHeightItersLarge    ->setValue(imageProp.properties->NormalHeightConv.Large);
-    ui->horizontalSliderNormalToHeightItersMedium   ->setValue(imageProp.properties->NormalHeightConv.Medium);
-    ui->horizontalSliderNormalToHeightItersVerySmall->setValue(imageProp.properties->NormalHeightConv.Small);
-    ui->horizontalSliderNormalToHeightItersSmall    ->setValue(imageProp.properties->NormalHeightConv.VerySmall);
+    if(imageProp.imageType == HEIGHT_TEXTURE){
 
+        ui->horizontalSliderNormalToHeightNoiseLevel    ->setValue(imageProp.properties->NormalHeightConv.NoiseLevel);
+        ui->horizontalSliderNormalToHeightItersHuge     ->setValue(imageProp.properties->NormalHeightConv.Huge);
+        ui->horizontalSliderNormalToHeightItersVeryLarge->setValue(imageProp.properties->NormalHeightConv.VeryLarge);
+        ui->horizontalSliderNormalToHeightItersLarge    ->setValue(imageProp.properties->NormalHeightConv.Large);
+        ui->horizontalSliderNormalToHeightItersMedium   ->setValue(imageProp.properties->NormalHeightConv.Medium);
+        ui->horizontalSliderNormalToHeightItersVerySmall->setValue(imageProp.properties->NormalHeightConv.Small);
+        ui->horizontalSliderNormalToHeightItersSmall    ->setValue(imageProp.properties->NormalHeightConv.VerySmall);
+    }
     // input image case study
     switch(imageProp.imageType){
         case(NORMAL_TEXTURE):

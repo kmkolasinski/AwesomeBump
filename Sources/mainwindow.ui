@@ -62,7 +62,7 @@
         <enum>QTabWidget::East</enum>
        </property>
        <property name="currentIndex">
-        <number>9</number>
+        <number>0</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideMiddle</enum>
@@ -76,7 +76,7 @@
         </property>
         <attribute name="icon">
          <iconset resource="content.qrc">
-          <normaloff>:/resources/actions/showDiffuse.png</normaloff>:/resources/actions/showDiffuse.png</iconset>
+          <normaloff>:/resources/actions/diffuse.png</normaloff>:/resources/actions/diffuse.png</iconset>
         </attribute>
         <attribute name="title">
          <string/>

@@ -210,10 +210,12 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+
+
     regABSliderDelegates();
     regABColorDelegates();
 
-    //qInstallMessageHandler(customMessageHandler);
+    qInstallMessageHandler(customMessageHandler);
 
     qDebug() << "Starting application:";
     qDebug() << "Application dir:" << QApplication::applicationDirPath();
@@ -246,9 +248,15 @@ int main(int argc, char *argv[])
     // Customize some elements:
     app.setStyleSheet("QGroupBox { font-weight: bold; } ");
 
+    // Load specific settings for GUI same for every preset
+    QSettings gui_settings("Configs/gui.ini", QSettings::IniFormat);
+    QPalette palette;
+    palette.setColor(QPalette::Shadow,QColor(gui_settings.value("slider_font_color","#000000").toString()));
+    app.setPalette(palette);
+
     QFont font;
     font.setFamily(font.defaultFamily());
-    font.setPixelSize(settings.value("gui_font_size",10).toInt());
+    font.setPixelSize(gui_settings.value("font_size",10).toInt());
     app.setFont(font);
 
     // removing old log file

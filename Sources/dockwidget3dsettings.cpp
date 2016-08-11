@@ -120,7 +120,7 @@ void DockWidget3DSettings::saveSettings(QtnPropertySetAwesomeBump* settings){
 }
 
 void DockWidget3DSettings::loadSettings(QtnPropertySetAwesomeBump* settings){
-    // 3D settings:
+    // 3D settings:    
     ui->horizontalSliderDepthScale  ->setValue(settings->depth_3d*100);
     ui->checkBoxPerformanceCullFace ->setChecked(settings->bUseCullFace);
     ui->checkBoxPerformanceSimplePBR->setChecked(settings->bUseSimplePBR);
