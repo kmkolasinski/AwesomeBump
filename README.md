@@ -1,6 +1,6 @@
 
 
-![Image](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/promo/githubimage3.jpg)
+![Image](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/promo/githubimage5.jpg)
 
 
 AwesomeBump 5.0 
@@ -12,24 +12,24 @@ Feel free to contact me if you find any bugs and problems: <awesomebump.help@gma
 
 If you want to fix or improve something, please fork my repository and send me the pull-request with changes.
 
-
-
-Installation & Building
+Binary packages
 ============
-There are two ways to make AB run on your computer. 
+Binary packages for selected system can be found at [link](https://github.com/kmkolasinski/AwesomeBump/releases)
 
-1. Look for a dedicated release binary packages [here](https://github.com/kmkolasinski/AwesomeBump/releases)
+
+Building from source
+============
+* Since version 5.0 you can use UNIX build script sh unixBuildScript.sh (see description below)
+* Always run AwesomeBump file from Bin directory. 
 
 
 Since version 3.0
 -----------------
 
-The best place to start with compiling/installing would be to read the appropriate sections in the [wiki ](https://github.com/kmkolasinski/AwesomeBump/wiki).
+The best place to start with compiling/installing would be to read the appropriate sections in the [wiki ](https://github.com/kmkolasinski/AwesomeBump/wiki). (note that the current version of cmake script does not work :()
 
-For using QTCreator, the steps are almost the same as for earlier versions.
+For those using QtCreator, the steps are almost the same as for earlier versions.
 See the [pdf ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) for instructions.
-
-
 
 For versions older than 3.0
 ---------------------------
@@ -38,9 +38,8 @@ For versions older than 3.0
 2. In order to build AwesomeBump you will need to have qt-sdk installed: http://www.qt.io/download/
 3. Download the sourcecode of AB from github and unzip it. Run Qt then open a new project using the AwesomeBump.pro file (located in AB source code folder.).
 4. Setup the build path and run path (in project build settings panel) and compile the project (remember that your graphics card has to support at least openGL 4.0). Compilation step will take some time. Run the program. In case of problems see the `log.txt` file.
-5. I hope you will like it :)
 
-Command-line instructions
+Unix (bash) automated script
 -------------------------
 
 1. Open terminal and unzip or untar downloaded source code.
@@ -60,7 +59,9 @@ You can now build AB to run all openGL instructions with 3.30 compatibility (not
 License
 =======
 
-AB is using tinyobjloader for loading the OBJ files: https://github.com/syoyo/tinyobjloaderCube maps textures were taken from Humus page [link](http://www.humus.name/index.php?page=Textures)
+AB is using tinyobjloader for loading the OBJ files: https://github.com/syoyo/tinyobjloader
+
+Cube maps textures were taken from Humus page [link](http://www.humus.name/index.php?page=Textures)
 
 
 This program is free software: you can redistribute it and/or modify
