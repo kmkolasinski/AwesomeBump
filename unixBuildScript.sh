@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Add your QT path here by setting MY_QT_PATH variable
+# MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
+MY_QT_PATH=
+
 tool="gcc_64"
 exe=""
 
@@ -8,12 +12,15 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	exe=".app"
 fi
 
-# Add your QT path here
-MY_QT_PATH=/home/mkk/Programs/Qt/5.4/gcc_64/bin/
 export PATH=$MY_QT_PATH:$PATH
 
 if [ ! -e "$MY_QT_PATH" ]; then
-	echo "Qt not found at $MY_QT_PATH"
+	echo " ---------------------------------"
+	echo "      Error: Wrong Qt path."
+	echo " ---------------------------------"
+	echo " Qt not found at '$MY_QT_PATH'."	
+	echo " Please set the MY_QT_PATH variable in the ./unixBuildScript.sh"
+	echo ""
 	exit 1
 fi
 
