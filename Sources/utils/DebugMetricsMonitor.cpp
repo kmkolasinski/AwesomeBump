@@ -23,6 +23,8 @@
 #include <mach/mach.h>
 #elif defined(Q_OS_UNIX)
 #include <QFile>
+#elif defined(Q_OS_WIN)
+#include <QFile>
 #endif
 
 DebugMetricsMonitor::DebugMetricsMonitor(QObject* parent) : QObject(parent) {

@@ -137,13 +137,13 @@ public slots:
       if (m_progress < 0)
         m_progress = 0;
       update();
-      qApp->processEvents();
+      repaint();
     }
     void setMessage(const QString &msg)
     {
       QSplashScreen:: showMessage(msg, Qt::AlignTop);
       update();
-      qApp->processEvents();
+      repaint();
     }
 
 protected:
@@ -152,7 +152,7 @@ protected:
 	  QSplashScreen::drawContents(painter);
 	
 	  // Set style for progressbar...
-	  QStyleOptionProgressBarV2 pbstyle;
+      QStyleOptionProgressBar pbstyle;
 	  pbstyle.initFrom(this);
 	  pbstyle.state = QStyle::State_Enabled;
 	  pbstyle.textVisible = false;
@@ -221,13 +221,13 @@ int main(int argc, char *argv[])
     qDebug() << "Application dir:" << QApplication::applicationDirPath();
     qDebug() << "Data dir:" << _find_data_dir(RESOURCE_BASE);
 
-	SplashScreen sp(&app);
-	QPixmap szpx = QPixmap(SplashImage);
- 	QSize sz = szpx.size() * float(QApplication::desktop()->screenGeometry().width()) / 4.0 / float(szpx.size().width()); // 1/4 of the screen
+    SplashScreen sp(&app);
+    QPixmap szpx = QPixmap(SplashImage);
+    QSize sz = szpx.size() * float(QApplication::desktop()->screenGeometry().width()) / 4.0 / float(szpx.size().width()); // 1/4 of the screen
     sp.resize(sz);
-	sp.setPixmap(szpx.scaled(sz));
-	sp.setMessage(VERSION_STRING "|Starting ...");
-	sp.show(); app.processEvents();
+    sp.setPixmap(szpx.scaled(sz));
+    sp.setMessage(VERSION_STRING "|Starting ...");
+    sp.show(); app.processEvents();
 
 	// Check for resource directory:
 	QString resDir = _find_data_dir(RESOURCE_BASE);
@@ -300,8 +300,8 @@ int main(int argc, char *argv[])
     }else{
 
         MainWindow window;
-    	QObject::connect(&window,SIGNAL(initProgress(int)),&sp,SLOT(setProgress(int)));
-    	QObject::connect(&window,SIGNAL(initMessage(const QString&)),&sp,SLOT(setMessage(const QString&)));
+        QObject::connect(&window,SIGNAL(initProgress(int)),&sp,SLOT(setProgress(int)));
+        QObject::connect(&window,SIGNAL(initMessage(const QString&)),&sp,SLOT(setMessage(const QString&)));
         window.initializeApp();
         window.setWindowTitle(AWESOME_BUMP_VERSION);
         window.resize(window.sizeHint());
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
             window.show();
         else
             window.showMaximized();
-		sp.finish(&window);
+        sp.finish(&window);
  
         return app.exec();
     }

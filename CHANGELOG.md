@@ -1,3 +1,10 @@
+New in version 5.0  
+==================
+
+- New GUI done with QtnProperty
+- And minor features.
+- Minor Fixes
+
 New in version 4.0  
 ==================
 

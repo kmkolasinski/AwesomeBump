@@ -72,7 +72,7 @@ GLImage::GLImage(QWidget *parent)
     cornerCursors[1] = QCursor(QPixmap(":/resources/cursors/corner2.png"));
     cornerCursors[2] = QCursor(QPixmap(":/resources/cursors/corner3.png"));
     cornerCursors[3] = QCursor(QPixmap(":/resources/cursors/corner4.png"));
-
+    activeImage = NULL;
     connect(this,SIGNAL(rendered()),this,SLOT(copyRenderToPaintFBO()));
 }
 

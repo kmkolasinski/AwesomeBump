@@ -32,7 +32,9 @@ debug: DBG = -dgb
 GL = -gl4
 gl330: GL = -gl3
 
-win32: LIBS += Opengl32.lib
+win32{ # For windows
+ msvc: LIBS += Opengl32.lib
+}
 
 SPEC=$$[QMAKE_SPEC]$$DBG$$GL
 DESTDIR = $$TOP_DIR/workdir/$$SPEC/bin

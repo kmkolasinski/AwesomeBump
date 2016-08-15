@@ -46,14 +46,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #define INIT_PROGRESS(p,m) \
 	emit initProgress(p); \
-	emit initMessage(m); \
-	qApp->processEvents();
+    emit initMessage(m);
 
 void MainWindow::initializeApp()
 {
     connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
+    qDebug() << "Initialization: Build image properties";
+    INIT_PROGRESS(10, "Build image properties");
 
-	INIT_PROGRESS(10, "Build image properties");
 
     diffuseImageProp  = new FormImageProp(this,glImage);
     normalImageProp   = new FormImageProp(this,glImage);
@@ -66,7 +66,8 @@ void MainWindow::initializeApp()
 
     materialManager = new FormMaterialIndicesManager(this,glImage);
 
-	INIT_PROGRESS(20, "Setup image properties");
+    qDebug() << "Initialization: Setup image properties";
+    INIT_PROGRESS(20, "Setup image properties");
 
     // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
@@ -122,7 +123,8 @@ void MainWindow::initializeApp()
     glImage ->targetImageMaterial  = materialManager   ->getImageProporties();
     glImage ->targetImageGrunge    = grungeImageProp   ->getImageProporties();
 
-	INIT_PROGRESS(30, "GUI setup");
+    qDebug() << "Initialization: GUI setup";
+    INIT_PROGRESS(30, "GUI setup");
 
     // ------------------------------------------------------
     //                      GUI setup
@@ -159,7 +161,8 @@ void MainWindow::initializeApp()
     ui->verticalLayout3DImage->addWidget(glWidget);
     ui->verticalLayout2DImage->addWidget(glImage);
 
-	INIT_PROGRESS(40, "Adding widgets.");
+    qDebug() << "Initialization: Adding widgets.";
+    INIT_PROGRESS(40, "Adding widgets.");
 
     ui->verticalLayoutDiffuseImage  ->addWidget(diffuseImageProp);
     ui->verticalLayoutNormalImage   ->addWidget(normalImageProp);
@@ -196,7 +199,8 @@ void MainWindow::initializeApp()
     connect(metallicImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateMetallicImage()));
     connect(grungeImageProp     ,SIGNAL(imageChanged()),this,SLOT(updateGrungeImage()));
 
-	INIT_PROGRESS(50, "Connections and actions.");
+    qDebug() << "Initialization: Connections and actions.";
+    INIT_PROGRESS(50, "Connections and actions.");
 
     // grunge
     connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),diffuseImageProp     ,SLOT(toggleGrungeImageSettingsGroup(bool)));
@@ -303,7 +307,8 @@ void MainWindow::initializeApp()
     connect(ui->actionShowUVsTab        ,SIGNAL(triggered()),this,SLOT(selectUVsTab()));
     connect(ui->actionFitToScreen       ,SIGNAL(triggered()),this,SLOT(fitImage()));
 
-	INIT_PROGRESS(60, "Perspective tool connections.");
+    qDebug() << "Initialization: Perspective tool connections.";
+    INIT_PROGRESS(60, "Perspective tool connections.");
 
     // perspective tool
     connect(ui->pushButtonResetTransform            ,SIGNAL(released()),this,SLOT(resetTransform()));
@@ -311,7 +316,8 @@ void MainWindow::initializeApp()
     connect(ui->comboBoxSeamlessMode                ,SIGNAL(activated(int)),this,SLOT(selectSeamlessMode(int)));
     connect(ui->comboBoxSeamlessContrastInputImage  ,SIGNAL(activated(int)),this,SLOT(selectContrastInputImage(int)));
 
-	INIT_PROGRESS(70, "UV seamless connections.");
+    qDebug() << "Initialization: UV seamless connections.";
+    INIT_PROGRESS(70, "UV seamless connections.");
 
     // uv seamless algorithms
     connect(ui->checkBoxUVTranslationsFirst,SIGNAL(clicked()),this,SLOT(updateSliders()));
@@ -399,7 +405,8 @@ void MainWindow::initializeApp()
     // Now we can load settings
     loadSettings();
 
-	INIT_PROGRESS(80, "Loading default (initial) textures.");
+    qDebug() << "Initialization: Loading default (initial) textures.";
+    INIT_PROGRESS(80, "Loading default (initial) textures.");
 
     // Loading default (initial) textures
     diffuseImageProp   ->setImage(QImage(QString(":/resources/logo/logo_D.png")));
@@ -426,7 +433,7 @@ void MainWindow::initializeApp()
     // Setting the active image
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
-	INIT_PROGRESS(90, "Updating main menu items.");
+    INIT_PROGRESS(90, "Updating main menu items.");
 
     aboutAction = new QAction(QIcon(":/resources/icons/cube.png"), tr("&About %1").arg(qApp->applicationName()), this);
     aboutAction->setToolTip(tr("Show information about AwesomeBump"));
@@ -472,7 +479,8 @@ void MainWindow::initializeApp()
     ui->pushButtonUVWarning->setVisible(false);
     ui->pushButtonOccWarning->setVisible(false);
 
-	INIT_PROGRESS(100, tr("Done - UI ready."));
+    qDebug() << "Initialization: Done - UI ready.";
+    INIT_PROGRESS(100, tr("Done - UI ready."));
 
 
 }
