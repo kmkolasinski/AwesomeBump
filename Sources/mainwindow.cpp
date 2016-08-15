@@ -46,14 +46,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #define INIT_PROGRESS(p,m) \
 	emit initProgress(p); \
-	emit initMessage(m); \
-	qApp->processEvents();
+    emit initMessage(m);
 
 void MainWindow::initializeApp()
 {
     connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
+    qDebug() << "Initialization: Build image properties";
+    INIT_PROGRESS(10, "Build image properties");
 
-	INIT_PROGRESS(10, "Build image properties");
 
     diffuseImageProp  = new FormImageProp(this,glImage);
     normalImageProp   = new FormImageProp(this,glImage);
@@ -66,7 +66,8 @@ void MainWindow::initializeApp()
 
     materialManager = new FormMaterialIndicesManager(this,glImage);
 
-	INIT_PROGRESS(20, "Setup image properties");
+    qDebug() << "Initialization: Setup image properties";
+    INIT_PROGRESS(20, "Setup image properties");
 
     // Selecting type of image for each texture
     diffuseImageProp  ->getImageProporties()->imageType = DIFFUSE_TEXTURE;
@@ -122,12 +123,15 @@ void MainWindow::initializeApp()
     glImage ->targetImageMaterial  = materialManager   ->getImageProporties();
     glImage ->targetImageGrunge    = grungeImageProp   ->getImageProporties();
 
-	INIT_PROGRESS(30, "GUI setup");
+    qDebug() << "Initialization: GUI setup";
+    INIT_PROGRESS(30, "GUI setup");
 
     // ------------------------------------------------------
     //                      GUI setup
     // ------------------------------------------------------
     ui->statusbar->addWidget(statusLabel);
+
+
 
     // Settings container
     settingsContainer = new FormSettingsContainer;
@@ -157,7 +161,8 @@ void MainWindow::initializeApp()
     ui->verticalLayout3DImage->addWidget(glWidget);
     ui->verticalLayout2DImage->addWidget(glImage);
 
-	INIT_PROGRESS(40, "Adding widgets.");
+    qDebug() << "Initialization: Adding widgets.";
+    INIT_PROGRESS(40, "Adding widgets.");
 
     ui->verticalLayoutDiffuseImage  ->addWidget(diffuseImageProp);
     ui->verticalLayoutNormalImage   ->addWidget(normalImageProp);
@@ -176,6 +181,11 @@ void MainWindow::initializeApp()
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
     
     // imageChange and imageLoaded signals
+    connect(diffuseImageProp    ,SIGNAL(imageChanged()),this,SLOT(checkWarnings()));
+    connect(grungeImageProp     ,SIGNAL(imageChanged()),this,SLOT(checkWarnings()));
+    connect(occlusionImageProp  ,SIGNAL(imageChanged()),this,SLOT(checkWarnings()));
+
+
     connect(diffuseImageProp    ,SIGNAL(imageChanged()),glImage,SLOT(imageChanged()));
     connect(roughnessImageProp  ,SIGNAL(imageChanged()),glImage,SLOT(imageChanged()));
     connect(metallicImageProp   ,SIGNAL(imageChanged()),glImage,SLOT(imageChanged()));
@@ -189,7 +199,8 @@ void MainWindow::initializeApp()
     connect(metallicImageProp   ,SIGNAL(imageChanged()),this,SLOT(updateMetallicImage()));
     connect(grungeImageProp     ,SIGNAL(imageChanged()),this,SLOT(updateGrungeImage()));
 
-	INIT_PROGRESS(50, "Connections and actions.");
+    qDebug() << "Initialization: Connections and actions.";
+    INIT_PROGRESS(50, "Connections and actions.");
 
     // grunge
     connect(grungeImageProp,SIGNAL(toggleGrungeSettings(bool)),diffuseImageProp     ,SLOT(toggleGrungeImageSettingsGroup(bool)));
@@ -203,6 +214,7 @@ void MainWindow::initializeApp()
     // Material Manager slots
     connect(materialManager,SIGNAL(materialChanged()),this,SLOT(replotAllImages()));   
     connect(materialManager,SIGNAL(materialsToggled(bool)),ui->tabTilling,SLOT(setDisabled(bool)));
+    connect(materialManager,SIGNAL(materialsToggled(bool)),this,SLOT(materialsToggled(bool))); // disable conversion tool
     connect(glWidget,SIGNAL(materialColorPicked(QColor)),materialManager,SLOT(chooseMaterialByColor(QColor)));
 
 
@@ -295,7 +307,8 @@ void MainWindow::initializeApp()
     connect(ui->actionShowUVsTab        ,SIGNAL(triggered()),this,SLOT(selectUVsTab()));
     connect(ui->actionFitToScreen       ,SIGNAL(triggered()),this,SLOT(fitImage()));
 
-	INIT_PROGRESS(60, "Perspective tool connections.");
+    qDebug() << "Initialization: Perspective tool connections.";
+    INIT_PROGRESS(60, "Perspective tool connections.");
 
     // perspective tool
     connect(ui->pushButtonResetTransform            ,SIGNAL(released()),this,SLOT(resetTransform()));
@@ -303,7 +316,8 @@ void MainWindow::initializeApp()
     connect(ui->comboBoxSeamlessMode                ,SIGNAL(activated(int)),this,SLOT(selectSeamlessMode(int)));
     connect(ui->comboBoxSeamlessContrastInputImage  ,SIGNAL(activated(int)),this,SLOT(selectContrastInputImage(int)));
 
-	INIT_PROGRESS(70, "UV seamless connections.");
+    qDebug() << "Initialization: UV seamless connections.";
+    INIT_PROGRESS(70, "UV seamless connections.");
 
     // uv seamless algorithms
     connect(ui->checkBoxUVTranslationsFirst,SIGNAL(clicked()),this,SLOT(updateSliders()));
@@ -391,7 +405,8 @@ void MainWindow::initializeApp()
     // Now we can load settings
     loadSettings();
 
-	INIT_PROGRESS(80, "Loading default (initial) textures.");
+    qDebug() << "Initialization: Loading default (initial) textures.";
+    INIT_PROGRESS(80, "Loading default (initial) textures.");
 
     // Loading default (initial) textures
     diffuseImageProp   ->setImage(QImage(QString(":/resources/logo/logo_D.png")));
@@ -418,7 +433,7 @@ void MainWindow::initializeApp()
     // Setting the active image
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
 
-	INIT_PROGRESS(90, "Updating main menu items.");
+    INIT_PROGRESS(90, "Updating main menu items.");
 
     aboutAction = new QAction(QIcon(":/resources/icons/cube.png"), tr("&About %1").arg(qApp->applicationName()), this);
     aboutAction->setToolTip(tr("Show information about AwesomeBump"));
@@ -457,7 +472,15 @@ void MainWindow::initializeApp()
 
     selectDiffuseTab();
 
-	INIT_PROGRESS(100, tr("Done - UI ready."));
+    // Hide warning icons
+    ui->pushButtonMaterialWarning  ->setVisible(false);
+    ui->pushButtonConversionWarning->setVisible(false);
+    ui->pushButtonGrungeWarning->setVisible(false);
+    ui->pushButtonUVWarning->setVisible(false);
+    ui->pushButtonOccWarning->setVisible(false);
+
+    qDebug() << "Initialization: Done - UI ready.";
+    INIT_PROGRESS(100, tr("Done - UI ready."));
 
 
 }
@@ -478,7 +501,6 @@ MainWindow::~MainWindow()
     delete roughnessImageProp;
     delete grungeImageProp;
     delete metallicImageProp;
-
     delete statusLabel;
     delete glImage;
     delete glWidget;
@@ -553,6 +575,34 @@ void MainWindow::replotAllImages(){
 
     statusLabel->setText(menu_text);
 #endif
+}
+
+void MainWindow::materialsToggled(bool toggle){
+    static bool bLastValue;
+    ui->pushButtonMaterialWarning->setVisible(toggle);
+    ui->pushButtonUVWarning->setVisible(FBOImageProporties::seamlessMode != SEAMLESS_NONE);
+    if(toggle){
+
+        bLastValue = diffuseImageProp->imageProp.properties->BaseMapToOthers.EnableConversion;
+        diffuseImageProp->imageProp.properties->BaseMapToOthers.EnableConversion = false;
+        ui->pushButtonUVWarning->setVisible(false);
+        if(bLastValue) replotAllImages();
+    }else{
+        diffuseImageProp->imageProp.properties->BaseMapToOthers.EnableConversion = bLastValue;
+    }
+    diffuseImageProp->imageProp.properties->BaseMapToOthers.switchState(QtnPropertyStateInvisible,toggle);
+
+}
+
+
+void MainWindow::checkWarnings(){
+    ui->pushButtonConversionWarning->setVisible(FBOImageProporties::bConversionBaseMap);
+    ui->pushButtonGrungeWarning->setVisible(grungeImageProp->imageProp.properties->Grunge.OverallWeight.value() > 0);
+    ui->pushButtonUVWarning->setVisible(FBOImageProporties::seamlessMode != SEAMLESS_NONE);
+
+    bool bOccTest = (occlusionImageProp->imageProp.inputImageType == INPUT_FROM_HO_NO) ||
+                (occlusionImageProp->imageProp.inputImageType == INPUT_FROM_HI_NI);
+    ui->pushButtonOccWarning->setVisible(bOccTest);
 }
 
 
@@ -1245,7 +1295,7 @@ void MainWindow::selectSeamlessMode(int mode){
         break;
     }
     glImage->selectSeamlessMode((SeamlessMode)mode);
-
+    checkWarnings();
     replotAllImages();
 }
 
@@ -1666,8 +1716,8 @@ void MainWindow::about()
                           "height, specular or ambient occlusion, roughness and metallic textures from a single image. "
                           "Since the image processing is done in 99% on GPU  the program runs very fast "
                           "and all the parameters can be changed in real time.\n "
-                          "Program written by: \n Krzysztof Kolasinski (Copyright 2015-2016) with collaboration \n"
-                          "with many people! See project collaborators list on github. "));
+                          "Program written by: \n Krzysztof Kolasinski and Pawel Piecuch (Copyright 2015-2016) with collaboration \n"
+                          "with other people! See project collaborators list on github. "));
 }
 
 void MainWindow::aboutQt()

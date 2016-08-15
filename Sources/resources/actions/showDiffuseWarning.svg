@@ -15,7 +15,7 @@
    width="166"
    height="166"
    viewBox="0 0 166 166"
-   sodipodi:docname="showUVs.svg">
+   sodipodi:docname="showDiffuseWarning.svg">
   <metadata
      id="metadata4274">
     <rdf:RDF>
@@ -24,7 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -89,9 +89,9 @@
      inkscape:window-height="1176"
      id="namedview4270"
      showgrid="false"
-     inkscape:zoom="2.95"
-     inkscape:cx="89.030375"
-     inkscape:cy="91.349961"
+     inkscape:zoom="2.085965"
+     inkscape:cx="105.36493"
+     inkscape:cy="50.648772"
      inkscape:window-x="51"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -100,8 +100,18 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0" />
+  <circle
+     style="fill:#009f60;fill-opacity:1;fill-rule:nonzero;stroke:#0d3510;stroke-width:6.09999990000000025;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     id="path4314"
+     cx="83"
+     cy="81"
+     r="53.931873"
+     sodipodi:cx="83"
+     sodipodi:cy="81"
+     sodipodi:rx="53.931873"
+     sodipodi:ry="53.931873" />
   <rect
-     style="fill:none;stroke:#464646;stroke-width:6;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.9901962"
+     style="fill:none;stroke:#0b2c0d;stroke-width:6;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="rect4278"
      width="160"
      height="160"
@@ -110,20 +120,14 @@
   <flowRoot
      xml:space="preserve"
      id="flowRoot4306"
-     style="font-size:80px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#464646;fill-opacity:0.99215686;stroke:none;font-family:sans-serif"
-     transform="translate(7.3115234,4.451235)"><flowRegion
+     style="font-size:80px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0b2c0e;fill-opacity:1;stroke:none;stroke-opacity:1;font-family:sans-serif"
+     transform="matrix(1.2144004,0,0,1.2144004,21.75702,-16.793962)"><flowRegion
        id="flowRegion4308"><rect
          id="rect4310"
          width="256.37241"
          height="202.63445"
          x="26.366693"
          y="42.795631"
-         style="font-size:80px;fill:#464646;fill-opacity:0.99215686" /></flowRegion><flowPara
+         style="font-size:80px;fill:#0b2c0e;fill-opacity:1;stroke:none;stroke-opacity:1" /></flowRegion><flowPara
        id="flowPara4312"
-       style="font-size:60px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#464646;fill-opacity:0.99215686;font-family:Vani;-inkscape-font-specification:Vani Bold">UV</flowPara></flowRoot>  <circle
-     style="fill:#686868;fill-opacity:0.36470588;fill-rule:nonzero;stroke:#464646;stroke-width:6.0999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.99215686"
-     id="path4314"
-     cx="83"
-     cy="81"
-     r="53.931873" />
-</svg>
+       style="font-size:60px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#0b2c0e;fill-opacity:1;stroke:none;stroke-opacity:1;font-family:Vani;-inkscape-font-specification:Vani Bold">D</flowPara></flowRoot></svg>
