@@ -42,6 +42,7 @@
 #include <QDesktopWidget>
 #include <QMessageBox>
 #include <QGLFormat>
+#include <QSurfaceFormat>
 #include <QtDebug>
 
 #include "mainwindow.h"
@@ -262,7 +263,12 @@ int main(int argc, char *argv[])
     // removing old log file
     QFile::remove(AB_LOG);
 
-    QGLFormat glFormat(QGL::SampleBuffers);
+	// setup default context attributes:
+    QGLFormat glFormat(QGL::SampleBuffers); // deprecated
+    QSurfaceFormat format;
+
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
      /*
@@ -272,16 +278,13 @@ int main(int argc, char *argv[])
     */
 # if defined(Q_OS_MAC)
     glFormat.setProfile( QGLFormat::CoreProfile );
+    format.setProfile( QSurfaceFormat::CoreProfile );
 # endif
     glFormat.setVersion( GL_MAJOR, GL_MINOR );
+    format.setVersion( GL_MAJOR, GL_MINOR );
 #endif
 
     QGLFormat::setDefaultFormat(glFormat);
-    QSurfaceFormat format;
-    format.setDepthBufferSize(24);
-    format.setStencilBufferSize(8);
-    format.setVersion(4, 0);
-    format.setProfile(QSurfaceFormat::CoreProfile);
     QSurfaceFormat::setDefaultFormat(format);
 
     if(!checkOpenGL()){
