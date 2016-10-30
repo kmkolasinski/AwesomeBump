@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>515</width>
-    <height>200</height>
+    <height>233</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,13 +22,13 @@
   <property name="minimumSize">
    <size>
     <width>515</width>
-    <height>200</height>
+    <height>233</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>524287</width>
-    <height>200</height>
+    <height>2000</height>
    </size>
   </property>
   <property name="windowOpacity">
@@ -1104,10 +1104,16 @@
       <item>
        <widget class="QPushButton" name="pushButtonLoadMesh">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
         </property>
         <property name="toolTip">
          <string>Load OBJ model from file</string>
