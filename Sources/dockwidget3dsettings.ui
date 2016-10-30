@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>515</width>
-    <height>233</height>
+    <height>248</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -933,6 +933,9 @@
       <property name="spacing">
        <number>0</number>
       </property>
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMinimumSize</enum>
+      </property>
       <item>
        <widget class="QComboBox" name="comboBoxShadingModel">
         <property name="sizePolicy">
@@ -1111,7 +1114,7 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>100</width>
+          <width>1000</width>
           <height>16777215</height>
          </size>
         </property>
