@@ -1,5 +1,6 @@
 #include "glslparsedshadercontainer.h"
-extern QString _find_data_dir(const QString& path);
+
+extern QString _find_data_dir(const QString& base);
 
 
 GLSLParsedShaderContainer::GLSLParsedShaderContainer()

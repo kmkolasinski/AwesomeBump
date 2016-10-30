@@ -1,6 +1,7 @@
 #include "dockwidget3dsettings.h"
 #include "ui_dockwidget3dsettings.h"
-extern QString _find_data_dir(const QString& path);
+
+extern QString _find_data_dir(const QString& resource);
 
 DockWidget3DSettings::DockWidget3DSettings(QWidget *parent, GLWidget* ptr_gl) :
     QDockWidget(parent),ptr_glWidget(ptr_gl),

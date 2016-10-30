@@ -14,19 +14,21 @@
    <string>AwesomeBump log </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="leftMargin">
-    <number>9</number>
-   </property>
-   <property name="topMargin">
-    <number>2</number>
-   </property>
-   <property name="bottomMargin">
-    <number>2</number>
+   <property name="spacing">
+    <number>8</number>
    </property>
    <item>
     <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <pointsize>20</pointsize>
+      </font>
+     </property>
      <property name="text">
-      <string>AwesomeBump log.txt</string>
+      <string>AwesomeBump log view</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -42,11 +44,14 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>796</width>
-          <height>269</height>
+          <width>790</width>
+          <height>249</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="margin">
+          <number>0</number>
+         </property>
          <item>
           <widget class="QTextEdit" name="textEdit">
            <property name="readOnly">

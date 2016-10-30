@@ -77,5 +77,6 @@
         <file>resources/actions/grungeWarning.png</file>
         <file>resources/actions/UVwarning.png</file>
         <file>resources/actions/showOcclusionWarning.png</file>
+        <file>resources/actions/restoreSettings.png</file>
     </qresource>
 </RCC>

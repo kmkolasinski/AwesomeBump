@@ -67,11 +67,46 @@ set(AwesomeBump_SRCS
     Sources/formsettingsfield.cpp Sources/glimageeditor.cpp Sources/glwidget.cpp
     Sources/glwidgetbase.cpp Sources/mainwindow.cpp Sources/main.cpp
     Sources/dockwidget3dsettings.cpp) 
-if(EXISTS ${CMAKE_SOURCE_DIR}/Sources/utils/QtnProperty/QtnPropertyUnity.cpp)
+# Check for QtnProperty (required)
+if(EXISTS "${CMAKE_SOURCE_DIR}/Sources/utils/QtnProperty/QtnPropertyUnity.cpp")
  set(AwesomeBump_SRCS
  	Sources/utils/QtnProperty/QtnPropertyUnity.cpp)
+ # choose QtnPeg binary
+ if(APPLE)
+	 set(QTNPEG "${CMAKE_SOURCE_DIR}/Sources/utils/QtnProperty/bin-osx/QtnPEG")
+ elseif(LINUX)
+	 set(QTNPEG "${CMAKE_SOURCE_DIR}/Sources/utils/QtnProperty/bin-linux/QtnPEG")
+ elseif(WIN32)
+	 set(QTNPEG "${CMAKE_SOURCE_DIR}/Sources/utils/QtnProperty/bin-win/QtnPEG")
+ else()
+	message(FATAL_ERROR "Cannot find QtnPEG binary for this platform.")
+ endif()
+ if(NOT EXISTS "${QTNPEG}")
+	message(FATAL_ERROR "Binary of QtnPEG not found.")
+ endif()
+ # process pef file
+ function(add_pef output file)
+  	# Only process *.pef files
+  	get_filename_component(ext ${file} EXT)
+  	if(NOT ext STREQUAL ".pef")
+  		message(STATUS "$file - not a pef extension")
+  	endif()
+  	set(header_extension "cpp")
+  	get_filename_component(base ${file} NAME_WE)
+  	set(base_abs ${CMAKE_CURRENT_BINARY_DIR}/${base})
+  	set(outfiles ${base_abs}.cpp ${base_abs}.${header_extension})
+  	set(${output} ${${output}} ${outfiles} PARENT_SCOPE)
+  	add_custom_command(
+		OUTPUT ${outfiles}
+		COMMAND "${QTNPEG}" "${CMAKE_CURRENT_SOURCE_DIR}/${file}"
+		DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${file}"
+		COMMENT "QtnPEG preprocessing of ${file}"
+		VERBATIM
+ 	)
+  	set_source_files_properties(${outfiles} PROPERTIES GENERATED TRUE)
+ endfunction()
 else()
- message(FATAL_ERROR "Could not find QtnProperty.")
+ message(FATAL_ERROR "Could not find QtnProperty submodule.")
 endif()
 
 # Configure the linker and finalize binary compilation

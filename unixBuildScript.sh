@@ -4,10 +4,12 @@
 # MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
 MY_QT_PATH=
 
+wget="wget"
 tool="gcc_64"
 exe=""
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
+	wget="curl -L -o master.zip"
 	tool="clang_64"
 	exe=".app"
 fi
@@ -30,7 +32,7 @@ else
     echo "Initializing QtnProperty module"
     # Copy QtnProperty directly from the repository
     cd Sources/utils/QtnProperty
-    wget https://github.com/kmkolasinski/QtnProperty/archive/master.zip
+    $wget https://github.com/kmkolasinski/QtnProperty/archive/master.zip
     unzip master.zip
     rm master.zip 
     mv QtnProperty-master/* .
