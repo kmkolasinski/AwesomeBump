@@ -30,7 +30,7 @@ public:
 
     void setupPopertiesGUI();
     void reloadSettings();
-
+    bool loadFile(const QString &fileName);
 
     ~FormImageProp();
 
@@ -85,7 +85,7 @@ signals:
 
 
 private:
-    bool loadFile(const QString &fileName);
+
     void pasteImageFromClipboard(QImage& _image);
 
 

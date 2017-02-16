@@ -274,7 +274,7 @@ bool FormImageProp::loadFile(const QString &fileName)
 {
     QFileInfo fileInfo(fileName);
     QImage _image;
-
+//    qDebug() << "Opening file: " << fileName;
     // Targa support added
     if(fileInfo.completeSuffix().compare("tga") == 0){
         TargaImage tgaImage;

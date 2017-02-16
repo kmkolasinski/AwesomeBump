@@ -87,7 +87,8 @@ HEADERS = glwidget.h \
     utils/glslshaderparser.h \
     utils/glslparsedshadercontainer.h \
 	utils/contextinfo/contextwidget.h \
-    utils/contextinfo/renderwindow.h
+    utils/contextinfo/renderwindow.h \
+    formimagebatch.h
 
 SOURCES = glwidget.cpp \
     main.cpp \
@@ -118,7 +119,8 @@ SOURCES = glwidget.cpp \
     properties/PropertyABColor.cpp \
     properties/PropertyDelegateABColor.cpp \
 	utils/contextinfo/contextwidget.cpp \
-    utils/contextinfo/renderwindow.cpp
+    utils/contextinfo/renderwindow.cpp \
+    formimagebatch.cpp
 
 
 RESOURCES += content.qrc
@@ -145,7 +147,8 @@ FORMS += \
     allaboutdialog.ui \
     dialogshortcuts.ui \
     dockwidget3dsettings.ui \
-    properties/Dialog3DGeneralSettings.ui
+    properties/Dialog3DGeneralSettings.ui \
+    formimagebatch.ui
 
 ICON = resources/icons/icon.icns
 

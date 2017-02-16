@@ -142,6 +142,7 @@ void MainWindow::initializeApp()
     connect(settingsContainer,SIGNAL(forceSaveCurrentConfig()),this,SLOT(saveSettings()));
     connect(ui->pushButtonProjectManager,SIGNAL(toggled(bool)),settingsContainer,SLOT(setVisible(bool)));
 
+
     // -------------------------------------------------------
     // 3D settings widget
     // -------------------------------------------------------
@@ -387,6 +388,12 @@ void MainWindow::initializeApp()
     connect(ui->spinBoxFontSize            ,SIGNAL(valueChanged(int)),this,SLOT(changeGUIFontSize(int)));
     connect(ui->checkBoxToggleMouseLoop    ,SIGNAL(toggled(bool)),glWidget,SLOT(toggleMouseWrap(bool)));
     connect(ui->checkBoxToggleMouseLoop    ,SIGNAL(toggled(bool)),glImage ,SLOT(toggleMouseWrap(bool)));
+
+    // batch settings
+    connect(ui->pushButtonImageBatchSource ,SIGNAL(pressed()),this,SLOT(selectSourceImages()));
+    connect(ui->pushButtonImageBatchOutput ,SIGNAL(pressed()),this,SLOT(selectOutputPath()));
+    connect(ui->pushButtonImageBatchRun ,SIGNAL(pressed()),this,SLOT(runBatch()));
+
 
 
 
@@ -728,7 +735,8 @@ void MainWindow::saveImages(){
 }
 
 bool MainWindow::saveAllImages(const QString &dir){
-     QFileInfo fileInfo(dir);
+
+    QFileInfo fileInfo(dir);
     if (!fileInfo.exists()) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
                                  tr("Cannot save to %1.").arg(QDir::toNativeSeparators(dir)));
@@ -1320,6 +1328,87 @@ void MainWindow::selectContrastInputImage(int mode){
     }
     replotAllImages();
 }
+
+void MainWindow::selectSourceImages(){
+
+    QString startPath;
+    if(recentDir.exists()) startPath = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first();
+    else  startPath = recentDir.absolutePath();
+
+    QString source = QFileDialog::getExistingDirectory(this, tr("Select source directory"),
+                                                startPath,
+                                                QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    QDir dir(source);
+    qDebug() << "Selecting source folder for batch processing: " << source;
+
+    QStringList filters;
+    filters << "*.png" << "*.jpg" << "*.bmp" << "*.tga";
+    QFileInfoList fileInfoList = dir.entryInfoList(filters, QDir::Files | QDir::NoDotAndDotDot);
+
+    ui->listWidgetImageBatch->clear();
+    foreach (QFileInfo fileInfo, fileInfoList) {
+       qDebug() << "Found:" << fileInfo.absoluteFilePath();
+       ui->listWidgetImageBatch->addItem(fileInfo.fileName());
+    }
+    ui->lineEditImageBatchSource->setText(source);
+}
+
+void MainWindow::selectOutputPath(){
+
+    QString startPath;
+    if(recentDir.exists()) startPath = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation).first();
+    else  startPath = recentDir.absolutePath();
+
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select source directory"),
+                                                startPath,
+                                                QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    ui->lineEditImageBatchOutput->setText(path);
+}
+
+void MainWindow::runBatch(){
+
+    QString sourceFolder = ui->lineEditImageBatchSource->text();
+    QString outputFolder = ui->lineEditImageBatchOutput->text();
+
+    // check if output path exists
+    if(!QDir(outputFolder).exists() || outputFolder == ""){
+        QMessageBox msgBox;
+        msgBox.setText("Info");
+        msgBox.setInformativeText("Output path is not provided");
+        msgBox.setStandardButtons(QMessageBox::Cancel);
+        msgBox.exec();
+        return;
+    }
+
+    qDebug() << "Starting batch mode: this may take some time";
+
+
+    while(ui->listWidgetImageBatch->count() > 0){
+        QListWidgetItem* item = ui->listWidgetImageBatch->takeItem(0);
+        ui->labelBatchProgress->setText("Images left: " + QString::number(ui->listWidgetImageBatch->count()+1));
+        ui->labelBatchProgress->repaint();
+        QCoreApplication::processEvents();
+
+        QString imageName = item->text();
+        ui->lineEditOutputName->setText(imageName);
+        QString imagePath = sourceFolder + "/" + imageName;
+
+        qDebug() << "Processing image: " << imagePath;
+        diffuseImageProp->loadFile(imagePath);
+        convertFromBase();
+        saveAllImages(outputFolder);
+
+        delete item;
+        ui->listWidgetImageBatch->repaint();
+        QCoreApplication::processEvents();
+    }
+
+    ui->labelBatchProgress->setText("Done...");
+
+}
+
 
 void MainWindow::randomizeAngles(){
     FBOImageProporties::seamlessRandomTiling.randomize();

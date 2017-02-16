@@ -62,7 +62,7 @@
         <enum>QTabWidget::East</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>11</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideMiddle</enum>
@@ -119,8 +119,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>369</width>
-              <height>691</height>
+              <width>383</width>
+              <height>697</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -197,8 +197,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>369</width>
-              <height>691</height>
+              <width>383</width>
+              <height>697</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -278,8 +278,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>369</width>
-              <height>691</height>
+              <width>383</width>
+              <height>697</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -353,8 +353,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>369</width>
-              <height>691</height>
+              <width>383</width>
+              <height>697</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -428,8 +428,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>369</width>
-              <height>691</height>
+              <width>383</width>
+              <height>697</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -500,8 +500,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>369</width>
-              <height>691</height>
+              <width>383</width>
+              <height>697</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -578,8 +578,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>369</width>
-              <height>691</height>
+              <width>383</width>
+              <height>697</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -638,8 +638,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>367</width>
-              <height>689</height>
+              <width>381</width>
+              <height>695</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -707,8 +707,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>367</width>
-              <height>689</height>
+              <width>381</width>
+              <height>695</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_33">
@@ -812,8 +812,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>380</width>
-              <height>702</height>
+              <width>383</width>
+              <height>657</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -2112,8 +2112,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>369</width>
-              <height>691</height>
+              <width>383</width>
+              <height>697</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -2690,6 +2690,80 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="tabBatch">
+        <attribute name="title">
+         <string>Batch</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_19">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QPushButton" name="pushButtonImageBatchSource">
+             <property name="text">
+              <string>Select folder</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonImageBatchOutput">
+             <property name="text">
+              <string>Output folder</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonImageBatchRun">
+             <property name="text">
+              <string>Run</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Source folder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Output folder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="lineEditImageBatchSource">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEditImageBatchOutput">
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidgetImageBatch"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelBatchProgress">
+           <property name="text">
+            <string>Progress:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="QSplitter" name="splitter">
        <property name="orientation">
@@ -3257,14 +3331,18 @@
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButtonProjectManager">
-           <property name="text">
-            <string>Project manager</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QPushButton" name="pushButtonProjectManager">
+             <property name="text">
+              <string>Projects manager</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -3279,7 +3357,7 @@
      <x>0</x>
      <y>0</y>
      <width>1289</width>
-     <height>25</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
