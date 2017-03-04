@@ -1,11 +1,11 @@
-TARGET        = AwesomeBump
+TARGET = AwesomeBump
 
-TEMPLATE      = app
-CONFIG       += c++11
-QT           += opengl gui widgets
+TEMPLATE = app
+CONFIG += c++11
+QT += opengl gui widgets svg
 
 isEmpty(TOP_DIR) {
-	ERROR("Run build process from the top directory")
+	ERROR("!!! Run build process from the top source directory.")
 }
 
 VERSION_STRING = 5.0
@@ -14,7 +14,6 @@ VERSION_FULL = 5.0.0
 DEFINES += VERSION_STRING=\\\"$$VERSION_STRING\\\"
 
 QTN=utils/QtnProperty
-#include($$QTN/Common.pri)
 include($$QTN/PEG.pri)
 
 
@@ -32,8 +31,8 @@ debug: DBG = -dgb
 GL = -gl4
 gl330: GL = -gl3
 
-win32{ # For windows
- msvc: LIBS += Opengl32.lib
+win32 {
+    msvc: LIBS += Opengl32.lib
 }
 
 SPEC=$$[QMAKE_SPEC]$$DBG$$GL
@@ -83,6 +82,7 @@ HEADERS = glwidget.h \
 	utils/DebugMetricsMonitor.h \
     utils/Mesh.hpp \
     utils/qglbuffers.h \
+    utils/activelabel.h \
     utils/tinyobj/tiny_obj_loader.h \
     utils/glslshaderparser.h \
     utils/glslparsedshadercontainer.h \
@@ -111,6 +111,7 @@ SOURCES = glwidget.cpp \
     dockwidget3dsettings.cpp \
     gpuinfo.cpp \
     properties/Dialog3DGeneralSettings.cpp \
+    utils/activelabel.cpp \
 	utils/DebugMetricsMonitor.cpp \
     utils/glslshaderparser.cpp \
     utils/glslparsedshadercontainer.cpp \
@@ -187,9 +188,8 @@ exists("utils/quazip/quazip.pri") {
 	include("utils/quazip/quazip.pri")
 }
 
-exists("utils/fervor/Fervor.pri") {
-	message("*** Adding 'fervor' module.")
-	DEFINES += HAVE_FERVOR
-	FV_APP_VERSION = $$VERSION_FULL
-	include("utils/fervor/Fervor.pri")
+exists("utils/KDUpdater/KDUpdater.pri") {
+	message("*** Adding 'KDUpdater' module.")
+	DEFINES += HAVE_KDUPDATER
+	include("utils/KDUpdater/KDUpdater.pri")
 }

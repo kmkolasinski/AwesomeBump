@@ -95,6 +95,9 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
       case QtWarningMsg:
          txt += QString("{Warning} \t %1").arg(msg);
          break;
+      case QtInfoMsg:
+         txt += QString("{Info} \t %1").arg(msg);
+         break;
       case QtCriticalMsg:
          txt += QString("{Critical} \t %1").arg(msg);
          break;
@@ -142,7 +145,7 @@ public slots:
     }
     void setMessage(const QString &msg)
     {
-      QSplashScreen:: showMessage(msg, Qt::AlignTop);
+      QSplashScreen::showMessage(msg, Qt::AlignTop);
       update();
       repaint();
     }
@@ -243,8 +246,13 @@ int main(int argc, char *argv[])
     // Chossing proper GUI style from config.ini file.
     QSettings settings("config.ini", QSettings::IniFormat);
     QString guiStyle = settings.value("gui_style").toString();
-    if (!guiStyle.isEmpty())
-	    app.setStyle(QStyleFactory::create( guiStyle ));
+    if (!guiStyle.isEmpty()) {
+        if (guiStyle == "Universal")
+            app.setStyle(QStyleFactory::create( guiStyle ));
+        else
+            // native
+            ;
+    }
 
     // Customize some elements:
     app.setStyleSheet("QGroupBox { font-weight: bold; } ");

@@ -2,7 +2,11 @@
 
 # Add your QT path here by setting MY_QT_PATH variable
 # MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
-MY_QT_PATH=
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	MY_QT_PATH=/Developer/Qt/5.6
+else
+	MY_QT_PATH=/Qt/5.6
+fi
 
 wget="wget"
 tool="gcc_64"
@@ -27,9 +31,9 @@ if [ ! -e "$MY_QT_PATH" ]; then
 fi
 
 if [ "$(ls -A Sources/utils/QtnProperty)" ]; then
-    echo "QtnProperty module is already initialized. No action is performed."
+    echo "*** QtnProperty module is already initialized. No action is performed."
 else
-    echo "Initializing QtnProperty module"
+    echo "*** Initializing QtnProperty module"
     # Copy QtnProperty directly from the repository
     cd Sources/utils/QtnProperty
     $wget https://github.com/kmkolasinski/QtnProperty/archive/master.zip

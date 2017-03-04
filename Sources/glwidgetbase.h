@@ -22,8 +22,8 @@ public:
 
 
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_FINAL Q_DECL_OVERRIDE;
-    void keyPressEvent(QKeyEvent *event) ;
-    void keyReleaseEvent(QKeyEvent *event) ;
+    void keyPressEvent(QKeyEvent *event) Q_DECL_FINAL Q_DECL_OVERRIDE;
+    void keyReleaseEvent(QKeyEvent *event) Q_DECL_FINAL Q_DECL_OVERRIDE;
 
 signals:
     void updateGLLater();

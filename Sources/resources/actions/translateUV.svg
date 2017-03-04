@@ -1,214 +1,33 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   id="svg4268"
-   version="1.1"
-   inkscape:version="0.91pre3 r13670"
-   width="1058.2034"
-   height="1058.2034"
-   viewBox="0 0 1058.2034 1058.2034"
-   sodipodi:docname="translateUV.svg">
-  <metadata
-     id="metadata4274">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs
-     id="defs4272">
-    <marker
-       inkscape:stockid="Arrow2Mstart"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="marker5182"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         id="path5184"
-         style="fill:#464646;fill-opacity:0.9901962;fill-rule:evenodd;stroke:#464646;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:0.9901962"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         transform="scale(0.6,0.6)"
-         inkscape:connector-curvature="0" />
-    </marker>
-    <marker
-       inkscape:isstock="true"
-       style="overflow:visible"
-       id="marker4962"
-       refX="0"
-       refY="0"
-       orient="auto"
-       inkscape:stockid="Arrow2Mstart"
-       inkscape:collect="always">
-      <path
-         inkscape:connector-curvature="0"
-         transform="scale(0.6,0.6)"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         style="fill:#464646;fill-opacity:0.9901962;fill-rule:evenodd;stroke:#464646;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:0.9901962"
-         id="path4964" />
-    </marker>
-    <marker
-       inkscape:isstock="true"
-       style="overflow:visible"
-       id="marker4314"
-       refX="0"
-       refY="0"
-       orient="auto"
-       inkscape:stockid="Arrow2Mstart">
-      <path
-         inkscape:connector-curvature="0"
-         transform="scale(0.6,0.6)"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         style="fill:#464646;fill-opacity:0.9901962;fill-rule:evenodd;stroke:#464646;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:0.9901962"
-         id="path4316" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow1Lstart"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow1Lstart"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         id="path4828"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
-         transform="matrix(0.8,0,0,0.8,10,0)"
-         inkscape:connector-curvature="0" />
-    </marker>
-    <marker
-       inkscape:isstock="true"
-       style="overflow:visible"
-       id="marker5138"
-       refX="0"
-       refY="0"
-       orient="auto"
-       inkscape:stockid="Arrow2Mstart">
-      <path
-         transform="scale(0.6,0.6)"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         style="fill:#464646;fill-opacity:0.9901962;fill-rule:evenodd;stroke:#464646;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:0.9901962"
-         id="path5140"
-         inkscape:connector-curvature="0" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow2Mstart"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow2Mstart"
-       style="overflow:visible"
-       inkscape:isstock="true"
-       inkscape:collect="always">
-      <path
-         id="path4852"
-         style="fill:#464646;fill-opacity:0.9901962;fill-rule:evenodd;stroke:#464646;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:0.9901962"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         transform="scale(0.6,0.6)"
-         inkscape:connector-curvature="0" />
-    </marker>
-    <marker
-       inkscape:stockid="Arrow2Lstart"
-       orient="auto"
-       refY="0"
-       refX="0"
-       id="Arrow2Lstart"
-       style="overflow:visible"
-       inkscape:isstock="true">
-      <path
-         id="path4846"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         transform="matrix(1.1,0,0,1.1,1.1,0)"
-         inkscape:connector-curvature="0" />
-    </marker>
-  </defs>
-  <sodipodi:namedview
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1"
-     objecttolerance="10"
-     gridtolerance="10"
-     guidetolerance="10"
-     inkscape:pageopacity="0"
-     inkscape:pageshadow="2"
-     inkscape:window-width="1600"
-     inkscape:window-height="838"
-     id="namedview4270"
-     showgrid="true"
-     inkscape:zoom="0.26074563"
-     inkscape:cx="1068.4078"
-     inkscape:cy="373.54901"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg4268"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0">
-    <inkscape:grid
-       type="xygrid"
-       id="grid4424"
-       originx="446.1017px"
-       originy="446.10172px" />
-  </sodipodi:namedview>
-  <rect
-     style="fill:none;stroke:#464646;stroke-width:38.2483139;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.9901962"
-     id="rect4278"
-     width="1019.9551"
-     height="1019.9551"
-     x="19.124157"
-     y="19.124157" />
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#464646;stroke-width:23.54996681;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.9901962;marker-start:url(#Arrow2Mstart)"
-     d="m 950.14202,509.60292 -194.18325,0"
-     id="path4282"
-     inkscape:connector-curvature="0"
-     sodipodi:nodetypes="cc" />
-  <path
-     sodipodi:nodetypes="cc"
-     inkscape:connector-curvature="0"
-     id="path4312"
-     d="m 94.153726,509.60292 194.183234,0"
-     style="fill:none;fill-rule:evenodd;stroke:#464646;stroke-width:23.54996681;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.9901962;marker-start:url(#marker4314)" />
-  <path
-     sodipodi:nodetypes="cc"
-     inkscape:connector-curvature="0"
-     id="path4960"
-     d="m 525.82038,956.11743 0,-194.18325"
-     style="fill:none;fill-rule:evenodd;stroke:#464646;stroke-width:23.54996681;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.9901962;marker-start:url(#marker4962)" />
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#464646;stroke-width:23.54996681;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.9901962;marker-start:url(#marker5182)"
-     d="m 525.82038,99.809766 0,194.183234"
-     id="path5176"
-     inkscape:connector-curvature="0"
-     sodipodi:nodetypes="cc" />
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:611.465271px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#464646;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="280.1413"
-     y="655.61505"
-     id="text5234"
-     sodipodi:linespacing="125%"><tspan
-       sodipodi:role="line"
-       id="tspan5236"
-       x="280.1413"
-       y="655.61505"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:LilyUPC;-inkscape-font-specification:LilyUPC">UV</tspan></text>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.4, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1 Tiny//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-tiny.dtd">
+<svg version="1.1" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+	 x="0px" y="0px" width="64px" height="64px" viewBox="0 0 64 64" xml:space="preserve">
+<g display="none">
+	<polygon display="inline" fill="#666666" points="6.49,27.31 5.326,26.255 0,31.473 0,32.527 5.326,37.744 6.436,36.689 
+		2.545,32.745 20.125,32.745 20.125,31.255 2.545,31.255 	"/>
+	<polygon display="inline" fill="#666666" points="45.573,32.684 61.67,32.684 58.059,36.295 59.123,37.26 64,32.482 64,31.518 
+		59.123,26.74 58.107,27.705 61.67,31.317 45.573,31.317 	"/>
+	<polygon display="inline" fill="#666666" points="31.44,0 25.898,5.657 27.018,6.835 31.208,2.703 31.208,21.375 32.792,21.375 
+		32.792,2.703 36.982,6.893 38.102,5.657 32.561,0 	"/>
+	<polygon display="inline" fill="#666666" points="31.222,43 31.222,61.346 27.105,57.229 26.006,58.441 31.45,64 32.55,64 
+		37.994,58.441 36.895,57.285 32.777,61.346 32.777,43 	"/>
+</g>
+<polygon fill="#CCCCCC" stroke="#666666" points="18.581,23.927 30.755,29.823 31.396,46.812 19.921,39.623 "/>
+<polygon fill="#CCCCCC" stroke="#666666" points="44.919,23.946 30.755,29.837 31.396,46.812 44.423,39.707 "/>
+<polygon fill="#FFFFFF" stroke="#666666" points="32.362,18.471 43.805,23.451 30.755,29.382 19.374,23.276 "/>
+<polygon points="24.145,25.981 31.703,23.078 25.68,20.57 18.284,23.116 "/>
+<polygon points="45.246,23.257 38.558,20.615 31.674,23.123 38.461,25.937 "/>
+<g>
+	<polygon points="55.001,38.563 55.995,38.563 61.915,32 55.995,25.437 55.001,25.437 58.147,32 	"/>
+</g>
+<g>
+	<polygon points="8.915,38.563 7.92,38.563 2,32 7.92,25.437 8.915,25.437 5.768,32 	"/>
+</g>
+<g>
+	<polygon points="37.318,9.021 37.318,8.026 30.755,2.106 24.191,8.026 24.191,9.021 30.755,5.874 	"/>
+</g>
+<g>
+	<polygon points="24.191,54.877 24.191,55.871 30.755,61.791 37.318,55.871 37.318,54.877 30.755,58.023 	"/>
+</g>
 </svg>

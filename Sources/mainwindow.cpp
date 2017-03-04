@@ -9,6 +9,7 @@
 #include "dialoglogger.h"
 #include "dialogshortcuts.h"
 #include "dockwidget3dsettings.h"
+#include "activelabel.h"
 
 #include "gpuinfo.h"
 #include <Property.h>
@@ -19,11 +20,12 @@
 
 extern QString _find_data_dir(const QString& resource);
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
+    setWindowIcon(QIcon(":/resources/icons/cube.png"));
 
     recentDir                   = NULL;
     recentMeshDir               = NULL;
@@ -46,7 +48,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 #define INIT_PROGRESS(p,m) \
 	emit initProgress(p); \
-    emit initMessage(m);
+    emit initMessage(m); \
+    qApp->processEvents()
 
 void MainWindow::initializeApp()
 {
@@ -397,7 +400,6 @@ void MainWindow::initializeApp()
     // Checking for GUI styles
     QStringList guiStyleList = QStyleFactory::keys();
     qDebug() << "Supported GUI styles: " << guiStyleList.join(", ");
-    ui->comboBoxGUIStyle->addItems(guiStyleList);
 
     ui->labelFontSize->setVisible(false);
     ui->spinBoxFontSize->setVisible(false);
@@ -466,14 +468,11 @@ void MainWindow::initializeApp()
     help->addAction(logAction);
     help->addAction(shortcutsAction);
 
-    QAction *action = ui->toolBar->toggleViewAction();
-    ui->menubar->addAction(action);
-
-
+    configureToolbarAndStatusline();
     selectDiffuseTab();
 
     // Hide warning icons
-    ui->pushButtonMaterialWarning  ->setVisible(false);
+    ui->pushButtonMaterialWarning->setVisible(false);
     ui->pushButtonConversionWarning->setVisible(false);
     ui->pushButtonGrungeWarning->setVisible(false);
     ui->pushButtonUVWarning->setVisible(false);
@@ -481,8 +480,6 @@ void MainWindow::initializeApp()
 
     qDebug() << "Initialization: Done - UI ready.";
     INIT_PROGRESS(100, tr("Done - UI ready."));
-
-
 }
 
 MainWindow::~MainWindow()
@@ -526,6 +523,80 @@ void MainWindow::resizeEvent(QResizeEvent* event){
 void MainWindow::showEvent(QShowEvent* event){
   QWidget::showEvent( event );
   replotAllImages();
+}
+
+void MainWindow::configureToolbarAndStatusline()
+{
+    // page selection combobox:
+    struct _show_action {
+      int tab;
+      QAction *action;
+      QString smallIcon;
+    } showActionsConfig[] = {
+      { 0, ui->actionShowDiffuseImage, ":/resources/actions/diffuse.png" },
+      { 1, ui->actionShowNormalImage, ":/resources/actions/normal.png" },
+      { 2, ui->actionShowSpecularImage, ":/resources/actions/specular.png" },
+      { 3, ui->actionShowHeightImage, ":/resources/actions/height.png" },
+      { 4, ui->actionShowOcclusiontImage, ":/resources/actions/occlusion.png" },
+      { 5, ui->actionShowRoughnessImage, ":/resources/actions/roughness.png" },
+      { 6, ui->actionShowMetallicImage, ":/resources/actions/metalic.png" },
+      { 7, ui->actionShowMaterialsImage, ":/resources/actions/showMaterials.png" },
+      { 8, ui->actionShowGrungeTexture, ":/resources/actions/grunge.png" },
+      { 9, ui->actionShowSettingsImage, ":/resources/actions/showSettings.png" },
+      { 10, ui->actionShowUVsTab, ":/resources/actions/showUVs.png" },
+      { -1, NULL, "" }
+    };
+
+    pageSel = new QComboBox();
+    QActionGroup *showTabGroup1 = new QActionGroup(this);
+    QWidget *pageSelW = ui->tabWidgetSwitch;
+    QGridLayout *pageSelL = new QGridLayout( ); 
+    pageSelL->setSpacing( 0 ); pageSelL->setMargin( 0 ); pageSelL->setSpacing( 0 ); pageSelL->setContentsMargins( 0,0,0,0 );
+
+    _show_action *act = showActionsConfig; int row = 0, col = 0; while (act->action) {
+        // action group
+        act->action->setCheckable(true);
+        if (ui->tabWidget->currentIndex() == act->tab) act->action->setChecked(true);
+        showTabGroup1->addAction(act->action);
+
+        // action with small icon:
+        QIcon icon(act->smallIcon);
+        CloneAction *clone = new CloneAction(act->action);
+        clone->setIcon(icon);
+
+        // combo box:
+        QVariant v; v.setValue(act->action);
+        pageSel->addItem(icon, act->action->text(), v); if (ui->tabWidget->currentIndex() == act->tab) 
+        pageSel->setCurrentIndex(act->tab);
+
+        // append button:
+        pageSelL->addWidget(new ActiveLabel(act->tab, act->action->text().toLatin1()));
+
+        // append menu:
+
+        ++act; row = act->tab/4; col = act->tab%4;
+    }
+
+    connect(showTabGroup1, &QActionGroup::triggered, [this](QAction *action){
+      // update combox with new selection:
+      for(int i=0; i<pageSel->count(); ++i) {
+        QAction *a = pageSel->itemData(i).value<QAction*>(); if (action == a) {
+          bool state = pageSel->blockSignals(true);
+          pageSel->setCurrentIndex(i);
+          pageSel->blockSignals(state);
+        }
+      }
+    });
+
+    connect(pageSel, 
+      static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), // there are 2 activated signals
+      [this](int index) {
+      QAction *a = pageSel->itemData(index).value<QAction*>();
+      Q_ASSERT(a);
+      a->trigger();
+    });
+
+    pageSelW->setLayout( pageSelL );
 }
 
 void MainWindow::replotAllImages(){
@@ -667,49 +738,49 @@ void MainWindow::showHideTextureTypes(bool){
 
     bool value = ui->checkBoxSaveDiffuse->isChecked();
     diffuseImageProp->getImageProporties()->bSkipProcessing = !value;
-    ui->tabWidget->setTabEnabled(DIFFUSE_TEXTURE,value);
+    setTabEnabled(DIFFUSE_TEXTURE,value);
     ui->pushButtonToggleDiffuse->setVisible(value);
     ui->pushButtonToggleDiffuse->setChecked(value);
     ui->actionShowDiffuseImage->setVisible(value);
 
     value = ui->checkBoxSaveNormal->isChecked();
     normalImageProp->getImageProporties()->bSkipProcessing = !value;
-    ui->tabWidget->setTabEnabled(NORMAL_TEXTURE,value);
+    setTabEnabled(NORMAL_TEXTURE,value);
     ui->pushButtonToggleNormal->setVisible(value);
     ui->pushButtonToggleNormal->setChecked(value);
     ui->actionShowNormalImage->setVisible(value);
 
     value = ui->checkBoxSaveHeight->isChecked();
     occlusionImageProp->getImageProporties()->bSkipProcessing = !value;
-    ui->tabWidget->setTabEnabled(OCCLUSION_TEXTURE,value);
+    setTabEnabled(OCCLUSION_TEXTURE,value);
     ui->pushButtonToggleOcclusion->setVisible(value);
     ui->pushButtonToggleOcclusion->setChecked(value);
     ui->actionShowOcclusiontImage->setVisible(value);
 
     value = ui->checkBoxSaveOcclusion->isChecked();
     heightImageProp->getImageProporties()->bSkipProcessing = !value;
-    ui->tabWidget->setTabEnabled(HEIGHT_TEXTURE,value);
+    setTabEnabled(HEIGHT_TEXTURE,value);
     ui->pushButtonToggleHeight->setVisible(value);
     ui->pushButtonToggleHeight->setChecked(value);
     ui->actionShowHeightImage->setVisible(value);
 
     value = ui->checkBoxSaveSpecular->isChecked();
     specularImageProp->getImageProporties()->bSkipProcessing = !value;
-    ui->tabWidget->setTabEnabled(SPECULAR_TEXTURE,value);
+    setTabEnabled(SPECULAR_TEXTURE,value);
     ui->pushButtonToggleSpecular->setVisible(value);
     ui->pushButtonToggleSpecular->setChecked(value);
     ui->actionShowSpecularImage->setVisible(value);
 
     value = ui->checkBoxSaveRoughness->isChecked();
     roughnessImageProp->getImageProporties()->bSkipProcessing = !value;
-    ui->tabWidget->setTabEnabled(ROUGHNESS_TEXTURE,value);
+    setTabEnabled(ROUGHNESS_TEXTURE,value);
     ui->pushButtonToggleRoughness->setVisible(value);
     ui->pushButtonToggleRoughness->setChecked(value);
     ui->actionShowRoughnessImage->setVisible(value);
 
     value = ui->checkBoxSaveMetallic->isChecked();
     metallicImageProp->getImageProporties()->bSkipProcessing = !value;
-    ui->tabWidget->setTabEnabled(METALLIC_TEXTURE,value);
+    setTabEnabled(METALLIC_TEXTURE,value);
     ui->pushButtonToggleMetallic->setVisible(value);
     ui->pushButtonToggleMetallic->setChecked(value);
     ui->actionShowMetallicImage->setVisible(value);
@@ -1348,11 +1419,17 @@ void MainWindow::updateSpinBoxes(int){
 }
 
 void MainWindow::selectShadingModel(int i){
-
-      if(i == 0) ui->tabWidget->setTabText(5,"Rgnss");
-      if(i == 1) ui->tabWidget->setTabText(5,"Gloss");
+      if(i == 0) setTabText(5,"Rgnss");
+      if(i == 1) setTabText(5,"Gloss");
 }
 
+void MainWindow::setTabText(int index, const char *title){
+    #pragma warning TODO
+}
+
+void MainWindow::setTabEnabled(int index, bool value){
+    #pragma warning TODO
+}
 
 void MainWindow::convertFromHtoN(){   
     glImage->setConversionType(CONVERT_FROM_H_TO_N);
@@ -1663,7 +1740,7 @@ void MainWindow::loadSettings(){
 
     ui->checkBoxUseLinearTextureInterpolation->setChecked(abSettings->use_texture_interpolation);
     FBOImages::bUseLinearInterpolation = ui->checkBoxUseLinearTextureInterpolation->isChecked();
-    ui->comboBoxGUIStyle->setCurrentText(abSettings->gui_style);
+    ui->comboBoxGUIStyle->setCurrentText(abSettings->gui_style); // native or universal
 
     // UV Settings
     ui->comboBoxSeamlessMode->setCurrentIndex(abSettings->uv_tiling_type);
@@ -1717,7 +1794,7 @@ void MainWindow::about()
                           "Since the image processing is done in 99% on GPU  the program runs very fast "
                           "and all the parameters can be changed in real time.\n "
                           "Program written by: \n Krzysztof Kolasinski and Pawel Piecuch (Copyright 2015-2016) with collaboration \n"
-                          "with other people! See project collaborators list on github. "));
+                          "with other people! See project collaborators list on github."));
 }
 
 void MainWindow::aboutQt()

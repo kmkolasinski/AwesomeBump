@@ -6,11 +6,11 @@
 #include <QFileDialog>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QAction>
 #include <QDir>
 
 #include "CommonObjects.h"
 
-class QAction;
 class QLabel;
 
 class GLWidget;
@@ -136,7 +136,7 @@ public slots:
     void resetRandomPatches();
     void selectContrastInputImage(int mode);
 
-private:    
+private:
     // saves all textures to given directory
     bool saveAllImages(const QString &dir);
 
@@ -183,6 +183,34 @@ private:
     DialogShortcuts* dialogShortcuts;
     QSettings defaults;
 
+    // page navigation
+    QComboBox *pageSel;
+    void configureToolbarAndStatusline();
+
+private:
+    void setTabText(int index, const char *title);
+    void setTabEnabled(int index, bool value);
+};
+
+class CloneAction : public QAction {
+    Q_OBJECT
+  public:
+    CloneAction(QAction *original, QObject *parent = 0) : QAction(parent), m_orig(original) {
+      connect(this, SIGNAL(triggered()), original, SLOT(trigger()));      // trigger on triggered
+      connect(this, SIGNAL(toggle(bool)), original, SLOT(toggle(bool)));  // trigger on toggled
+
+      connect(original, SIGNAL(changed()), this, SLOT(__update()));       // update on change
+      connect(original, SIGNAL(destroyed()), this, SLOT(deleteLater()));  // delete on destroyed
+      __update();
+    }
+  private slots:
+    void __update() {
+      static QStringList props = QStringList() << "text" << "iconText" << "enabled" << "checkable" << "checked";
+      foreach(const QString prop, props)
+        setProperty(qPrintable(prop), m_orig->property(qPrintable(prop)));
+    }
+  private:
+    QAction *m_orig;
 };
 
 #endif // MAINWINDOW_H
