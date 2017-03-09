@@ -298,6 +298,7 @@ private:
     std::map<std::string,GLuint> subroutines;
     std::map<std::string,QOpenGLShaderProgram*> filter_programs; // all filters in one array
 
+    GLuint vao;
     GLuint vbos[3];
     ConversionType conversionType;
     bool bShadowRender;

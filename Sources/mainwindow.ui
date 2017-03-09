@@ -39,10 +39,12 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
+
       <widget class="QWidget" name="tabWidgetSwitch_1">
        <layout class="QVBoxLayout" name="verticalTabLayout">
         <property name="spacing">
          <number>0</number>
+
         </property>
         <item>
          <widget class="QWidget" name="tabWidgetSwitch" native="true"/>
@@ -77,6 +79,7 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <property name="leftMargin">
              <number>2</number>
@@ -89,6 +92,7 @@
             </property>
             <property name="bottomMargin">
              <number>2</number>
+
             </property>
             <item>
              <widget class="QScrollArea" name="scrollArea">
@@ -145,18 +149,22 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <property name="leftMargin">
              <number>2</number>
             </property>
             <property name="topMargin">
              <number>2</number>
+
             </property>
             <property name="rightMargin">
              <number>2</number>
             </property>
+
             <property name="bottomMargin">
              <number>2</number>
+
             </property>
             <item>
              <widget class="QScrollArea" name="scrollArea_2">
@@ -213,9 +221,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <property name="leftMargin">
              <number>2</number>
+
             </property>
             <property name="topMargin">
              <number>2</number>
@@ -689,9 +699,11 @@
              <height>16777215</height>
             </size>
            </property>
+
            <layout class="QVBoxLayout" name="verticalLayout_11">
             <property name="spacing">
              <number>2</number>
+
             </property>
             <property name="leftMargin">
              <number>2</number>
@@ -840,7 +852,7 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Change the current size of the image. Interpolation is always done on the image you loaded from the file. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>Change the current size of the image. Interpolation is always done on the image you loaded from the file. </string>
                        </property>
                        <property name="text">
                         <string>Apply</string>
@@ -926,7 +938,7 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Keep width same as height.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>Keep width same as height.</string>
                        </property>
                        <property name="text">
                         <string>p</string>
@@ -1008,7 +1020,7 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The same as above but scaling is applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>The same as above but scaling is applied.</string>
                        </property>
                        <property name="text">
                         <string>Apply</string>
@@ -1043,7 +1055,7 @@
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Keep width same as height.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>Keep width same as height.</string>
                        </property>
                        <property name="text">
                         <string>p</string>
@@ -1912,7 +1924,7 @@
                 <item>
                  <widget class="QCheckBox" name="checkBoxUseLinearTextureInterpolation">
                   <property name="whatsThis">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked the &lt;span style=&quot; font-weight:600;&quot;&gt;GL_LINEAR&lt;/span&gt; texture parameter is enabled thus all processing is done with texture filtering enabled which will lead to bluring of the orginal image. Otherwise &lt;span style=&quot; font-weight:600;&quot;&gt;GL_NEAREST&lt;/span&gt; filtering is applied. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>If checked the &lt;span style=&quot; font-weight:600;&quot;&gt;GL_LINEAR&lt;/span&gt; texture parameter is enabled thus all processing is done with texture filtering enabled which will lead to bluring of the orginal image. Otherwise &lt;span style=&quot; font-weight:600;&quot;&gt;GL_NEAREST&lt;/span&gt; filtering is applied. </string>
                   </property>
                   <property name="text">
                    <string>Use texture linear interpolation (save and restart)</string>
@@ -2146,7 +2158,7 @@
                   <item row="0" column="2">
                    <widget class="QCheckBox" name="checkBoxUVTranslationsFirst">
                     <property name="toolTip">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled: UV translations and transformations are performed first before the seamless algorithms. If disabled: UV tranformations are performed after seamless algorithms.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     <string>If enabled: UV translations and transformations are performed first before the seamless algorithms. If disabled: UV tranformations are performed after seamless algorithms.</string>
                     </property>
                     <property name="text">
                      <string>Translations first</string>
@@ -2191,7 +2203,7 @@
                      <item row="2" column="1">
                       <widget class="QSlider" name="horizontalSliderSeamlessContrastPower">
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Another parameter which allows you to control blending weights  between two colors.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>Another parameter which allows you to control blending weights  between two colors.</string>
                        </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
@@ -2208,7 +2220,7 @@
                      <item row="1" column="1">
                       <widget class="QSlider" name="horizontalSliderSeamlessContrastStrenght">
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It corrects the blending equation according to contrast between two mixed colors. When slider is set to &lt;span style=&quot; font-weight:600;&quot;&gt;zero&lt;/span&gt; standard linear interpolation is applied. This tool works best with &lt;span style=&quot; font-weight:600;&quot;&gt;simple tilling&lt;/span&gt; algorithm.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>It corrects the blending equation according to contrast between two mixed colors. When slider is set to &lt;span style=&quot; font-weight:600;&quot;&gt;zero&lt;/span&gt; standard linear interpolation is applied. This tool works best with &lt;span style=&quot; font-weight:600;&quot;&gt;simple tilling&lt;/span&gt; algorithm.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;</string>
                        </property>
                        <property name="maximum">
                         <number>100</number>
@@ -2251,7 +2263,7 @@
                      <item row="3" column="1">
                       <widget class="QComboBox" name="comboBoxSeamlessContrastInputImage">
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between to types of images which are taken in order to calculate the contrast parameter. Only input textures (height and diffuse) are supported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>Choose between to types of images which are taken in order to calculate the contrast parameter. Only input textures (height and diffuse) are supported.</string>
                        </property>
                        <item>
                         <property name="text">
@@ -2591,7 +2603,7 @@
                 <item>
                  <widget class="QPushButton" name="pushButtonApplyUVtransformations">
                   <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use current diffuse texture and regenerate all the textures based on it. It resets all UV transformations.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note: &lt;/span&gt;It is better to work on images when UVs transformation are &lt;span style=&quot; font-weight:600;&quot;&gt;disabled&lt;/span&gt;. Otherwise processing may lead to some &lt;span style=&quot; font-weight:600;&quot;&gt;bugs&lt;/span&gt; in the images generated by AB. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>Use current diffuse texture and regenerate all the textures based on it. It resets all UV transformations.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note: &lt;/span&gt;It is better to work on images when UVs transformation are &lt;span style=&quot; font-weight:600;&quot;&gt;disabled&lt;/span&gt;. Otherwise processing may lead to some &lt;span style=&quot; font-weight:600;&quot;&gt;bugs&lt;/span&gt; in the images generated by AB. </string>
                   </property>
                   <property name="statusTip">
                    <string/>
@@ -2620,10 +2632,85 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="tabBatch">
+        <attribute name="title">
+         <string>Batch</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_19">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QPushButton" name="pushButtonImageBatchSource">
+             <property name="text">
+              <string>Select folder</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonImageBatchOutput">
+             <property name="text">
+              <string>Output folder</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonImageBatchRun">
+             <property name="text">
+              <string>Run</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Source folder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Output folder</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="lineEditImageBatchSource">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEditImageBatchOutput">
+             <property name="readOnly">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidgetImageBatch"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelBatchProgress">
+           <property name="text">
+            <string>Progress:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
          </widget>
         </item>
        </layout>
-      </widget>
+
+    </widget>
       <widget class="QSplitter" name="splitter">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -2637,24 +2724,12 @@
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout3DSettings">
+          <layout class="QGridLayout" name="toolsLayout3DSettings">
            <property name="spacing">
             <number>0</number>
            </property>
-           <item>
-            <widget class="QPushButton" name="pushButton3DSettings">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
+           <item row="0" column="0">
+            <widget class="QToolButton" name="pushButton3DSettings">
              <property name="text">
               <string>3D settings</string>
              </property>
@@ -2666,10 +2741,13 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="pushButton3DGeneralSettings">
+           <item row="1" column="0">
+            <widget class="QToolButton" name="pushButton3DGeneralSettings">
+             <property name="text">
+              <string>Render settings</string>
+             </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AB 3D rendering settings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>AB 3D rendering settings.</string>
              </property>
              <property name="text">
               <string/>
@@ -2684,41 +2762,25 @@
                <height>19</height>
               </size>
              </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonReplotAll">
+           <item row="0" column="1">
+            <widget class="QToolButton" name="pushButtonReplotAll">
+             <property name="text">
+              <string>Replot all</string>
+             </property>
              <property name="toolTip">
               <string>Replot all</string>
              </property>
              <property name="statusTip">
               <string>Replot all images</string>
              </property>
-             <property name="icon">
-              <iconset resource="content.qrc">
-               <normaloff>:/resources/actions/replot.png</normaloff>:/resources/actions/replot.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonResetCameraPosition">
-             <property name="maximumSize">
-              <size>
-               <width>20</width>
-               <height>16777215</height>
-              </size>
+           <item row="1" column="1">
+            <widget class="QToolButton" name="pushButtonResetCameraPosition">
+             <property name="text">
+              <string>Camera reset</string>
              </property>
              <property name="toolTip">
               <string>Reset Camera position</string>
@@ -2729,40 +2791,14 @@
              <property name="text">
               <string/>
              </property>
-             <property name="icon">
-              <iconset resource="content.qrc">
-               <normaloff>:/resources/actions/resetCamera.png</normaloff>:/resources/actions/resetCamera.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="flat">
-              <bool>true</bool>
-             </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonChangeCamPosition">
+           <item row="0" column="2">
+            <widget class="QToolButton" name="pushButtonChangeCamPosition">
              <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="content.qrc">
-               <normaloff>:/resources/cursors/centerCamCursor.png</normaloff>:/resources/cursors/centerCamCursor.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
+              <string>Change camera</string>
              </property>
              <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="flat">
               <bool>true</bool>
              </property>
             </widget>
@@ -2780,7 +2816,7 @@
              </property>
             </spacer>
            </item>
-           <item>
+           <item row="0" column="0" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleDiffuse">
              <property name="maximumSize">
               <size>
@@ -2818,7 +2854,7 @@
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="1" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleNormal">
              <property name="maximumSize">
               <size>
@@ -2856,7 +2892,7 @@
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="2" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleSpecular">
              <property name="maximumSize">
               <size>
@@ -2894,7 +2930,7 @@
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="3" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleHeight">
              <property name="maximumSize">
               <size>
@@ -2932,7 +2968,7 @@
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="4" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleOcclusion">
              <property name="maximumSize">
               <size>
@@ -2970,7 +3006,7 @@
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="5" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleRoughness">
              <property name="maximumSize">
               <size>
@@ -3008,7 +3044,7 @@
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="6" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleMetallic">
              <property name="maximumSize">
               <size>
@@ -3082,7 +3118,7 @@
               </size>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Occlusion from input/output selected.&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;br/&gt;Once this option is selected each time you change Normal or Height map the Occlusion texture is recalculated. Since this operation is computationally demanding it is recommended to work with this option selected at the end of processing.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Occlusion from input/output selected.&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;br/&gt;Once this option is selected each time you change Normal or Height map the Occlusion texture is recalculated. Since this operation is computationally demanding it is recommended to work with this option selected at the end of processing.&lt;/span&gt;</string>
              </property>
              <property name="text">
               <string/>
@@ -3111,7 +3147,7 @@
               </size>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Tilling is enabled.&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Tip:&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; In some cases (like &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-style:italic;&quot;&gt;Random&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; mode) it is recommented to set &amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-style:italic;&quot;&gt;Height (Output)&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&amp;quot; in the &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Normal&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; tab.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Tilling is enabled.&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Tip:&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; In some cases (like &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-style:italic;&quot;&gt;Random&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; mode) it is recommented to set &amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-style:italic;&quot;&gt;Height (Output)&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&amp;quot; in the &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Normal&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; tab.&lt;/span&gt;</string>
              </property>
              <property name="text">
               <string/>
@@ -3140,7 +3176,7 @@
               </size>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Grunge texture is enabled.&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Grunge texture is enabled.&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;&lt;br/&gt;&lt;/span&gt;</string>
              </property>
              <property name="text">
               <string/>
@@ -3169,7 +3205,7 @@
               </size>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#000000;&quot;&gt;C&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;onversion from diffuse is enabled.&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Click &amp;quot;Convert&amp;quot; button in the Diffuse tab and disable &amp;quot;Enable preview&amp;quot; in order to work with the textures.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Conversion from diffuse is enabled. Click [Convert] button in the Diffuse tab and disable [Enable preview] in order to work with the textures.</string>
              </property>
              <property name="text">
               <string/>
@@ -3204,7 +3240,7 @@
               </size>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600; color:#000000;&quot;&gt;M&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;aterials are enabled. &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Conversion from Base to Other and tilling tools are &lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;blocked&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;. Loading new image will overwrite current texture. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Materials are enabled. Conversion from Base to Other and tilling tools are blocked. Loading new image will overwrite current texture.</string>
              </property>
              <property name="text">
               <string/>
@@ -3232,14 +3268,18 @@
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButtonProjectManager">
-           <property name="text">
-            <string>Project manager</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QPushButton" name="pushButtonProjectManager">
+             <property name="text">
+              <string>Projects manager</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -3475,7 +3515,7 @@
     <string>Show Materials</string>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show materials tab (Alt+W)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>Show materials tab (Alt+W)</string>
    </property>
    <property name="shortcut">
     <string>Alt+W</string>
@@ -3490,7 +3530,7 @@
     <string>Show UVs</string>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show materials tab (Alt+E)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>Show materials tab (Alt+E)</string>
    </property>
    <property name="shortcut">
     <string>Alt+E</string>
@@ -3505,10 +3545,25 @@
     <string>Show Grunge Map</string>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show grunge tab (G)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>Show grunge tab (G)</string>
    </property>
    <property name="shortcut">
     <string>G</string>
+   </property>
+  </action>
+  <action name="actionShowBatchTab">
+   <property name="icon">
+    <iconset resource="content.qrc">
+     <normaloff>:/resources/actions/showUVs.png</normaloff>:/resources/actions/showBatch.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Batch</string>
+   </property>
+   <property name="toolTip">
+    <string>Show batch processing tab (Alt+B)</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+B</string>
    </property>
   </action>
  </widget>

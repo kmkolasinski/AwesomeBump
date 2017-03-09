@@ -64,6 +64,7 @@ private:
     bool hasCommonEdge(int i, int j);
     void calculateTangents();
 
+    GLuint vao;
 
     QString mesh_path;
     bool bLoaded;

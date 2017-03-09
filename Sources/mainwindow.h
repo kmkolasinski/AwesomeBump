@@ -137,6 +137,10 @@ public slots:
     void selectContrastInputImage(int mode);
 
 private:
+    // batch tool
+    void selectSourceImages();
+    void selectOutputPath();
+    void runBatch();
     // saves all textures to given directory
     bool saveAllImages(const QString &dir);
 

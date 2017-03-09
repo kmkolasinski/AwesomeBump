@@ -243,6 +243,8 @@ bool Mesh::hasCommonEdge(int i, int j){
 void Mesh::drawMesh(bool bUseArrays ){
     if(bLoaded == false) return;
 
+    GLCHK(glBindVertexArray(vao));
+
     glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[0]);
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
 
@@ -275,6 +277,7 @@ void Mesh::drawMesh(bool bUseArrays ){
         #endif
     }
 
+    GLCHK(glBindVertexArray(0));
 }
 
 void Mesh::initializeMesh(){
@@ -297,6 +300,9 @@ void Mesh::initializeMesh(){
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
 
+    GLCHK(glGenVertexArrays(1, &vao));
+    GLCHK(glBindVertexArray(vao));
+    glGenBuffers(6, &mesh_vbos[0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[1]);
     glBufferData(GL_ARRAY_BUFFER, gl_texcoords.size() * sizeof(QVector3D), gl_texcoords.constData(), GL_STATIC_DRAW);
@@ -323,9 +329,7 @@ void Mesh::initializeMesh(){
     glEnableVertexAttribArray(5);
     glVertexAttribPointer(5,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
 
-
-
-
+    glBindVertexArray(0);
 }
 
 

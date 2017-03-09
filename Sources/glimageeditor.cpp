@@ -293,6 +293,9 @@ void GLImage::initializeGL()
 
 #endif
 
+    GLCHK(glGenVertexArrays(1, &vao));
+    GLCHK(glBindVertexArray(vao));
+
     makeScreenQuad();
 
     averageColorFBO = NULL;
@@ -313,11 +316,14 @@ void GLImage::initializeGL()
     }
     paintFBO   = NULL;
 
+    GLCHK(glBindVertexArray(0));
+
     emit readyGL();
 }
 
 void GLImage::paintGL()
 {
+    glBindVertexArray(vao);
 
     // Perform filters on images and render the final result to renderFBO
     // avoid rendering function if there is rendered something already
@@ -361,7 +367,7 @@ void GLImage::paintGL()
         activeFBO->bindDefault();
         program->setUniformValue("quad_draw_mode", 1);
 
-        GLCHK( glViewport(0,0,width(),height()) );
+        GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, activeFBO->texture()) );
 
@@ -376,14 +382,15 @@ void GLImage::paintGL()
         GLCHK( program->setUniformValue("quad_draw_mode", int(0)) );
     }
 
+    glBindVertexArray(0);
 }
 
 
 
 void GLImage::render(){
 
-
     if (!activeImage) return;
+
     if ( activeImage->fbo){ // since grunge map can be different we need to calculate ratio each time
       fboRatio = float(activeImage->fbo->width())/activeImage->fbo->height();
       orthographicProjHeight = (1+zoom)/windowRatio;

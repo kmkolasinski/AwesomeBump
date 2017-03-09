@@ -4,17 +4,22 @@
 # MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	MY_QT_PATH=/Developer/Qt/5.6
+	if [ ! -e "$MY_QT_PATH" ]; then
+		MY_QT_PATH=~/Qt/5.6
+	fi
 else
 	MY_QT_PATH=/Qt/5.6
 fi
 
 wget="wget"
 tool="gcc_64"
+peg="bin-linux"
 exe=""
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	wget="curl -L -o master.zip"
 	tool="clang_64"
+    peg="bin-osx"
 	exe=".app"
 fi
 
@@ -35,16 +40,23 @@ if [ "$(ls -A Sources/utils/QtnProperty)" ]; then
 else
     echo "*** Initializing QtnProperty module"
     # Copy QtnProperty directly from the repository
-    cd Sources/utils/QtnProperty
+    pushd Sources/utils/QtnProperty
     $wget https://github.com/kmkolasinski/QtnProperty/archive/master.zip
     unzip master.zip
     rm master.zip 
     mv QtnProperty-master/* .
     rm -r QtnProperty-master    
-    cd ../../../
+    popd
 fi
 
-qmake \
-	&& make \
-	&& echo "*** Copying binary from `cat workdir/current` ..." \
-	&& cp -vr workdir/`cat workdir/current`/bin/AwesomeBump$exe ./Bin
+if Sources/utils/QtnProperty/$peg/QtnPEG > /dev/null ; then
+    qmake \
+        && make \
+        && echo "*** Copying binary from `cat workdir/current` ..." \
+        && cp -vr workdir/`cat workdir/current`/bin/AwesomeBump$exe ./Bin
+else
+	echo " --------------------------------------"
+    echo "      Error: QtnPEG failed to run."
+	echo " --------------------------------------"
+    echo "Try to rebuild the QtnPEG binary from Sources/utils/QtnProperty directory."
+fi

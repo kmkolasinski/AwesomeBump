@@ -496,22 +496,19 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
 
-
-     glReadBuffer(GL_BACK);
+    GLCHK( glReadBuffer(GL_BACK) );
     // ---------------------------------------------------------
     // Drawing env
     // ---------------------------------------------------------
     bakeEnviromentalMaps();
     colorFBO->bindDefault();
-    GLCHK( glViewport(0, 0, width(), height()) );
+    GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
 
     if(cameraInterpolation < 1.0){
         double w = cameraInterpolation;
         camera.position = camera.position*(1-w) + newCamera.position * w;
         cameraInterpolation += 0.01;
     }
-
-
 
     // setting the camera viewpoint
     viewMatrix = camera.updateCamera();
@@ -1224,7 +1221,7 @@ void GLWidget::copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst){
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
-    quad_mesh->drawMesh(true);
+    GLCHK( quad_mesh->drawMesh(true) );
     dst->bindDefault();
 
 }

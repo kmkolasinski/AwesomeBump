@@ -11,7 +11,7 @@ isEmpty(TOP_DIR) {
 VERSION_STRING = 5.0
 VERSION_FULL = 5.0.0
 
-DEFINES += VERSION_STRING=\\\"$$VERSION_STRING\\\"
+DEFINES += VERSION_STRING=\\\"$$VERSION_STRING\\\" PROJECTVERSION=\\\"VERSION_FULL\\\"
 
 QTN=utils/QtnProperty
 include($$QTN/PEG.pri)
@@ -27,7 +27,7 @@ PEG_SOURCES += properties/Filter3DDOF.pef \
 
 gl330: DEFINES += USE_OPENGL_330
 
-debug: DBG = -dgb
+CONFIG(debug, debug|release): DBG = -dgb
 GL = -gl4
 gl330: GL = -gl3
 
@@ -87,7 +87,8 @@ HEADERS = glwidget.h \
     utils/glslshaderparser.h \
     utils/glslparsedshadercontainer.h \
 	utils/contextinfo/contextwidget.h \
-    utils/contextinfo/renderwindow.h
+    utils/contextinfo/renderwindow.h \
+    formimagebatch.h
 
 SOURCES = glwidget.cpp \
     main.cpp \
@@ -119,7 +120,8 @@ SOURCES = glwidget.cpp \
     properties/PropertyABColor.cpp \
     properties/PropertyDelegateABColor.cpp \
 	utils/contextinfo/contextwidget.cpp \
-    utils/contextinfo/renderwindow.cpp
+    utils/contextinfo/renderwindow.cpp \
+    formimagebatch.cpp
 
 
 RESOURCES += content.qrc
@@ -146,7 +148,8 @@ FORMS += \
     allaboutdialog.ui \
     dialogshortcuts.ui \
     dockwidget3dsettings.ui \
-    properties/Dialog3DGeneralSettings.ui
+    properties/Dialog3DGeneralSettings.ui \
+    formimagebatch.ui
 
 ICON = resources/icons/icon.icns
 
@@ -186,6 +189,11 @@ exists("utils/quazip/quazip.pri") {
 	DEFINES += HAVE_QUAZIP
 	CONFIG += quazip_include_zip quazip_include_unzip
 	include("utils/quazip/quazip.pri")
+}
+
+exists("utils/QGitHubReleaseAPI/qgithubreleaseapi.pri") {
+	message("*** Adding 'QGitHubReleaseAPI' module (PROJECTVERSION=$$VERSION_FULL)")
+	include("utils/QGitHubReleaseAPI/qgithubreleaseapi.pri")
 }
 
 exists("utils/KDUpdater/KDUpdater.pri") {
