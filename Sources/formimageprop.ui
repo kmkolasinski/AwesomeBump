@@ -82,6 +82,13 @@
        </property>
       </widget>
      </item>
+    <item>
+        <widget class="Line" name="line_3">
+        <property name="orientation">
+        <enum>Qt::Verical</enum>
+        </property>
+        </widget>
+    </item>
      <item>
       <widget class="QPushButton" name="pushButtonOpenImage">
        <property name="toolTip">

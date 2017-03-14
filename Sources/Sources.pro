@@ -5,7 +5,12 @@ CONFIG += debug c++11
 QT += opengl gui widgets svg
 
 isEmpty(TOP_DIR) {
-	ERROR("!!! Run build process from the top source directory.")
+	error("*** Run build process from the top source directory.")
+}
+
+QTN=utils/QtnProperty
+!exists($$QTN/PEG.pri) {
+	error("*** QtnProperty not found. Install this module before compiling the application.")
 }
 
 VERSION_STRING = 5.0
@@ -13,32 +18,16 @@ VERSION_FULL = 5.0.0
 
 DEFINES += VERSION_STRING=\\\"$$VERSION_STRING\\\" PROJECTVERSION=\\\"VERSION_FULL\\\"
 
-QTN=utils/QtnProperty
-include($$QTN/PEG.pri)
-
-
-PEG_SOURCES += properties/Filter3DDOF.pef \
-               properties/Filter3DBloom.pef \
-               properties/Filter3DLensFlares.pef \
-               properties/Filter3DToneMapping.pef \
-               properties/GLSLParsedFragShader.pef \
-               properties/ImageProperties.pef \
-               properties/Filters3D.pef
-
 gl330: DEFINES += USE_OPENGL_330
 
 # build workdir path (spec/gl/c++):
 CONFIG(c++11): C11 = -c11
 else:CONFIG(c++14): C11 = -c14
 
-CONFIG(debug, debug|release): DBG = -dgb
+CONFIG(debug, debug|release): DBG = -dbg
 
 gl330: GL = -gl3
 else:GL = -gl4
-
-win32 {
-    msvc: LIBS += Opengl32.lib
-}
 
 SPEC=$$[QMAKE_SPEC]$$DBG$$GL$$C11
 DESTDIR = $$TOP_DIR/workdir/$$SPEC/bin
@@ -48,7 +37,6 @@ UI_DIR = $$TOP_DIR/workdir/$$SPEC/gen
 RCC_DIR = $$TOP_DIR/workdir/$$SPEC/gen
 
 write_file("$$TOP_DIR/workdir/current", SPEC)
-
 
 # It's now required to define the path for resource files
 # at compile time
@@ -60,6 +48,7 @@ DEFINES += RESOURCE_BASE=\\\"./\\\"
 
 VPATH += ../shared
 INCLUDEPATH += ../shared include utils utils/QtnProperty utils/contextinfo
+win32:msvc: LIBS += Opengl32.lib
 
 HEADERS = glwidget.h \
     mainwindow.h \
@@ -128,6 +117,15 @@ SOURCES = glwidget.cpp \
     utils/contextinfo/renderwindow.cpp \
     formimagebatch.cpp
 
+include($$QTN/PEG.pri)
+
+PEG_SOURCES += properties/Filter3DDOF.pef \
+               properties/Filter3DBloom.pef \
+               properties/Filter3DLensFlares.pef \
+               properties/Filter3DToneMapping.pef \
+               properties/GLSLParsedFragShader.pef \
+               properties/ImageProperties.pef \
+               properties/Filters3D.pef
 
 RESOURCES += content.qrc
 
@@ -168,13 +166,6 @@ DISTFILES += \
     properties/GLSLParsedFragShader.pef \
     properties/ImageProperties.pef
 
-
-# install additional files into target destination
-# (require "make install")
-config.path = $$DESTDIR
-config.files += $$TOP_DIR/Bin/Configs $$TOP_DIR/Bin/Core
-INSTALLS += config
-
 exists("utils/qtcopydialog/qtcopydialog.pri") {
 	message("*** Adding 'copydialog' module.")
 	DEFINES += HAVE_RTCOPY
@@ -206,3 +197,9 @@ exists("utils/KDUpdater/KDUpdater.pri") {
 	DEFINES += HAVE_KDUPDATER
 	include("utils/KDUpdater/KDUpdater.pri")
 }
+
+# install additional files into target destination
+# (require "make install")
+config.path = $$DESTDIR
+config.files += $$TOP_DIR/Bin/Configs $$TOP_DIR/Bin/Core
+INSTALLS += config
