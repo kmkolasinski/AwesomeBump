@@ -65,6 +65,7 @@
         <file>resources/actions/showMetallic.png</file>
         <file>resources/actions/roughness.png</file>
         <file>resources/actions/metalic.png</file>
+        <file>resources/actions/showBatch.png</file>
         <file>resources/actions/showRoughness.png</file>
         <file>resources/actions/showMaterials.png</file>
         <file>resources/actions/showUVs.png</file>
