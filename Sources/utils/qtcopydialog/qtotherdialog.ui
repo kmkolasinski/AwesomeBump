@@ -1,0 +1,224 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>QtOtherDialog</class>
+ <widget class="QDialog" name="QtOtherDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>267</width>
+    <height>100</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>File Already Exists</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="margin" >
+    <number>8</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <layout class="QGridLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item rowspan="2" row="0" column="0" >
+      <widget class="QLabel" name="iconLabel" >
+       <property name="text" >
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2" >
+      <widget class="QLineEdit" name="destLineEdit" >
+       <property name="sizePolicy" >
+        <sizepolicy>
+         <hsizetype>7</hsizetype>
+         <vsizetype>0</vsizetype>
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="focusPolicy" >
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="readOnly" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="QLabel" name="label" >
+       <property name="text" >
+        <string>Source</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2" >
+      <widget class="QLineEdit" name="sourceLineEdit" >
+       <property name="sizePolicy" >
+        <sizepolicy>
+         <hsizetype>7</hsizetype>
+         <vsizetype>0</vsizetype>
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="focusPolicy" >
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="readOnly" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" >
+      <widget class="QLabel" name="label_3" >
+       <property name="text" >
+        <string>Destination</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="messageLabel" >
+     <property name="text" >
+      <string>Destination file already exists.</string>
+     </property>
+     <property name="alignment" >
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="margin" >
+      <number>0</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>16</width>
+         <height>31</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="retryButton" >
+       <property name="text" >
+        <string>Retry</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="skipButton" >
+       <property name="text" >
+        <string>Skip</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="skipAllButton" >
+       <property name="text" >
+        <string>Skip All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelButton" >
+       <property name="text" >
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>16</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+  <widget class="QWidget" name="" >
+   <property name="geometry" >
+    <rect>
+     <x>9</x>
+     <y>83</y>
+     <width>519</width>
+     <height>33</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="" >
+   <property name="geometry" >
+    <rect>
+     <x>9</x>
+     <y>154</y>
+     <width>456</width>
+     <height>33</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="" >
+   <property name="geometry" >
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>480</width>
+     <height>70</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="" >
+   <property name="geometry" >
+    <rect>
+     <x>16</x>
+     <y>10</y>
+     <width>472</width>
+     <height>68</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="" >
+   <property name="geometry" >
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>331</width>
+     <height>94</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <resources/>
+ <connections/>
+</ui>
