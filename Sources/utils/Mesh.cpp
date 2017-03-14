@@ -292,7 +292,10 @@ void Mesh::initializeMesh(){
         return;
     }
     initializeOpenGLFunctions();
-    glGenBuffers(6, &mesh_vbos[0]);
+
+    GLCHK( glGenVertexArrays(1, &vao) );
+    GLCHK( glBindVertexArray(vao) );
+    GLCHK( glGenBuffers(6, &mesh_vbos[0]) );
 
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[0]);

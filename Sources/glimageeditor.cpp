@@ -182,7 +182,7 @@ void GLImage::initializeGL()
     QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/resources/shaders/filters.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
-    else qDebug() << "done";
+    else qDebug() << "> done";
 
     QFile fFile(":/resources/shaders/filters.frag");
     fFile.open(QFile::ReadOnly);
@@ -225,15 +225,13 @@ void GLImage::initializeGL()
 
 #else
 
-
-
     qDebug() << "Loading filters (vertex shader)";
     QString preambule = "#version 400 core\n";
 
     QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     fshader->compileSourceCode(preambule + shaderCode);
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
-    else qDebug() << "done";
+    else qDebug() << "> done";
 
 
 
@@ -323,7 +321,7 @@ void GLImage::initializeGL()
 
 void GLImage::paintGL()
 {
-    glBindVertexArray(vao);
+    GLCHK( glBindVertexArray(vao) );
 
     // Perform filters on images and render the final result to renderFBO
     // avoid rendering function if there is rendered something already
@@ -340,34 +338,29 @@ void GLImage::paintGL()
     if(!bShadowRender){
 
         //if (!activeImage) return;
+        
         if (paintFBO != NULL){ // since grunge map can be different we need to calculate ratio each time
           fboRatio = float(paintFBO->width())/paintFBO->height();
           orthographicProjHeight = (1+zoom)/windowRatio;
           orthographicProjWidth  = (1+zoom)/fboRatio;
         }
+        GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
         GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
         GLCHK( glDisable(GL_CULL_FACE) );
         GLCHK( glDisable(GL_DEPTH_TEST) );
-        // positions
-        glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-        glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
-        // indices
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
 
-        QGLFramebufferObject* activeFBO     = paintFBO;
+        QGLFramebufferObject* activeFBO = paintFBO;
 
         #ifdef USE_OPENGL_330
             program = filter_programs["mode_normal_filter"];
-            program->bind();
+            GLCHK( program->bind() );
         #else
             GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
         #endif
 
         // Displaying new image
-        activeFBO->bindDefault();
         program->setUniformValue("quad_draw_mode", 1);
 
-        GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, activeFBO->texture()) );
 
@@ -404,16 +397,12 @@ void GLImage::render(){
     GLCHK( glDisable(GL_CULL_FACE) );
     GLCHK( glDisable(GL_DEPTH_TEST) );
 
-
-
-    // positions
-    glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
-    // indices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
+    GLCHK( glBindVertexArray(vao) );
 
     QGLFramebufferObject* activeFBO     = activeImage->fbo;
 
+    if (!activeFBO->isValid())
+        qWarning() << "Invalid framebuffer fbo for" << PostfixNames::getTextureName(activeImage->imageType);
 
 
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
@@ -975,6 +964,9 @@ void GLImage::render(){
         GLCHK( program->setUniformValue("material_id", int(-1)) );
         GLCHK(applyNormalFilter(activeFBO,renderFBO));
     }
+
+    GLCHK( glBindVertexArray(0) );
+    
     emit rendered();
 }
 
@@ -1022,8 +1014,6 @@ void GLImage::resizeGL(int width, int height)
 {
   windowRatio = float(width)/height;
   if (isValid()) {
-    GLCHK( glViewport(0, 0, width, height) );
-
     if (activeImage && activeImage->fbo){
       fboRatio = float(activeImage->fbo->width())/activeImage->fbo->height();
       orthographicProjHeight = (1+zoom)/windowRatio;
@@ -2815,6 +2805,7 @@ void GLImage::makeScreenQuad()
     }}
 
     glGenBuffers(3, &vbos[0]);
+    
     glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float)*3, vertices.constData(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
@@ -2825,10 +2816,7 @@ void GLImage::makeScreenQuad()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,(void*)0);
 
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
-
-
     int no_triangles = 2*(size - 1)*(size - 1);
     QVector<GLuint> indices(no_triangles*3);
     iter = 0;

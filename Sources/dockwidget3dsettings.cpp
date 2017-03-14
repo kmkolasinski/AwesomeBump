@@ -1,7 +1,7 @@
 #include "dockwidget3dsettings.h"
 #include "ui_dockwidget3dsettings.h"
 
-extern QString _find_data_dir(const QString& resource);
+extern QString _find_data_dir(const QString& resource = RESOURCE_BASE);
 
 DockWidget3DSettings::DockWidget3DSettings(QWidget *parent, GLWidget* ptr_gl) :
     QDockWidget(parent),ptr_glWidget(ptr_gl),
@@ -45,15 +45,14 @@ DockWidget3DSettings::DockWidget3DSettings(QWidget *parent, GLWidget* ptr_gl) :
     // ------------------------------------------------------- //
     //               Loading cub maps folders
     // ------------------------------------------------------- //
-    qDebug() << "Loading cubemaps folders:";
-    QDir currentDir(_find_data_dir(QString(RESOURCE_BASE) + "Core/2D/skyboxes"));
+    QDir currentDir(_find_data_dir() + "/Core/2D/skyboxes");
     currentDir.setFilter(QDir::Dirs);
     QStringList entries = currentDir.entryList();
     qDebug() << "Looking for enviromental maps in Core/2D/skyboxes:";
     for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ){
         QString dirname=*entry;
         if(dirname != tr(".") && dirname != tr("..")){
-            qDebug() << "Enviromental map:" << dirname;
+            qDebug() << "> enviromental map:" << dirname;
             ui->comboBoxSkyBox->addItem(dirname);
         }
     }// end of for

@@ -42,6 +42,9 @@
 #include <QtOpenGL>
 #include <math.h>
 #include "glwidget.h"
+
+QString _find_data_dir(const QString& resource = RESOURCE_BASE);
+
 QDir* GLWidget::recentMeshDir = NULL;
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
@@ -100,11 +103,9 @@ void GLWidget::cleanup()
         qDebug() << "Removing program:" << QString(iterator->first.c_str());
         delete iterator->second;
     }
-    deleteTexture(lensFlareColorsTexture);
-    deleteTexture(lensDirtTexture);
-    deleteTexture(lensStarTexture);
-
-
+    delete lensFlareColorsTexture;
+    delete lensDirtTexture;
+    delete lensStarTexture;
 
     delete line_program;
     delete skybox_program;
@@ -187,11 +188,11 @@ void GLWidget::initializeGL()
 
 
     initializeOpenGLFunctions();
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     makeCurrent();
+
     qglClearColor(QColor::fromCmykF(0.79, 0.79, 0.79, 0.0).dark());
 
-
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
@@ -213,27 +214,27 @@ void GLWidget::initializeGL()
     QString preambule = "#version 330 core\n"
                         "layout(triangle_strip, max_vertices = 3) out;\n" ;
     gshader->compileSourceCode(preambule+shaderCode);
-    if (!gshader->log().isEmpty()) qDebug() << gshader->log();
-    else qDebug() << "done";
+    if (!gshader->log().isEmpty()) qDebug() << gshader->log().split("\n");
+    else qDebug() << "> done";
 
 #ifndef USE_OPENGL_330
     qDebug() << "Loading quad (vertex shader)";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/resources/shaders/plane.vert");
-    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
-    else qDebug() << "done";
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log().split("\n");
+    else qDebug() << "> done";
 
     qDebug() << "Loading quad (tessellation control shader)";
     tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl, this);
     tcshader->compileSourceFile(":/resources/shaders/plane.tcs.vert");
-    if (!tcshader->log().isEmpty()) qDebug() << tcshader->log();
-    else qDebug() << "done";
+    if (!tcshader->log().isEmpty()) qDebug() << tcshader->log().split("\n");
+    else qDebug() << "> done";
 
     qDebug() << "Loading quad (tessellation evaluation shader)";
     teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation, this);
     teshader->compileSourceFile(":/resources/shaders/plane.tes.vert");
-    if (!teshader->log().isEmpty()) qDebug() << teshader->log();
-    else qDebug() << "done";
+    if (!teshader->log().isEmpty()) qDebug() << teshader->log().split("\n");
+    else qDebug() << "> done";
 
 
 // setting shaders for 3.30 version of openGL
@@ -241,8 +242,8 @@ void GLWidget::initializeGL()
     qDebug() << "Loading quad (vertex shader) for openGL 3.30";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/resources/shaders/plane_330.vert");
-    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
-    else qDebug() << "done";
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log().split("\n");
+    else qDebug() << "> done";
 #endif
     GLSLShaderParser* lastIndex = currentShader;
     for(int ip = 0 ; ip < glslShadersList->glslParsedShaders.size();ip++){
@@ -255,8 +256,8 @@ void GLWidget::initializeGL()
         qDebug() << "Loading parsed glsl fragmend shader";
         QOpenGLShader* pfshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
         pfshader->compileSourceFile(currentShader->shaderPath);
-        if (!pfshader->log().isEmpty()) qDebug() << pfshader->log();
-        else qDebug() << "done";
+        if (!pfshader->log().isEmpty()) qDebug() << pfshader->log().split("\n");
+        else qDebug() << "> done";
 
 
         #ifndef USE_OPENGL_330
@@ -271,6 +272,8 @@ void GLWidget::initializeGL()
         currentShader->program->bindAttributeLocation("FragGlowColor",2);
         currentShader->program->bindAttributeLocation("FragPosition",3);
         GLCHK(currentShader->program->link());
+        if (!currentShader->program->log().isEmpty())
+            qWarning() << Q_FUNC_INFO << currentShader->program->log().split("\n");
 
         delete pfshader;
 
@@ -299,11 +302,11 @@ void GLWidget::initializeGL()
 
     // lines shader
     qDebug() << "Compiling lines program...";
-     preambule = QString("#version 330 core\n")+
+    preambule = QString("#version 330 core\n")+
                         "layout(line_strip, max_vertices = 3) out;\n" ;
     gshader->compileSourceCode(preambule+shaderCode);
-    if (!gshader->log().isEmpty()) qDebug() << gshader->log();
-    else qDebug() << "done";
+    if (!gshader->log().isEmpty()) qDebug() << gshader->log().split("\n");
+    else qDebug() << "> done";
 
 
     line_program = new QOpenGLShaderProgram(this);
@@ -320,6 +323,8 @@ void GLWidget::initializeGL()
     line_program->bindAttributeLocation("FragGlowColor",2);
     line_program->bindAttributeLocation("FragPosition",3);
     GLCHK(line_program->link());
+    if (!line_program->log().isEmpty())
+        qWarning() << Q_FUNC_INFO << line_program->log().split("\n");
 
     GLCHK(line_program->bind());
     line_program->setUniformValue("texDiffuse"  , 0);
@@ -348,14 +353,14 @@ void GLWidget::initializeGL()
     qDebug() << "Loading skybox shader (vertex shader)";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/resources/shaders/skybox.vert.glsl");
-    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
-    else qDebug() << "done";
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log().split("\n");
+    else qDebug() << "> done";
 
     qDebug() << "Loading skybox shader (fragment shader)";
     fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     fshader->compileSourceFile(":/resources/shaders/skybox.frag.glsl");
-    if (!fshader->log().isEmpty()) qDebug() << fshader->log();
-    else qDebug() << "done";
+    if (!fshader->log().isEmpty()) qDebug() << fshader->log().split("\n");
+    else qDebug() << "> done";
 
     skybox_program = new QOpenGLShaderProgram(this);
     skybox_program->addShader(vshader);
@@ -365,6 +370,8 @@ void GLWidget::initializeGL()
     skybox_program->bindAttributeLocation("FragGlowColor",2);
     skybox_program->bindAttributeLocation("FragPosition",3);
     GLCHK(skybox_program->link());
+    if (!skybox_program->log().isEmpty())
+        qWarning() << Q_FUNC_INFO << skybox_program->log().split("\n");
     GLCHK(skybox_program->bind());
     skybox_program->setUniformValue("texEnv" , 0);
 
@@ -373,20 +380,20 @@ void GLWidget::initializeGL()
     qDebug() << "Loading enviromental shader (vertex shader)";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/resources/shaders/env.vert");
-    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
-    else qDebug() << "done";
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log().split("\n");
+    else qDebug() << "> done";
 
     qDebug() << "Loading enviromental shader (geometry shader)";
     gshader = new QOpenGLShader(QOpenGLShader::Geometry, this);
     gshader->compileSourceFile(":/resources/shaders/env.geom");
-    if (!gshader->log().isEmpty()) qDebug() << gshader->log();
-    else qDebug() << "done";
+    if (!gshader->log().isEmpty()) qDebug() << gshader->log().split("\n");
+    else qDebug() << "> done";
 
     qDebug() << "Loading enviromental shader (fragment shader)";
     fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     fshader->compileSourceFile(":/resources/shaders/env.frag");
-    if (!fshader->log().isEmpty()) qDebug() << fshader->log();
-    else qDebug() << "done";
+    if (!fshader->log().isEmpty()) qDebug() << fshader->log().split("\n");
+    else qDebug() << "> done";
 
     env_program = new QOpenGLShaderProgram(this);
     env_program->addShader(vshader);
@@ -394,6 +401,8 @@ void GLWidget::initializeGL()
     env_program->addShader(fshader);
 
     GLCHK(env_program->link());
+    if (!env_program->log().isEmpty())
+        qWarning() << Q_FUNC_INFO << env_program->log().split("\n");
     GLCHK(env_program->bind());
     env_program->setUniformValue("texEnv" , 0);
 
@@ -409,8 +418,8 @@ void GLWidget::initializeGL()
     qDebug() << "Loading post-processing shader (vertex shader)";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/resources/shaders/filters_3d.vert");
-    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
-    else qDebug() << "done";
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log().split("\n");
+    else qDebug() << "> done";
 
 
     qDebug() << "Loading post-processing shaders (fragment shader)";
@@ -439,7 +448,7 @@ void GLWidget::initializeGL()
 
         fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
         fshader->compileSourceCode(preambule + shaderCode);
-        if (!fshader->log().isEmpty()) qDebug() << fshader->log();
+        if (!fshader->log().isEmpty()) qDebug() << fshader->log().split("\n");
 
 
         filter_program = new QOpenGLShaderProgram(this);
@@ -447,6 +456,8 @@ void GLWidget::initializeGL()
         filter_program->addShader(fshader);
         filter_program->bindAttributeLocation("positionIn", 0);
         GLCHK( filter_program->link() );
+        if (!filter_program->log().isEmpty())
+            qWarning() << Q_FUNC_INFO << filter_program->log().split("\n");
 
         GLCHK( filter_program->bind() );
         GLCHK( filter_program->setUniformValue("layerA" , 0) );
@@ -463,14 +474,11 @@ void GLWidget::initializeGL()
     }
     if(vshader  != NULL) delete vshader;
 
+    GLCLRERR();
 
-    GLCHK( lensFlareColorsTexture = bindTexture(QImage(":/resources/textures/lenscolor.png"),GL_TEXTURE_2D) );
-    qDebug() << "Loading lensColors texture: (id=" << lensFlareColorsTexture << ")";
-    GLCHK( lensDirtTexture = bindTexture(QImage(":/resources/textures/lensdirt.png"),GL_TEXTURE_2D) );
-    qDebug() << "Loading lensDirt texture: (id=" << lensDirtTexture << ")";
-    GLCHK( lensStarTexture = bindTexture(QImage(":/resources/textures/lensstar.png"),GL_TEXTURE_2D) );
-    qDebug() << "Loading lensDirt texture: (id=" << lensStarTexture << ")";
-
+    GLCHK( lensFlareColorsTexture = new QOpenGLTexture(QImage(":/resources/textures/lenscolor.png").mirrored()) );
+    GLCHK( lensDirtTexture = new QOpenGLTexture(QImage(":/resources/textures/lensdirt.png").mirrored()) );
+    GLCHK( lensStarTexture = new QOpenGLTexture(QImage(":/resources/textures/lensstar.png").mirrored()) );
 
 
     camera.position.setZ( -0 );
@@ -482,10 +490,10 @@ void GLWidget::initializeGL()
     lightDirection.toggleFreeCamera(false);
     lightDirection.radius = 1;
 
-    mesh        = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","Cube.obj");
-    skybox_mesh = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","sky_cube.obj");
-    env_mesh    = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","sky_cube_env.obj");
-    quad_mesh   = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","quad.obj");
+    mesh        = new Mesh(_find_data_dir() + "/Core/3D/","Cube.obj");
+    skybox_mesh = new Mesh(_find_data_dir() + "/Core/3D/","sky_cube.obj");
+    env_mesh    = new Mesh(_find_data_dir() + "/Core/3D/","sky_cube_env.obj");
+    quad_mesh   = new Mesh(_find_data_dir() + "/Core/3D/","quad.obj");
 
     m_prefiltered_env_map = new GLTextureCube(512);
 
@@ -497,11 +505,14 @@ void GLWidget::paintGL()
 {
 
     GLCHK( glReadBuffer(GL_BACK) );
+    
     // ---------------------------------------------------------
     // Drawing env
     // ---------------------------------------------------------
     bakeEnviromentalMaps();
-    colorFBO->bindDefault();
+    
+    QGLFramebufferObject::bindDefault();
+
     GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
 
     if(cameraInterpolation < 1.0){
@@ -747,8 +758,10 @@ void GLWidget::paintGL()
 }
 
 void GLWidget::bakeEnviromentalMaps(){
+    
     if(bDiffuseMapBaked) return;
     bDiffuseMapBaked = true;
+    
     // ---------------------------------------------------------
     // Drawing env - one pass method
     // ---------------------------------------------------------
@@ -771,11 +784,7 @@ void GLWidget::bakeEnviromentalMaps(){
 
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( m_env_map->bind());
-    GLCHK( env_mesh->drawMesh(true) );
-
-    glBindFramebuffer   (GL_FRAMEBUFFER, 0);
-
-    glViewport(0, 0, width(), height()) ;
+    GLCHK( env_mesh->drawMesh(true) );    
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -991,7 +1000,7 @@ bool GLWidget::loadMeshFile(const QString &fileName, bool bAddExtension)
     // loading new mesh
     Mesh* new_mesh;
     if(bAddExtension){
-      new_mesh = new Mesh(QString(RESOURCE_BASE) + "Core/3D/",fileName+QString(".obj"));
+      new_mesh = new Mesh(_find_data_dir() + "/Core/3D/",fileName+QString(".obj"));
     }else{
         new_mesh = new Mesh(QString(""),fileName);
     }
@@ -1027,10 +1036,11 @@ void GLWidget::chooseMeshFile(const QString &fileName){
 
 
 void GLWidget::chooseSkyBox(QString cubeMapName,bool bFirstTime){
-    QStringList list;
     makeCurrent();
-    list << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posx.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/negx.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posy.jpg"
-         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negy.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/posz.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negz.jpg";
+    QStringList list;
+    const QString base = _find_data_dir();
+    list << base + "/Core/2D/skyboxes/" + cubeMapName + "/posx.jpg" << base + "/Core/2D/skyboxes/" + cubeMapName  + "/negx.jpg" << base + "/Core/2D/skyboxes/" + cubeMapName + "/posy.jpg"
+         << base + "/Core/2D/skyboxes/" + cubeMapName + "/negy.jpg" << base + "/Core/2D/skyboxes/" + cubeMapName  + "/posz.jpg" << base + "/Core/2D/skyboxes/" + cubeMapName + "/negz.jpg";
 
     qDebug() << "Reading new cube map:" << list;
     bDiffuseMapBaked     = false;
@@ -1074,24 +1084,24 @@ void GLWidget::recompileRenderShader(){
     QString preambule = "#version 330 core\n"
                         "layout(triangle_strip, max_vertices = 3) out;\n" ;
     gshader->compileSourceCode(preambule+shaderCode);
-    if (!gshader->log().isEmpty()) qDebug() << gshader->log();
+    if (!gshader->log().isEmpty()) qDebug() << gshader->log().split("\n");
     else qDebug() << "  Geometry shader: OK";
 
 #ifndef USE_OPENGL_330
 
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/resources/shaders/plane.vert");
-    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log().split("\n");
     else qDebug() << "  Vertex shader (GLSL4.0): OK";
 
     tcshader = new QOpenGLShader(QOpenGLShader::TessellationControl, this);
     tcshader->compileSourceFile(":/resources/shaders/plane.tcs.vert");
-    if (!tcshader->log().isEmpty()) qDebug() << tcshader->log();
+    if (!tcshader->log().isEmpty()) qDebug() << tcshader->log().split("\n");
     else qDebug() << "  Tessellation control shader (GLSL4.0): OK";
 
     teshader = new QOpenGLShader(QOpenGLShader::TessellationEvaluation, this);
     teshader->compileSourceFile(":/resources/shaders/plane.tes.vert");
-    if (!teshader->log().isEmpty()) qDebug() << teshader->log();
+    if (!teshader->log().isEmpty()) qDebug() << teshader->log().split("\n");
     else qDebug() << "  Tessellation evaluation shader (GLSL4.0): OK";
 
 // setting shaders for 3.30 version of openGL
@@ -1099,7 +1109,7 @@ void GLWidget::recompileRenderShader(){
     qDebug() << "Loading quad (vertex shader) for openGL 3.30";
     vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/resources/shaders/plane_330.vert");
-    if (!vshader->log().isEmpty()) qDebug() << vshader->log();
+    if (!vshader->log().isEmpty()) qDebug() << vshader->log().split("\n");
     else qDebug() << "  Vertex shader (GLSL3.3): OK";
 #endif
 
@@ -1108,7 +1118,7 @@ void GLWidget::recompileRenderShader(){
     // -----------------------------------------
     QOpenGLShader* pfshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
     pfshader->compileSourceFile(currentShader->shaderPath);
-    if (!pfshader->log().isEmpty()) qDebug() << pfshader->log();
+    if (!pfshader->log().isEmpty()) qDebug() << pfshader->log().split("\n");
     else qDebug() << "  Custom Fragment Shader (GLSL3.3): OK";
 
 
@@ -1124,6 +1134,8 @@ void GLWidget::recompileRenderShader(){
     currentShader->program->bindAttributeLocation("FragGlowColor",2);
     currentShader->program->bindAttributeLocation("FragPosition",3);
     GLCHK(currentShader->program->link());
+    if (!currentShader->program->log().isEmpty())
+        qWarning() << Q_FUNC_INFO << currentShader->program->log().split("\n");
 
     delete pfshader;
     if(vshader  != NULL) delete vshader;
@@ -1157,6 +1169,7 @@ void GLWidget::recompileRenderShader(){
 void GLWidget::resizeFBOs(){
 
     if(colorFBO != NULL) delete colorFBO;
+
     colorFBO = new GLFrameBufferObject(width(),height());
     colorFBO->addTexture(GL_COLOR_ATTACHMENT1);
     colorFBO->addTexture(GL_COLOR_ATTACHMENT2);
@@ -1456,7 +1469,7 @@ void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outp
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
     GLCHK( glActiveTexture(GL_TEXTURE2) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, lensFlareColorsTexture) );
+    GLCHK( lensFlareColorsTexture->bind() );
 
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, glowInputColor[0]->fbo->texture()) );
@@ -1506,9 +1519,9 @@ void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outp
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[0]->fbo->texture()) );// ghost texture
     GLCHK( glActiveTexture(GL_TEXTURE2) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, lensDirtTexture) ); // dirt texture
+    GLCHK( lensDirtTexture->bind() ); // dirt texture
     GLCHK( glActiveTexture(GL_TEXTURE3) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, lensStarTexture) ); // star texture
+    GLCHK( lensStarTexture->bind() ); // star texture
     GLCHK( glActiveTexture(GL_TEXTURE4) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[3]->fbo->texture()) ); // exposure reference
     quad_mesh->drawMesh(true);

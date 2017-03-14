@@ -62,7 +62,7 @@
 #define SplashImage ":/resources/logo/splash.png"
 
 // find data directory for each platform:
-QString _find_data_dir(const QString& resource)
+QString _find_data_dir(const QString& resource = RESOURCE_BASE)
 {
    if (resource.startsWith(":"))
      return resource; // resource
@@ -76,7 +76,7 @@ QString _find_data_dir(const QString& resource)
     fpath = resource;
 #endif
 
-    return fpath;
+    return QDir::cleanPath( fpath );
 }
 
 // Redirect qDebug() to file log file.
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
 
     qDebug() << "Starting application:";
     qDebug() << "Application dir:" << QApplication::applicationDirPath();
-    qDebug() << "Data dir:" << _find_data_dir(RESOURCE_BASE);
+    qDebug() << "Data dir:" << _find_data_dir();
 
     SplashScreen sp(&app);
     QPixmap szpx = QPixmap(SplashImage);
@@ -234,10 +234,11 @@ int main(int argc, char *argv[])
     sp.show(); app.processEvents();
 
 	// Check for resource directory:
-	QString resDir = _find_data_dir(RESOURCE_BASE);
-	if (!QFileInfo(resDir+"Configs").isDir() || !QFileInfo(resDir+"Core").isDir()) {
+	QString resDir = _find_data_dir();
+	if (!QFileInfo(resDir+"/Configs").isDir() || !QFileInfo(resDir+"/Core").isDir()) {
+    sp.hide(); app.processEvents();
 #ifdef Q_OS_MAC
-		return QMessageBox::critical(0, "Missing runtime files", QString("Missing runtime files\n\nCannot find runtime assets required to run the application (resource path: %1).").arg(resDir));
+		return QMessageBox::critical(0, "Missing runtime files", QString("Missing runtime files\n\nCannot find runtime assets required to run the application (resource path: %1).").arg(QDir::cleanPath(resDir)));
 #else
 		return QMessageBox::critical(0, "Missing runtime files", QString("Cannot find runtime assets required to run the application (resource path: %1).").arg(resDir));
 #endif

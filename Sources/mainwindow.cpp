@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    setWindowIcon(QIcon(":/resources/icons/cube.png"));
+    setWindowIcon(QIcon(":/resources/icons/AB.png"));
 
     recentDir                   = NULL;
     recentMeshDir               = NULL;
@@ -444,7 +444,7 @@ void MainWindow::initializeApp()
 
     INIT_PROGRESS(90, "Updating main menu items.");
 
-    aboutAction = new QAction(QIcon(":/resources/icons/cube.png"), tr("&About %1").arg(qApp->applicationName()), this);
+    aboutAction = new QAction(QIcon(":/resources/icons/AB.png"), tr("&About %1").arg(qApp->applicationName()), this);
     aboutAction->setToolTip(tr("Show information about AwesomeBump"));
     aboutAction->setMenuRole(QAction::AboutQtRole);
     aboutAction->setMenuRole(QAction::AboutRole);
@@ -548,14 +548,13 @@ void MainWindow::configureToolbarAndStatusline()
       { 5, ui->actionShowRoughnessImage, ":/resources/actions/roughness.png" },
       { 6, ui->actionShowMetallicImage, ":/resources/actions/metalic.png" },
       { 7, ui->actionShowMaterialsImage, ":/resources/actions/showMaterials.png" },
-      { 8, ui->actionShowGrungeTexture, ":/resources/actions/grunge.png" },
+      { 8, ui->actionShowGrungeTexture, ":/resources/actions/showGrunge.png" },
       { 9, ui->actionShowSettingsImage, ":/resources/actions/showSettings.png" },
       { 10, ui->actionShowUVsTab, ":/resources/actions/showUVs.png" },
       { 11, ui->actionShowBatchTab, ":/resources/actions/showBatch.png" },
       { -1, NULL, "" }
     };
 
-    pageSel = new QComboBox();
     QActionGroup *showTabGroup1 = new QActionGroup(this);
     QWidget *pageSelW = ui->tabWidgetSwitch;
     QGridLayout *pageSelL = new QGridLayout( ); 
@@ -574,11 +573,12 @@ void MainWindow::configureToolbarAndStatusline()
 
         // combo box:
         QVariant v; v.setValue(act->action);
-        pageSel->addItem(icon, act->action->text(), v); if (ui->tabWidget->currentIndex() == act->tab) 
-        pageSel->setCurrentIndex(act->tab);
+        ui->pageSel->addItem(icon, act->action->text(), v); if (ui->tabWidget->currentIndex() == act->tab) 
+        ui->pageSel->setCurrentIndex(act->tab);
 
         // append button:
-        pageSelL->addWidget(new ActiveLabel(act->tab, act->action->text().toLatin1()));
+        if (pageSelL)
+            pageSelL->addWidget(new ActiveLabel(act->tab, act->action->text().toLatin1()), col, row);
 
         // append menu:
 
@@ -587,19 +587,19 @@ void MainWindow::configureToolbarAndStatusline()
 
     connect(showTabGroup1, &QActionGroup::triggered, [this](QAction *action){
       // update combox with new selection:
-      for(int i=0; i<pageSel->count(); ++i) {
-        QAction *a = pageSel->itemData(i).value<QAction*>(); if (action == a) {
-          bool state = pageSel->blockSignals(true);
-          pageSel->setCurrentIndex(i);
-          pageSel->blockSignals(state);
+      for(int i=0; i<ui->pageSel->count(); ++i) {
+        QAction *a = ui->pageSel->itemData(i).value<QAction*>(); if (action == a) {
+          bool state = ui->pageSel->blockSignals(true);
+          ui->pageSel->setCurrentIndex(i);
+          ui->pageSel->blockSignals(state);
         }
       }
     });
 
-    connect(pageSel, 
+    connect(ui->pageSel, 
       static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), // there are 2 activated signals
       [this](int index) {
-      QAction *a = pageSel->itemData(index).value<QAction*>();
+      QAction *a = ui->pageSel->itemData(index).value<QAction*>();
       Q_ASSERT(a);
       a->trigger();
     });

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1462</width>
+    <width>1327</width>
     <height>753</height>
    </rect>
   </property>
@@ -39,13 +39,27 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-
       <widget class="QWidget" name="tabWidgetSwitch_1">
        <layout class="QVBoxLayout" name="verticalTabLayout">
         <property name="spacing">
          <number>0</number>
-
         </property>
+        <item>
+         <widget class="QComboBox" name="pageSel"/>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>12</height>
+           </size>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QWidget" name="tabWidgetSwitch" native="true"/>
         </item>
@@ -79,7 +93,6 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <property name="leftMargin">
              <number>2</number>
@@ -92,7 +105,6 @@
             </property>
             <property name="bottomMargin">
              <number>2</number>
-
             </property>
             <item>
              <widget class="QScrollArea" name="scrollArea">
@@ -116,8 +128,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>372</width>
-                 <height>670</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -149,22 +161,18 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <property name="leftMargin">
              <number>2</number>
             </property>
             <property name="topMargin">
              <number>2</number>
-
             </property>
             <property name="rightMargin">
              <number>2</number>
             </property>
-
             <property name="bottomMargin">
              <number>2</number>
-
             </property>
             <item>
              <widget class="QScrollArea" name="scrollArea_2">
@@ -188,8 +196,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>372</width>
-                 <height>670</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -221,11 +229,9 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <property name="leftMargin">
              <number>2</number>
-
             </property>
             <property name="topMargin">
              <number>2</number>
@@ -264,8 +270,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>372</width>
-                 <height>670</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -332,8 +338,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>372</width>
-                 <height>670</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -536,8 +542,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>372</width>
-                 <height>670</height>
+                 <width>100</width>
+                 <height>30</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_27">
@@ -589,8 +595,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>370</width>
-                 <height>668</height>
+                 <width>98</width>
+                 <height>28</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -651,8 +657,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>370</width>
-                 <height>668</height>
+                 <width>98</width>
+                 <height>28</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_33">
@@ -699,11 +705,9 @@
              <height>16777215</height>
             </size>
            </property>
-
            <layout class="QVBoxLayout" name="verticalLayout_11">
             <property name="spacing">
              <number>2</number>
-
             </property>
             <property name="leftMargin">
              <number>2</number>
@@ -750,8 +754,8 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-86</y>
-                 <width>372</width>
+                 <y>0</y>
+                 <width>359</width>
                  <height>720</height>
                 </rect>
                </property>
@@ -2054,8 +2058,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>372</width>
-                 <height>670</height>
+                 <width>361</width>
+                 <height>593</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -2633,84 +2637,80 @@
            </layout>
           </widget>
           <widget class="QWidget" name="tabBatch">
-        <attribute name="title">
-         <string>Batch</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_19">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QPushButton" name="pushButtonImageBatchSource">
-             <property name="text">
-              <string>Select folder</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonImageBatchOutput">
-             <property name="text">
-              <string>Output folder</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonImageBatchRun">
-             <property name="text">
-              <string>Run</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QFormLayout" name="formLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Source folder</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Output folder</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="lineEditImageBatchSource">
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="lineEditImageBatchOutput">
-             <property name="readOnly">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QListWidget" name="listWidgetImageBatch"/>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelBatchProgress">
-           <property name="text">
-            <string>Progress:</string>
-           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_19">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QPushButton" name="pushButtonImageBatchSource">
+                <property name="text">
+                 <string>Select folder</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButtonImageBatchOutput">
+                <property name="text">
+                 <string>Output folder</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButtonImageBatchRun">
+                <property name="text">
+                 <string>Run</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QFormLayout" name="formLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Source folder</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Output folder</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="lineEditImageBatchSource">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="lineEditImageBatchOutput">
+                <property name="readOnly">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidgetImageBatch"/>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelBatchProgress">
+              <property name="text">
+               <string>Progress:</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
-         </item>
-        </layout>
-       </widget>
          </widget>
         </item>
        </layout>
-
-    </widget>
+      </widget>
       <widget class="QSplitter" name="splitter">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -2720,9 +2720,6 @@
          <property name="spacing">
           <number>0</number>
          </property>
-         <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
-         </property>
          <item>
           <layout class="QGridLayout" name="toolsLayout3DSettings">
            <property name="spacing">
@@ -2730,6 +2727,18 @@
            </property>
            <item row="0" column="0">
             <widget class="QToolButton" name="pushButton3DSettings">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
+             </property>
              <property name="text">
               <string>3D settings</string>
              </property>
@@ -2743,31 +2752,33 @@
            </item>
            <item row="1" column="0">
             <widget class="QToolButton" name="pushButton3DGeneralSettings">
-             <property name="text">
-              <string>Render settings</string>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
              </property>
              <property name="toolTip">
               <string>AB 3D rendering settings.</string>
              </property>
              <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="content.qrc">
-               <normaloff>:/resources/actions/settings3d.png</normaloff>:/resources/actions/settings3d.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>19</width>
-               <height>19</height>
-              </size>
+              <string>Render settings</string>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
             <widget class="QToolButton" name="pushButtonReplotAll">
-             <property name="text">
-              <string>Replot all</string>
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
              </property>
              <property name="toolTip">
               <string>Replot all</string>
@@ -2775,12 +2786,18 @@
              <property name="statusTip">
               <string>Replot all images</string>
              </property>
+             <property name="text">
+              <string>Replot all</string>
+             </property>
             </widget>
            </item>
            <item row="1" column="1">
             <widget class="QToolButton" name="pushButtonResetCameraPosition">
-             <property name="text">
-              <string>Camera reset</string>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
              </property>
              <property name="toolTip">
               <string>Reset Camera position</string>
@@ -2789,12 +2806,18 @@
               <string>Reset camera position</string>
              </property>
              <property name="text">
-              <string/>
+              <string>Camera reset</string>
              </property>
             </widget>
            </item>
            <item row="0" column="2">
             <widget class="QToolButton" name="pushButtonChangeCamPosition">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
+             </property>
              <property name="text">
               <string>Change camera</string>
              </property>
@@ -2803,25 +2826,12 @@
              </property>
             </widget>
            </item>
-           <item>
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="0" rowspan="2">
+           <item row="0" column="3" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleDiffuse">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>32</height>
+               <height>40</height>
               </size>
              </property>
              <property name="statusTip">
@@ -2854,12 +2864,12 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1" rowspan="2">
+           <item row="0" column="3" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleNormal">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>32</height>
+               <height>40</height>
               </size>
              </property>
              <property name="statusTip">
@@ -2892,12 +2902,12 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="2" rowspan="2">
+           <item row="0" column="5" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleSpecular">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>32</height>
+               <height>40</height>
               </size>
              </property>
              <property name="statusTip">
@@ -2930,12 +2940,12 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="3" rowspan="2">
+           <item row="0" column="6" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleHeight">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>32</height>
+               <height>40</height>
               </size>
              </property>
              <property name="statusTip">
@@ -2968,12 +2978,12 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="4" rowspan="2">
+           <item row="0" column="7" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleOcclusion">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>32</height>
+               <height>40</height>
               </size>
              </property>
              <property name="statusTip">
@@ -3006,12 +3016,12 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="5" rowspan="2">
+           <item row="0" column="8" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleRoughness">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>32</height>
+               <height>40</height>
               </size>
              </property>
              <property name="statusTip">
@@ -3044,12 +3054,12 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="6" rowspan="2">
+           <item row="0" column="9" rowspan="2">
             <widget class="QPushButton" name="pushButtonToggleMetallic">
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>32</height>
+               <height>40</height>
               </size>
              </property>
              <property name="statusTip">
@@ -3270,7 +3280,19 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <widget class="QPushButton" name="pushButtonProjectManager">
+            <widget class="QToolButton" name="pushButtonProjectManager">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
+             </property>
              <property name="text">
               <string>Projects manager</string>
              </property>
@@ -3293,7 +3315,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1462</width>
+     <width>1327</width>
      <height>22</height>
     </rect>
    </property>
@@ -3512,7 +3534,7 @@
      <normaloff>:/resources/actions/showMaterials.png</normaloff>:/resources/actions/showMaterials.png</iconset>
    </property>
    <property name="text">
-    <string>Show Materials</string>
+    <string>Show materials</string>
    </property>
    <property name="toolTip">
     <string>Show materials tab (Alt+W)</string>
@@ -3542,7 +3564,7 @@
      <normaloff>:/resources/actions/showGrunge.png</normaloff>:/resources/actions/showGrunge.png</iconset>
    </property>
    <property name="text">
-    <string>Show Grunge Map</string>
+    <string>Show grunge map</string>
    </property>
    <property name="toolTip">
     <string>Show grunge tab (G)</string>
@@ -3554,10 +3576,10 @@
   <action name="actionShowBatchTab">
    <property name="icon">
     <iconset resource="content.qrc">
-     <normaloff>:/resources/actions/showUVs.png</normaloff>:/resources/actions/showBatch.png</iconset>
+     <normaloff>:/resources/actions/showUVs.png</normaloff>:/resources/actions/showUVs.png</iconset>
    </property>
    <property name="text">
-    <string>Show Batch</string>
+    <string>Show batch</string>
    </property>
    <property name="toolTip">
     <string>Show batch processing tab (Alt+B)</string>

@@ -2,6 +2,9 @@
 #include "ui_formimageprop.h"
 
 
+QString _find_data_dir(const QString& resource = RESOURCE_BASE);
+
+
 bool FormImageProp::bLoading = false;
 
 FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
@@ -206,7 +209,9 @@ void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
         // Grunge Load predefined pattern
         if(dynamic_cast<const QtnPropertyQString*>(changedProperty)
                 == &imageProp.properties->Grunge.Patterns){
-            loadPredefinedGrunge(imageProp.properties->Grunge.Patterns.value());
+            QTimer::singleShot(0, [=]{ // let ui is redrawn before loading image (PP)
+                loadPredefinedGrunge(imageProp.properties->Grunge.Patterns.value());
+            });
         }
         // Enable Grunge
         if(imageProp.properties->Grunge.OverallWeight.value() == 0){
@@ -216,7 +221,9 @@ void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
         }
         // Open Normal mixer
         if(dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->NormalsMixer.NormalImage){
-            loadFile(imageProp.properties->NormalsMixer.NormalImage);
+            QTimer::singleShot(0, [=]{ // let ui is redrawn before loading image (PP)
+                loadFile(imageProp.properties->NormalsMixer.NormalImage);
+            });
         }
         // Bool activated, enum changed
         if(dynamic_cast<const QtnPropertyBool*>(changedProperty)
@@ -274,7 +281,7 @@ bool FormImageProp::loadFile(const QString &fileName)
 {
     QFileInfo fileInfo(fileName);
     QImage _image;
-//    qDebug() << "Opening file: " << fileName;
+    
     // Targa support added
     if(fileInfo.completeSuffix().compare("tga") == 0){
         TargaImage tgaImage;
@@ -328,7 +335,7 @@ void FormImageProp::setImage(QImage _image){
     if (imageProp.glWidget_ptr->isValid())
       imageProp.init(image);
     else
-        qDebug() << Q_FUNC_INFO << "Invalid context.";
+        qWarning() << Q_FUNC_INFO << "Invalid context.";
 }
 
 
@@ -498,7 +505,7 @@ void FormImageProp::toggleGrungeImageSettingsGroup(bool toggle){
 }
 
 void FormImageProp::loadPredefinedGrunge(QString image){
-    loadFile(QString(RESOURCE_BASE) + "Core/2D/grunge/" + image);
+    loadFile(_find_data_dir() + "/Core/2D/grunge/" + image);
 }
 
 

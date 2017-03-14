@@ -74,6 +74,8 @@ static void checkOpenGLError( const char* stmt, const char* function, const char
     }();
 #endif
 
+#define GLCLRERR() glGetError()
+
 #endif
 
 #endif // QOPENGLERRORCHECK_H

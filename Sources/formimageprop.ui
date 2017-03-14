@@ -51,48 +51,6 @@
     <number>2</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonRestoreSettings">
-       <property name="maximumSize">
-        <size>
-         <width>50</width>
-         <height>2000</height>
-        </size>
-       </property>
-       <property name="whatsThis">
-        <string>Reloads the setting from ini file</string>
-       </property>
-       <property name="autoFillBackground">
-        <bool>true</bool>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">font: 75 6pt &quot;Arial&quot;;</string>
-       </property>
-       <property name="text">
-        <string>Restore</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
     <widget class="Line" name="line_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -100,8 +58,31 @@
     </widget>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayout_8">
-     <item row="0" column="0">
+    <layout class="QHBoxLayout" name="gridLayout_8">
+     <item>
+      <widget class="QPushButton" name="pushButtonRestoreSettings">
+       <property name="toolTip">
+        <string>Reloads settings from ini file</string>
+       </property>
+       <property name="statusTip">
+        <string>Reloads settings from ini file</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="content.qrc">
+         <normaloff>:/resources/actions/restoreSettings.png</normaloff>:/resources/actions/restoreSettings.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonOpenImage">
        <property name="toolTip">
         <string>Open new image (Ctrl+O)</string>
@@ -127,7 +108,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="5">
+     <item>
       <widget class="QPushButton" name="pushButtonSaveImage">
        <property name="toolTip">
         <string>Save current image (Ctrl+S)</string>
@@ -153,20 +134,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="4">
+     <item>
       <widget class="QPushButton" name="pushButtonPasteFromClipboard">
        <property name="toolTip">
         <string>Paste from clipboard</string>
@@ -189,7 +157,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
+     <item>
       <widget class="QPushButton" name="pushButtonCopyToClipboard">
        <property name="toolTip">
         <string>Copy to clipboard</string>
@@ -351,7 +319,7 @@
               </sizepolicy>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It changes the depth of the calculated normal map in pixels unit.&lt;/p&gt;&lt;p&gt;For example: lets assume that you have picture of wall of size 1x1 m&lt;span style=&quot; vertical-align:super;&quot;&gt;2 &lt;/span&gt; in real world with bricks pattern and your image has size 1024x1024 pixels. Then you want to generate normals for texture which depth is 3cm = 0.03 m. So the depth in pixels is 0.03*1024 = 30.72 ~ 31 pixels. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>It changes the depth of the calculated normal map in pixels unit. For example: lets assume that you have picture of wall of size 1x1 m&lt;span style=&quot; vertical-align:super;&quot;&gt;2 &lt;/span&gt; in real world with bricks pattern and your image has size 1024x1024 pixels. Then you want to generate normals for texture which depth is 3cm = 0.03 m. So the depth in pixels is 0.03*1024 = 30.72 ~ 31 pixels.</string>
              </property>
              <property name="maximum">
               <number>500</number>
@@ -555,7 +523,7 @@
       <item>
        <widget class="QPushButton" name="pushButtonConvertOcclusionFromHN">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Calculates AO map from Height (output) and Normal (output) maps according the presets below. After that original AO image is replaced by new one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Calculates AO map from Height (output) and Normal (output) maps according the presets below. After that original AO image is replaced by new one.</string>
         </property>
         <property name="text">
          <string>Recalculate From Heigh and Normal (output)</string>

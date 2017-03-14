@@ -1,7 +1,7 @@
 TARGET = AwesomeBump
 
 TEMPLATE = app
-CONFIG += c++11
+CONFIG += debug c++11
 QT += opengl gui widgets svg
 
 isEmpty(TOP_DIR) {
@@ -27,15 +27,20 @@ PEG_SOURCES += properties/Filter3DDOF.pef \
 
 gl330: DEFINES += USE_OPENGL_330
 
+# build workdir path (spec/gl/c++):
+CONFIG(c++11): C11 = -c11
+else:CONFIG(c++14): C11 = -c14
+
 CONFIG(debug, debug|release): DBG = -dgb
-GL = -gl4
+
 gl330: GL = -gl3
+else:GL = -gl4
 
 win32 {
     msvc: LIBS += Opengl32.lib
 }
 
-SPEC=$$[QMAKE_SPEC]$$DBG$$GL
+SPEC=$$[QMAKE_SPEC]$$DBG$$GL$$C11
 DESTDIR = $$TOP_DIR/workdir/$$SPEC/bin
 OBJECTS_DIR = $$TOP_DIR/workdir/$$SPEC/obj
 MOC_DIR = $$TOP_DIR/workdir/$$SPEC/gen

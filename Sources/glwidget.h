@@ -195,9 +195,9 @@ private:
     // tone mapping mipmaps FBOS
     GLFrameBufferObject* toneMipmaps[10];
 
-    GLuint lensFlareColorsTexture;
-    GLuint lensDirtTexture;
-    GLuint lensStarTexture;
+    QOpenGLTexture *lensFlareColorsTexture;
+    QOpenGLTexture *lensDirtTexture;
+    QOpenGLTexture *lensStarTexture;
 
 protected:
     void resizeFBOs();

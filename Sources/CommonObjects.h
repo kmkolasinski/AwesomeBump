@@ -8,6 +8,7 @@
 #include "qopenglerrorcheck.h"
 #include <QOpenGLFunctions_3_3_Core>
 #include "properties/ImageProperties.peg.h"
+
 #define TAB_SETTINGS 9
 #define TAB_TILING   10
 
@@ -21,7 +22,6 @@
 
 
 
-//#define TEXTURE_FORMAT GL_RGB16F
 #define TEXTURE_FORMAT GL_RGB16F
 #define TEXTURE_3DRENDER_FORMAT GL_RGB16F
 
@@ -30,7 +30,7 @@
 //#define USE_OPENGL_330
 
 #ifdef USE_OPENGL_330
-#define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2016) (openGL 330 release)"
+#define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2016) (OpenGL 330 rel.)"
 #else
 #define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2016)"
 #endif
@@ -323,6 +323,13 @@ public:
         format.setTextureTarget(GL_TEXTURE_2D);
         format.setMipmap(true);
         fbo = new QGLFramebufferObject(width,height,format);
+        
+        GLCLRERR();
+        
+        qDebug() << "FBOImages::creating new FBO(" << width << "," << height << ") with id =" << fbo->texture() ;
+        if (!fbo->isValid())
+            qWarning() << "Framebuffer" << fbo->texture() << "is invalid.";
+
         GLCHK(glBindTexture(GL_TEXTURE_2D, fbo->texture()));
         GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
         GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
@@ -336,10 +343,10 @@ public:
             GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
         }
         float aniso = 0.0;
-        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
+        GLCHK(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso));
         GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso));
+
         GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
-        qDebug() << "FBOImages::creating new FBO(" << width << "," << height << ") with id=" << fbo->texture() ;
     }
     static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref,GLuint internal_format = TEXTURE_FORMAT){
         if(src == NULL){
@@ -462,14 +469,13 @@ public:
      }
 
     void init(QImage& image){
-        qDebug() << Q_FUNC_INFO;
-
         glWidget_ptr->makeCurrent();
         if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
-        scr_tex_id = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
+
+        scr_tex_id = glWidget_ptr->bindTexture(image, GL_TEXTURE_2D);
         scr_tex_width  = image.width();
         scr_tex_height = image.height();
-        bFirstDraw    = true;
+        bFirstDraw = true;
 
         /*
         switch(imageType){
@@ -484,7 +490,7 @@ public:
         */
         GLuint internal_format = TEXTURE_FORMAT;
         if(imageType == HEIGHT_TEXTURE) internal_format = TEXTURE_3DRENDER_FORMAT;
-        GLCHK(FBOImages::create(fbo , image.width(), image.height(),internal_format));
+        GLCHK(FBOImages::create(fbo , image.width(), image.height(), internal_format));
 
     }
 
