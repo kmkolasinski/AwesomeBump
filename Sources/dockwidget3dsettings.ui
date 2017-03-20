@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>515</width>
-    <height>248</height>
+    <width>692</width>
+    <height>275</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,8 +21,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>515</width>
-    <height>233</height>
+    <width>692</width>
+    <height>275</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -76,7 +76,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Rays. nbr</string>
+           <string>Rays. nbr: </string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -92,7 +92,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Sub. tess. nbr</string>
+           <string>Sub. tess. nbr: </string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -192,13 +192,13 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When &lt;span style=&quot; font-weight:600;&quot;&gt;Simple PBR&lt;/span&gt; model is disabled, it defines number of rays used to solve scattering equation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>When [Simple PBR] model is disabled, it defines number of rays used to solve scattering equation.</string>
           </property>
           <property name="statusTip">
            <string/>
           </property>
           <property name="whatsThis">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When &lt;span style=&quot; font-weight:600;&quot;&gt;Simple PBR&lt;/span&gt; model is disabled, it defines number of rays used to solve scattering equation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>When [Simple PBR] model is disabled, it defines number of rays used to solve scattering equation.</string>
           </property>
           <property name="currentIndex">
            <number>2</number>
@@ -929,26 +929,20 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QGridLayout" name="gridlLayout_2">
       <property name="spacing">
        <number>0</number>
       </property>
       <property name="sizeConstraint">
        <enum>QLayout::SetMinimumSize</enum>
       </property>
-      <item>
+      <item row="0" column="0">
        <widget class="QComboBox" name="comboBoxShadingModel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>16777215</height>
-         </size>
         </property>
         <property name="toolTip">
          <string>Toggle shading model</string>
@@ -968,19 +962,13 @@
         </item>
        </widget>
       </item>
-      <item>
+      <item row="1" column="0">
        <widget class="QComboBox" name="comboBoxShadingType">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>16777215</height>
-         </size>
         </property>
         <property name="toolTip">
          <string>Choose displacement model</string>
@@ -1005,19 +993,13 @@
         </item>
        </widget>
       </item>
-      <item>
+      <item row="0" column="1">
        <widget class="QComboBox" name="comboBoxChooseOBJModel">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>16777215</height>
-         </size>
         </property>
         <property name="toolTip">
          <string>Choose model</string>
@@ -1082,19 +1064,13 @@
         </item>
        </widget>
       </item>
-      <item>
+      <item row="1" column="1">
        <widget class="QComboBox" name="comboBoxSkyBox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>100</width>
-          <height>16777215</height>
-         </size>
         </property>
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose enviromental map.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Note: &lt;/span&gt;You can &lt;span style=&quot; font-weight:600;&quot;&gt;add&lt;/span&gt; your own env. maps to this list. Just copy folder with your images to the &lt;span style=&quot; font-weight:600;&quot;&gt;Core/2D/skyboxes&lt;/span&gt; folder. Make sure you have same names for each face like other cubemaps already present there.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1104,7 +1080,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="2" colspan="1" rowspan="2">
        <widget class="QPushButton" name="pushButtonLoadMesh">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1112,20 +1088,14 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>1000</width>
-          <height>16777215</height>
-         </size>
-        </property>
         <property name="toolTip">
-         <string>Load OBJ model from file</string>
+         <string>Load custom OBJ model from file</string>
         </property>
         <property name="statusTip">
-         <string>Load OBJ model from file</string>
+         <string>Load custom OBJ model from file</string>
         </property>
         <property name="text">
-         <string>Load OBJ</string>
+         <string>Load OBJ model</string>
         </property>
        </widget>
       </item>

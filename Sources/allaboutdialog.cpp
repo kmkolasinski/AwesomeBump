@@ -5,6 +5,7 @@
 #include "contextwidget.h"
 #include "allaboutdialog.h"
 #include "ui_allaboutdialog.h"
+
 #include "CommonObjects.h"
 
 AllAboutDialog::AllAboutDialog(QWidget *parent, QGLWidget *surface) :
@@ -28,7 +29,7 @@ AllAboutDialog::AllAboutDialog(QWidget *parent, QGLWidget *surface) :
     QGLWidget *gl = new QGLWidget;
     ctx = gl->context()->contextHandle();
     gl->makeCurrent();
-    gl->deleteLater(); qDebug() << ctx;
+    gl->deleteLater();
   }
 
   GLfloat GL_MaxAnisotropy = 0; glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &GL_MaxAnisotropy);

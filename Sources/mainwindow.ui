@@ -3378,7 +3378,7 @@
     <string>Show normal</string>
    </property>
    <property name="toolTip">
-    <string>Show normal  image (Alt+2)</string>
+    <string>Show normal image (Alt+2)</string>
    </property>
    <property name="shortcut">
     <string>Alt+2</string>
@@ -3393,7 +3393,7 @@
     <string>Show specular</string>
    </property>
    <property name="toolTip">
-    <string>Show specular  image (Alt+3)</string>
+    <string>Show specular image (Alt+3)</string>
    </property>
    <property name="shortcut">
     <string>Alt+3</string>
@@ -3408,7 +3408,7 @@
     <string>Show height</string>
    </property>
    <property name="toolTip">
-    <string>Show height  image (Alt+4)</string>
+    <string>Show height image (Alt+4)</string>
    </property>
    <property name="shortcut">
     <string>Alt+4</string>
@@ -3438,7 +3438,7 @@
     <string>Show occlusion</string>
    </property>
    <property name="toolTip">
-    <string>Show occlusion  image (Alt+5)</string>
+    <string>Show occlusion image (Alt+5)</string>
    </property>
    <property name="shortcut">
     <string>Alt+5</string>

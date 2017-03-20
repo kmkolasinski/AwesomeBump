@@ -41,15 +41,16 @@
 **
 ****************************************************************************/
 
+#include <math.h>
+#include <map>
+
 #include <QWidget>
 #include <QtOpenGL>
 
-
 #include "glwidgetbase.h"
-#include <math.h>
-#include <map>
-#include "CommonObjects.h"
 #include "formmaterialindicesmanager.h"
+
+#include "CommonObjects.h"
 
 #ifdef USE_OPENGL_330
     #include <QOpenGLFunctions_3_3_Core>
@@ -70,7 +71,6 @@
 #define BaseMapToOthersProp activeImage->properties->BaseMapToOthers
 #define RMFilterProp activeImage->properties->RMFilter
 
-//! [0]
 class GLImage : public GLWidgetBase , protected OPENGL_FUNCTIONS
 {
     Q_OBJECT
@@ -272,7 +272,7 @@ public:
                                      QGLFramebufferObject* outputFBO);
 
     void updateProgramUniforms(int step);
-//! [3]
+
 private:
     void makeScreenQuad();
 
@@ -281,6 +281,7 @@ private:
     QGLFramebufferObject* averageColorFBO; // small FBO used for calculation of average color
     QGLFramebufferObject* samplerFBO1; // FBO with size 1024x1024
     QGLFramebufferObject* samplerFBO2; // FBO with size 1024x1024 used for different processing
+    
     // FBOs used in image processing
     QGLFramebufferObject* auxFBO1;
     QGLFramebufferObject* auxFBO2;
@@ -291,15 +292,14 @@ private:
     QGLFramebufferObject* auxFBO2BMLevels[3]; //
     QGLFramebufferObject* auxFBO0BMLevels[3]; //
 
-    //
     QGLFramebufferObject* paintFBO;  // Used for painting texture
     QGLFramebufferObject* renderFBO; // Used for rendering to it
 
     std::map<std::string,GLuint> subroutines;
     std::map<std::string,QOpenGLShaderProgram*> filter_programs; // all filters in one array
 
-    GLuint vao;
-    GLuint vbos[3];
+    GLuint vao, vbos[3];
+
     ConversionType conversionType;
     bool bShadowRender;
     bool bSkipProcessing;   // draw quad but skip all the processing step (using during mouse interaction)
@@ -337,7 +337,6 @@ private:
     UVManipulationMethods uvManilupationMethod;
 
     // openGL 330 variables
-
     TextureTypes openGL330ForceTexType;
 
     // rendering variables

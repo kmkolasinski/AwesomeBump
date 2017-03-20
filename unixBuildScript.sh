@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# additinal modules:
+# ------------------
+#  https://github.com/dbzhang800/KDUpdater.git
+#  https://github.com/velnias75/QGitHubReleaseAPI
+
 # Add your QT path here by setting MY_QT_PATH variable
 # MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -58,5 +63,6 @@ else
 	echo " --------------------------------------"
     echo "      Error: QtnPEG failed to run."
 	echo " --------------------------------------"
-    echo "Try to rebuild the QtnPEG binary from Sources/utils/QtnProperty directory."
+    echo "Try to rebuild the QtnPEG binary from Sources/utils/QtnProperty directory:"
+    echo "$MY_QT_PATH/qmake Property.pro"
 fi

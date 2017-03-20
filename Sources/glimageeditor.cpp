@@ -73,6 +73,8 @@ GLImage::GLImage(QWidget *parent)
     cornerCursors[2] = QCursor(QPixmap(":/resources/cursors/corner3.png"));
     cornerCursors[3] = QCursor(QPixmap(":/resources/cursors/corner4.png"));
     activeImage = NULL;
+
+
     connect(this,SIGNAL(rendered()),this,SLOT(copyRenderToPaintFBO()));
 }
 
@@ -177,7 +179,6 @@ void GLImage::initializeGL()
     filters_list.push_back("mode_add_noise_filter");
 
 
-
     qDebug() << "Loading filters (fragment shader)";
     QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
     vshader->compileSourceFile(":/resources/shaders/filters.vert");
@@ -234,12 +235,13 @@ void GLImage::initializeGL()
     else qDebug() << "> done";
 
 
-
     program = new QOpenGLShaderProgram(this);
     program->addShader(vshader);
     program->addShader(fshader);
     program->bindAttributeLocation("positionIn", 0);
     GLCHK( program->link() );
+    if (!program->log().isEmpty())
+        qWarning() << Q_FUNC_INFO << program->log().split("\n");
 
     GLCHK( program->bind() );
     GLCHK( program->setUniformValue("layerA" , 0) );
@@ -330,7 +332,6 @@ void GLImage::paintGL()
         render();
     }
 
-
     bSkipProcessing = false;
     conversionType  = CONVERT_NONE;
 
@@ -402,7 +403,7 @@ void GLImage::render(){
     QGLFramebufferObject* activeFBO     = activeImage->fbo;
 
     if (!activeFBO->isValid())
-        qWarning() << "Invalid framebuffer fbo for" << PostfixNames::getTextureName(activeImage->imageType);
+        qWarning() << "Invalid framebuffer for" << PostfixNames::getTextureName(activeImage->imageType);
 
 
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
@@ -487,11 +488,11 @@ void GLImage::render(){
 
 
     GLCHK( glActiveTexture(GL_TEXTURE10) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageMaterial->scr_tex_id) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageMaterial->scr_tex->textureId()) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
 
 //    if(int(activeImage->currentMaterialIndeks) < 0){
-        copyTex2FBO(activeImage->scr_tex_id,activeImage->fbo);
+        copyTex2FBO(activeImage->scr_tex->textureId(),activeImage->fbo);
 //    }
 
 
@@ -521,7 +522,7 @@ void GLImage::render(){
                     GLCHK( program->setUniformValue("gui_image_type", HEIGHT_TEXTURE) );
 
 
-                    copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
+                    copyTex2FBO(targetImageHeight->scr_tex->textureId(),activeFBO);
 
                     applyAllUVsTransforms(activeFBO);
 
@@ -531,7 +532,7 @@ void GLImage::render(){
                     openGL330ForceTexType = activeImage->imageType;
                     bTransformUVs = false;
                 }else{                    
-                    copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
+                    copyTex2FBO(targetImageHeight->scr_tex->textureId(),activeFBO);
                 }
 
 
@@ -556,14 +557,14 @@ void GLImage::render(){
                 // do nothing
                 break;
             case(INPUT_FROM_HEIGHT_INPUT):                
-                copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);                
+                copyTex2FBO(targetImageHeight->scr_tex->textureId(),activeFBO);
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 copyFBO(targetImageHeight->fbo,activeFBO);
                 if(!targetImageHeight->bSkipProcessing) bTransformUVs = false;
                 break;
             case(INPUT_FROM_DIFFUSE_INPUT):                
-                copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);                
+                copyTex2FBO(targetImageDiffuse->scr_tex->textureId(),activeFBO);
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
                 copyFBO(targetImageDiffuse->fbo,activeFBO);
@@ -594,7 +595,7 @@ void GLImage::render(){
             case(INPUT_FROM_HI_NI):
                 // Ambient occlusion is calculated from normal and height map, so
                 // some part of processing is skiped
-                applyOcclusionFilter(targetImageHeight->scr_tex_id,targetImageNormal->scr_tex_id,activeFBO);
+                applyOcclusionFilter(targetImageHeight->scr_tex->textureId(),targetImageNormal->scr_tex->textureId(),activeFBO);
 
 
                 break;     
@@ -630,14 +631,14 @@ void GLImage::render(){
                 // do nothing
                 break;
             case(INPUT_FROM_HEIGHT_INPUT):                
-                copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
+                copyTex2FBO(targetImageHeight->scr_tex->textureId(),activeFBO);
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 copyFBO(targetImageHeight->fbo,activeFBO);
                 if(!targetImageHeight->bSkipProcessing)  bTransformUVs = false;
                 break;
             case(INPUT_FROM_DIFFUSE_INPUT):                
-                copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);
+                copyTex2FBO(targetImageDiffuse->scr_tex->textureId(),activeFBO);
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
                 copyFBO(targetImageDiffuse->fbo,activeFBO);
@@ -656,14 +657,14 @@ void GLImage::render(){
                 // do nothing
                 break;
             case(INPUT_FROM_HEIGHT_INPUT):                
-                copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
+                copyTex2FBO(targetImageHeight->scr_tex->textureId(),activeFBO);
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
                 copyFBO(targetImageHeight->fbo,activeFBO);
                 if(!targetImageHeight->bSkipProcessing)  bTransformUVs = false;
                 break;
             case(INPUT_FROM_DIFFUSE_INPUT):                
-                copyTex2FBO(targetImageDiffuse->scr_tex_id,activeFBO);
+                copyTex2FBO(targetImageDiffuse->scr_tex->textureId(),activeFBO);
                 break;
             case(INPUT_FROM_DIFFUSE_OUTPUT):
                 copyFBO(targetImageDiffuse->fbo,activeFBO);
@@ -707,16 +708,13 @@ void GLImage::render(){
     }
 
 
-
     // skip all processing and when mouse is dragged
     if(!bSkipStandardProcessing){
-
 
 
     // begin standart pipe-line (for each image)
     applyInvertComponentsFilter(activeFBO,auxFBO1);
     copyFBO(auxFBO1,activeFBO);
-
 
 
     if(activeImage->imageType != HEIGHT_TEXTURE &&
@@ -729,8 +727,6 @@ void GLImage::render(){
         copyFBO(auxFBO1,activeFBO);
     }
 
-
-
     if(BasicProp.GrayScale.EnableGrayScale ||
             activeImage->imageType == ROUGHNESS_TEXTURE ||
             activeImage->imageType == OCCLUSION_TEXTURE ||
@@ -741,14 +737,12 @@ void GLImage::render(){
     }
 
 
-
     // specular manipulation
     if(SurfaceDetailsProp.EnableSurfaceDetails && activeImage->imageType != HEIGHT_TEXTURE){
         applyDGaussiansFilter(activeFBO,auxFBO2,auxFBO1);
         //copyFBO(auxFBO1,activeFBO);
         applyContrastFilter(auxFBO1,activeFBO);
     }
-
 
     // Removing shading...
     if(activeImage->properties->EnableRemoveShading){
@@ -770,9 +764,6 @@ void GLImage::render(){
                                 auxFBO1);
         copyFBO(auxFBO1,activeFBO);
     }
-
-
-
 
 
     if(BasicProp.EnhanceDetails > 0){
@@ -839,7 +830,7 @@ void GLImage::render(){
         applyNormalsStepFilter(activeFBO,auxFBO1);
 
         // apply normal mixer filter
-        if(NormalMixerProp.EnableMixer && activeImage->normalMixerInputTexId != 0){
+        if(NormalMixerProp.EnableMixer && activeImage->normalMixerInputTex->textureId() != 0){
             applyNormalMixerFilter(auxFBO1,activeFBO);
         }else{// otherwise skip
             copyFBO(auxFBO1,activeFBO);
@@ -922,19 +913,19 @@ void GLImage::render(){
             targetImageHeight->updateSrcTexId(targetImageHeight->fbo);
 
 
-            applyOcclusionFilter(targetImageHeight->scr_tex_id,targetImageNormal->scr_tex_id,targetImageOcclusion->fbo);
+            applyOcclusionFilter(targetImageHeight->scr_tex->textureId(),targetImageNormal->scr_tex->textureId(),targetImageOcclusion->fbo);
 
             targetImageOcclusion->updateSrcTexId(targetImageOcclusion->fbo);
 
-            copyTex2FBO(activeImage->scr_tex_id,targetImageSpecular->fbo);
+            copyTex2FBO(activeImage->scr_tex->textureId(),targetImageSpecular->fbo);
             targetImageSpecular->updateSrcTexId(targetImageSpecular->fbo);
 
 
-            copyTex2FBO(activeImage->scr_tex_id,targetImageRoughness->fbo);
+            copyTex2FBO(activeImage->scr_tex->textureId(),targetImageRoughness->fbo);
             targetImageRoughness->updateSrcTexId(targetImageRoughness->fbo);
 
 
-            copyTex2FBO(activeImage->scr_tex_id,targetImageMetallic->fbo);
+            copyTex2FBO(activeImage->scr_tex->textureId(),targetImageMetallic->fbo);
             targetImageMetallic->updateSrcTexId(targetImageMetallic->fbo);
 
         break;
@@ -955,14 +946,13 @@ void GLImage::render(){
     }// end of skip processing
 
 
-
     bSkipProcessing = false;
     conversionType  = CONVERT_NONE;
 
     if(!bShadowRender){
-        GLCHK(FBOImages::resize(renderFBO,activeFBO->width(),activeFBO->height()));
+        GLCHK( FBOImages::resize(renderFBO,activeFBO->width(),activeFBO->height()) );
         GLCHK( program->setUniformValue("material_id", int(-1)) );
-        GLCHK(applyNormalFilter(activeFBO,renderFBO));
+        GLCHK( applyNormalFilter(activeFBO,renderFBO) );
     }
 
     GLCHK( glBindVertexArray(0) );
@@ -1393,11 +1383,11 @@ void GLImage::applySeamlessLinearFilter(QGLFramebufferObject* inputFBO,
         default:
         case(INPUT_FROM_HEIGHT_INPUT):
             //copyFBO(targetImageHeight->ref_fbo,activeImage->aux2_fbo);
-            copyTex2FBO(targetImageHeight->scr_tex_id,auxFBO2);
+            copyTex2FBO(targetImageHeight->scr_tex->textureId(),auxFBO2);
             break;
         case(INPUT_FROM_DIFFUSE_INPUT):
             //copyFBO(targetImageDiffuse->ref_fbo,activeImage->aux2_fbo);
-            copyTex2FBO(targetImageDiffuse->scr_tex_id,auxFBO2);
+            copyTex2FBO(targetImageDiffuse->scr_tex->textureId(),auxFBO2);
             break;
     };
 
@@ -1481,10 +1471,10 @@ void GLImage::applySeamlessFilter(QGLFramebufferObject* inputFBO,
     switch(FBOImageProporties::seamlessContrastInputType){
         default:
         case(INPUT_FROM_HEIGHT_INPUT):            
-            copyTex2FBO(targetImageHeight->scr_tex_id,auxFBO1);
+            copyTex2FBO(targetImageHeight->scr_tex->textureId(),auxFBO1);
             break;
         case(INPUT_FROM_DIFFUSE_INPUT):            
-            copyTex2FBO(targetImageDiffuse->scr_tex_id,auxFBO1);
+            copyTex2FBO(targetImageDiffuse->scr_tex->textureId(),auxFBO1);
             break;
     };
 
@@ -1939,8 +1929,7 @@ void GLImage::applyNormalMixerFilter(QGLFramebufferObject* inputFBO,
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
 
-    GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, activeImage->normalMixerInputTexId) );
+    GLCHK( activeImage->normalMixerInputTex->bind(GL_TEXTURE1) );
 
 
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
@@ -2566,7 +2555,7 @@ void GLImage::copyFBO(QGLFramebufferObject* src,QGLFramebufferObject* dst){
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, src->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    src->bindDefault();
+    GLCHK( dst->bindDefault() );
 }
 
 void GLImage::copyTex2FBO(GLuint src_tex_id,QGLFramebufferObject* dst){
@@ -2759,8 +2748,7 @@ void GLImage::applyGrungeWarpNormalFilter(QGLFramebufferObject* inputFBO,
     GLCHK( outputFBO->bind() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-    GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageNormal->scr_tex_id) );
+    GLCHK( targetImageNormal->scr_tex->bind(GL_TEXTURE1) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     outputFBO->bindDefault();
@@ -2863,7 +2851,6 @@ void GLImage::wheelEvent(QWheelEvent *event){
         orthographicProjHeight = (1+zoom)/windowRatio;
         orthographicProjWidth = (1+zoom)/fboRatio;
       } else {
-        qWarning() << Q_FUNC_INFO;
         if (!activeImage) qWarning() << "  activeImage is null";
         else
       if (!activeImage->fbo) qWarning() << "  activeImage->fbo is null";
@@ -3090,7 +3077,8 @@ void GLImage::pickImageColor( QtnPropertyABColor* property) {
 }
 
 void GLImage::copyRenderToPaintFBO(){
-     GLCHK(FBOImages::resize(paintFBO,renderFBO->width(),renderFBO->height()));
+     makeCurrent();
+     GLCHK( FBOImages::resize(paintFBO,renderFBO->width(),renderFBO->height()) );
      GLCHK( program->setUniformValue("material_id", int(-1)) );
      copyFBO(renderFBO,paintFBO);
      bRendering      = false;

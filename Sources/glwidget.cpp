@@ -47,8 +47,7 @@ QString _find_data_dir(const QString& resource = RESOURCE_BASE);
 
 QDir* GLWidget::recentMeshDir = NULL;
 
-GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
-    : GLWidgetBase(QGLFormat::defaultFormat(), parent, shareWidget)
+GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget) : GLWidgetBase(QGLFormat::defaultFormat(), parent, shareWidget)
 {
     setAcceptDrops(true);
     zoom                    = 60;
@@ -103,9 +102,6 @@ void GLWidget::cleanup()
         qDebug() << "Removing program:" << QString(iterator->first.c_str());
         delete iterator->second;
     }
-    delete lensFlareColorsTexture;
-    delete lensDirtTexture;
-    delete lensStarTexture;
 
     delete line_program;
     delete skybox_program;
@@ -184,9 +180,6 @@ void GLWidget::toggleMetallicView(bool enable){
 
 void GLWidget::initializeGL()
 {
-
-
-
     initializeOpenGLFunctions();
     makeCurrent();
 
@@ -476,9 +469,9 @@ void GLWidget::initializeGL()
 
     GLCLRERR();
 
-    GLCHK( lensFlareColorsTexture = new QOpenGLTexture(QImage(":/resources/textures/lenscolor.png").mirrored()) );
-    GLCHK( lensDirtTexture = new QOpenGLTexture(QImage(":/resources/textures/lensdirt.png").mirrored()) );
-    GLCHK( lensStarTexture = new QOpenGLTexture(QImage(":/resources/textures/lensstar.png").mirrored()) );
+    GLCHK( lensFlareColorsTexture =  QSharedPointer<QOpenGLTexture> (new QOpenGLTexture(QImage(":/resources/textures/lenscolor.png").mirrored())) );
+    GLCHK( lensDirtTexture = QSharedPointer<QOpenGLTexture> (new QOpenGLTexture(QImage(":/resources/textures/lensdirt.png").mirrored())) );
+    GLCHK( lensStarTexture = QSharedPointer<QOpenGLTexture> (new QOpenGLTexture(QImage(":/resources/textures/lensstar.png").mirrored())) );
 
 
     camera.position.setZ( -0 );
@@ -531,13 +524,9 @@ void GLWidget::paintGL()
     projectionMatrix.perspective(zoom,ratio,0.1,350.0);
 
 
-
-
     // set to which FBO result will be drawn
     GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 , GL_COLOR_ATTACHMENT3 };
     glDrawBuffers(4,  attachments);
-    GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
-
     GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 
     // ---------------------------------------------------------
@@ -1517,11 +1506,9 @@ void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outp
     GLCHK( filter_program->setUniformValue("lf_starMatrix"  , uLensStarMatrix) );// 3
 
     GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[0]->fbo->texture()) );// ghost texture
-    GLCHK( glActiveTexture(GL_TEXTURE2) );
-    GLCHK( lensDirtTexture->bind() ); // dirt texture
-    GLCHK( glActiveTexture(GL_TEXTURE3) );
-    GLCHK( lensStarTexture->bind() ); // star texture
+    GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[0]->fbo->texture()) ); // ghost texture
+    GLCHK( lensDirtTexture->bind(GL_TEXTURE2) ); // dirt texture
+    GLCHK( lensStarTexture->bind(GL_TEXTURE3) ); // star texture
     GLCHK( glActiveTexture(GL_TEXTURE4) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, glowOutputColor[3]->fbo->texture()) ); // exposure reference
     quad_mesh->drawMesh(true);

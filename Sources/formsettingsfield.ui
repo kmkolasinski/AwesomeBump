@@ -72,16 +72,18 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QToolButton" name="pushButton">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>20</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Hide/show description</string>
        </property>
        <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/resources/actions/text.png</normaloff>:/resources/actions/text.png</iconset>
+        <string>Description</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -89,17 +91,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonSave">
+      <widget class="QToolButton" name="pushButtonSave">
        <property name="maximumSize">
         <size>
-         <width>50</width>
-         <height>16777215</height>
+         <width>16777215</width>
+         <height>20</height>
         </size>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>6</pointsize>
-        </font>
        </property>
        <property name="toolTip">
         <string>Click here to save current settings</string>
@@ -111,20 +108,16 @@
         <string>Save project</string>
        </property>
        <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/resources/actions/save.png</normaloff>:/resources/actions/save.png</iconset>
+        <string>Save</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonLoad">
+      <widget class="QToolButton" name="pushButtonLoad">
        <property name="maximumSize">
         <size>
-         <width>50</width>
-         <height>16777215</height>
+         <width>16777215</width>
+         <height>20</height>
         </size>
        </property>
        <property name="toolTip">
@@ -137,11 +130,7 @@
         <string>Reload project</string>
        </property>
        <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/resources/actions/replot.png</normaloff>:/resources/actions/replot.png</iconset>
+        <string>Reload</string>
        </property>
       </widget>
      </item>
@@ -153,16 +142,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonLoadAndConv">
+      <widget class="QToolButton" name="pushButtonLoadAndConv">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>20</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Load setting and convert all textures.</string>
        </property>
-       <property name="text">
-        <string/>
+       <property name="statusTip">
+        <string>Load setting and convert all textures.</string>
        </property>
-       <property name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/resources/actions/recompileShader.png</normaloff>:/resources/actions/recompileShader.png</iconset>
+       <property name="text">
+        <string>Recompile</string>
        </property>
       </widget>
      </item>
@@ -180,11 +174,11 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonDelete">
+      <widget class="QToolButton" name="pushButtonDelete">
        <property name="maximumSize">
         <size>
-         <width>50</width>
-         <height>16777215</height>
+         <width>16777215</width>
+         <height>20</height>
         </size>
        </property>
        <property name="toolTip">
@@ -197,11 +191,7 @@
         <string>Delete project</string>
        </property>
        <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="content.qrc">
-         <normaloff>:/resources/actions/trash.png</normaloff>:/resources/actions/trash.png</iconset>
+        <string>Delete</string>
        </property>
       </widget>
      </item>

@@ -3,6 +3,7 @@
 
 #include "glwidget.h"
 #include "glimageeditor.h"
+#include "glpreview.h"
 #include "formimageprop.h"
 #include "formsettingscontainer.h"
 #include "formmaterialindicesmanager.h"
@@ -15,6 +16,8 @@
 #include <Property.h>
 #include <PropertySet.h>
 #include "properties/Dialog3DGeneralSettings.h"
+
+#include <QOpenGLDebugLogger>
 
 #include <iostream>
 
@@ -44,6 +47,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     glImage          = new GLImage(this);
     glWidget         = new GLWidget(this,glImage);
+    glTexturesPreview= new GLPreview(this,glImage);
+
+    connect(glImage,SIGNAL(textureChanged(TextureTypes, GLuint)),glTexturesPreview,SLOT(textureChanged(TextureTypes, GLuint)));
 }
 
 #define INIT_PROGRESS(p,m) \
@@ -164,6 +170,7 @@ void MainWindow::initializeApp()
 
     ui->verticalLayout3DImage->addWidget(glWidget);
     ui->verticalLayout2DImage->addWidget(glImage);
+    ui->verticalLayout2DImage->addWidget(glTexturesPreview);
 
     qDebug() << "Initialization: Adding widgets.";
     INIT_PROGRESS(40, "Adding widgets.");
@@ -398,8 +405,6 @@ void MainWindow::initializeApp()
     connect(ui->pushButtonImageBatchRun ,SIGNAL(pressed()),this,SLOT(runBatch()));
 
 
-
-
 #ifdef Q_OS_MAC
     if(ui->statusbar && !ui->statusbar->testAttribute(Qt::WA_MacNormalSize)) ui->statusbar->setAttribute(Qt::WA_MacSmallSize);
 #endif
@@ -539,19 +544,20 @@ void MainWindow::configureToolbarAndStatusline()
       int tab;
       QAction *action;
       QString smallIcon;
+      QString shortLabel;
     } showActionsConfig[] = {
-      { 0, ui->actionShowDiffuseImage, ":/resources/actions/diffuse.png" },
-      { 1, ui->actionShowNormalImage, ":/resources/actions/normal.png" },
-      { 2, ui->actionShowSpecularImage, ":/resources/actions/specular.png" },
-      { 3, ui->actionShowHeightImage, ":/resources/actions/height.png" },
-      { 4, ui->actionShowOcclusiontImage, ":/resources/actions/occlusion.png" },
-      { 5, ui->actionShowRoughnessImage, ":/resources/actions/roughness.png" },
-      { 6, ui->actionShowMetallicImage, ":/resources/actions/metalic.png" },
-      { 7, ui->actionShowMaterialsImage, ":/resources/actions/showMaterials.png" },
-      { 8, ui->actionShowGrungeTexture, ":/resources/actions/showGrunge.png" },
-      { 9, ui->actionShowSettingsImage, ":/resources/actions/showSettings.png" },
-      { 10, ui->actionShowUVsTab, ":/resources/actions/showUVs.png" },
-      { 11, ui->actionShowBatchTab, ":/resources/actions/showBatch.png" },
+      { 0, ui->actionShowDiffuseImage, ":/resources/actions/diffuse.png", tr("Diffuse") },
+      { 1, ui->actionShowNormalImage, ":/resources/actions/normal.png", tr("Normal") },
+      { 2, ui->actionShowSpecularImage, ":/resources/actions/specular.png", tr("Specular") },
+      { 3, ui->actionShowHeightImage, ":/resources/actions/height.png", tr("Height") },
+      { 4, ui->actionShowOcclusiontImage, ":/resources/actions/occlusion.png", tr("Occlusion") },
+      { 5, ui->actionShowRoughnessImage, ":/resources/actions/roughness.png", tr("Roughness") },
+      { 6, ui->actionShowMetallicImage, ":/resources/actions/metalic.png", tr("Metallic") },
+      { 7, ui->actionShowMaterialsImage, ":/resources/actions/showMaterials.png", tr("Material") },
+      { 8, ui->actionShowGrungeTexture, ":/resources/actions/showGrunge.png", tr("Grunge") },
+      { 9, ui->actionShowSettingsImage, ":/resources/actions/showSettings.png", tr("Settings") },
+      { 10, ui->actionShowUVsTab, ":/resources/actions/showUVs.png", tr("UVs") },
+      { 11, ui->actionShowBatchTab, ":/resources/actions/showBatch.png", tr("Batch") },
       { -1, NULL, "" }
     };
 
@@ -573,16 +579,17 @@ void MainWindow::configureToolbarAndStatusline()
 
         // combo box:
         QVariant v; v.setValue(act->action);
-        ui->pageSel->addItem(icon, act->action->text(), v); if (ui->tabWidget->currentIndex() == act->tab) 
+        ui->pageSel->addItem(icon, act->action->text()+" ["+act->action->shortcut().toString()+"]", v); if (ui->tabWidget->currentIndex() == act->tab) 
         ui->pageSel->setCurrentIndex(act->tab);
 
         // append button:
-        if (pageSelL)
-            pageSelL->addWidget(new ActiveLabel(act->tab, act->action->text().toLatin1()), col, row);
+        if (pageSelL) {
+            pageSelL->addWidget(new ActiveLabel(act->tab, act->shortLabel.toLatin1()), col, row);
+        }
 
         // append menu:
 
-        ++act; row = act->tab/4; col = act->tab%4;
+        ++act; row = act->tab/3; col = act->tab%3;
     }
 
     connect(showTabGroup1, &QActionGroup::triggered, [this](QAction *action){
@@ -1133,6 +1140,18 @@ void MainWindow::updateImageInformation(){
 }
 
 void MainWindow::initializeGL(){  
+
+    QOpenGLDebugLogger *logger = new QOpenGLDebugLogger;
+    connect( logger, &QOpenGLDebugLogger::messageLogged, []( QOpenGLDebugMessage message ){
+        qWarning() << "[OpenGL]" << message;
+    });
+
+    if ( logger->initialize() ) {
+        logger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
+        logger->enableMessages();
+        qDebug() << "QOpenGLDebugLogger initialized.";
+    }
+
     static bool one_time = false;
     // Context is vallid at this moment
     if (!one_time){
@@ -1302,8 +1321,8 @@ void MainWindow::applyScaleImage(){
     QCoreApplication::processEvents();
     float scale_width   = ui->doubleSpinBoxRescaleWidth ->value();
     float scale_height  = ui->doubleSpinBoxRescaleHeight->value();
-    int width  = diffuseImageProp->getImageProporties()->scr_tex_width *scale_width;
-    int height = diffuseImageProp->getImageProporties()->scr_tex_height*scale_height;
+    int width  = diffuseImageProp->getImageProporties()->scr_tex->width() *scale_width;
+    int height = diffuseImageProp->getImageProporties()->scr_tex->height()*scale_height;
 
     qDebug() << "Image rescale applied. Current image size is (" << width << "," << height << ")" ;
     int materiaIndex = FBOImageProporties::currentMaterialIndeks;

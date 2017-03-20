@@ -41,8 +41,10 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+#include <QSharedPointer> 
 #include <QGLWidget>
 #include <QtOpenGL>
+#include <QOpenGLTexture>
 #include <qmath.h>
 
 #include "CommonObjects.h"
@@ -195,9 +197,9 @@ private:
     // tone mapping mipmaps FBOS
     GLFrameBufferObject* toneMipmaps[10];
 
-    QOpenGLTexture *lensFlareColorsTexture;
-    QOpenGLTexture *lensDirtTexture;
-    QOpenGLTexture *lensStarTexture;
+    QSharedPointer<QOpenGLTexture> lensFlareColorsTexture;
+    QSharedPointer<QOpenGLTexture> lensDirtTexture;
+    QSharedPointer<QOpenGLTexture> lensStarTexture;
 
 protected:
     void resizeFBOs();

@@ -269,7 +269,6 @@ void FormImageProp::pasteNormalFromClipBoard(const QtnPropertyButton*){
 
 FormImageProp::~FormImageProp()
 {
-    qDebug() << "calling" << Q_FUNC_INFO;
     delete heightCalculator;    
     //delete imageProp.properties;
     delete ui;
@@ -297,32 +296,28 @@ bool FormImageProp::loadFile(const QString &fileName)
         return false;
     }
     if(imageProp.properties->NormalsMixer.EnableMixer){
-        qDebug() << "<FormImageProp> Open normal mixer image:" << fileName;
+        qDebug() << Q_FUNC_INFO << "Open normal mixer image:" << fileName;
 
         imageProp.glWidget_ptr->makeCurrent();
-        if(glIsTexture(imageProp.normalMixerInputTexId)) imageProp.glWidget_ptr->deleteTexture(imageProp.normalMixerInputTexId);
-        imageProp.normalMixerInputTexId = imageProp.glWidget_ptr->bindTexture(_image,GL_TEXTURE_2D);        
+        imageProp.normalMixerInputTex = QSharedPointer<QOpenGLTexture>( new QOpenGLTexture(_image) );
 
         emit imageChanged();
 
     }else{
-        qDebug() << "<FormImageProp> Open image:" << fileName;
-
         imageName = fileInfo.baseName();
         (*recentDir).setPath(fileName);
         image    = _image;
         imageProp.init(image);
 
-        //emit imageChanged();
         emit imageLoaded(image.width(),image.height());
-        if(imageProp.imageType == GRUNGE_TEXTURE)emit imageChanged();
+        if(imageProp.imageType == GRUNGE_TEXTURE) emit imageChanged(); // (TODO) Why only Grunge?
     }
     return true;
 }
 
 void FormImageProp::pasteImageFromClipboard(QImage& _image){
     imageName = "clipboard_image";
-    image     = _image;
+    image = _image;
     imageProp.init(image);
     emit imageLoaded(image.width(),image.height());
     if(imageProp.imageType == GRUNGE_TEXTURE)emit imageChanged();
@@ -331,11 +326,11 @@ void FormImageProp::pasteImageFromClipboard(QImage& _image){
 
 
 void FormImageProp::setImage(QImage _image){
-    image    = _image;
+    image = _image;
     if (imageProp.glWidget_ptr->isValid())
       imageProp.init(image);
     else
-        qWarning() << Q_FUNC_INFO << "Invalid context.";
+        qWarning() << Q_FUNC_INFO << "Invalid context. Skipping image" << _image;
 }
 
 
@@ -493,8 +488,7 @@ void FormImageProp::pasteNormalFromClipBoard(){
         QImage _image = pixmap.toImage();
 
         imageProp.glWidget_ptr->makeCurrent();
-        if(glIsTexture(imageProp.normalMixerInputTexId)) imageProp.glWidget_ptr->deleteTexture(imageProp.normalMixerInputTexId);
-        imageProp.normalMixerInputTexId = imageProp.glWidget_ptr->bindTexture(_image,GL_TEXTURE_2D);
+        imageProp.normalMixerInputTex->setData(_image);
         emit imageChanged();
 
     }

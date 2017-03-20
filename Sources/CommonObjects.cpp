@@ -31,7 +31,6 @@ bool FBOImages::bUseLinearInterpolation = true;
 
 void TargaImage::write(QImage image, QString fileName){
 
-
     TargaColorFormat format = TARGA_BGRA;
     unsigned char   *pixels;
     int              width,height;
@@ -217,7 +216,7 @@ bool TargaImage::load_targa (const char *filename, int &width, int &height,
         format = TARGA_BGR;
     }
     else
-
+    {
         // read RGBA image (32 bit)
         if (header [2] == TARGA_UNCOMP_RGB_IMG && header [16] == 32)
         {
@@ -226,7 +225,7 @@ bool TargaImage::load_targa (const char *filename, int &width, int &height,
             format = TARGA_BGRA;
         }
         else
-
+        {
             // read monocolour image
             if (header [2] == TARGA_UNCOMP_BW_IMG && header [16] == 8)
             {
@@ -236,6 +235,8 @@ bool TargaImage::load_targa (const char *filename, int &width, int &height,
             }
             else
                 return false;
+        }
+    }
 
     // close image
     fclose (tga);

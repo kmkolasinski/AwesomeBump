@@ -15,6 +15,7 @@ class QLabel;
 
 class GLWidget;
 class GLImage;
+class GLPreview;
 class FormImageProp;
 class FormMaterialIndicesManager;
 class FormSettingsContainer;
@@ -136,11 +137,13 @@ public slots:
     void resetRandomPatches();
     void selectContrastInputImage(int mode);
 
-private:
+private slots:
     // batch tool
     void selectSourceImages();
     void selectOutputPath();
     void runBatch();
+
+private:
     // saves all textures to given directory
     bool saveAllImages(const QString &dir);
 
@@ -150,6 +153,8 @@ private:
 
     GLImage* glImage;
     
+    GLPreview *glTexturesPreview;
+
     bool bSaveCheckedImages;
     bool bSaveCompressedFormImages;
 

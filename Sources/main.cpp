@@ -43,6 +43,7 @@
 #include <QMessageBox>
 #include <QGLFormat>
 #include <QSurfaceFormat>
+#include <QSysInfo>
 #include <QtDebug>
 
 #include "mainwindow.h"
@@ -183,15 +184,19 @@ bool checkOpenGL(){
     glMajorVersion = glContext->format().majorVersion();
     glMinorVersion = glContext->format().minorVersion();
 
-    qDebug() << "Running the " + QString(AWESOME_BUMP_VERSION);
-    qDebug() << "Checking OpenGL widget:";
-    qDebug() << "Widget OpenGL:" << QString("%1.%2").arg(glMajorVersion).arg(glMinorVersion);
-    qDebug() << "Context valid:" << glContext->isValid() ;
-    qDebug() << "OpenGL information:" ;
-    qDebug() << "VENDOR:"       << (const char*)glGetString(GL_VENDOR) ;
-    qDebug() << "RENDERER:"     << (const char*)glGetString(GL_RENDERER) ;
-    qDebug() << "VERSION:"      << (const char*)glGetString(GL_VERSION) ;
-    qDebug() << "GLSL VERSION:" << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
+    qInfo() << "Running the " + QString(AWESOME_BUMP_VERSION);
+    qInfo() << "Checking OpenGL widget:";
+    qInfo() << "Widget OpenGL:" << QString("%1.%2").arg(glMajorVersion).arg(glMinorVersion);
+    qInfo() << "Context valid:" << glContext->isValid() ;
+    qInfo() << "OpenGL information:" ;
+    qInfo() << "VENDOR:"       << (const char*)glGetString(GL_VENDOR) ;
+    qInfo() << "RENDERER:"     << (const char*)glGetString(GL_RENDERER) ;
+    qInfo() << "VERSION:"      << (const char*)glGetString(GL_VERSION) ;
+    qInfo() << "GLSL VERSION:" << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
+    if (glContext->contextHandle()->hasExtension(QByteArrayLiteral("GL_KHR_debug"))) 
+    {
+        qInfo() << "Debug context: GL_KHR_debug available.";
+    }
 
     Display3DSettings::openGLVersion = GL_MAJOR + (GL_MINOR * 0.1);
 
@@ -214,16 +219,15 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-
-
     regABSliderDelegates();
     regABColorDelegates();
 
     qInstallMessageHandler(customMessageHandler);
 
-    qDebug() << "Starting application:";
-    qDebug() << "Application dir:" << QApplication::applicationDirPath();
-    qDebug() << "Data dir:" << _find_data_dir();
+    qInfo() << "Starting application:";
+    qInfo() << " > Host:" << QSysInfo::prettyProductName();
+    qInfo() << " > Application dir:" << QApplication::applicationDirPath();
+    qInfo() << " > Data dir:" << _find_data_dir();
 
     SplashScreen sp(&app);
     QPixmap szpx = QPixmap(SplashImage);
@@ -278,7 +282,7 @@ int main(int argc, char *argv[])
 
     format.setDepthBufferSize(24);
     format.setStencilBufferSize(8);
-
+    
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
      /*
      * Commenting out the next line because it causes rendering to fail.  QGLFormat::CoreProfile
@@ -287,6 +291,9 @@ int main(int argc, char *argv[])
     */
 # if defined(Q_OS_MAC)
     glFormat.setProfile( QGLFormat::CoreProfile );
+# ifdef DEBUG
+    format.setOption( QSurfaceFormat::DebugContext );
+# endif
     format.setProfile( QSurfaceFormat::CoreProfile );
 # endif
     glFormat.setVersion( GL_MAJOR, GL_MINOR );

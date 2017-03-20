@@ -1,12 +1,15 @@
 #ifndef COMMONOBJECTS_H
 #define COMMONOBJECTS_H
 
-#include <QtOpenGL>
-#include <QImage>
 #include <cstdio>
 #include <iostream>
+
+#include <QSharedPointer>
+#include <QImage>
+#include <QtOpenGL>
+#include <QOpenGLTexture>
+
 #include "qopenglerrorcheck.h"
-#include <QOpenGLFunctions_3_3_Core>
 #include "properties/ImageProperties.peg.h"
 
 #define TAB_SETTINGS 9
@@ -30,9 +33,9 @@
 //#define USE_OPENGL_330
 
 #ifdef USE_OPENGL_330
-#define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2016) (OpenGL 330 rel.)"
+# define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2016) (OpenGL 3.30 compatible)"
 #else
-#define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2016)"
+# define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2016)"
 #endif
 
 using namespace std;
@@ -158,8 +161,6 @@ class TargaImage{
     // The same as above but write image to file
     bool save_targa (const char *filename, int width, int height,
                           TargaColorFormat format, unsigned char *pixels);
-
-
 };
 
 class PostfixNames{
@@ -366,7 +367,6 @@ public:
     }
 public:
     static bool bUseLinearInterpolation;
-
 };
 
 
@@ -401,7 +401,6 @@ struct BaseMapConvLevelProperties{
         conversionBaseMapBlending       = level.Blending;
 
     }
-
 };
 
 // Main object. Contains information about Image and the post process parameters
@@ -411,11 +410,11 @@ public:
     bool bSkipProcessing;
     QGLFramebufferObject *fbo     ; // output image
 
-    GLuint scr_tex_id;       // Id of texture loaded from image, from loaded file
-    GLuint normalMixerInputTexId; // Used only by normal texture
-    int scr_tex_width;       // width of the image loaded from file.
-    int scr_tex_height;      // height ...
+    QSharedPointer<QOpenGLTexture> normalMixerInputTex; // Used only by normal texture
+    QSharedPointer<QOpenGLTexture> scr_tex;  // Texture loaded from image, from loaded file
+    
     QGLWidget* glWidget_ptr; // pointer to GL context
+    
     TextureTypes imageType;  // This will define what kind of preprocessing will be applied to image
 
 
@@ -432,7 +431,7 @@ public:
 
     static SeamlessMode seamlessMode;
     static float seamlessSimpleModeRadius;
-    static int seamlessMirroModeType; // values: 2 - x repear, 1 - y  repeat, 0 - xy  repeat
+    static int seamlessMirroModeType; // values: 2 - x repeat, 1 - y  repeat, 0 - xy  repeat
     static RandomTilingMode seamlessRandomTiling;
     static float seamlessContrastStrenght;
     static float seamlessContrastPower;
@@ -442,23 +441,20 @@ public:
     static int currentMaterialIndeks;
 
 
-
-     FBOImageProporties(){
+    FBOImageProporties() {
         bSkipProcessing = false;
         properties      = NULL;
         fbo             = NULL;
-        normalMixerInputTexId = 0;
         glWidget_ptr = NULL;
         bFirstDraw   = true;
-        scr_tex_id   = 0;
         conversionHNDepth  = 2.0;
         bConversionBaseMap = false;
         inputImageType = INPUT_NONE;
         seamlessMode   = SEAMLESS_NONE;
         properties     = new QtnPropertySetFormImageProp;
-     }
+    }
 
-     void copySettings(FBOImageProporties &src){
+    void copySettings(FBOImageProporties &src){
 
         bFirstDraw         = src.bFirstDraw;
         conversionHNDepth  = src.conversionHNDepth;
@@ -466,15 +462,11 @@ public:
         inputImageType     = src.inputImageType;
 
         if(properties != NULL && src.properties != NULL ) properties->copyValues(src.properties);
-     }
+    }
 
     void init(QImage& image){
         glWidget_ptr->makeCurrent();
-        if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
-
-        scr_tex_id = glWidget_ptr->bindTexture(image, GL_TEXTURE_2D);
-        scr_tex_width  = image.width();
-        scr_tex_height = image.height();
+        scr_tex = QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(image));
         bFirstDraw = true;
 
         /*
@@ -490,23 +482,21 @@ public:
         */
         GLuint internal_format = TEXTURE_FORMAT;
         if(imageType == HEIGHT_TEXTURE) internal_format = TEXTURE_3DRENDER_FORMAT;
-        GLCHK(FBOImages::create(fbo , image.width(), image.height(), internal_format));
+        GLCHK( FBOImages::create(fbo , image.width(), image.height(), internal_format) );
 
     }
 
     void updateSrcTexId(QGLFramebufferObject* in_ref_fbo){
         glWidget_ptr->makeCurrent();
-        if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
         QImage image = in_ref_fbo->toImage();
-        scr_tex_id   = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
-
+        scr_tex = QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(image));
     }
 
     void resizeFBO(int width, int height){
 
         GLuint internal_format = TEXTURE_FORMAT;
         if(imageType == HEIGHT_TEXTURE) internal_format = TEXTURE_3DRENDER_FORMAT;
-        GLCHK(FBOImages::resize(fbo,width,height,internal_format));
+        GLCHK( FBOImages::resize(fbo,width,height,internal_format) );
         bFirstDraw = true;
     }
 
@@ -522,19 +512,14 @@ public:
     ~FBOImageProporties(){
 
         if(glWidget_ptr != NULL){
-            qDebug() << Q_FUNC_INFO;
             glWidget_ptr->makeCurrent();
 
-            if(glIsTexture(normalMixerInputTexId)) glWidget_ptr->deleteTexture(normalMixerInputTexId);
-            if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
-            normalMixerInputTexId = 0;
-            scr_tex_id = 0;
-            glWidget_ptr = NULL;
-            //qDebug() << "p=" << properties;
             if(properties != NULL ) delete properties;
             if(fbo        != NULL ) delete fbo;
             properties = NULL;
             fbo        = NULL;
+ 
+            glWidget_ptr = NULL;
         }
     }
 };

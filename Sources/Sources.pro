@@ -19,6 +19,7 @@ VERSION_FULL = 5.0.0
 DEFINES += VERSION_STRING=\\\"$$VERSION_STRING\\\" PROJECTVERSION=\\\"VERSION_FULL\\\"
 
 gl330: DEFINES += USE_OPENGL_330
+CONFIG(debug, debug|release): DEFINES += DEBUG
 
 # build workdir path (spec/gl/c++):
 CONFIG(c++11): C11 = -c11
@@ -30,7 +31,7 @@ gl330: GL = -gl3
 else:GL = -gl4
 
 SPEC=$$[QMAKE_SPEC]$$DBG$$GL$$C11
-DESTDIR = $$TOP_DIR/workdir/$$SPEC/bin
+DESTDIR = $$TOP_DIR/workdir/bin
 OBJECTS_DIR = $$TOP_DIR/workdir/$$SPEC/obj
 MOC_DIR = $$TOP_DIR/workdir/$$SPEC/gen
 UI_DIR = $$TOP_DIR/workdir/$$SPEC/gen
@@ -50,11 +51,13 @@ VPATH += ../shared
 INCLUDEPATH += ../shared include utils utils/QtnProperty utils/contextinfo
 win32:msvc: LIBS += Opengl32.lib
 
-HEADERS = glwidget.h \
+HEADERS = \
     mainwindow.h \
     CommonObjects.h \
     formimageprop.h \
+    glwidget.h \
     glimageeditor.h \
+    glpreview.h \
     camera.h \
     dialogheightcalculator.h \
     qopenglerrorcheck.h \
@@ -84,11 +87,13 @@ HEADERS = glwidget.h \
     utils/contextinfo/renderwindow.h \
     formimagebatch.h
 
-SOURCES = glwidget.cpp \
+SOURCES = \
     main.cpp \
     mainwindow.cpp \
     formimageprop.cpp \
+    glwidget.cpp \
     glimageeditor.cpp \
+    glpreview.cpp \
     CommonObjects.cpp \
     camera.cpp \
     dialogheightcalculator.cpp \
