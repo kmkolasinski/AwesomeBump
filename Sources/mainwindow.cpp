@@ -112,14 +112,14 @@ void MainWindow::initializeApp()
 
 
     // Setting pointers to 3D view (this pointer are used to bindTextures).
-    glWidget->setPointerToTexture(&diffuseImageProp->getImageProporties()  ->fbo,DIFFUSE_TEXTURE);
-    glWidget->setPointerToTexture(&normalImageProp->getImageProporties()   ->fbo,NORMAL_TEXTURE);
-    glWidget->setPointerToTexture(&specularImageProp->getImageProporties() ->fbo,SPECULAR_TEXTURE);
-    glWidget->setPointerToTexture(&heightImageProp->getImageProporties()   ->fbo,HEIGHT_TEXTURE);
-    glWidget->setPointerToTexture(&occlusionImageProp->getImageProporties()->fbo,OCCLUSION_TEXTURE);
-    glWidget->setPointerToTexture(&roughnessImageProp->getImageProporties()->fbo,ROUGHNESS_TEXTURE);
-    glWidget->setPointerToTexture(&metallicImageProp->getImageProporties()->fbo ,METALLIC_TEXTURE);
-    glWidget->setPointerToTexture(&materialManager->getImageProporties()->fbo,MATERIAL_TEXTURE);
+    glWidget->setPointerToTexture(diffuseImageProp->getImageProporties()  ->fbo,DIFFUSE_TEXTURE);
+    glWidget->setPointerToTexture(normalImageProp->getImageProporties()   ->fbo,NORMAL_TEXTURE);
+    glWidget->setPointerToTexture(specularImageProp->getImageProporties() ->fbo,SPECULAR_TEXTURE);
+    glWidget->setPointerToTexture(heightImageProp->getImageProporties()   ->fbo,HEIGHT_TEXTURE);
+    glWidget->setPointerToTexture(occlusionImageProp->getImageProporties()->fbo,OCCLUSION_TEXTURE);
+    glWidget->setPointerToTexture(roughnessImageProp->getImageProporties()->fbo,ROUGHNESS_TEXTURE);
+    glWidget->setPointerToTexture(metallicImageProp->getImageProporties()->fbo ,METALLIC_TEXTURE);
+    glWidget->setPointerToTexture(materialManager->getImageProporties()->fbo,MATERIAL_TEXTURE);
 
 
     glImage ->targetImageNormal    = normalImageProp   ->getImageProporties();
@@ -886,10 +886,10 @@ bool MainWindow::saveAllImages(const QString &dir){
         QCoreApplication::processEvents();
         glImage->makeCurrent();
 
-        QGLFramebufferObject* diffuseFBOImage  = diffuseImageProp->getImageProporties()->fbo;
-        QGLFramebufferObject* normalFBOImage   = normalImageProp->getImageProporties()->fbo;
-        QGLFramebufferObject* specularFBOImage = specularImageProp->getImageProporties()->fbo;
-        QGLFramebufferObject* heightFBOImage   = heightImageProp->getImageProporties()->fbo;
+        QGLFramebufferObjectPtr diffuseFBOImage  = diffuseImageProp->getImageProporties()->fbo;
+        QGLFramebufferObjectPtr normalFBOImage   = normalImageProp->getImageProporties()->fbo;
+        QGLFramebufferObjectPtr specularFBOImage = specularImageProp->getImageProporties()->fbo;
+        QGLFramebufferObjectPtr heightFBOImage   = heightImageProp->getImageProporties()->fbo;
 
         QImage diffuseImage = diffuseFBOImage->toImage() ;
         QImage normalImage  = normalFBOImage->toImage();

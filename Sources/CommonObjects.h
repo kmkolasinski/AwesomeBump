@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <iostream>
 
+#include <QPointer>
 #include <QSharedPointer>
 #include <QImage>
 #include <QtOpenGL>
@@ -23,6 +24,9 @@
 # define AB_LOG "log.txt"
 #endif
 
+// default types for OpenGL objects:
+typedef QSharedPointer<QGLFramebufferObject> QGLFramebufferObjectPtr;
+typedef QSharedPointer<QOpenGLTexture> QOpenGLTexturePtr;
 
 
 #define TEXTURE_FORMAT GL_RGB16F
@@ -313,17 +317,16 @@ public:
 // Wrapper for FBO initialization.
 class FBOImages {
 public:
-    static void create(QGLFramebufferObject *&fbo,int width,int height,GLuint internal_format = TEXTURE_FORMAT){
-       if(fbo)
-       {
+    static void create(QGLFramebufferObjectPtr fbo, int width, int height, GLuint internal_format = TEXTURE_FORMAT){
+        if(fbo)
+        {
             fbo->release();
-            delete fbo;
         }
         QGLFramebufferObjectFormat format;
         format.setInternalTextureFormat(internal_format);
         format.setTextureTarget(GL_TEXTURE_2D);
         format.setMipmap(true);
-        fbo = new QGLFramebufferObject(width,height,format);
+        fbo = QGLFramebufferObjectPtr(new QGLFramebufferObject(width,height,format));
         
         GLCLRERR();
         
@@ -349,7 +352,7 @@ public:
 
         GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
     }
-    static void resize(QGLFramebufferObject *&src,QGLFramebufferObject *&ref,GLuint internal_format = TEXTURE_FORMAT){
+    static void resize(QGLFramebufferObjectPtr src, QGLFramebufferObjectPtr ref, GLuint internal_format = TEXTURE_FORMAT){
         if(src == NULL){
             GLCHK(FBOImages::create(src ,ref->width(),ref->height(),internal_format));
         }else if( ref->width()  == src->width() &&
@@ -357,7 +360,7 @@ public:
             GLCHK(FBOImages::create(src ,ref->width(),ref->height(),internal_format));
         }
     }
-    static void resize(QGLFramebufferObject *&src,int width, int height,GLuint internal_format = TEXTURE_FORMAT){
+    static void resize(QGLFramebufferObjectPtr src, int width, int height,GLuint internal_format = TEXTURE_FORMAT){
         if(!src){
             GLCHK(FBOImages::create(src ,width,height,internal_format));
         }else if( width  == src->width() &&
@@ -408,15 +411,12 @@ class FBOImageProporties{
 public:
     QtnPropertySetFormImageProp* properties;
     bool bSkipProcessing;
-    QGLFramebufferObject *fbo     ; // output image
+    QGLFramebufferObjectPtr fbo; // output image
 
-    QSharedPointer<QOpenGLTexture> normalMixerInputTex; // Used only by normal texture
-    QSharedPointer<QOpenGLTexture> scr_tex;  // Texture loaded from image, from loaded file
-    
-    QGLWidget* glWidget_ptr; // pointer to GL context
+    QOpenGLTexturePtr normalMixerInputTex; // Used only by normal texture
+    QOpenGLTexturePtr scr_tex;  // Texture loaded from image, from loaded file
     
     TextureTypes imageType;  // This will define what kind of preprocessing will be applied to image
-
 
     bool bFirstDraw;
     // Conversion settings
@@ -443,15 +443,13 @@ public:
 
     FBOImageProporties() {
         bSkipProcessing = false;
-        properties      = NULL;
-        fbo             = NULL;
-        glWidget_ptr = NULL;
-        bFirstDraw   = true;
+        properties = NULL;
+        bFirstDraw = true;
         conversionHNDepth  = 2.0;
         bConversionBaseMap = false;
         inputImageType = INPUT_NONE;
-        seamlessMode   = SEAMLESS_NONE;
-        properties     = new QtnPropertySetFormImageProp;
+        seamlessMode = SEAMLESS_NONE;
+        properties = new QtnPropertySetFormImageProp;
     }
 
     void copySettings(FBOImageProporties &src){
@@ -465,8 +463,9 @@ public:
     }
 
     void init(QImage& image){
-        glWidget_ptr->makeCurrent();
-        scr_tex = QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(image));
+        Q_ASSERT(QGLContext::currentContext());
+
+        scr_tex = QOpenGLTexturePtr(new QOpenGLTexture(image));
         bFirstDraw = true;
 
         /*
@@ -486,10 +485,11 @@ public:
 
     }
 
-    void updateSrcTexId(QGLFramebufferObject* in_ref_fbo){
-        glWidget_ptr->makeCurrent();
+    void updateSrcTexId(QGLFramebufferObjectPtr in_ref_fbo){
+        Q_ASSERT(QGLContext::currentContext());
+
         QImage image = in_ref_fbo->toImage();
-        scr_tex = QSharedPointer<QOpenGLTexture>(new QOpenGLTexture(image));
+        scr_tex = QOpenGLTexturePtr(new QOpenGLTexture(image));
     }
 
     void resizeFBO(int width, int height){
@@ -505,25 +505,14 @@ public:
      * @return QImage
      */
     QImage getImage(){
-        glWidget_ptr->makeCurrent();
+        Q_ASSERT(QGLContext::currentContext());
         return fbo->toImage();
     }
 
     ~FBOImageProporties(){
-
-        if(glWidget_ptr != NULL){
-            glWidget_ptr->makeCurrent();
-
-            if(properties != NULL ) delete properties;
-            if(fbo        != NULL ) delete fbo;
-            properties = NULL;
-            fbo        = NULL;
- 
-            glWidget_ptr = NULL;
-        }
+        if(properties != NULL) delete properties;
     }
 };
-
 
 
 #endif // COMMONOBJECTS_H

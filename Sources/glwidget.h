@@ -41,7 +41,6 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include <QSharedPointer> 
 #include <QGLWidget>
 #include <QtOpenGL>
 #include <QOpenGLTexture>
@@ -70,18 +69,17 @@
 #endif
 
 
-
 class GLWidget : public GLWidgetBase , protected OPENGL_FUNCTIONS
 {
     Q_OBJECT
 
 public:
-    GLWidget(QWidget *parent = 0 , QGLWidget * shareWidget  = 0);
+    GLWidget(QWidget *parent = 0 , QGLWidget *shareWidget = 0);
     ~GLWidget();
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;    
-    void setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes type);
+    void setPointerToTexture(QGLFramebufferObjectPtr pointer, TextureTypes type);
 
 public slots:
 
@@ -141,7 +139,7 @@ private:
     QOpenGLShaderProgram *skybox_program;
     QOpenGLShaderProgram *env_program;
 
-    QGLFramebufferObject**  fboIdPtrs[8];
+    QGLFramebufferObjectPtr fboIdPtrs[MAX_TEXTURES_TYPE];
 
 
 
@@ -182,8 +180,6 @@ private:
     GLTextureCube* m_prefiltered_env_map; // filtered lambertian cube map
     bool bDiffuseMapBaked;                // prevent program from calculating diffuse env. map many times
 
-    GLImage* glImagePtr;
-
     // Post-processing variables
     std::map<std::string,QOpenGLShaderProgram*> post_processing_programs; // all post processing functions
     Mesh* quad_mesh;                      // quad mesh used for post processing
@@ -197,9 +193,9 @@ private:
     // tone mapping mipmaps FBOS
     GLFrameBufferObject* toneMipmaps[10];
 
-    QSharedPointer<QOpenGLTexture> lensFlareColorsTexture;
-    QSharedPointer<QOpenGLTexture> lensDirtTexture;
-    QSharedPointer<QOpenGLTexture> lensStarTexture;
+    QOpenGLTexturePtr lensFlareColorsTexture;
+    QOpenGLTexturePtr lensDirtTexture;
+    QOpenGLTexturePtr lensStarTexture;
 
 protected:
     void resizeFBOs();
@@ -217,6 +213,5 @@ protected:
 public:
     static QDir* recentMeshDir;
 };
-//! [3]
 
 #endif

@@ -103,8 +103,8 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
          txt += QString("{Critical} \t %1").arg(msg);
          break;
       case QtFatalMsg:
-         txt += QString("{Fatal} \t\t %1").arg(msg);
-         abort();
+         fprintf(stderr, "*** Fatal error:\n*** %s\n", msg.toLatin1().constData());
+         txt += QString("{Fatal} \t %1").arg(msg);
          break;
    }
 
@@ -120,6 +120,8 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
 
    QTextStream textStream(&outFile);
    textStream << txt << endl;
+
+   if (type == QtFatalMsg) abort();
 }
 
 class SplashScreen : public QSplashScreen

@@ -1,7 +1,7 @@
 #include "formimagebase.h"
 QDir* FormImageBase::recentDir;
 
-FormImageBase::FormImageBase(QWidget *parent) : QWidget(parent)
+FormImageBase::FormImageBase(QWidget *parent, QGLWidget *shareWidget) : QGLWidget(parent, shareWidget)
 {
     setMouseTracking(true);
     setFocus();

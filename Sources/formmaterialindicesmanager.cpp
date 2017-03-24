@@ -1,12 +1,11 @@
 #include "formmaterialindicesmanager.h"
 #include "ui_formmaterialindicesmanager.h"
 
-FormMaterialIndicesManager::FormMaterialIndicesManager(QMainWindow *parent, QGLWidget* qlW_ptr) :
-    FormImageBase(parent),
+FormMaterialIndicesManager::FormMaterialIndicesManager(QMainWindow *parent, QGLWidget* sharedWidget) :
+    FormImageBase(parent, sharedWidget),
     ui(new Ui::FormMaterialIndicesManager)
 {
     ui->setupUi(this);
-    imageProp.glWidget_ptr = qlW_ptr;
 
     connect(ui->pushButtonOpenMaterialImage,SIGNAL(released()),this,SLOT(open()));
     connect(ui->pushButtonCopyToClipboard,SIGNAL(released()),this,SLOT(copyToClipboard()));
@@ -21,7 +20,6 @@ FormMaterialIndicesManager::FormMaterialIndicesManager(QMainWindow *parent, QGLW
 
 FormMaterialIndicesManager::~FormMaterialIndicesManager()
 {
-    qDebug() << "calling" << Q_FUNC_INFO;
     delete ui;
 }
 
@@ -35,21 +33,17 @@ void FormMaterialIndicesManager::disableMaterials(){
 
 
 void FormMaterialIndicesManager::setImage(QImage _image){
+    Q_ASSERT(QGLContext::currentContext());
 
-    if (imageProp.glWidget_ptr->isValid()){
-        // remember the last id
-        int mIndex = FBOImageProporties::currentMaterialIndeks;
-        if(updateMaterials(_image)){
-              image    = _image;
-              imageProp.init(image);
-              emit materialChanged();
-        }
-
-        FBOImageProporties::currentMaterialIndeks = mIndex ;
-
+    // remember the last id
+    int mIndex = FBOImageProporties::currentMaterialIndeks;
+    if(updateMaterials(_image)){
+            image    = _image;
+            imageProp.init(image);
+            emit materialChanged();
     }
-    else
-        qDebug() << Q_FUNC_INFO << "Invalid context.";
+
+    FBOImageProporties::currentMaterialIndeks = mIndex ;
 }
 
 bool FormMaterialIndicesManager::updateMaterials(QImage& image){

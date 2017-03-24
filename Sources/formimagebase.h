@@ -1,7 +1,7 @@
 #ifndef FORMIMAGEBASE_H
 #define FORMIMAGEBASE_H
 
-#include <QWidget>
+#include <QGLWidget>
 #include "CommonObjects.h"
 
 // Manages all the input/output operations
@@ -9,11 +9,11 @@
 // paste & copy from/to clipboard
 // drag & drop events
 
-class FormImageBase : public QWidget
+class FormImageBase : public QGLWidget
 {
     Q_OBJECT
 public:
-    FormImageBase(QWidget *parent = 0);
+    FormImageBase(QWidget *parent = 0, QGLWidget *shareWidget = 0);
     ~FormImageBase();
     void keyPressEvent(QKeyEvent *event);
     virtual FBOImageProporties* getImageProporties(){return &imageProp;}

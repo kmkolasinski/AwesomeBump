@@ -7,8 +7,8 @@ QString _find_data_dir(const QString& resource = RESOURCE_BASE);
 
 bool FormImageProp::bLoading = false;
 
-FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
-    FormImageBase(parent),
+FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget *shareWidget) :
+    FormImageBase(parent, shareWidget),
     ui(new Ui::FormImageProp)
 {
     ui->setupUi(this);
@@ -49,8 +49,6 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
 
     ui->groupBoxConvertToHeightSettings->hide();
     bOpenNormalMapMixer   = false;
-
-    imageProp.glWidget_ptr = qlW_ptr;
     
     connect(ui->pushButtonOpenImage,SIGNAL(released()),this,SLOT(open()));
     connect(ui->pushButtonSaveImage,SIGNAL(released()),this,SLOT(save()));
@@ -298,8 +296,8 @@ bool FormImageProp::loadFile(const QString &fileName)
     if(imageProp.properties->NormalsMixer.EnableMixer){
         qDebug() << Q_FUNC_INFO << "Open normal mixer image:" << fileName;
 
-        imageProp.glWidget_ptr->makeCurrent();
-        imageProp.normalMixerInputTex = QSharedPointer<QOpenGLTexture>( new QOpenGLTexture(_image) );
+        makeCurrent();
+        imageProp.normalMixerInputTex = QOpenGLTexturePtr( new QOpenGLTexture(_image) );
 
         emit imageChanged();
 
@@ -326,11 +324,9 @@ void FormImageProp::pasteImageFromClipboard(QImage& _image){
 
 
 void FormImageProp::setImage(QImage _image){
+    Q_ASSERT(QGLContext::currentContext());
     image = _image;
-    if (imageProp.glWidget_ptr->isValid())
-      imageProp.init(image);
-    else
-        qWarning() << Q_FUNC_INFO << "Invalid context. Skipping image" << _image;
+    imageProp.init(image);
 }
 
 
@@ -487,10 +483,10 @@ void FormImageProp::pasteNormalFromClipBoard(){
         QPixmap pixmap = qvariant_cast<QPixmap>(mimeData->imageData());
         QImage _image = pixmap.toImage();
 
-        imageProp.glWidget_ptr->makeCurrent();
+        makeCurrent();
         imageProp.normalMixerInputTex->setData(_image);
+        
         emit imageChanged();
-
     }
 }
 

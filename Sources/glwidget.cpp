@@ -47,7 +47,7 @@ QString _find_data_dir(const QString& resource = RESOURCE_BASE);
 
 QDir* GLWidget::recentMeshDir = NULL;
 
-GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget) : GLWidgetBase(QGLFormat::defaultFormat(), parent, shareWidget)
+GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget) : GLWidgetBase(QGLFormat::defaultFormat(), parent, shareWidget)
 {
     setAcceptDrops(true);
     zoom                    = 60;
@@ -66,8 +66,6 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget) : GLWidgetBase(QGLF
     setCursor(Qt::PointingHandCursor);
     lightCursor = QCursor(QPixmap(":/resources/cursors/lightCursor.png"));
 
-
-    glImagePtr = (GLImage*)shareWidget;
     // Post processing variables:
     colorFBO = NULL;
     outputFBO= NULL;
@@ -469,9 +467,9 @@ void GLWidget::initializeGL()
 
     GLCLRERR();
 
-    GLCHK( lensFlareColorsTexture =  QSharedPointer<QOpenGLTexture> (new QOpenGLTexture(QImage(":/resources/textures/lenscolor.png").mirrored())) );
-    GLCHK( lensDirtTexture = QSharedPointer<QOpenGLTexture> (new QOpenGLTexture(QImage(":/resources/textures/lensdirt.png").mirrored())) );
-    GLCHK( lensStarTexture = QSharedPointer<QOpenGLTexture> (new QOpenGLTexture(QImage(":/resources/textures/lensstar.png").mirrored())) );
+    GLCHK( lensFlareColorsTexture =  QOpenGLTexturePtr (new QOpenGLTexture(QImage(":/resources/textures/lenscolor.png").mirrored())) );
+    GLCHK( lensDirtTexture = QOpenGLTexturePtr (new QOpenGLTexture(QImage(":/resources/textures/lensdirt.png").mirrored())) );
+    GLCHK( lensStarTexture = QOpenGLTexturePtr (new QOpenGLTexture(QImage(":/resources/textures/lensstar.png").mirrored())) );
 
 
     camera.position.setZ( -0 );
@@ -584,7 +582,7 @@ void GLWidget::paintGL()
 
     objectMatrix.setToIdentity();
     if( fboIdPtrs[0] != NULL){
-        float fboRatio = float((*(fboIdPtrs[0]))->width())/(*(fboIdPtrs[0]))->height();
+        float fboRatio = float(fboIdPtrs[0]->width())/float(fboIdPtrs[0]->height());
         objectMatrix.scale(fboRatio,1,fboRatio);
     }
     if(mesh->isLoaded()){
@@ -667,7 +665,7 @@ void GLWidget::paintGL()
 
         for(tindeks = 0 ; tindeks <= MATERIAL_TEXTURE ; tindeks++){ // skip grunge texture (not used in 3D view)
             GLCHK( glActiveTexture(GL_TEXTURE0+tindeks) );
-            GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[tindeks]))->texture()) );
+            GLCHK( glBindTexture(GL_TEXTURE_2D, fboIdPtrs[tindeks]->texture()) );
         }
 
         GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks ) );
@@ -929,7 +927,7 @@ void GLWidget::dragEnterEvent(QDragEnterEvent *event)
 
 
 
-void GLWidget::setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes tType){
+void GLWidget::setPointerToTexture(QGLFramebufferObjectPtr pointer, TextureTypes tType){
     switch(tType){
         case(DIFFUSE_TEXTURE ):
             fboIdPtrs[0] = pointer;

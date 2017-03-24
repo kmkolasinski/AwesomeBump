@@ -24,9 +24,9 @@ class FormImageProp : public FormImageBase
     Q_OBJECT
 
 public:
-    explicit FormImageProp(QMainWindow *parent = 0, QGLWidget* qlW_ptr = 0);
+    explicit FormImageProp(QMainWindow *parent = 0, QGLWidget *shareWidget = 0);
+
     void setImage(QImage image);
-    void setPtrToGLWidget(QGLWidget* ptr){ imageProp.glWidget_ptr = ptr;  }
 
     void setupPopertiesGUI();
     void reloadSettings();
@@ -88,16 +88,12 @@ private:
 
     void pasteImageFromClipboard(QImage& _image);
 
-
     Ui::FormImageProp *ui;
-    DialogHeightCalculator      *heightCalculator;     // height calculator tool
-
+    DialogHeightCalculator *heightCalculator; // height calculator tool
 
 public:
     static bool bLoading;
     bool bOpenNormalMapMixer;
-
-
 };
 
 #endif // FORMIMAGEPROP_H

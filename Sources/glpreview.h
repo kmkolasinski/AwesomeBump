@@ -31,7 +31,7 @@ class GLPreview : public QGLWidget, protected OpenGLFunctionsBase
     Q_OBJECT
 
 public:
-    GLPreview(QWidget *parent = 0, QGLWidget * shareWidget  = 0);
+    GLPreview(QWidget *parent = 0, QGLWidget *shareWidget = 0);
     ~GLPreview();
 
     QSize minimumSizeHint() const;

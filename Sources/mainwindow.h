@@ -11,11 +11,12 @@
 
 #include "CommonObjects.h"
 
+#include "glwidget.h"
+#include "glimageeditor.h"
+#include "glpreview.h"
+
 class QLabel;
 
-class GLWidget;
-class GLImage;
-class GLPreview;
 class FormImageProp;
 class FormMaterialIndicesManager;
 class FormSettingsContainer;
@@ -149,10 +150,8 @@ private:
 
     // Pointers
     Ui::MainWindow *ui;
-    GLWidget* glWidget;
-
-    GLImage* glImage;
-    
+    GLWidget *glWidget;
+    GLImage *glImage;
     GLPreview *glTexturesPreview;
 
     bool bSaveCheckedImages;
