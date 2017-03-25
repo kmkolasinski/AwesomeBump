@@ -96,13 +96,13 @@ void GLPreview::initializeGL()
 
     qDebug() << "Loading quad (fragment shader)";
     QOpenGLShader *vshader = new QOpenGLShader(QOpenGLShader::Vertex, this);
-    vshader->compileSourceFile(":/resources/quad.vert");
+    vshader->compileSourceFile(":/resources/shaders/uad.vert");
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
     qDebug() << "Loading quad (vertex shader)";
     QOpenGLShader *fshader = new QOpenGLShader(QOpenGLShader::Fragment, this);
-    fshader->compileSourceFile(":/resources/quad.frag");
+    fshader->compileSourceFile(":/resources/shaders/quad.frag");
     if (!fshader->log().isEmpty()) qDebug() << fshader->log();
     else qDebug() << "done";
 

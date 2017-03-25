@@ -16,7 +16,7 @@ public:
     FormImageBase(QWidget *parent = 0, QGLWidget *shareWidget = 0);
     ~FormImageBase();
     void keyPressEvent(QKeyEvent *event);
-    virtual FBOImageProporties* getImageProporties(){return &imageProp;}
+    virtual FBOImageProportiesPtr getImageProporties(){return FBOImageProportiesPtr(&imageProp);}
     virtual void setImageName(QString name);
     virtual QString getImageName();
     virtual void saveFileToDir(const QString &dir);

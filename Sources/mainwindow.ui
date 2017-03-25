@@ -35,12 +35,12 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_31">
     <item>
-     <widget class="QSplitter" name="splitter_2">
+     <widget class="QSplitter" name="splitterMain">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QWidget" name="tabWidgetSwitch_1">
-       <layout class="QVBoxLayout" name="verticalTabLayout">
+       <layout class="QVBoxLayout" name="tabLayout">
         <property name="spacing">
          <number>0</number>
         </property>
@@ -84,7 +84,7 @@
            </size>
           </property>
           <property name="currentIndex">
-           <number>9</number>
+           <number>11</number>
           </property>
           <widget class="QWidget" name="tabDiffuseImage">
            <property name="sizePolicy">
@@ -107,7 +107,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea">
+             <widget class="QScrollArea" name="scrollAreaDiffuse">
               <property name="autoFillBackground">
                <bool>true</bool>
               </property>
@@ -175,7 +175,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea_2">
+             <widget class="QScrollArea" name="scrollAreaNormal">
               <property name="autoFillBackground">
                <bool>true</bool>
               </property>
@@ -243,7 +243,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea_3">
+             <widget class="QScrollArea" name="scrollAreaSpecular">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -317,7 +317,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea_4">
+             <widget class="QScrollArea" name="scrollAreaHeight">
               <property name="autoFillBackground">
                <bool>true</bool>
               </property>
@@ -385,7 +385,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea_5">
+             <widget class="QScrollArea" name="scrollAreaOcclusion">
               <property name="autoFillBackground">
                <bool>true</bool>
               </property>
@@ -453,7 +453,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea_8">
+             <widget class="QScrollArea" name="scrollAreaRoughness">
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
               </property>
@@ -518,7 +518,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea_9">
+             <widget class="QScrollArea" name="scrollAreaMetallic">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -583,7 +583,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea_10">
+             <widget class="QScrollArea" name="scrollAreaMaterial">
               <property name="horizontalScrollBarPolicy">
                <enum>Qt::ScrollBarAlwaysOff</enum>
               </property>
@@ -648,7 +648,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea_11">
+             <widget class="QScrollArea" name="scrollAreaGrunge">
               <property name="widgetResizable">
                <bool>true</bool>
               </property>
@@ -755,8 +755,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>359</width>
-                 <height>720</height>
+                 <width>357</width>
+                 <height>700</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -2043,7 +2043,7 @@
              <number>2</number>
             </property>
             <item>
-             <widget class="QScrollArea" name="scrollArea_7">
+             <widget class="QScrollArea" name="scrollAreaTilling">
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
               </property>
@@ -2639,7 +2639,7 @@
           <widget class="QWidget" name="tabBatch">
            <layout class="QVBoxLayout" name="verticalLayout_19">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <layout class="QHBoxLayout" name="horizontalLayoutBatch">
               <item>
                <widget class="QPushButton" name="pushButtonImageBatchSource">
                 <property name="text">
@@ -2742,11 +2742,18 @@
              <property name="text">
               <string>3D settings</string>
              </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/actions/right_arrow_disabled.png</normaloff>:/resources/actions/right_arrow_disabled.png</iconset>
+             </property>
              <property name="checkable">
               <bool>true</bool>
              </property>
              <property name="checked">
               <bool>false</bool>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextBesideIcon</enum>
              </property>
             </widget>
            </item>
@@ -2763,6 +2770,13 @@
              </property>
              <property name="text">
               <string>Render settings</string>
+             </property>
+             <property name="icon">
+              <iconset resource="content.qrc">
+               <normaloff>:/resources/actions/right_arrow_disabled.png</normaloff>:/resources/actions/right_arrow_disabled.png</iconset>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextBesideIcon</enum>
              </property>
             </widget>
            </item>

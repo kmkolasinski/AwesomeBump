@@ -27,7 +27,8 @@
 // default types for OpenGL objects:
 typedef QSharedPointer<QGLFramebufferObject> QGLFramebufferObjectPtr;
 typedef QSharedPointer<QOpenGLTexture> QOpenGLTexturePtr;
-
+class FBOImageProporties;
+typedef QSharedPointer<FBOImageProporties> FBOImageProportiesPtr;
 
 #define TEXTURE_FORMAT GL_RGB16F
 #define TEXTURE_3DRENDER_FORMAT GL_RGB16F
@@ -317,7 +318,7 @@ public:
 // Wrapper for FBO initialization.
 class FBOImages {
 public:
-    static void create(QGLFramebufferObjectPtr fbo, int width, int height, GLuint internal_format = TEXTURE_FORMAT){
+    static void create(QGLFramebufferObjectPtr &fbo, int width, int height, GLuint internal_format = TEXTURE_FORMAT){
         if(fbo)
         {
             fbo->release();
@@ -326,46 +327,46 @@ public:
         format.setInternalTextureFormat(internal_format);
         format.setTextureTarget(GL_TEXTURE_2D);
         format.setMipmap(true);
+        
         fbo = QGLFramebufferObjectPtr(new QGLFramebufferObject(width,height,format));
         
         GLCLRERR();
         
         qDebug() << "FBOImages::creating new FBO(" << width << "," << height << ") with id =" << fbo->texture() ;
         if (!fbo->isValid())
-            qWarning() << "Framebuffer" << fbo->texture() << "is invalid.";
+            qWarning() << " > framebuffer is invalid.";
 
-        GLCHK(glBindTexture(GL_TEXTURE_2D, fbo->texture()));
-        GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-        GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-
+        GLCHK( glBindTexture(GL_TEXTURE_2D, fbo->texture()) );
+        GLCHK( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT) );
+        GLCHK( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT) );
 
         if(FBOImages::bUseLinearInterpolation){
-            GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-            GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+            GLCHK( glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) );
+            GLCHK( glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR) );
         }else{
-            GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-            GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+            GLCHK( glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST) );
+            GLCHK( glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST) );
         }
         float aniso = 0.0;
-        GLCHK(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso));
-        GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso));
+        GLCHK( glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso) );
+        GLCHK( glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso) );
 
-        GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
+        GLCHK( glBindTexture(GL_TEXTURE_2D, 0) );
     }
-    static void resize(QGLFramebufferObjectPtr src, QGLFramebufferObjectPtr ref, GLuint internal_format = TEXTURE_FORMAT){
+    static void resize(QGLFramebufferObjectPtr &src, QGLFramebufferObjectPtr ref, GLuint internal_format = TEXTURE_FORMAT){
         if(src == NULL){
-            GLCHK(FBOImages::create(src ,ref->width(),ref->height(),internal_format));
+            GLCHK( FBOImages::create(src ,ref->width(),ref->height(),internal_format) );
         }else if( ref->width()  == src->width() &&
             ref->height() == src->height() ){}else{
-            GLCHK(FBOImages::create(src ,ref->width(),ref->height(),internal_format));
+            GLCHK( FBOImages::create(src ,ref->width(),ref->height(),internal_format) );
         }
     }
-    static void resize(QGLFramebufferObjectPtr src, int width, int height,GLuint internal_format = TEXTURE_FORMAT){
+    static void resize(QGLFramebufferObjectPtr &src, int width, int height,GLuint internal_format = TEXTURE_FORMAT){
         if(!src){
-            GLCHK(FBOImages::create(src ,width,height,internal_format));
+            GLCHK( FBOImages::create(src ,width,height,internal_format) );
         }else if( width  == src->width() &&
             height == src->height() ){}else{
-            GLCHK(FBOImages::create(src ,width,height,internal_format));
+            GLCHK( FBOImages::create(src ,width,height,internal_format) );
         }
     }
 public:

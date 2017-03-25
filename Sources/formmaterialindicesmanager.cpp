@@ -38,9 +38,9 @@ void FormMaterialIndicesManager::setImage(QImage _image){
     // remember the last id
     int mIndex = FBOImageProporties::currentMaterialIndeks;
     if(updateMaterials(_image)){
-            image    = _image;
-            imageProp.init(image);
-            emit materialChanged();
+        image    = _image;
+        imageProp.init(image);
+        emit materialChanged();
     }
 
     FBOImageProporties::currentMaterialIndeks = mIndex ;
@@ -60,7 +60,7 @@ bool FormMaterialIndicesManager::updateMaterials(QImage& image){
 
     }}
     if(colorIndices.size() > 32){
-    QMessageBox msgBox;
+        QMessageBox msgBox;
         msgBox.setText("Error: too much colors!");
         msgBox.setInformativeText(" Sorry, but this image does not look like a material texture.\n"
                                   " Your image contains more than 32 different colors");
@@ -76,16 +76,15 @@ bool FormMaterialIndicesManager::updateMaterials(QImage& image){
     // generate materials list
     int indeks = 1;
     for(it_type iterator = colorIndices.begin(); iterator != colorIndices.end(); iterator++) {
-           qDebug() << "Material index:  " << iterator->first << " Color :" << QColor(iterator->second);
+        qDebug() << "Material index:  " << iterator->first << " Color :" << QColor(iterator->second);
 
-           QListWidgetItem* pItem =new QListWidgetItem("Material"+QString::number(indeks++));
-           QColor mColor = QColor(iterator->second);
-           pItem->setForeground(mColor); // sets red text
-           pItem->setBackground(mColor); // sets green background
-           QColor textColor = QColor(255-mColor.red(),255-mColor.green(),255-mColor.blue());
-           pItem->setTextColor(textColor);
-           ui->listWidgetMaterialIndices->addItem(pItem);
-
+        QListWidgetItem* pItem =new QListWidgetItem("Material"+QString::number(indeks++));
+        QColor mColor = QColor(iterator->second);
+        pItem->setForeground(mColor); // sets red text
+        pItem->setBackground(mColor); // sets green background
+        QColor textColor = QColor(255-mColor.red(),255-mColor.green(),255-mColor.blue());
+        pItem->setTextColor(textColor);
+        ui->listWidgetMaterialIndices->addItem(pItem);
     }
 
 
@@ -109,7 +108,6 @@ bool FormMaterialIndicesManager::updateMaterials(QImage& image){
     FBOImageProporties::currentMaterialIndeks = bgColor.red()*255*255 + bgColor.green()*255 + bgColor.blue();
 
     bSkipUpdating = false;
-
 
 
     return true;
@@ -144,10 +142,8 @@ void FormMaterialIndicesManager::changeMaterial(int index){
     ui->listWidgetMaterialIndices->item(lastMaterialIndex)->setText(cText+" (selected material)");
 
 
-
     emit materialChanged();
 }
-
 
 
 

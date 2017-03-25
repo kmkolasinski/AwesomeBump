@@ -34,6 +34,12 @@ public:
 
     ~FormImageProp();
 
+protected:
+    bool eventFilter(QObject* object, QEvent* event) {
+        if (event->type() == QEvent::Paint) { return true; }
+        return false;
+    }
+
 public slots:
 
     void propertyChanged(const QtnPropertyBase* changedProperty,

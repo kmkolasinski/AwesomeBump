@@ -383,7 +383,7 @@ void MainWindow::initializeApp()
     connect(roughnessImageProp  ,SIGNAL(pickImageColor( QtnPropertyABColor*)),glImage,SLOT(pickImageColor( QtnPropertyABColor*)));
     connect(metallicImageProp   ,SIGNAL(pickImageColor( QtnPropertyABColor*)),glImage,SLOT(pickImageColor( QtnPropertyABColor*)));
 
-    // 2D imate tool box settings
+    // 2D image tool box settings
     QActionGroup *group = new QActionGroup( this );
     group->addAction( ui->actionTranslateUV );
     group->addAction( ui->actionGrabCorners);
@@ -423,16 +423,16 @@ void MainWindow::initializeApp()
     INIT_PROGRESS(80, "Loading default (initial) textures.");
 
     // Loading default (initial) textures
-    diffuseImageProp   ->setImage(QImage(QString(":/resources/logo/logo_D.png")));
+    diffuseImageProp   ->setImage(QImage(QStringLiteral(":/resources/logo/logo_D.png")));
 
-    normalImageProp    ->setImage(QImage(QString(":/resources/logo/logo_N.png")));
-    specularImageProp  ->setImage(QImage(QString(":/resources/logo/logo_D.png")));
-    heightImageProp    ->setImage(QImage(QString(":/resources/logo/logo_H.png")));
-    occlusionImageProp ->setImage(QImage(QString(":/resources/logo/logo_O.png")));
-    roughnessImageProp ->setImage(QImage(QString(":/resources/logo/logo_R.png")));
-    metallicImageProp  ->setImage(QImage(QString(":/resources/logo/logo_M.png")));
-    grungeImageProp    ->setImage(QImage(QString(":/resources/logo/logo_R.png")));
-    materialManager    ->setImage(QImage(QString(":/resources/logo/logo_R.png")));
+    normalImageProp    ->setImage(QImage(QStringLiteral(":/resources/logo/logo_N.png")));
+    specularImageProp  ->setImage(QImage(QStringLiteral(":/resources/logo/logo_D.png")));
+    heightImageProp    ->setImage(QImage(QStringLiteral(":/resources/logo/logo_H.png")));
+    occlusionImageProp ->setImage(QImage(QStringLiteral(":/resources/logo/logo_O.png")));
+    roughnessImageProp ->setImage(QImage(QStringLiteral(":/resources/logo/logo_R.png")));
+    metallicImageProp  ->setImage(QImage(QStringLiteral(":/resources/logo/logo_M.png")));
+    grungeImageProp    ->setImage(QImage(QStringLiteral(":/resources/logo/logo_R.png")));
+    materialManager    ->setImage(QImage(QStringLiteral(":/resources/logo/logo_R.png")));
 
 
     diffuseImageProp   ->setImageName(ui->lineEditOutputName->text());
@@ -459,7 +459,6 @@ void MainWindow::initializeApp()
     aboutQtAction = new QAction(QIcon(":/resources/icons/Qt.png"), tr("About &Qt"), this);
     aboutQtAction->setToolTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
-
 
 
     logAction = new QAction("Show log file",this);
@@ -615,7 +614,7 @@ void MainWindow::configureToolbarAndStatusline()
 }
 
 void MainWindow::replotAllImages(){
-    FBOImageProporties* lastActive = glImage->getActiveImage();
+    FBOImageProportiesPtr lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
 
     // skip grunge map if conversion is enabled
@@ -737,7 +736,7 @@ void MainWindow::selectGeneralSettingsTab(){
     ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
 }
 void MainWindow::selectUVsTab(){
-    ui->tabWidget->setCurrentIndex(TAB_SETTINGS+1);
+    ui->tabWidget->setCurrentIndex(TAB_TILING);
 }
 
 
@@ -1193,7 +1192,7 @@ void MainWindow::initializeImages(){
 
     replotAllImages();
     // SSAO recalculation
-    FBOImageProporties* lastActive = glImage->getActiveImage();
+    FBOImageProportiesPtr lastActive = glImage->getActiveImage();
 
     updateImage(OCCLUSION_TEXTURE);
     //glImage->update();
@@ -1258,7 +1257,7 @@ void MainWindow::applyResizeImage(){
     int materiaIndex = FBOImageProporties::currentMaterialIndeks;
     materialManager->disableMaterials();
 
-    FBOImageProporties* lastActive = glImage->getActiveImage();
+    FBOImageProportiesPtr lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
         if( i != GRUNGE_TEXTURE){ // grunge map does not scale like other images
@@ -1285,7 +1284,7 @@ void MainWindow::applyResizeImage(int width, int height){
     qDebug() << "Image resize applied. Current image size is (" << width << "," << height << ")" ;
     int materiaIndex = FBOImageProporties::currentMaterialIndeks;
     materialManager->disableMaterials();
-    FBOImageProporties* lastActive = glImage->getActiveImage();
+    FBOImageProportiesPtr lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
         if( i != GRUNGE_TEXTURE){
@@ -1327,7 +1326,7 @@ void MainWindow::applyScaleImage(){
     qDebug() << "Image rescale applied. Current image size is (" << width << "," << height << ")" ;
     int materiaIndex = FBOImageProporties::currentMaterialIndeks;
     materialManager->disableMaterials();
-    FBOImageProporties* lastActive = glImage->getActiveImage();
+    FBOImageProportiesPtr lastActive = glImage->getActiveImage();
     glImage->enableShadowRender(true);
     for(int i = 0 ; i < MAX_TEXTURES_TYPE ; i++){
         glImage->resizeFBO(width,height);
@@ -1573,7 +1572,7 @@ void MainWindow::convertFromNtoH(){
 
 
 void MainWindow::convertFromBase(){
-    FBOImageProporties* lastActive = glImage->getActiveImage();
+    FBOImageProportiesPtr lastActive = glImage->getActiveImage();
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
     qDebug() << "Conversion from Base to others started";
     normalImageProp   ->setImageName(diffuseImageProp->getImageName());

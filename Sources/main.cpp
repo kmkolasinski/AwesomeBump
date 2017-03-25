@@ -91,20 +91,20 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
    switch (type)
    {
       case QtDebugMsg:
-         txt += QString("{Debug} \t\t %1").arg(msg);
+         txt += QString("{DBG} %1").arg(msg);
          break;
       case QtWarningMsg:
-         txt += QString("{Warning} \t %1").arg(msg);
+         txt += QString("{WRN} %1").arg(msg);
          break;
       case QtInfoMsg:
-         txt += QString("{Info} \t %1").arg(msg);
+         txt += QString("{INF} %1").arg(msg);
          break;
       case QtCriticalMsg:
-         txt += QString("{Critical} \t %1").arg(msg);
+         txt += QString("{CRI} %1").arg(msg);
          break;
       case QtFatalMsg:
          fprintf(stderr, "*** Fatal error:\n*** %s\n", msg.toLatin1().constData());
-         txt += QString("{Fatal} \t %1").arg(msg);
+         txt += QString("{FAT} %1").arg(msg);
          break;
    }
 

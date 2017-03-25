@@ -205,7 +205,7 @@ class CloneAction : public QAction {
   public:
     CloneAction(QAction *original, QObject *parent = 0) : QAction(parent), m_orig(original) {
       connect(this, SIGNAL(triggered()), original, SLOT(trigger()));      // trigger on triggered
-      connect(this, SIGNAL(toggle(bool)), original, SLOT(toggle(bool)));  // trigger on toggled
+      connect(this, SIGNAL(toggled(bool)), original, SLOT(toggle()));     // trigger on toggled
 
       connect(original, SIGNAL(changed()), this, SLOT(__update()));       // update on change
       connect(original, SIGNAL(destroyed()), this, SLOT(deleteLater()));  // delete on destroyed
@@ -214,8 +214,10 @@ class CloneAction : public QAction {
   private slots:
     void __update() {
       static QStringList props = QStringList() << "text" << "iconText" << "enabled" << "checkable" << "checked";
+      this->blockSignals(true);
       foreach(const QString prop, props)
         setProperty(qPrintable(prop), m_orig->property(qPrintable(prop)));
+      this->blockSignals(false);
     }
   private:
     QAction *m_orig;

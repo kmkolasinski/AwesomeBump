@@ -82,8 +82,8 @@ public:
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
-    void setActiveImage(FBOImageProporties* ptr);
-    FBOImageProporties* getActiveImage(){return activeImage;}
+    void setActiveImage(FBOImageProportiesPtr ptr);
+    FBOImageProportiesPtr getActiveImage(){return activeImage;}
     void enableShadowRender(bool enable);
     void setConversionType(ConversionType conversionType);
     ConversionType getConversionType();
@@ -91,16 +91,16 @@ public:
     void render();
 
 
-    FBOImageProporties* targetImageDiffuse;
-    FBOImageProporties* targetImageNormal;
-    FBOImageProporties* targetImageHeight;
-    FBOImageProporties* targetImageSpecular;
-    FBOImageProporties* targetImageOcclusion;
-    FBOImageProporties* targetImageRoughness;
-    FBOImageProporties* targetImageMetallic;
-    FBOImageProporties* targetImageGrunge;
+    FBOImageProportiesPtr targetImageDiffuse;
+    FBOImageProportiesPtr targetImageNormal;
+    FBOImageProportiesPtr targetImageHeight;
+    FBOImageProportiesPtr targetImageSpecular;
+    FBOImageProportiesPtr targetImageOcclusion;
+    FBOImageProportiesPtr targetImageRoughness;
+    FBOImageProportiesPtr targetImageMetallic;
+    FBOImageProportiesPtr targetImageGrunge;
 
-    FBOImageProporties* targetImageMaterial;
+    FBOImageProportiesPtr targetImageMaterial;
 public slots:
     void resizeFBO(int width, int height);
     void imageChanged();
@@ -149,7 +149,7 @@ public:
                               GLuint normal_tex,
                               QGLFramebufferObjectPtr outputFBO);
 
-    void applyNormalToHeight(FBOImageProporties *image,
+    void applyNormalToHeight(FBOImageProportiesPtr image,
                              QGLFramebufferObjectPtr normalFBO,
                              QGLFramebufferObjectPtr heightFBO,
                              QGLFramebufferObjectPtr outputFBO);
@@ -277,7 +277,7 @@ private:
     void makeScreenQuad();
 
     QOpenGLShaderProgram *program;
-    FBOImageProporties* activeImage;
+    FBOImageProportiesPtr activeImage;
     QGLFramebufferObjectPtr averageColorFBO; // small FBO used for calculation of average color
     QGLFramebufferObjectPtr samplerFBO1; // FBO with size 1024x1024
     QGLFramebufferObjectPtr samplerFBO2; // FBO with size 1024x1024 used for different processing

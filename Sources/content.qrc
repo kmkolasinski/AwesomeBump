@@ -82,6 +82,10 @@
         <file>resources/actions/UVwarning.png</file>
         <file>resources/actions/showOcclusionWarning.png</file>
         <file>resources/actions/restoreSettings.png</file>
+        <file>resources/actions/down_arrow_disabled.png</file>
+        <file>resources/actions/down_arrow.png</file>
+        <file>resources/actions/right_arrow_disabled.png</file>
+        <file>resources/actions/right_arrow.png</file>
         <file>resources/fonts/multi/Standard Multi v2.1.ttf</file>
         <file>resources/fonts/citadina/CitadinaBlack.otf</file>
         <file>resources/fonts/citadina/CitadinaBlackItalic.otf</file>

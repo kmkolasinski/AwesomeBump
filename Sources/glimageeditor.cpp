@@ -70,8 +70,6 @@ GLImage::GLImage(QWidget *parent)
     cornerCursors[1] = QCursor(QPixmap(":/resources/cursors/corner2.png"));
     cornerCursors[2] = QCursor(QPixmap(":/resources/cursors/corner3.png"));
     cornerCursors[3] = QCursor(QPixmap(":/resources/cursors/corner4.png"));
-    activeImage = NULL;
-
 
     connect(this,SIGNAL(rendered()),this,SLOT(copyRenderToPaintFBO()));
 }
@@ -284,11 +282,11 @@ void GLImage::initializeGL()
 
     makeScreenQuad();
 
-    FBOImages::create(averageColorFBO,256,256);
-    FBOImages::create(samplerFBO1,1024,1024);
-    FBOImages::create(samplerFBO2,1024,1024);
+    FBOImages::create(averageColorFBO, 256,256);
+    FBOImages::create(samplerFBO1, 1024,1024);
+    FBOImages::create(samplerFBO2, 1024,1024);
 
-    GLCHK(glBindVertexArray(0));
+    GLCHK( glBindVertexArray(0) );
 
     emit readyGL();
 }
@@ -991,10 +989,8 @@ void GLImage::resizeGL(int width, int height)
 }
 
 
-void GLImage::setActiveImage(FBOImageProporties* ptr){
+void GLImage::setActiveImage(FBOImageProportiesPtr ptr){
     activeImage = ptr;
-    Q_ASSERT(activeImage);
-    Q_ASSERT(activeImage->fbo);
     updateGLNow();
 }
 void GLImage::enableShadowRender(bool enable){
@@ -1964,7 +1960,7 @@ void GLImage::applySobelToNormalFilter(QGLFramebufferObjectPtr inputFBO,
 
 
 
-void GLImage::applyNormalToHeight(FBOImageProporties* image,
+void GLImage::applyNormalToHeight(FBOImageProportiesPtr image,
                                   QGLFramebufferObjectPtr normalFBO,
                                   QGLFramebufferObjectPtr heightFBO,
                                   QGLFramebufferObjectPtr outputFBO){
@@ -2533,7 +2529,7 @@ void GLImage::copyTex2FBO(GLuint src_tex_id, QGLFramebufferObjectPtr dst){
 void GLImage::applyAllUVsTransforms(QGLFramebufferObjectPtr inoutFBO){
 
     if(FBOImageProporties::bSeamlessTranslationsFirst){
-      applyPerspectiveTransformFilter(inoutFBO,auxFBO1);// the output is save to activeFBO
+      applyPerspectiveTransformFilter(inoutFBO, auxFBO1);// the output is save to activeFBO
     }
     // Making seamless...
     switch(FBOImageProporties::seamlessMode){
