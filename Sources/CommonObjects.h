@@ -453,14 +453,14 @@ public:
         properties = new QtnPropertySetFormImageProp;
     }
 
-    void copySettings(FBOImageProporties &src){
+    void copySettings(FBOImageProportiesPtr src){
 
-        bFirstDraw         = src.bFirstDraw;
-        conversionHNDepth  = src.conversionHNDepth;
-        bConversionBaseMap = src.bConversionBaseMap;
-        inputImageType     = src.inputImageType;
+        bFirstDraw         = src->bFirstDraw;
+        conversionHNDepth  = src->conversionHNDepth;
+        bConversionBaseMap = src->bConversionBaseMap;
+        inputImageType     = src->inputImageType;
 
-        if(properties != NULL && src.properties != NULL ) properties->copyValues(src.properties);
+        if(properties != NULL && src->properties != NULL ) properties->copyValues(src->properties);
     }
 
     void init(QImage& image){

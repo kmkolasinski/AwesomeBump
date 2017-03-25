@@ -332,6 +332,7 @@ void GLImage::paintGL()
         // Displaying new image
         program->setUniformValue("quad_draw_mode", 1);
 
+        GLCHK( glViewport(0,0,width() * devicePixelRatio(),height() * devicePixelRatio()) );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, activeFBO->texture()) );
 

@@ -185,8 +185,6 @@ void MainWindow::initializeApp()
     ui->verticalLayoutMaterialIndicesImage->addWidget(materialManager);
     ui->verticalLayoutGrungeImage   ->addWidget(grungeImageProp);
 
-
-    ui->tabWidget->setCurrentIndex(TAB_SETTINGS);
     
     connect(ui->tabWidget,SIGNAL(currentChanged(int)),this,SLOT(updateImage(int)));
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(updateImage(int)));
@@ -269,8 +267,8 @@ void MainWindow::initializeApp()
     connect(ui->doubleSpinBoxRescaleWidth  ,SIGNAL(valueChanged(double)),this,SLOT(scaleWidth(double)));
     connect(ui->doubleSpinBoxRescaleHeight ,SIGNAL(valueChanged(double)),this,SLOT(scaleHeight(double)));
 
-    connect(ui->pushButtonResizeApply ,SIGNAL(released()),this,SLOT(applyResizeImage()));
-    connect(ui->pushButtonRescaleApply,SIGNAL(released()),this,SLOT(applyScaleImage()));
+    connect(ui->buttonResizeApply ,SIGNAL(released()),this,SLOT(applyResizeImage()));
+    connect(ui->buttonRescaleApply,SIGNAL(released()),this,SLOT(applyScaleImage()));
 
 
     connect(ui->pushButtonReplotAll           ,SIGNAL(released()),this,SLOT(replotAllImages()));
@@ -610,6 +608,14 @@ void MainWindow::configureToolbarAndStatusline()
       a->trigger();
     });
 
+    connect(ui->tabWidget, &QStackedWidget::currentChanged, [this](int index) {
+        ui->pageSel->blockSignals(true);
+        if (ui->pageSel->currentIndex() != index) { // sync. combobox with tabs
+            ui->pageSel->setCurrentIndex(index);
+        }
+        ui->pageSel->blockSignals(false);
+    });
+
     pageSelW->setLayout( pageSelL );
 }
 
@@ -668,25 +674,25 @@ void MainWindow::materialsToggled(bool toggle){
     ui->pushButtonUVWarning->setVisible(FBOImageProporties::seamlessMode != SEAMLESS_NONE);
     if(toggle){
 
-        bLastValue = diffuseImageProp->imageProp.properties->BaseMapToOthers.EnableConversion;
-        diffuseImageProp->imageProp.properties->BaseMapToOthers.EnableConversion = false;
+        bLastValue = diffuseImageProp->getImageProporties()->properties->BaseMapToOthers.EnableConversion;
+        diffuseImageProp->getImageProporties()->properties->BaseMapToOthers.EnableConversion = false;
         ui->pushButtonUVWarning->setVisible(false);
         if(bLastValue) replotAllImages();
     }else{
-        diffuseImageProp->imageProp.properties->BaseMapToOthers.EnableConversion = bLastValue;
+        diffuseImageProp->getImageProporties()->properties->BaseMapToOthers.EnableConversion = bLastValue;
     }
-    diffuseImageProp->imageProp.properties->BaseMapToOthers.switchState(QtnPropertyStateInvisible,toggle);
+    diffuseImageProp->getImageProporties()->properties->BaseMapToOthers.switchState(QtnPropertyStateInvisible,toggle);
 
 }
 
 
 void MainWindow::checkWarnings(){
     ui->pushButtonConversionWarning->setVisible(FBOImageProporties::bConversionBaseMap);
-    ui->pushButtonGrungeWarning->setVisible(grungeImageProp->imageProp.properties->Grunge.OverallWeight.value() > 0);
+    ui->pushButtonGrungeWarning->setVisible(grungeImageProp->getImageProporties()->properties->Grunge.OverallWeight.value() > 0);
     ui->pushButtonUVWarning->setVisible(FBOImageProporties::seamlessMode != SEAMLESS_NONE);
 
-    bool bOccTest = (occlusionImageProp->imageProp.inputImageType == INPUT_FROM_HO_NO) ||
-                (occlusionImageProp->imageProp.inputImageType == INPUT_FROM_HI_NI);
+    bool bOccTest = (occlusionImageProp->getImageProporties()->inputImageType == INPUT_FROM_HO_NO) ||
+                (occlusionImageProp->getImageProporties()->inputImageType == INPUT_FROM_HI_NI);
     ui->pushButtonOccWarning->setVisible(bOccTest);
 }
 
@@ -1662,28 +1668,28 @@ void MainWindow::loadImageSettings(TextureTypes type){
 
     switch(type){
         case(DIFFUSE_TEXTURE):            
-            diffuseImageProp    ->imageProp.properties->copyValues(&abSettings->Diffuse);
+            diffuseImageProp    ->getImageProporties()->properties->copyValues(&abSettings->Diffuse);
             break;
         case(NORMAL_TEXTURE):
-            normalImageProp     ->imageProp.properties->copyValues(&abSettings->Normal);
+            normalImageProp     ->getImageProporties()->properties->copyValues(&abSettings->Normal);
             break;
         case(SPECULAR_TEXTURE):
-            specularImageProp   ->imageProp.properties->copyValues(&abSettings->Specular);
+            specularImageProp   ->getImageProporties()->properties->copyValues(&abSettings->Specular);
             break;
         case(HEIGHT_TEXTURE):
-            heightImageProp     ->imageProp.properties->copyValues(&abSettings->Height);
+            heightImageProp     ->getImageProporties()->properties->copyValues(&abSettings->Height);
             break;
         case(OCCLUSION_TEXTURE):
-            occlusionImageProp  ->imageProp.properties->copyValues(&abSettings->Occlusion);
+            occlusionImageProp  ->getImageProporties()->properties->copyValues(&abSettings->Occlusion);
             break;
         case(ROUGHNESS_TEXTURE):
-            roughnessImageProp  ->imageProp.properties->copyValues(&abSettings->Roughness);
+            roughnessImageProp  ->getImageProporties()->properties->copyValues(&abSettings->Roughness);
             break;
         case(METALLIC_TEXTURE):
-            metallicImageProp   ->imageProp.properties->copyValues(&abSettings->Metallic);
+            metallicImageProp   ->getImageProporties()->properties->copyValues(&abSettings->Metallic);
             break;
         case(GRUNGE_TEXTURE):
-            grungeImageProp     ->imageProp.properties->copyValues(&abSettings->Grunge);
+            grungeImageProp     ->getImageProporties()->properties->copyValues(&abSettings->Grunge);
             break;
         default: qWarning() << "Trying to load non supported image! Given textureType:" << type;
     }
@@ -1753,14 +1759,14 @@ void MainWindow::saveSettings(){
     dock3Dsettings->saveSettings(abSettings);
 
 
-    abSettings->Diffuse  .copyValues(diffuseImageProp   ->imageProp.properties);
-    abSettings->Specular .copyValues(specularImageProp  ->imageProp.properties);
-    abSettings->Normal   .copyValues(normalImageProp    ->imageProp.properties);
-    abSettings->Occlusion.copyValues(occlusionImageProp ->imageProp.properties);
-    abSettings->Height   .copyValues(heightImageProp    ->imageProp.properties);
-    abSettings->Metallic .copyValues(metallicImageProp  ->imageProp.properties);
-    abSettings->Roughness.copyValues(roughnessImageProp ->imageProp.properties);
-    abSettings->Grunge   .copyValues(grungeImageProp    ->imageProp.properties);
+    abSettings->Diffuse  .copyValues(diffuseImageProp   ->getImageProporties()->properties);
+    abSettings->Specular .copyValues(specularImageProp  ->getImageProporties()->properties);
+    abSettings->Normal   .copyValues(normalImageProp    ->getImageProporties()->properties);
+    abSettings->Occlusion.copyValues(occlusionImageProp ->getImageProporties()->properties);
+    abSettings->Height   .copyValues(heightImageProp    ->getImageProporties()->properties);
+    abSettings->Metallic .copyValues(metallicImageProp  ->getImageProporties()->properties);
+    abSettings->Roughness.copyValues(roughnessImageProp ->getImageProporties()->properties);
+    abSettings->Grunge   .copyValues(grungeImageProp    ->getImageProporties()->properties);
 
 
     // Disable possibility to save conversion status ???
@@ -1809,14 +1815,14 @@ void MainWindow::loadSettings(){
     QString name = abSettings->settings_name.value();
     ui->pushButtonProjectManager->setText("Project manager (" + name + ")");
 
-    diffuseImageProp    ->imageProp.properties->copyValues(&abSettings->Diffuse);
-    specularImageProp   ->imageProp.properties->copyValues(&abSettings->Specular);
-    normalImageProp     ->imageProp.properties->copyValues(&abSettings->Normal);
-    occlusionImageProp  ->imageProp.properties->copyValues(&abSettings->Occlusion);
-    heightImageProp     ->imageProp.properties->copyValues(&abSettings->Height);
-    metallicImageProp   ->imageProp.properties->copyValues(&abSettings->Metallic);
-    roughnessImageProp  ->imageProp.properties->copyValues(&abSettings->Roughness);
-    grungeImageProp     ->imageProp.properties->copyValues(&abSettings->Grunge);
+    diffuseImageProp    ->getImageProporties()->properties->copyValues(&abSettings->Diffuse);
+    specularImageProp   ->getImageProporties()->properties->copyValues(&abSettings->Specular);
+    normalImageProp     ->getImageProporties()->properties->copyValues(&abSettings->Normal);
+    occlusionImageProp  ->getImageProporties()->properties->copyValues(&abSettings->Occlusion);
+    heightImageProp     ->getImageProporties()->properties->copyValues(&abSettings->Height);
+    metallicImageProp   ->getImageProporties()->properties->copyValues(&abSettings->Metallic);
+    roughnessImageProp  ->getImageProporties()->properties->copyValues(&abSettings->Roughness);
+    grungeImageProp     ->getImageProporties()->properties->copyValues(&abSettings->Grunge);
 
 
     // update general settings

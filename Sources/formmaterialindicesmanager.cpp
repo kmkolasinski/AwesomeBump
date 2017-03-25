@@ -39,7 +39,7 @@ void FormMaterialIndicesManager::setImage(QImage _image){
     int mIndex = FBOImageProporties::currentMaterialIndeks;
     if(updateMaterials(_image)){
         image    = _image;
-        imageProp.init(image);
+        imageProp->init(image);
         emit materialChanged();
     }
 
@@ -93,8 +93,8 @@ bool FormMaterialIndicesManager::updateMaterials(QImage& image){
         materialIndices[i].clear();
         for(int m = 0 ; m < ui->listWidgetMaterialIndices->count() ; m++){
             QString m_name = ui->listWidgetMaterialIndices->item(m)->text();
-            FBOImageProporties tmp;
-            tmp.copySettings(imagesPointers[i]->imageProp);
+            FBOImageProportiesPtr tmp = FBOImageProportiesPtr(new FBOImageProporties);
+            tmp->copySettings(imagesPointers[i]->getImageProporties());
             materialIndices[i][m_name] = tmp;
         }
     }
@@ -121,7 +121,7 @@ void FormMaterialIndicesManager::changeMaterial(int index){
 
     QString m_name = ui->listWidgetMaterialIndices->item(lastMaterialIndex)->text();
     for(int i = 0 ; i < MATERIAL_TEXTURE ; i++){
-        materialIndices[i][m_name].copySettings(imagesPointers[i]->imageProp);
+        materialIndices[i][m_name]->copySettings(imagesPointers[i]->getImageProporties());
     }
 
     lastMaterialIndex = index;
@@ -133,7 +133,7 @@ void FormMaterialIndicesManager::changeMaterial(int index){
     // load different material
     m_name = ui->listWidgetMaterialIndices->item(index)->text();
     for(int i = 0 ; i < MATERIAL_TEXTURE ; i++){
-        imagesPointers[i]->imageProp.copySettings(materialIndices[i][m_name]);
+        imagesPointers[i]->getImageProporties()->copySettings(materialIndices[i][m_name]);
         imagesPointers[i]->reloadSettings();
     }
 
@@ -175,7 +175,7 @@ bool FormMaterialIndicesManager::loadFile(const QString &fileName)
     int mIndex = FBOImageProporties::currentMaterialIndeks;
     if(updateMaterials(_image)){
           image    = _image;
-          imageProp.init(image);
+          imageProp->init(image);
           emit materialChanged();
           FBOImageProporties::currentMaterialIndeks = mIndex;
           emit imageLoaded(image.width(),image.height());
@@ -193,7 +193,7 @@ void FormMaterialIndicesManager::pasteImageFromClipboard(QImage& _image){
     int mIndex = FBOImageProporties::currentMaterialIndeks;
     if(updateMaterials(_image)){
           image    = _image;
-          imageProp.init(image);
+          imageProp->init(image);
           emit materialChanged();
           FBOImageProporties::currentMaterialIndeks = mIndex;
           emit imageLoaded(image.width(),image.height());
@@ -264,7 +264,7 @@ void FormMaterialIndicesManager::pasteFromClipboard(){
 
     if (mimeData->hasImage()) {
         qDebug() << "<FormImageProp> Image :"+
-                    PostfixNames::getTextureName(imageProp.imageType)+
+                    PostfixNames::getTextureName(imageProp->imageType)+
                     " loaded from clipboard.";
         QPixmap pixmap = qvariant_cast<QPixmap>(mimeData->imageData());
         QImage image = pixmap.toImage();
@@ -275,10 +275,10 @@ void FormMaterialIndicesManager::pasteFromClipboard(){
 void FormMaterialIndicesManager::copyToClipboard(){
 
     qDebug() << "<FormImageProp> Image :"+
-                PostfixNames::getTextureName(imageProp.imageType)+
+                PostfixNames::getTextureName(imageProp->imageType)+
                 " copied to clipboard.";
 
     QApplication::processEvents();
-    image = imageProp.getImage();
+    image = imageProp->getImage();
     QApplication::clipboard()->setImage(image,QClipboard::Clipboard);
 }

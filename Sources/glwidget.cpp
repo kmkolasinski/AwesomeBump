@@ -504,8 +504,6 @@ void GLWidget::paintGL()
     
     QGLFramebufferObject::bindDefault();
 
-    GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
-
     if(cameraInterpolation < 1.0){
         double w = cameraInterpolation;
         camera.position = camera.position*(1-w) + newCamera.position * w;
@@ -1216,7 +1214,7 @@ void GLWidget::copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst){
     filter_program = post_processing_programs["NORMAL_FILTER"];
     filter_program->bind();
     dst->bind();
-    GLCHK( glViewport(0,0,dst->width(),dst->height()) );
+    GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );

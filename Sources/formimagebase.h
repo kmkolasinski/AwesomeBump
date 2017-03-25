@@ -16,16 +16,18 @@ public:
     FormImageBase(QWidget *parent = 0, QGLWidget *shareWidget = 0);
     ~FormImageBase();
     void keyPressEvent(QKeyEvent *event);
-    virtual FBOImageProportiesPtr getImageProporties(){return FBOImageProportiesPtr(&imageProp);}
+    virtual FBOImageProportiesPtr getImageProporties(){return imageProp;}
     virtual void setImageName(QString name);
     virtual QString getImageName();
     virtual void saveFileToDir(const QString &dir);
     virtual void saveImageToDir(const QString &dir,QImage& image);
     virtual void setImageType(TextureTypes imageType);
-    FBOImageProporties imageProp; // for simplicity I made this public, why not...
+
     // some properties are visible or hiden for given texture type
 
 protected:
+
+    FBOImageProportiesPtr imageProp;
 
     void dropEvent(QDropEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);

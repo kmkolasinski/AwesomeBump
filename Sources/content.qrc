@@ -35,6 +35,8 @@
         <file>resources/shaders/filters_3d.vert</file>
         <file>resources/shaders/plane.frag</file>
         <file>resources/shaders/plane.vert</file>
+        <file>resources/shaders/quad.frag</file>
+        <file>resources/shaders/quad.vert</file>
         <file>resources/textures/lenscolor.png</file>
         <file>resources/textures/lensdirt.png</file>
         <file>resources/textures/lensstar.png</file>

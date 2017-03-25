@@ -50,7 +50,7 @@ protected:
 
 
     // keep all the settings in one place
-    std::map<QString,FBOImageProporties> materialIndices[7];
+    std::map<QString,FBOImageProportiesPtr> materialIndices[7];
     std::map<int,QRgb> colorIndices;
     int lastMaterialIndex;
     Ui::FormMaterialIndicesManager *ui;

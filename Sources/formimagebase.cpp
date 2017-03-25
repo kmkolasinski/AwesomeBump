@@ -1,7 +1,8 @@
 #include "formimagebase.h"
 QDir* FormImageBase::recentDir;
 
-FormImageBase::FormImageBase(QWidget *parent, QGLWidget *shareWidget) : QGLWidget(parent, shareWidget)
+FormImageBase::FormImageBase(QWidget *parent, QGLWidget *shareWidget) : QGLWidget(parent, shareWidget), imageProp(FBOImageProportiesPtr(new FBOImageProporties))
+
 {
     setMouseTracking(true);
     setFocus();
@@ -44,7 +45,7 @@ void FormImageBase::open()
 void FormImageBase::saveFileToDir(const QString &dir){
 
     QString fullFileName = dir + "/" +
-                           imageName + PostfixNames::getPostfix(imageProp.imageType)
+                           imageName + PostfixNames::getPostfix(imageProp->imageType)
                            + PostfixNames::outputFormat;
     saveFile(fullFileName);
 }
@@ -52,7 +53,7 @@ void FormImageBase::saveFileToDir(const QString &dir){
 void FormImageBase::saveImageToDir(const QString &dir,QImage& image){
 
     QString fullFileName = dir + "/" +
-                           imageName + PostfixNames::getPostfix(imageProp.imageType)
+                           imageName + PostfixNames::getPostfix(imageProp->imageType)
                            + PostfixNames::outputFormat;
 
     qDebug() << "<FormImageProp> save image:" << fullFileName;
@@ -74,7 +75,7 @@ QString FormImageBase::getImageName(){
 }
 
 void  FormImageBase::setImageType(TextureTypes imageType){
-     imageProp.imageType = imageType;
+     imageProp->imageType = imageType;
 }
 
 void FormImageBase::save(){
@@ -85,7 +86,7 @@ void FormImageBase::save(){
     else{
          QFileInfo fileInfo(recentDir->absolutePath());
          QString fullFileName = fileInfo.absolutePath()+ "/" +
-                                imageName + PostfixNames::getPostfix(imageProp.imageType)
+                                imageName + PostfixNames::getPostfix(imageProp->imageType)
                                 + PostfixNames::outputFormat;
          picturesLocations << fullFileName;
          qDebug() << "<FormImageProp>:: Saving to file:" << fullFileName;
@@ -109,7 +110,7 @@ bool FormImageBase::saveFile(const QString &fileName){
 
     QFileInfo fileInfo(fileName);
     (*recentDir).setPath(fileInfo.absolutePath());
-    image = imageProp.getImage();
+    image = imageProp->getImage();
 
     if( PostfixNames::outputFormat.compare(".tga") == 0 || fileInfo.completeSuffix().compare("tga") == 0 ){
         TargaImage tgaImage;
@@ -184,7 +185,7 @@ void FormImageBase::keyPressEvent(QKeyEvent *event){
 
             if (mimeData->hasImage()) {
                 qDebug() << "<FormImageProp> Image :"+
-                            PostfixNames::getTextureName(imageProp.imageType)+
+                            PostfixNames::getTextureName(imageProp->imageType)+
                             " loaded from clipboard.";
                 QPixmap pixmap = qvariant_cast<QPixmap>(mimeData->imageData());
                 QImage image = pixmap.toImage();
@@ -196,11 +197,11 @@ void FormImageBase::keyPressEvent(QKeyEvent *event){
 
         if(keySequenceName.compare("Ctrl+C",Qt::CaseInsensitive) == 0){
             qDebug() << "<FormImageProp> Image :"+
-                        PostfixNames::getTextureName(imageProp.imageType)+
+                        PostfixNames::getTextureName(imageProp->imageType)+
                         " copied to clipboard.";
 
             QApplication::processEvents();
-            image = imageProp.getImage();
+            image = imageProp->getImage();
             QApplication::clipboard()->setImage(image,QClipboard::Clipboard);
 
 
