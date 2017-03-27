@@ -1243,13 +1243,13 @@ void MainWindow::updateImage(int tType){
 
 void MainWindow::changeWidth (int size=0){
 
-    if(ui->pushButtonResizePropTo->isChecked()){
+    if(ui->buttonResizePropTo->isChecked()){
         ui->comboBoxResizeHeight->setCurrentText(ui->comboBoxResizeWidth->currentText());
     }
 }
 void MainWindow::changeHeight(int size=0){
 
-    if(ui->pushButtonResizePropTo->isChecked()){
+    if(ui->buttonResizePropTo->isChecked()){
         ui->comboBoxResizeWidth->setCurrentText(ui->comboBoxResizeHeight->currentText());
     }
 }
@@ -1312,12 +1312,12 @@ void MainWindow::applyResizeImage(int width, int height){
 }
 
 void MainWindow::scaleWidth(double){
-    if(ui->pushButtonRescalePropTo->isChecked()){
+    if(ui->buttonRescalePropTo->isChecked()){
         ui->doubleSpinBoxRescaleHeight->setValue(ui->doubleSpinBoxRescaleWidth->value());
     }
 }
 void MainWindow::scaleHeight(double){
-    if(ui->pushButtonRescalePropTo->isChecked()){
+    if(ui->buttonRescalePropTo->isChecked()){
         ui->doubleSpinBoxRescaleWidth->setValue(ui->doubleSpinBoxRescaleHeight->value());
     }
 }

@@ -361,6 +361,12 @@ void GLImage::render(){
       orthographicProjHeight = (1+zoom)/windowRatio;
       orthographicProjWidth  = (1+zoom)/fboRatio;
     }
+
+    QGLFramebufferObjectPtr activeFBO = activeImage->fbo;
+    if (!activeFBO->isValid())
+        qWarning() << "Invalid framebuffer for" << PostfixNames::getTextureName(activeImage->imageType);
+    activeFBO->bind();
+
     // do not clear the background during rendering process
     if(!bShadowRender){
         GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
@@ -370,12 +376,6 @@ void GLImage::render(){
     GLCHK( glDisable(GL_DEPTH_TEST) );
 
     GLCHK( glBindVertexArray(vao) );
-
-    QGLFramebufferObjectPtr activeFBO = activeImage->fbo;
-
-    if (!activeFBO->isValid())
-        qWarning() << "Invalid framebuffer for" << PostfixNames::getTextureName(activeImage->imageType);
-
 
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
     bool bSkipStandardProcessing = false;
@@ -454,7 +454,6 @@ void GLImage::render(){
         bTransformUVs = false;
         GLCHK( program->setUniformValue("material_id", int(MATERIALS_DISABLED) ) );
     }
-
 
 
     GLCHK( glActiveTexture(GL_TEXTURE10) );
@@ -927,6 +926,7 @@ void GLImage::render(){
 
     GLCHK( glBindVertexArray(0) );
     
+    emit textureChanged(activeImage->imageType, activeImage->fbo->texture());
     emit rendered();
 }
 
@@ -1027,10 +1027,10 @@ void GLImage::selectUVManipulationMethod(UVManipulationMethods method){
 }
 
 void GLImage::updateCornersWeights(float w1,float w2,float w3,float w4){
-    cornerWeights.setX( w1);
-    cornerWeights.setY( w2);
-    cornerWeights.setZ( w3);
-    cornerWeights.setW( w4);
+    cornerWeights.setX( w1 );
+    cornerWeights.setY( w2 );
+    cornerWeights.setZ( w3 );
+    cornerWeights.setW( w4 );
     updateGL();
 }
 
@@ -1061,8 +1061,10 @@ void GLImage::applyNormalFilter(QGLFramebufferObjectPtr inputFBO,
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    outputFBO->bindDefault();
+    GLCHK( glBindVertexArray(0) );
+    GLCHK( outputFBO->bindDefault() );
 }
 
 void GLImage::applyHeightToNormal(QGLFramebufferObjectPtr inputFBO, QGLFramebufferObjectPtr outputFBO){
@@ -1077,10 +1079,12 @@ void GLImage::applyHeightToNormal(QGLFramebufferObjectPtr inputFBO, QGLFramebuff
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( program->setUniformValue("gui_hn_conversion_depth", activeImage->conversionHNDepth) );
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( outputFBO->bindDefault() );
 }
 
@@ -1103,8 +1107,10 @@ void GLImage::applyColorHueFilter(QGLFramebufferObjectPtr inputFBO, QGLFramebuff
 
 
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    outputFBO->bindDefault();
+    GLCHK( glBindVertexArray(0) );
+    GLCHK( outputFBO->bindDefault() );
 }
 
 void GLImage::applyPerspectiveTransformFilter(QGLFramebufferObjectPtr inputFBO, QGLFramebufferObjectPtr outputFBO){
@@ -1144,15 +1150,19 @@ void GLImage::applyPerspectiveTransformFilter(QGLFramebufferObjectPtr inputFBO, 
 
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
 
     GLCHK( inputFBO->bind() );
     GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
     GLCHK( program->setUniformValue("uv_scaling_mode", 1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, outputFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
-    inputFBO->bindDefault();
+    GLCHK( inputFBO->bindDefault() );
 }
 
 
@@ -1203,8 +1213,9 @@ void GLImage::applyInverseColorFilter(QGLFramebufferObjectPtr inputFBO, QGLFrame
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
     GLCHK( outputFBO->bindDefault() );
@@ -1230,8 +1241,9 @@ void GLImage::applyRemoveShadingFilter(QGLFramebufferObjectPtr inputFBO,
     GLCHK( program->setUniformValue("gui_remove_shading",RemoveShadingProp.RemoveShadingByGaussian));
     GLCHK( program->setUniformValue("gui_ao_cancellation",RemoveShadingProp.AOCancellation ));
 
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
@@ -1239,6 +1251,7 @@ void GLImage::applyRemoveShadingFilter(QGLFramebufferObjectPtr inputFBO,
     GLCHK( glActiveTexture(GL_TEXTURE2) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, refFBO->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+
     GLCHK( outputFBO->bindDefault() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
 }
@@ -1380,18 +1393,21 @@ void GLImage::applySeamlessLinearFilter(QGLFramebufferObjectPtr inputFBO, QGLFra
     GLCHK( program->setUniformValue("gui_seamless_contrast_power"    , FBOImageProporties::seamlessContrastPower) );
 
 
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     switch(FBOImageProporties::seamlessSimpleModeDirection){
         default:
         case(0)://XY
         GLCHK( program->setUniformValue("gui_seamless_mode"         , (int)0) ); // horizontal filtering
         GLCHK( outputFBO->bind() );
+        GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
 
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
 
         GLCHK( inputFBO->bind() );
+        GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+
         GLCHK( program->setUniformValue("gui_seamless_mode"         , (int)1) ); // vertical filtering
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, outputFBO->texture()) );
@@ -1401,6 +1417,8 @@ void GLImage::applySeamlessLinearFilter(QGLFramebufferObjectPtr inputFBO, QGLFra
         GLCHK( program->setUniformValue("gui_seamless_mode"         , (int)0) ); // horizontal filtering
 
         GLCHK( outputFBO->bind() );
+        GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
@@ -1409,6 +1427,8 @@ void GLImage::applySeamlessLinearFilter(QGLFramebufferObjectPtr inputFBO, QGLFra
         break;
         case(2)://Y
         GLCHK( outputFBO->bind() );
+        GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+    
         GLCHK( program->setUniformValue("gui_seamless_mode"         , (int)1) ); // vertical filtering
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
@@ -1509,12 +1529,12 @@ void GLImage::applyDGaussiansFilter(QGLFramebufferObjectPtr inputFBO,
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
 
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
-
     GLCHK( program->setUniformValue("gauss_mode",1) );
 
 
     GLCHK( auxFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
@@ -1528,6 +1548,8 @@ void GLImage::applyDGaussiansFilter(QGLFramebufferObjectPtr inputFBO,
 
 
     GLCHK( auxFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( program->setUniformValue("gauss_mode",1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
@@ -1535,6 +1557,8 @@ void GLImage::applyDGaussiansFilter(QGLFramebufferObjectPtr inputFBO,
 
     GLCHK( program->setUniformValue("gauss_mode",2) );
     GLCHK( inputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+
     GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO->texture()) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
 
@@ -1550,6 +1574,8 @@ void GLImage::applyDGaussiansFilter(QGLFramebufferObjectPtr inputFBO,
     GLCHK( program->setUniformValue("gui_specular_amplifier", SurfaceDetailsProp.Amplifier) );
 
     GLCHK( auxFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
@@ -1559,8 +1585,8 @@ void GLImage::applyDGaussiansFilter(QGLFramebufferObjectPtr inputFBO,
     GLCHK( program->setUniformValue("gauss_mode",0) );
 
     copyFBO(auxFBO,outputFBO);
-    outputFBO->bindDefault();
 
+    outputFBO->bindDefault();
 }
 
 void GLImage::applyContrastFilter(QGLFramebufferObjectPtr inputFBO, QGLFramebufferObjectPtr outputFBO){
@@ -1800,12 +1826,13 @@ void GLImage::applyInvertComponentsFilter(QGLFramebufferObjectPtr inputFBO, QGLF
                                                                            BasicProp.ColorComponents.InvertGreen,
                                                                            BasicProp.ColorComponents.InvertBlue)) );
 
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( outputFBO->bindDefault() );
-
 }
 
 void GLImage::applySharpenBlurFilter(QGLFramebufferObjectPtr inputFBO,
@@ -2327,7 +2354,6 @@ void GLImage::applyBaseMapConversion(QGLFramebufferObjectPtr baseMapFBO,
         #endif
         GLCHK( program->setUniformValue("gui_combine_normals" , 0 ) );
 
-
 }
 
 
@@ -2356,8 +2382,9 @@ void GLImage::applyOcclusionFilter(GLuint height_tex, GLuint normal_tex, QGLFram
     GLCHK( glBindTexture(GL_TEXTURE_2D, height_tex) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, normal_tex) );
-
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault() );
 
@@ -2383,11 +2410,13 @@ void GLImage::applyHeightProcessingFilter(QGLFramebufferObjectPtr inputFBO, QGLF
     GLCHK( program->setUniformValue("gui_height_proc_offset_value",ColorLevelsProp.Offset) );
     GLCHK( program->setUniformValue("gui_height_proc_normalization",ColorLevelsProp.EnableNormalization) );
 
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault());
 }
@@ -2407,15 +2436,17 @@ void GLImage::applyCombineNormalHeightFilter(QGLFramebufferObjectPtr normalFBO,
 
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    GLCHK( glViewport(0,0,normalFBO->width(),normalFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,normalFBO->width(),normalFBO->height()) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, normalFBO->texture()) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, heightFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
-    outputFBO->bindDefault();
+    GLCHK( outputFBO->bindDefault() );
 }
 
 void GLImage::applyRoughnessFilter(QGLFramebufferObjectPtr inputFBO,
@@ -2443,13 +2474,15 @@ void GLImage::applyRoughnessFilter(QGLFramebufferObjectPtr inputFBO,
     GLCHK( program->setUniformValue("gui_roughness_amplifier"  , RMFilterProp.NoiseFilter.Amplifier) );
 
 
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault() );
 
@@ -2480,13 +2513,15 @@ void GLImage::applyRoughnessColorFilter(QGLFramebufferObjectPtr inputFBO, QGLFra
     GLCHK( program->setUniformValue("gui_roughness_invert_mask"   , RMFilterProp.ColorFilter.InvertColors ) );
     GLCHK( program->setUniformValue("gui_roughness_color_amplifier", RMFilterProp.ColorFilter.Amplifier ) );
 
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
-    outputFBO->bindDefault();
+    GLCHK( outputFBO->bindDefault() );
 
 }
 
@@ -2503,7 +2538,9 @@ void GLImage::copyFBO(QGLFramebufferObjectPtr src, QGLFramebufferObjectPtr dst){
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, src->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( dst->bindDefault() );
 }
 
@@ -2519,12 +2556,13 @@ void GLImage::copyTex2FBO(GLuint src_tex_id, QGLFramebufferObjectPtr dst){
 
     GLCHK( dst->bind() );
     GLCHK( glViewport(0,0,dst->width(),dst->height()) );
-
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, src_tex_id) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    dst->bindDefault();
+    GLCHK( glBindVertexArray(0) );
+    GLCHK( dst->bindDefault() );
 }
 
 void GLImage::applyAllUVsTransforms(QGLFramebufferObjectPtr inoutFBO){
@@ -2554,89 +2592,87 @@ void GLImage::applyGrungeImageFilter (QGLFramebufferObjectPtr inputFBO,
                                       QGLFramebufferObjectPtr outputFBO,
                                       QGLFramebufferObjectPtr grungeFBO){
 
-
     // in case of normal texture grunge is treated differently
     if(activeImage->imageType == NORMAL_TEXTURE){
 
 
-#ifdef USE_OPENGL_330
-    program = filter_programs["mode_height_to_normal"];
-    program->bind();
-    updateProgramUniforms(0);
-#else
-    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_height_to_normal"]) );
-#endif
-    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
-    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+    #ifdef USE_OPENGL_330
+        program = filter_programs["mode_height_to_normal"];
+        program->bind();
+        updateProgramUniforms(0);
+    #else
+        GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_height_to_normal"]) );
+    #endif
+        GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+        GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
 
+        GLCHK( program->setUniformValue("gui_hn_conversion_depth", 2*GrungeOnImageProp.GrungeWeight * GrungeProp.OverallWeight) );
+        GLCHK( auxFBO3->bind() );
+        GLCHK( glViewport(0,0,auxFBO3->width(),auxFBO3->height()) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, grungeFBO->texture()) );
+        GLCHK( glBindVertexArray(vao) );
+        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+        GLCHK( glBindVertexArray(0) );
+        GLCHK( auxFBO3->bindDefault() );
 
-    GLCHK( program->setUniformValue("gui_hn_conversion_depth", 2*GrungeOnImageProp.GrungeWeight * GrungeProp.OverallWeight) );
-    GLCHK( glViewport(0,0,auxFBO3->width(),auxFBO3->height()) );
-    GLCHK( auxFBO3->bind() );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, grungeFBO->texture()) );
-    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( auxFBO3->bindDefault() );
+    #ifdef USE_OPENGL_330
+        program = filter_programs["mode_normal_mixer_filter"];
+        program->bind();
+        updateProgramUniforms(0);
+    #else
+        GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_mixer_filter"]) );
+    #endif
 
-#ifdef USE_OPENGL_330
-    program = filter_programs["mode_normal_mixer_filter"];
-    program->bind();
-    updateProgramUniforms(0);
-#else
-    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_mixer_filter"]) );
-#endif
+        GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+        GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+        float weight = 2*GrungeOnImageProp.ImageWeight;
 
-    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
-    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    float weight = 2*GrungeOnImageProp.ImageWeight;
+        GLCHK( program->setUniformValue("gui_normal_mixer_depth", weight) );
+        GLCHK( program->setUniformValue("gui_normal_mixer_angle", 0.0f) );
+        GLCHK( program->setUniformValue("gui_normal_mixer_scale", 1.0f) );
+        GLCHK( program->setUniformValue("gui_normal_mixer_pos_x", 0.0f) );
+        GLCHK( program->setUniformValue("gui_normal_mixer_pos_y", 0.0f) );
 
-    GLCHK( program->setUniformValue("gui_normal_mixer_depth", weight) );
-    GLCHK( program->setUniformValue("gui_normal_mixer_angle", 0.0f) );
-    GLCHK( program->setUniformValue("gui_normal_mixer_scale", 1.0f) );
-    GLCHK( program->setUniformValue("gui_normal_mixer_pos_x", 0.0f) );
-    GLCHK( program->setUniformValue("gui_normal_mixer_pos_y", 0.0f) );
-
-    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
-    GLCHK( outputFBO->bind() );
-    GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-
-    GLCHK( glActiveTexture(GL_TEXTURE0) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO3->texture()) );
-
-
-    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( outputFBO->bindDefault() );
-    GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( outputFBO->bind() );
+        GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
+        GLCHK( glActiveTexture(GL_TEXTURE1) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO3->texture()) );
+        GLCHK( glBindVertexArray(vao) );
+        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+        GLCHK( glBindVertexArray(0) );
+        GLCHK( outputFBO->bindDefault() );
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
 
     }else{
 
 #ifdef USE_OPENGL_330
-    program = filter_programs["mode_grunge_filter"];
-    program->bind();
-    updateProgramUniforms(0);
+        program = filter_programs["mode_grunge_filter"];
+        program->bind();
+        updateProgramUniforms(0);
 #else
-    GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_grunge_filter"]) );
+        GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_grunge_filter"]) );
 #endif
 
-    GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
-    GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
-    float weight = GrungeOnImageProp.GrungeWeight * GrungeProp.OverallWeight;
+        GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
+        GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
+        float weight = GrungeOnImageProp.GrungeWeight * GrungeProp.OverallWeight;
 
-    GLCHK( program->setUniformValue("gui_grunge_overall_weight"  , weight ) );
-    GLCHK( program->setUniformValue("gui_grunge_blending_mode"  , (int)GrungeOnImageProp.BlendingMode) );
+        GLCHK( program->setUniformValue("gui_grunge_overall_weight"  , weight ) );
+        GLCHK( program->setUniformValue("gui_grunge_blending_mode"  , (int)GrungeOnImageProp.BlendingMode) );
 
-
-
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
-    GLCHK( outputFBO->bind() );
-    GLCHK( glActiveTexture(GL_TEXTURE0) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-    GLCHK( glActiveTexture(GL_TEXTURE1) );
-    GLCHK( glBindTexture(GL_TEXTURE_2D, grungeFBO->texture()) );
-    GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glActiveTexture(GL_TEXTURE0) );
-    outputFBO->bindDefault();
-
+        GLCHK( outputFBO->bind() );
+        GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
+        GLCHK( glActiveTexture(GL_TEXTURE1) );
+        GLCHK( glBindTexture(GL_TEXTURE_2D, grungeFBO->texture()) );
+        GLCHK( glBindVertexArray(vao) );
+        GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+        GLCHK( glBindVertexArray(0) );
+        GLCHK( glActiveTexture(GL_TEXTURE0) );
+        GLCHK( outputFBO->bindDefault() );
     }
 }
 
@@ -2665,15 +2701,17 @@ void GLImage::applyGrungeRandomizationFilter(QGLFramebufferObjectPtr inputFBO, Q
     GLCHK( program->setUniformValue("gui_grunge_translations" , int(GrungeProp.RandomTranslations) ) );
 
 
-    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageGrunge->fbo->texture()) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
-    outputFBO->bindDefault();
+    GLCHK( outputFBO->bindDefault() );
 }
 
 
@@ -2691,14 +2729,16 @@ void GLImage::applyGrungeWarpNormalFilter(QGLFramebufferObjectPtr inputFBO, QGLF
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( program->setUniformValue("grunge_normal_warp"  , GrungeProp.NormalWarp) );
 
-    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
     GLCHK( outputFBO->bind() );
+    GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( targetImageNormal->scr_tex->bind(GL_TEXTURE1) );
+    GLCHK( glBindVertexArray(vao) );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
+    GLCHK( glBindVertexArray(0) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
-    outputFBO->bindDefault();
+    GLCHK( outputFBO->bindDefault() );
 
 }
 

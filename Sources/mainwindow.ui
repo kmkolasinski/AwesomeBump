@@ -934,7 +934,7 @@
                       </widget>
                      </item>
                      <item row="2" column="2">
-                      <widget class="QPushButton" name="pushButtonResizePropTo">
+                      <widget class="QToolButton" name="buttonResizePropTo">
                        <property name="maximumSize">
                         <size>
                          <width>20</width>
@@ -1045,7 +1045,7 @@
                       </widget>
                      </item>
                      <item row="3" column="2">
-                      <widget class="QPushButton" name="pushButtonRescalePropTo">
+                      <widget class="QToolButton" name="buttonRescalePropTo">
                        <property name="minimumSize">
                         <size>
                          <width>20</width>

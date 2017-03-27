@@ -117,6 +117,7 @@ signals:
     void rendered();
     void readyGL();
     void colorPicked(QVector4D color);
+    void textureChanged(TextureTypes textureType, GLuint textureName);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

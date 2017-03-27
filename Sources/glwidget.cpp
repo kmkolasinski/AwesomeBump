@@ -514,6 +514,8 @@ void GLWidget::paintGL()
     viewMatrix = camera.updateCamera();
 
     colorFBO->bind();
+    GLCHK( glViewport(0, 0, width(), height()) );
+    
 
     GLCHK( glDisable(GL_CULL_FACE) );
     projectionMatrix.setToIdentity();
@@ -522,7 +524,7 @@ void GLWidget::paintGL()
 
     // set to which FBO result will be drawn
     GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 , GL_COLOR_ATTACHMENT3 };
-    glDrawBuffers(4,  attachments);
+    GLCHK( glDrawBuffers(4,  attachments) );
     GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 
     // ---------------------------------------------------------
@@ -688,11 +690,12 @@ void GLWidget::paintGL()
 
     // set to which FBO result will be drawn
     GLuint attachments2[1] = { GL_COLOR_ATTACHMENT0 };
-    glDrawBuffers(1,  attachments2);
+    GLCHK( glDrawBuffers(1,  attachments2) );
 
 
     colorFBO->bindDefault();
 
+    GLCHK( glViewport(0, 0, width(), height()) );
     GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
 
 
@@ -1209,7 +1212,7 @@ void GLWidget::applyNormalFilter(GLuint input_tex){
 
 }
 
-void GLWidget::copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst){
+void GLWidget::copyTexToFBO(GLuint input_tex, QGLFramebufferObjectPtr dst){
 
     filter_program = post_processing_programs["NORMAL_FILTER"];
     filter_program->bind();
@@ -1224,9 +1227,9 @@ void GLWidget::copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst){
 
 }
 
-void GLWidget::applyGaussFilter(  GLuint input_tex,
-                                  QGLFramebufferObject* auxFBO,
-                                  QGLFramebufferObject* outputFBO, float radius){
+void GLWidget::applyGaussFilter(GLuint input_tex,
+                                QGLFramebufferObjectPtr auxFBO,
+                                QGLFramebufferObjectPtr outputFBO, float radius){
 
 
 
@@ -1256,8 +1259,7 @@ void GLWidget::applyGaussFilter(  GLuint input_tex,
 
 }
 
-void GLWidget::applyDofFilter(GLuint input_tex,
-                QGLFramebufferObject* outputFBO){
+void GLWidget::applyDofFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO){
 
     // Skip processing if effect is disabled
     if(!settings3D->DOF.EnableEffect) return;
@@ -1300,7 +1302,7 @@ void GLWidget::applyDofFilter(GLuint input_tex,
 
 
 
-void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
+void GLWidget::applyGlowFilter(QGLFramebufferObjectPtr outputFBO){
     // Skip processing if effect is disabled
     if(!settings3D->Bloom.EnableEffect) return;
 
@@ -1351,7 +1353,7 @@ void GLWidget::applyGlowFilter(QGLFramebufferObject* outputFBO){
 }
 
 
-void GLWidget::applyToneFilter(GLuint input_tex,QGLFramebufferObject* outputFBO){
+void GLWidget::applyToneFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO){
 
     // Skip processing if effect is disabled
     if(!settings3D->ToneMapping.EnableEffect) return;
@@ -1411,7 +1413,7 @@ void GLWidget::applyToneFilter(GLuint input_tex,QGLFramebufferObject* outputFBO)
     copyTexToFBO(outputFBO->texture(),colorFBO->fbo);
 }
 
-void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outputFBO){
+void GLWidget::applyLensFlaresFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO){
 
     // Skip processing if effect is disabled
     if(!settings3D->Flares.EnableEffect) return;

@@ -201,15 +201,14 @@ protected:
     void resizeFBOs();
     void deleteFBOs();
     void applyNormalFilter(GLuint input_tex);
-    void copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst);
+    void copyTexToFBO(GLuint input_tex, QGLFramebufferObjectPtr dst);
     void applyGaussFilter(GLuint input_tex,
-                          QGLFramebufferObject* auxFBO,
-                          QGLFramebufferObject* outputFBO, float radius = 10.0);
-    void applyDofFilter(GLuint input_tex,
-                        QGLFramebufferObject* outputFBO);
-    void applyGlowFilter(QGLFramebufferObject* outputFBO);
-    void applyToneFilter(GLuint input_tex,QGLFramebufferObject* outputFBO);
-    void applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outputFBO);
+                          QGLFramebufferObjectPtr auxFBO,
+                          QGLFramebufferObjectPtr outputFBO, float radius = 10.0);
+    void applyDofFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO);
+    void applyGlowFilter(QGLFramebufferObjectPtr outputFBO);
+    void applyToneFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO);
+    void applyLensFlaresFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO);
 public:
     static QDir* recentMeshDir;
 };

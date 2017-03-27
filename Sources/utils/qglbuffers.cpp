@@ -101,40 +101,38 @@ GLTexture2D::GLTexture2D(const QString& fileName, int width, int height)
     if (width != image.width() || height != image.height())
         image = image.scaled(width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    glBindTexture(GL_TEXTURE_2D, m_texture);
+    GLCHK( glBindTexture(GL_TEXTURE_2D, m_texture) );
 
     // Works on x86, so probably works on all little-endian systems.
     // Does it work on big-endian systems?
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0,
-        GL_BGRA, GL_UNSIGNED_BYTE, image.bits());
+    GLCHK( glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0,
+        GL_BGRA, GL_UNSIGNED_BYTE, image.bits()) );
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GLCHK( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT) );
+    GLCHK( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT) );
+    GLCHK( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR) );
+    GLCHK( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR) );
+    //GLCHK( glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR) );
+    //GLCHK( glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, 0) );
 }
 
 void GLTexture2D::load(int width, int height, QRgb *data)
 {
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-        GL_BGRA, GL_UNSIGNED_BYTE, data);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GLCHK( glBindTexture(GL_TEXTURE_2D, m_texture) );
+    GLCHK( glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
+        GL_BGRA, GL_UNSIGNED_BYTE, data) );
+    GLCHK( glBindTexture(GL_TEXTURE_2D, 0) );
 }
 
 void GLTexture2D::bind()
 {
     glBindTexture(GL_TEXTURE_2D, m_texture);
-    // glEnable(GL_TEXTURE_2D);
 }
 
 void GLTexture2D::unbind()
 {
     glBindTexture(GL_TEXTURE_2D, 0);
-    // glDisable(GL_TEXTURE_2D);
 }
 
 
@@ -332,30 +330,13 @@ GLFrameBufferObject::GLFrameBufferObject(int width, int height)
 {
     initializeOpenGLFunctions();
 
-/*
-
-    glGenTextures(1, &depth_texture);
-    glBindTexture(GL_TEXTURE_2D, depth_texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-    //NULL means reserve texture memory, but texels are undefined
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    */
-
-
     attachments.clear();
     QGLFramebufferObjectFormat format;
     format.setInternalTextureFormat(TEXTURE_3DRENDER_FORMAT);
     format.setTextureTarget(GL_TEXTURE_2D);
     format.setMipmap(true);
     format.setAttachment(QGLFramebufferObject::Depth);
-    fbo = new QGLFramebufferObject(width,height,format);
+    fbo = QGLFramebufferObjectPtr(new QGLFramebufferObject(width,height,format));
 
     GLCHK(glBindTexture(GL_TEXTURE_2D, fbo->texture()));
     GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT));
@@ -373,8 +354,6 @@ GLFrameBufferObject::~GLFrameBufferObject()
     }
 
     attachments.erase(attachments.begin(),attachments.end());
-
-    delete fbo; fbo = 0;
 }
 
 

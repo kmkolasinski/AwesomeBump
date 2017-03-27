@@ -35,12 +35,19 @@
 #define GLBUFFERS_H
 
 #include <QtOpenGL>
-//#include <QOpenGLFunctions_4_0_Core>
-#include <QOpenGLFunctions_3_3_Core>
 #include <QtWidgets>
 #include <QDebug>
 #include "../qopenglerrorcheck.h"
 #include "../CommonObjects.h"
+
+#ifdef USE_OPENGL_330
+    #include <QOpenGLFunctions_3_3_Core>
+    #define OpenGLFunctionsBase QOpenGLFunctions_3_3_Core
+#else
+    #include <QOpenGLFunctions_4_0_Core>
+    #define OpenGLFunctionsBase QOpenGLFunctions_4_0_Core
+#endif
+
 
 #define BUFFER_OFFSET(i) ((char*)0 + (i))
 #define SIZE_OF_MEMBER(cls, member) sizeof(static_cast<cls *>(0)->member)
@@ -53,7 +60,7 @@ QT_BEGIN_NAMESPACE
 class QMatrix4x4;
 QT_END_NAMESPACE
 
-class GLTexture : public QOpenGLFunctions_3_3_Core
+class GLTexture : public OpenGLFunctionsBase
 {
 public:
     GLTexture();
@@ -67,7 +74,7 @@ protected:
     bool m_failed;
 };
 
-class GLFrameBufferObject : public QOpenGLFunctions_3_3_Core
+class GLFrameBufferObject : public OpenGLFunctionsBase
 {
 public:
     friend class GLRenderTargetCube;
@@ -81,7 +88,7 @@ public:
     void bindDefault();
     bool addTexture(GLenum COLOR_ATTACHMENTn);
     const GLuint& getAttachedTexture(GLuint index);
-    QGLFramebufferObject *fbo;
+    QGLFramebufferObjectPtr fbo;
 protected:
     int m_width, m_height;
     bool m_failed;    
