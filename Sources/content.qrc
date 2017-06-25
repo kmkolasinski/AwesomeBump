@@ -80,7 +80,7 @@
         <file>resources/actions/UVwarning.png</file>
         <file>resources/actions/showOcclusionWarning.png</file>
         <file>resources/actions/restoreSettings.png</file>
-        <file>resources/fonts/Standard Multi v2.1.ttf</file>
+        <file>resources/fonts/multi/Standard Multi v2.1.ttf</file>
         <file>resources/fonts/citadina/CitadinaBlack.otf</file>
         <file>resources/fonts/citadina/CitadinaBlackItalic.otf</file>
         <file>resources/fonts/citadina/CitadinaBold.otf</file>
@@ -93,9 +93,9 @@
         <file>resources/fonts/citadina/CitadinaRegularItalic.otf</file>
         <file>resources/fonts/citadina/CitadinaThin.otf</file>
         <file>resources/fonts/citadina/CitadinaThinItalic.otf</file>
-        <file>resources/fonts/Tecnica/Graviton_Tecnica.Bold.Alternate.otf</file>
-        <file>resources/fonts/Tecnica/Graviton_Tecnica.Bold.otf</file>
-        <file>resources/fonts/Tecnica/Graviton_Tecnica.Regular.Alternate.otf</file>
-        <file>resources/fonts/Tecnica/Graviton_Tecnica.Regular.otf</file>
+        <file>resources/fonts/tecnica/Graviton_Tecnica.Bold.Alternate.otf</file>
+        <file>resources/fonts/tecnica/Graviton_Tecnica.Bold.otf</file>
+        <file>resources/fonts/tecnica/Graviton_Tecnica.Regular.Alternate.otf</file>
+        <file>resources/fonts/tecnica/Graviton_Tecnica.Regular.otf</file>
     </qresource>
 </RCC>
