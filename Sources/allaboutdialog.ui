@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
-    <height>416</height>
+    <width>500</width>
+    <height>550</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>550</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>About AwesomeBump</string>
@@ -49,7 +55,7 @@
           <widget class="QLabel" name="version">
            <property name="font">
             <font>
-             <pointsize>14</pointsize>
+             <pointsize>13</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
@@ -61,8 +67,13 @@
          </item>
          <item>
           <widget class="QLabel" name="label_4">
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>AwesomeBump is a free and open source program designed to generate normal, height, specular or ambient occlusion, roughness and metallic textures from a single image.</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;AwesomeBump is a free and open source program designed to generate normal, height, specular or ambient occlusion, roughness and metallic textures from a single image.&lt;br/&gt;Since the image processing is done in 99% on GPU  the program runs very fast and all the parameters can be changed in real time.&lt;hr/&gt;Program written by &lt;span style=&quot; font-weight:600;&quot;&gt;Krzysztof Kolasinski&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;Pawel Piecuch&lt;/span&gt; (Copyright 2015-2017) with collaboration with other people!&lt;/p&gt;&lt;p&gt;See project collaborators list on github.&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignJustify|Qt::AlignVCenter</set>
@@ -73,14 +84,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="label_url">
            <property name="font">
             <font>
-             <pointsize>14</pointsize>
+             <pointsize>11</pointsize>
             </font>
            </property>
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/kmkolasinski/AwesomeBump&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;AwesomeBump github webpage&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;a href=&quot;https://github.com/kmkolasinski/AwesomeBump&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;AwesomeBump github webpage&lt;/span&gt;&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -95,72 +106,90 @@
       </layout>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBoxInfo">
-       <property name="title">
-        <string>GroupBox</string>
+      <widget class="QLabel" name="labelInfo">
+       <property name="font">
+        <font>
+         <pointsize>13</pointsize>
+        </font>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <property name="leftMargin">
-         <number>4</number>
-        </property>
-        <property name="topMargin">
-         <number>4</number>
-        </property>
-        <property name="rightMargin">
-         <number>4</number>
-        </property>
-        <property name="bottomMargin">
-         <number>4</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="labelInfo">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
-      <number>2</number>
-     </property>
-     <widget class="QWidget" name="tabSysInfo">
-      <attribute name="title">
-       <string>System info</string>
-      </attribute>
-      <widget class="QLabel" name="info">
-       <property name="geometry">
-        <rect>
-         <x>80</x>
-         <y>10</y>
-         <width>470</width>
-         <height>16</height>
-        </rect>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="lineWidth">
+        <number>2</number>
        </property>
        <property name="text">
         <string/>
        </property>
-       <property name="textInteractionFlags">
-        <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-       </property>
       </widget>
-     </widget>
-     <widget class="QWidget" name="tabContextInfo">
-      <attribute name="title">
-       <string>Context info</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="tabLogFile">
-      <attribute name="title">
-       <string>Log file</string>
-      </attribute>
-     </widget>
-    </widget>
+     </item>
+     <item>
+      <widget class="QTabWidget" name="infoBox">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tabSysInfo">
+        <attribute name="title">
+         <string>System info</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="info">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabContextInfo">
+        <attribute name="title">
+         <string>Context info</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="ContextWidget" name="contex_widget" native="true"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tabLogFile">
+        <attribute name="title">
+         <string>Log file</string>
+        </attribute>
+       </widget>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QFrame" name="frame">
@@ -184,6 +213,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ContextWidget</class>
+   <extends>QWidget</extends>
+   <header>contextwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="content.qrc"/>
   <include location="content.qrc"/>

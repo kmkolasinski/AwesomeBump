@@ -5,16 +5,25 @@
 #  https://github.com/dbzhang800/KDUpdater.git
 #  https://github.com/velnias75/QGitHubReleaseAPI
 
-# Add your QT path here by setting MY_QT_PATH variable
-# MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
-if [[ "$OSTYPE" == "darwin"* ]]; then
-	MY_QT_PATH=/Developer/Qt/5.6
-	if [ ! -e "$MY_QT_PATH" ]; then
-		MY_QT_PATH=~/Qt/5.6
+# Add your QT path here by setting QT_PATH variable
+# QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
+
+locations="\
+    /Developer/Qt/5.9 \
+    ~/Qt/5.9 \
+    /opt/Qt5.7.0/5.7/gcc_64/bin \
+"
+for p in $locations; do
+	if [ -e "$p" ]; then
+        QT_PATH=$p
 	fi
-else
-	MY_QT_PATH=/opt/Qt5.7.0/5.7/gcc_64/bin/
+done
+
+if [ ! -e "$QT_PATH" ]; then
+    echo "Qt not found at any known locations. Exit."
 fi
+
+echo "Qt at path: $QT_PATH"
 
 wget="wget"
 tool="gcc_64"
@@ -28,14 +37,14 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	exe=".app"
 fi
 
-export PATH=$MY_QT_PATH:$PATH
+export PATH=$QT_PATH:$PATH
 
-if [ ! -e "$MY_QT_PATH" ]; then
+if [ ! -e "$QT_PATH" ]; then
 	echo " ---------------------------------"
 	echo "      Error: Wrong Qt path."
 	echo " ---------------------------------"
-	echo " Qt not found at '$MY_QT_PATH'."	
-	echo " Please set the MY_QT_PATH variable in the ./unixBuildScript.sh"
+	echo " Qt not found at '$QT_PATH'."
+	echo " Please set the QT_PATH variable in the ./unixBuildScript.sh"
 	echo ""
 	exit 1
 fi
@@ -64,5 +73,5 @@ else
     echo "      Error: QtnPEG failed to run."
 	echo " --------------------------------------"
     echo "Try to rebuild the QtnPEG binary from Sources/utils/QtnProperty directory:"
-    echo "$MY_QT_PATH/qmake Property.pro"
+    echo "$QT_PATH/qmake Property.pro"
 fi

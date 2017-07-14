@@ -13,7 +13,9 @@ AllAboutDialog::AllAboutDialog(QWidget *parent, QGLWidget *surface) :
 	ui(new Ui::allAboutDialog)
 {
 	ui->setupUi(this);
-  	ui->groupBoxInfo->hide();
+
+    ui->infoBox->hide();
+  	ui->labelInfo->hide();
 
 	ui->version->setText(AWESOME_BUMP_VERSION);
 
@@ -68,16 +70,15 @@ AllAboutDialog::AllAboutDialog(QWidget *parent, QGLWidget *surface) :
 	ui->info->setText(Version + Buffers + Extensions);
 }
 
-void AllAboutDialog::setText(const QString &t)
+void AllAboutDialog::showGroupBoxInfo()
 {
-  ui->groupBoxInfo->setTitle(t);
-  ui->groupBoxInfo->setVisible(!ui->labelInfo->text().isEmpty());  
+      	ui->infoBox->show();
 }
 
-void AllAboutDialog::setInformativeText(const QString &t)
+void AllAboutDialog::setInfoText(const QString &t)
 {
   ui->labelInfo->setText(t);
-  ui->groupBoxInfo->setVisible(!ui->labelInfo->text().isEmpty());  
+  ui->labelInfo->setVisible(!ui->labelInfo->text().isEmpty());
 }
 
 void AllAboutDialog::setPixmap(const QPixmap &pixmap)

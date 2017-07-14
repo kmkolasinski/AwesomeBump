@@ -296,7 +296,7 @@ bool FormImageProp::loadFile(const QString &fileName)
     if(imageProp->properties->NormalsMixer.EnableMixer){
         qDebug() << Q_FUNC_INFO << "Open normal mixer image:" << fileName;
 
-        makeCurrent();
+        shared->makeCurrent();
         imageProp->normalMixerInputTex = QOpenGLTexturePtr( new QOpenGLTexture(_image) );
 
         emit imageChanged();
@@ -483,7 +483,7 @@ void FormImageProp::pasteNormalFromClipBoard(){
         QPixmap pixmap = qvariant_cast<QPixmap>(mimeData->imageData());
         QImage _image = pixmap.toImage();
 
-        makeCurrent();
+        shared->makeCurrent();
         imageProp->normalMixerInputTex->setData(_image);
         
         emit imageChanged();

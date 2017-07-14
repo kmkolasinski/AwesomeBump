@@ -19,8 +19,8 @@ public:
 
   void setPixmap(const QPixmap &pixmap);
   void setPixmap(const QString &pixmap);
-  void setText(const QString &t);
-  void setInformativeText(const QString &t);
+  void showGroupBoxInfo();
+  void setInfoText(const QString &t);
 
 private:
 	Ui::allAboutDialog *ui;

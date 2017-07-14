@@ -1,13 +1,18 @@
+#include <QGLWidget>
 #include "formimagebase.h"
+
 QDir* FormImageBase::recentDir;
 
-FormImageBase::FormImageBase(QWidget *parent, QGLWidget *shareWidget) : QGLWidget(parent, shareWidget), imageProp(FBOImageProportiesPtr(new FBOImageProporties))
+FormImageBase::FormImageBase(QWidget *parent, QGLWidget *shareWidget) : QWidget(parent), imageProp(FBOImageProportiesPtr(new FBOImageProporties))
 
 {
     setMouseTracking(true);
     setFocus();
     setFocusPolicy(Qt::ClickFocus);
     setAcceptDrops(true);
+
+    shared = new QGLWidget(parent, shareWidget);
+    shared->resize(0,0); // invisible shared window
 }
 
 FormImageBase::~FormImageBase()

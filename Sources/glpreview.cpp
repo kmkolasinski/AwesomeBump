@@ -155,48 +155,29 @@ void GLPreview::textureChanged(TextureTypes imageType, GLuint texture)
   update();
 }
 
-static QRect RectScaleToFit(const QRect destRect, const QRect srcRect) {
-    
-    // Start off with a rectangle the same size as the destination rectangle:
-    QRect rect = destRect;
-    
-    // find the aspect ratios of the two rectangles:
-    float aspectScale = srcRect.width() / srcRect.height();
-    float aspectDest = destRect.width() / destRect.height();
-    
-    // compare the aspect ratios of the two rectangles:
-    if (aspectScale > aspectDest)
-      // if the inside rectangle has the wider shape, reduce its height
-      rect.setHeight( rect.width() / aspectScale );
-    else
-      // if the inside rectangle has the taller shape, reduce its width:
-      rect.setWidth( rect.height() * aspectScale );
-    
-    //now centre the rectangle:
-    rect.setX( destRect.x() + (destRect.width() - rect.width()) / 2 );
-    rect.setY( destRect.y() + (destRect.height() - rect.height()) / 2 );
-    
+
+static QRect RectScaleTo(const QRect destRect, const QRect srcRect, bool fit) {
+
+    QRect rect = (QRect){0, 0, 0, 0};
+
+    const qreal aspectWidth = qreal(destRect.width()) / qreal(srcRect.width());
+    const qreal aspectHeight = qreal(destRect.height()) / qreal(srcRect.height());
+    const qreal aspectRatio = fit?qMin( aspectWidth, aspectHeight ):qMax( aspectWidth, aspectHeight );
+
+    rect.setWidth( srcRect.width() * aspectRatio );
+    rect.setHeight( srcRect.height() * aspectRatio );
+
+    rect.moveTo( (destRect.width() - rect.width()) / 2, (destRect.height() - rect.height()) / 2 );
+
     return rect;
 }
 
-static QRect RectScaleToFill(const QRect destRect, const QRect srcRect) {
-  float aspectDest = destRect.width() / destRect.height();
-  float aspectScale = srcRect.width() / srcRect.height();
-  QRect projectTo = (QRect){0, 0, 0, 0};
-  // Scale the image so that the aspect ratio is preserved and the
-  // dest target size is filled.
-  if (aspectScale < aspectDest) {
-    //if the inside rectangle has the taller shape, reduce its width:
-    projectTo.setWidth( projectTo.height() * aspectScale );
-  } else {
-    //if the inside rectangle has the wider shape, reduce its height
-    projectTo.setHeight( projectTo.width() / aspectScale );
-  }
-  // now center the rectangle:
-  projectTo.setX( destRect.x() + (destRect.width() - projectTo.width()) / 2 );
-  projectTo.setY( destRect.y() + (destRect.height() - projectTo.height()) / 2 );
+static QRect RectScaleToFit(const QRect destRect, const QRect srcRect) {
+    return RectScaleTo(destRect, srcRect, true);
+}
 
-  return projectTo;
+static QRect RectScaleToFill(const QRect destRect, const QRect srcRect) {
+    return RectScaleTo(destRect, srcRect, false);
 }
 
 void GLPreview::makeScreenQuad()
@@ -223,8 +204,8 @@ void GLPreview::makeScreenQuad()
       tex << texfull;
       const uint _off = t*4;
       QVector<uint>  quad{
-	  _off+0,_off+1,_off+2,   // first triangle (bottom left - top left - top right)
-	  _off+0,_off+2,_off+3 }; // second triangle (bottom left - top right - bottom right)
+        _off+0,_off+1,_off+2,   // first triangle (bottom left - top left - top right)
+        _off+0,_off+2,_off+3 }; // second triangle (bottom left - top right - bottom right)
       indices << quad;
     }
 

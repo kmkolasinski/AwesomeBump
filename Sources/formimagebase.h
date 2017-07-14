@@ -1,7 +1,7 @@
 #ifndef FORMIMAGEBASE_H
 #define FORMIMAGEBASE_H
 
-#include <QGLWidget>
+#include <QWidget>
 #include "CommonObjects.h"
 
 // Manages all the input/output operations
@@ -9,7 +9,8 @@
 // paste & copy from/to clipboard
 // drag & drop events
 
-class FormImageBase : public QGLWidget
+class QGLWidget;
+class FormImageBase : public QWidget
 {
     Q_OBJECT
 public:
@@ -36,16 +37,15 @@ protected:
     virtual bool saveFile(const QString &fileName);
     QImage  image;
     QString imageName;
-
 signals:
 
 public slots:
     virtual void open();//open dialog
     virtual void save();
+protected:
+    QGLWidget *shared;
 public:
     static QDir* recentDir;
-
-
 
 };
 

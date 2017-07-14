@@ -309,9 +309,7 @@ int main(int argc, char *argv[])
 
         AllAboutDialog msgBox;
         msgBox.setPixmap(":/resources/icons/icon-off.png");
-        msgBox.setText("Fatal Error!");
-
-        msgBox.setInformativeText(QString("Sorry but it seems that your graphics card does not support openGL %1.%2.\n"
+        msgBox.setInfoText(QString("Sorry but it seems that your graphics card does not support openGL %1.%2.\n"
                                           "Program will not run :(\n"
                                           "See " AB_LOG " file for more info.").arg(GL_MAJOR).arg(GL_MINOR));
 
