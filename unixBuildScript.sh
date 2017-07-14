@@ -13,7 +13,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 		MY_QT_PATH=~/Qt/5.6
 	fi
 else
-	MY_QT_PATH=/Qt/5.6
+	MY_QT_PATH=/opt/Qt5.7.0/5.7/gcc_64/bin/
 fi
 
 wget="wget"

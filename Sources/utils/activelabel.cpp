@@ -35,4 +35,3 @@ void ActiveLabel::mouseReleaseEvent (QMouseEvent *e)
     }
   }
 }
-
