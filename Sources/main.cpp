@@ -84,6 +84,16 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
 {
    Q_UNUSED(context);
 
+#ifdef CONVERT_TO_CONSOLE
+
+    if (msg[0] == '>')
+    {
+        fprintf(stderr,
+                "console: %s \n", msg.toLocal8Bit().data());
+    }
+
+#else
+
    QString dt = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
    QString txt = QString("[%1] ").arg(dt);
 
@@ -116,6 +126,7 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
 
    QTextStream textStream(&outFile);
    textStream << txt << endl;
+#endif
 }
 
 class SplashScreen : public QSplashScreen
@@ -212,16 +223,20 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
 
-
     regABSliderDelegates();
     regABColorDelegates();
 
+#ifdef CONVERT_TO_CONSOLE
+    qInstallMessageHandler(customMessageHandler);
+#else
 //    qInstallMessageHandler(customMessageHandler);
+#endif
 
     qDebug() << "Starting application:";
     qDebug() << "Application dir:" << QApplication::applicationDirPath();
     qDebug() << "Data dir:" << _find_data_dir(RESOURCE_BASE);
 
+#ifndef CONVERT_TO_CONSOLE
     SplashScreen sp(&app);
     QPixmap szpx = QPixmap(SplashImage);
     QSize sz = szpx.size() * float(QApplication::desktop()->screenGeometry().width()) / 4.0 / float(szpx.size().width()); // 1/4 of the screen
@@ -229,6 +244,7 @@ int main(int argc, char *argv[])
     sp.setPixmap(szpx.scaled(sz));
     sp.setMessage(VERSION_STRING "|Starting ...");
     sp.show(); app.processEvents();
+#endif
 
 	// Check for resource directory:
 	QString resDir = _find_data_dir(RESOURCE_BASE);
@@ -299,25 +315,80 @@ int main(int argc, char *argv[])
 
         msgBox.show();
 
+        qDebug() << QString("> Sorry but it seems that your graphics "
+                    "card does not support openGL %1.%2.\n"
+                    "Program will not run :(\n"
+                    "See " AB_LOG " file for more info.").
+                arg(GL_MAJOR).arg(GL_MINOR);
+
         return app.exec();
     }else{
 
-        MainWindow window;
-        QObject::connect(&window,SIGNAL(initProgress(int)),&sp,SLOT(setProgress(int)));
-        QObject::connect(&window,SIGNAL(initMessage(const QString&)),&sp,SLOT(setMessage(const QString&)));
-        window.initializeApp();
-        window.setWindowTitle(AWESOME_BUMP_VERSION);
-        window.resize(window.sizeHint());
-        int desktopArea = QApplication::desktop()->width() *
-                         QApplication::desktop()->height();
-        int widgetArea = window.width() * window.height();
-        if (((float)widgetArea / (float)desktopArea) < 0.75f)
-            window.show();
+        if (app.arguments().size() == 3)
+        {
+            MainWindow window;
+    #ifndef CONVERT_TO_CONSOLE
+            QObject::connect(&window,SIGNAL(initProgress(int)),&sp,SLOT(setProgress(int)));
+            QObject::connect(&window,SIGNAL(initMessage(const QString&)),&sp,SLOT(setMessage(const QString&)));
+    #endif
+            window.initializeApp();
+    #ifndef CONVERT_TO_CONSOLE
+            window.setWindowTitle(AWESOME_BUMP_VERSION);
+            window.resize(window.sizeHint());
+
+            int desktopArea = QApplication::desktop()->width() *
+                             QApplication::desktop()->height();
+            int widgetArea = window.width() * window.height();
+
+            if (((float)widgetArea / (float)desktopArea) < 0.75f)
+                window.show();
+            else
+                window.showMaximized();
+
+            sp.finish(&window);
+    #endif
+            bool ok = true;
+            ok = window.selectSourceImagesFromPath(app.arguments().at(1));
+            if (!ok)
+            {
+                QMessageBox msgBox;
+                msgBox.setText("Info");
+                msgBox.setInformativeText("Input path is not provided");
+                msgBox.setStandardButtons(QMessageBox::Cancel);
+                msgBox.exec();
+            }
+            ok = window.selectOutputPath(app.arguments().at(2));
+            if (!ok)
+            {
+                QMessageBox msgBox;
+                msgBox.setText("Info");
+                msgBox.setInformativeText("Output path is not provided");
+                msgBox.setStandardButtons(QMessageBox::Cancel);
+                msgBox.exec();
+            }
+//            window.selectSourceImagesFromPath("test_img/in/ground1.png");
+//    //        window.selectSourceImagesFromPath("test_img/in/");
+//            window.selectOutputPath("test_img/out/");
+
+            if (ok)
+            {
+                window.runBatch();
+            }
+        }
         else
-            window.showMaximized();
-        sp.finish(&window);
- 
+        {
+            qDebug() << "> Input the two argumets: \n"
+                        "1 - input path for an image (or a dir with images) (*.png/*.jpg/*.bmp/*.tga) \n"
+                        "2 - output path for saving results";
+        }
+
+#ifdef CONVERT_TO_CONSOLE
+        qDebug() << "> press any key..";
+        getchar();
+        return 0;
+#else
         return app.exec();
+#endif
     }
 }
 

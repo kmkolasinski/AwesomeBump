@@ -1,8 +1,24 @@
 TARGET        = AwesomeBump
-
 TEMPLATE      = app
 CONFIG       += c++11
-QT           += opengl gui widgets
+
+DEFINES += CONVERT_TO_CONSOLE
+
+
+
+contains(DEFINES, CONVERT_TO_CONSOLE){
+    QT += core opengl
+    QT -= gui
+    CONFIG += console
+    CONFIG -= app_bundle
+    TARGET  = AwesomeBumpConsole
+    LIBS += -lopengl32
+}else{
+    QT += opengl gui widgets
+}
+
+
+
 
 isEmpty(TOP_DIR) {
 	ERROR("Run build process from the top directory")
@@ -33,7 +49,7 @@ GL = -gl4
 gl330: GL = -gl3
 
 win32{ # For windows
- msvc: LIBS += Opengl32.lib
+msvc: LIBS += Opengl32.lib
 }
 
 SPEC=$$[QMAKE_SPEC]$$DBG$$GL

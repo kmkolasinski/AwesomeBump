@@ -287,10 +287,13 @@ bool FormImageProp::loadFile(const QString &fileName)
     if (_image.isNull()) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
                                  tr("Cannot load %1.").arg(QDir::toNativeSeparators(fileName)));
+        qDebug() << tr("> Cannot load %1.").
+                    arg(QDir::toNativeSeparators(fileName));
+
         return false;
     }
     if(imageProp.properties->NormalsMixer.EnableMixer){
-        qDebug() << "<FormImageProp> Open normal mixer image:" << fileName;
+        qDebug() << "> <FormImageProp> Open normal mixer image:" << fileName;
 
         imageProp.glWidget_ptr->makeCurrent();
         if(glIsTexture(imageProp.normalMixerInputTexId)) imageProp.glWidget_ptr->deleteTexture(imageProp.normalMixerInputTexId);
@@ -299,7 +302,7 @@ bool FormImageProp::loadFile(const QString &fileName)
         emit imageChanged();
 
     }else{
-        qDebug() << "<FormImageProp> Open image:" << fileName;
+        qDebug() << "> <FormImageProp> Open image:" << fileName;
 
         imageName = fileInfo.baseName();
         (*recentDir).setPath(fileName);

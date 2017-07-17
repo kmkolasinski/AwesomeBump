@@ -174,6 +174,8 @@ bool FormMaterialIndicesManager::loadFile(const QString &fileName)
     if (_image.isNull()) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
                                  tr("Cannot load material image %1.").arg(QDir::toNativeSeparators(fileName)));
+        qDebug() << tr("> Cannot load material image %1.").
+                    arg(QDir::toNativeSeparators(fileName));
         return false;
     }
 

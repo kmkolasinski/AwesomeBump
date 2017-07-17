@@ -140,8 +140,10 @@ public slots:
     // batch tool
     void selectSourceImages();
     void selectOutputPath();
+    bool selectOutputPath(QString path);
     void runBatch();
-private:    
+    bool selectSourceImagesFromPath(QString source);
+private:
     // saves all textures to given directory
     bool saveAllImages(const QString &dir);
 
