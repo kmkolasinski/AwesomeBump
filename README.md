@@ -77,6 +77,31 @@ Unix (bash) automated script
 5. If everything gone well AB should start after compilation process. See **Bin/** folder. There should be an AwesomeBump file now.
 6. Run AwesomeBump with `./RunAwesomeBump.sh` script. 
 
+Windows (Qt 5.4.2 + Mingw x86) steps (thanks to Andrey Kuznetsov)
+-------------------------
+
+* Download sources with git
+ 1. `git clone https://github.com/kmkolasinski/AwesomeBump`
+ 2. `git submodule init`
+ 3. `git submodule update`
+
+* Build QtnProperty (see below)
+ 1. Download win_flex and win_bison (see ![QtProperty](https://github.com/kmkolasinski/QtnProperty/tree/af948d54ad25755609cdcaf6f15cb58302ee8b91) project instructions) and paste it, e.g., here: `D:\win_flex`
+ 2. Comment `QMAKE_CXXFLAGS += /wd4065 in PEG.pro`
+ 3. In Bison.pri check win_bison command. For me this worked
+ ```
+ win32:bison.commands = D:\win_flex\win_bison -d -o ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.parser.cpp ${QMAKE_FILE_IN}
+ ```
+ 4. In Flex.pri check win_flex command. For me this worked
+ ```
+ win32:flex.commands = D:\win_flex\win_flex --wincompat -o ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.lexer.cpp ${QMAKE_FILE_IN}
+ ```
+* OpenGL 3.30 support
+
+  `For OpenGL 3.3 use #define USE_OPENGL_330 in CommonObjects.h (this can be defined in QtCreator see pdf instruction)`
+  
+* Build and Run using QtCreator.
+
 ### OpenGL 3.30 support
 
 You can now build AB to run all openGL instructions with 3.30 compatibility (note that tessellation will not work with 3.30). See [PDF ](https://github.com/kmkolasinski/AwesomeBump/releases/download/BuildingAB/BuildingInstruction.pdf) file and "Step 8" for more datails. Basically you just have to add `CONFIG+=gl330` command in the qmake settings in order to build 3.30-supported version of AwesomeBump.
