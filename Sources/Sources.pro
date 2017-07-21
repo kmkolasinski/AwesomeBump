@@ -9,7 +9,7 @@ LIBS += -lopengl32
 
 contains(DEFINES, CONVERT_TO_CONSOLE){
     QT += core opengl
-    QT -= gui
+    QT += gui widgets
     CONFIG += console
     CONFIG -= app_bundle
     TARGET  = AwesomeBumpConsole    

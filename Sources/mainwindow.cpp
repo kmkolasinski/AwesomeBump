@@ -761,53 +761,53 @@ bool MainWindow::saveAllImages(const QString &dir){
     ui->progressBar->setValue(0);
 
     if(!bSaveCompressedFormImages){
-        qDebug() << "> Saving diffuse image...";
         ui->labelProgressInfo->setText("Saving diffuse image...");
         if(bSaveCheckedImages*ui->checkBoxSaveDiffuse->isChecked() || !bSaveCheckedImages ){
+            qDebug() << "> Saving diffuse image...";
             diffuseImageProp ->saveFileToDir(dir);
         }
         ui->progressBar->setValue(15);
 
 
-        qDebug() << "> Saving normal image...";
         ui->labelProgressInfo->setText("Saving normal image...");
         if(bSaveCheckedImages*ui->checkBoxSaveNormal->isChecked() || !bSaveCheckedImages ){
+            qDebug() << "> Saving normal image...";
             normalImageProp  ->saveFileToDir(dir);
 
         }
         ui->progressBar->setValue(30);
-        qDebug() << "> Saving specular image...";
         ui->labelProgressInfo->setText("Saving specular image...");
         if(bSaveCheckedImages*ui->checkBoxSaveSpecular->isChecked() || !bSaveCheckedImages ){
+            qDebug() << "> Saving specular image...";
             specularImageProp->saveFileToDir(dir);
 
         }
         ui->progressBar->setValue(45);
 
-        qDebug() << "> Saving height image...";
         ui->labelProgressInfo->setText("Saving height image...");
         if(bSaveCheckedImages*ui->checkBoxSaveHeight->isChecked() || !bSaveCheckedImages ){
+            qDebug() << "> Saving height image...";
             occlusionImageProp  ->saveFileToDir(dir);
         }
 
         ui->progressBar->setValue(60);
-        qDebug() << "> Saving occlusion image...";
         ui->labelProgressInfo->setText("Saving occlusion image...");
         if(bSaveCheckedImages*ui->checkBoxSaveOcclusion->isChecked() || !bSaveCheckedImages ){
+            qDebug() << "> Saving occlusion image...";
             heightImageProp  ->saveFileToDir(dir);
         }
 
         ui->progressBar->setValue(75);
-        qDebug() << "> Saving roughness image...";
         ui->labelProgressInfo->setText("Saving roughness image...");
         if(bSaveCheckedImages*ui->checkBoxSaveRoughness->isChecked() || !bSaveCheckedImages ){
+            qDebug() << "> Saving roughness image...";
             roughnessImageProp  ->saveFileToDir(dir);
         }
 
         ui->progressBar->setValue(90);
-        qDebug() << "> Saving metallic image...";
         ui->labelProgressInfo->setText("Saving metallic image...");
         if(bSaveCheckedImages*ui->checkBoxSaveMetallic->isChecked() || !bSaveCheckedImages ){
+            qDebug() << "> Saving metallic image...";
             metallicImageProp ->saveFileToDir(dir);
         }
         ui->progressBar->setValue(100);

@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
 #ifdef CONVERT_TO_CONSOLE
     qInstallMessageHandler(customMessageHandler);
 #else
-//    qInstallMessageHandler(customMessageHandler);
+    qInstallMessageHandler(customMessageHandler);
 #endif
 
     qDebug() << "Starting application:";
