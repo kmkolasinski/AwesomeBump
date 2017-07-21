@@ -324,29 +324,13 @@ int main(int argc, char *argv[])
         return app.exec();
     }else{
 
+#ifdef CONVERT_TO_CONSOLE
         if (app.arguments().size() == 3)
         {
             MainWindow window;
-    #ifndef CONVERT_TO_CONSOLE
-            QObject::connect(&window,SIGNAL(initProgress(int)),&sp,SLOT(setProgress(int)));
-            QObject::connect(&window,SIGNAL(initMessage(const QString&)),&sp,SLOT(setMessage(const QString&)));
-    #endif
+
             window.initializeApp();
-    #ifndef CONVERT_TO_CONSOLE
-            window.setWindowTitle(AWESOME_BUMP_VERSION);
-            window.resize(window.sizeHint());
 
-            int desktopArea = QApplication::desktop()->width() *
-                             QApplication::desktop()->height();
-            int widgetArea = window.width() * window.height();
-
-            if (((float)widgetArea / (float)desktopArea) < 0.75f)
-                window.show();
-            else
-                window.showMaximized();
-
-            sp.finish(&window);
-    #endif
             bool ok = true;
             ok = window.selectSourceImagesFromPath(app.arguments().at(1));
             if (!ok)
@@ -382,11 +366,26 @@ int main(int argc, char *argv[])
                         "2 - output path for saving results";
         }
 
-#ifdef CONVERT_TO_CONSOLE
         qDebug() << "> press any key..";
         getchar();
         return 0;
 #else
+
+        MainWindow window;
+        QObject::connect(&window,SIGNAL(initProgress(int)),&sp,SLOT(setProgress(int)));
+        QObject::connect(&window,SIGNAL(initMessage(const QString&)),&sp,SLOT(setMessage(const QString&)));
+        window.initializeApp();
+        window.setWindowTitle(AWESOME_BUMP_VERSION);
+        window.resize(window.sizeHint());
+        int desktopArea = QApplication::desktop()->width() *
+                         QApplication::desktop()->height();
+        int widgetArea = window.width() * window.height();
+        if (((float)widgetArea / (float)desktopArea) < 0.75f)
+            window.show();
+        else
+            window.showMaximized();
+        sp.finish(&window);
+
         return app.exec();
 #endif
     }

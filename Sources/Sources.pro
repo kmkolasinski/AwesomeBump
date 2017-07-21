@@ -2,17 +2,17 @@ TARGET        = AwesomeBump
 TEMPLATE      = app
 CONFIG       += c++11
 
-DEFINES += CONVERT_TO_CONSOLE
+#DEFINES += CONVERT_TO_CONSOLE
 
 
+LIBS += -lopengl32
 
 contains(DEFINES, CONVERT_TO_CONSOLE){
     QT += core opengl
     QT -= gui
     CONFIG += console
     CONFIG -= app_bundle
-    TARGET  = AwesomeBumpConsole
-    LIBS += -lopengl32
+    TARGET  = AwesomeBumpConsole    
 }else{
     QT += opengl gui widgets
 }
