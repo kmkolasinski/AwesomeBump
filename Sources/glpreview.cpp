@@ -1,10 +1,11 @@
-
+#include <qopengl.h>
 #include <cmath>
 
 #include <QPainter>
 #include <QtWidgets>
-#include <QtOpenGL>
+
 #include "qopenglerrorcheck.h"
+#include "qtofflinegl.h"
 #include "glpreview.h"
 
 #define PROGRAM_VERTEX_ATTRIBUTE   0
@@ -63,7 +64,7 @@ void QPictureLabel::_displayImage()
 
 /////
 
-GLPreview::GLPreview(QWidget *parent, QGLWidget * shareWidget) : QGLWidget(parent, shareWidget), alignType(TextureAll), textures{1}
+GLPreview::GLPreview(QWidget *parent) : QOpenGLWidget(parent), alignType(TextureAll), textures{1}
 {
   setObjectName("GLPreview");
   vbos[2] = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);

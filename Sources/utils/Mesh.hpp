@@ -8,17 +8,18 @@
 #define	Mesh_H
 
 
-#include <QtOpenGL>
+#include <qopengl.h>
 
-
-#include "../CommonObjects.h"
 #include <QString>
 #include <QDebug>
 #include <QVector>
 #include <QVector3D>
 #include <iostream>
-#include "../qopenglerrorcheck.h"
+
 #include "tinyobj/tiny_obj_loader.h"
+
+#include "../CommonObjects.h"
+#include "../qopenglerrorcheck.h"
 
 
 #ifdef USE_OPENGL_330

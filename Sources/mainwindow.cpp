@@ -47,8 +47,8 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
     glImage          = new GLImage(this);
-    glWidget         = new GLWidget(this,glImage);
-    glTexturesPreview= new GLPreview(this,glImage);
+    glWidget         = new GLWidget(this);
+    glTexturesPreview= new GLPreview(this);
 
     connect(glImage,SIGNAL(textureChanged(TextureTypes, GLuint)),glTexturesPreview,SLOT(textureChanged(TextureTypes, GLuint)));
 }
@@ -65,16 +65,16 @@ void MainWindow::initializeApp()
     INIT_PROGRESS(10, "Build image properties");
 
 
-    diffuseImageProp  = new FormImageProp(this,glImage);
-    normalImageProp   = new FormImageProp(this,glImage);
-    specularImageProp = new FormImageProp(this,glImage);
-    heightImageProp   = new FormImageProp(this,glImage);
-    occlusionImageProp= new FormImageProp(this,glImage);
-    roughnessImageProp= new FormImageProp(this,glImage);
-    metallicImageProp = new FormImageProp(this,glImage);
-    grungeImageProp   = new FormImageProp(this,glImage);
+    diffuseImageProp  = new FormImageProp(this);
+    normalImageProp   = new FormImageProp(this);
+    specularImageProp = new FormImageProp(this);
+    heightImageProp   = new FormImageProp(this);
+    occlusionImageProp= new FormImageProp(this);
+    roughnessImageProp= new FormImageProp(this);
+    metallicImageProp = new FormImageProp(this);
+    grungeImageProp   = new FormImageProp(this);
 
-    materialManager = new FormMaterialIndicesManager(this,glImage);
+    materialManager = new FormMaterialIndicesManager(this);
 
     qDebug() << "Initialization: Setup image properties";
     INIT_PROGRESS(20, "Setup image properties");
@@ -166,7 +166,7 @@ void MainWindow::initializeApp()
 
     dialog3dGeneralSettings = new Dialog3DGeneralSettings(this);
     connect(ui->pushButton3DGeneralSettings,SIGNAL(released()),dialog3dGeneralSettings,SLOT(show()));
-    connect(dialog3dGeneralSettings,SIGNAL(signalPropertyChanged()),glWidget,SLOT(repaint()));
+    connect(dialog3dGeneralSettings,SIGNAL(signalPropertyChanged()),glWidget,SLOT(update()));
     connect(dialog3dGeneralSettings,SIGNAL(signalRecompileCustomShader()),glWidget,SLOT(recompileRenderShader()));
 
     ui->verticalLayout3DImage->addWidget(glWidget);
@@ -645,11 +645,8 @@ void MainWindow::replotAllImages(){
     glImage->setActiveImage(lastActive);
     glWidget->update();
     
-    QGLContext* glContext = (QGLContext *) glWidget->context();
-    GLCHK( glContext->makeCurrent() );
-
 #ifndef Q_OS_MAC
-    GpuInfo glGpu(glContext);
+    GpuInfo glGpu();
     QString menu_text;
     
     GLint gpuMemTotal = glGpu.getTotalMem();
@@ -749,7 +746,7 @@ void MainWindow::selectUVsTab(){
 
 void MainWindow::fitImage(){
     glImage->resetView();
-    glImage->repaint();
+    glImage->update();
 }
 
 
@@ -892,10 +889,10 @@ bool MainWindow::saveAllImages(const QString &dir){
         QCoreApplication::processEvents();
         glImage->makeCurrent();
 
-        QGLFramebufferObjectPtr diffuseFBOImage  = diffuseImageProp->getImageProporties()->fbo;
-        QGLFramebufferObjectPtr normalFBOImage   = normalImageProp->getImageProporties()->fbo;
-        QGLFramebufferObjectPtr specularFBOImage = specularImageProp->getImageProporties()->fbo;
-        QGLFramebufferObjectPtr heightFBOImage   = heightImageProp->getImageProporties()->fbo;
+        QOpenGLFramebufferObjectPtr diffuseFBOImage  = diffuseImageProp->getImageProporties()->fbo;
+        QOpenGLFramebufferObjectPtr normalFBOImage   = normalImageProp->getImageProporties()->fbo;
+        QOpenGLFramebufferObjectPtr specularFBOImage = specularImageProp->getImageProporties()->fbo;
+        QOpenGLFramebufferObjectPtr heightFBOImage   = heightImageProp->getImageProporties()->fbo;
 
         QImage diffuseImage = diffuseFBOImage->toImage() ;
         QImage normalImage  = normalFBOImage->toImage();
@@ -996,13 +993,12 @@ void MainWindow::saveCompressedForm(){
 void MainWindow::updateDiffuseImage(){
     ui->lineEditOutputName->setText(diffuseImageProp->getImageName());
     updateImageInformation();   
-    glImage->repaint();
+    glImage->update();
 
     // replot normal if height was changed in attached mode
     if(specularImageProp->getImageProporties()->inputImageType == INPUT_FROM_DIFFUSE_OUTPUT){
         glImage->enableShadowRender(true);
         updateImage(SPECULAR_TEXTURE);
-        //glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
         updateImage(DIFFUSE_TEXTURE);
@@ -1012,7 +1008,6 @@ void MainWindow::updateDiffuseImage(){
     if(roughnessImageProp->getImageProporties()->inputImageType == INPUT_FROM_DIFFUSE_OUTPUT){
         glImage->enableShadowRender(true);
         updateImage(ROUGHNESS_TEXTURE);
-        //glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
         updateImage(DIFFUSE_TEXTURE);
@@ -1022,45 +1017,42 @@ void MainWindow::updateDiffuseImage(){
     if(metallicImageProp->getImageProporties()->inputImageType == INPUT_FROM_DIFFUSE_OUTPUT){
         glImage->enableShadowRender(true);
         updateImage(METALLIC_TEXTURE);
-        //glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
         updateImage(DIFFUSE_TEXTURE);
     }
 
-    glWidget->repaint();
+    glWidget->update();
 }
 void MainWindow::updateNormalImage(){
     ui->lineEditOutputName->setText(normalImageProp->getImageName());
-    glImage->repaint();
+    glImage->update();
 
     // replot normal if  was changed in attached mode
     if(occlusionImageProp->getImageProporties()->inputImageType == INPUT_FROM_HO_NO){
         glImage->enableShadowRender(true);
         updateImage(OCCLUSION_TEXTURE);
-        //glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
         updateImage(NORMAL_TEXTURE);
     }
 
-    glWidget->repaint();
+    glWidget->update();
 }
 void MainWindow::updateSpecularImage(){
     ui->lineEditOutputName->setText(specularImageProp->getImageName());
-    glImage->repaint();
-    glWidget->repaint();
+    glImage->update();
+    glWidget->update();
 }
 void MainWindow::updateHeightImage(){
     ui->lineEditOutputName->setText(heightImageProp->getImageName());
-    glImage->repaint();
+    glImage->update();
 
 
     // replot normal if height was changed in attached mode
     if(normalImageProp->getImageProporties()->inputImageType == INPUT_FROM_HEIGHT_OUTPUT){
         glImage->enableShadowRender(true);
         updateImage(NORMAL_TEXTURE);
-        //glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
         updateImage(HEIGHT_TEXTURE);
@@ -1069,7 +1061,6 @@ void MainWindow::updateHeightImage(){
     if(specularImageProp->getImageProporties()->inputImageType == INPUT_FROM_HEIGHT_OUTPUT){
         glImage->enableShadowRender(true);
         updateImage(SPECULAR_TEXTURE);
-        //glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
         updateImage(HEIGHT_TEXTURE);
@@ -1080,7 +1071,6 @@ void MainWindow::updateHeightImage(){
        occlusionImageProp->getImageProporties()->inputImageType == INPUT_FROM_HO_NO){
         glImage->enableShadowRender(true);
         updateImage(OCCLUSION_TEXTURE);
-        //glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
         updateImage(HEIGHT_TEXTURE);
@@ -1090,7 +1080,6 @@ void MainWindow::updateHeightImage(){
     if(roughnessImageProp->getImageProporties()->inputImageType == INPUT_FROM_HEIGHT_OUTPUT){
         glImage->enableShadowRender(true);
         updateImage(ROUGHNESS_TEXTURE);
-        //glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
         updateImage(HEIGHT_TEXTURE);
@@ -1099,30 +1088,29 @@ void MainWindow::updateHeightImage(){
     if(metallicImageProp->getImageProporties()->inputImageType == INPUT_FROM_HEIGHT_OUTPUT){
         glImage->enableShadowRender(true);
         updateImage(METALLIC_TEXTURE);
-        //glImage->updateGL();
         glImage->enableShadowRender(false);
         // set height tab back again
         updateImage(HEIGHT_TEXTURE);
     }
-    glWidget->repaint();
+    glWidget->update();
 }
 
 void MainWindow::updateOcclusionImage(){
     ui->lineEditOutputName->setText(occlusionImageProp->getImageName());
-    glImage->repaint();
-    glWidget->repaint();
+    glImage->update();
+    glWidget->update();
 }
 
 void MainWindow::updateRoughnessImage(){
     ui->lineEditOutputName->setText(roughnessImageProp->getImageName());
-    glImage->repaint();
-    glWidget->repaint();
+    glImage->update();
+    glWidget->update();
 }
 
 void MainWindow::updateMetallicImage(){
     ui->lineEditOutputName->setText(metallicImageProp->getImageName());
-    glImage->repaint();
-    glWidget->repaint();
+    glImage->update();
+    glWidget->update();
 }
 
 void MainWindow::updateGrungeImage(){
@@ -1134,8 +1122,8 @@ void MainWindow::updateGrungeImage(){
         replotAllImages();
 
     }else{ // otherwise replot only the grunge map
-        glImage->repaint();
-        glWidget->repaint();
+        glImage->update();
+        glWidget->update();
     }
 }
 
@@ -1276,7 +1264,7 @@ void MainWindow::applyResizeImage(){
     glImage->setActiveImage(lastActive);
     replotAllImages();
     updateImageInformation();
-    glWidget->repaint();
+    glWidget->update();
     // replot all material group after image resize
 
     FBOImageProporties::currentMaterialIndeks = materiaIndex;
@@ -1303,7 +1291,7 @@ void MainWindow::applyResizeImage(int width, int height){
     glImage->setActiveImage(lastActive);
     replotAllImages();
     updateImageInformation();
-    glWidget->repaint();
+    glWidget->update();
 
     // replot all material group after image resize
     FBOImageProporties::currentMaterialIndeks = materiaIndex;
@@ -1343,7 +1331,7 @@ void MainWindow::applyScaleImage(){
     glImage->setActiveImage(lastActive);
     replotAllImages();
     updateImageInformation();
-    glWidget->repaint();
+    glWidget->update();
 
     // replot all material group after image resize
     FBOImageProporties::currentMaterialIndeks = materiaIndex;
@@ -1485,7 +1473,7 @@ void MainWindow::runBatch(){
     while(ui->listWidgetImageBatch->count() > 0){
         QListWidgetItem* item = ui->listWidgetImageBatch->takeItem(0);
         ui->labelBatchProgress->setText("Images left: " + QString::number(ui->listWidgetImageBatch->count()+1));
-        ui->labelBatchProgress->repaint();
+        ui->labelBatchProgress->update();
         QCoreApplication::processEvents();
 
         QString imageName = item->text();
@@ -1498,7 +1486,7 @@ void MainWindow::runBatch(){
         saveAllImages(outputFolder);
 
         delete item;
-        ui->listWidgetImageBatch->repaint();
+        ui->listWidgetImageBatch->update();
         QCoreApplication::processEvents();
     }
 
@@ -1589,7 +1577,7 @@ void MainWindow::convertFromBase(){
     roughnessImageProp->setImageName(diffuseImageProp->getImageName());
     metallicImageProp ->setImageName(diffuseImageProp->getImageName());
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
-    glImage->updateGLNow();
+    glImage->update();
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
     replotAllImages();
 
@@ -1639,8 +1627,8 @@ void MainWindow::updateSliders(){
     if(ui->radioButtonSeamlessSimpleDirX ->isChecked()) FBOImageProporties::seamlessSimpleModeDirection = 1;
     if(ui->radioButtonSeamlessSimpleDirY ->isChecked()) FBOImageProporties::seamlessSimpleModeDirection = 2;
 
-    glImage ->repaint();
-    glWidget->repaint();
+    glImage ->update();
+    glWidget->update();
 
 }
 
@@ -1694,8 +1682,8 @@ void MainWindow::loadImageSettings(TextureTypes type){
             break;
         default: qWarning() << "Trying to load non supported image! Given textureType:" << type;
     }
-    glImage ->repaint();
-    glWidget->repaint();
+    glImage ->update();
+    glWidget->update();
 }
 
 void MainWindow::showSettingsManager(){
@@ -1895,15 +1883,15 @@ void MainWindow::loadSettings(){
 
     replotAllImages();
 
-    glImage ->repaint();
-    glWidget->repaint();
+    glImage ->update();
+    glWidget->update();
     bFirstTime = false;
 
 }
 
 void MainWindow::about()
 {
-    AllAboutDialog *ab = new AllAboutDialog(this);
+    AllAboutDialog *ab = new AllAboutDialog(glImage->context(), this);
     ab->showGroupBoxInfo();
     ab->exec();
 }

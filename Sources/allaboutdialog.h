@@ -7,14 +7,14 @@ namespace Ui {
 class allAboutDialog;
 }
 
-class QGLWidget;
+class QOpenGLContext;
 
 class AllAboutDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	explicit AllAboutDialog(QWidget *parent = 0, QGLWidget *surface = 0);
+	explicit AllAboutDialog(QOpenGLContext *ctx, QWidget *parent = 0);
 	~AllAboutDialog();
 
   void setPixmap(const QPixmap &pixmap);

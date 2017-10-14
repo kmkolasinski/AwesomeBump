@@ -19,7 +19,7 @@
 
 #include "gpuinfo.h"
 
-GpuInfo::GpuInfo(QGLContext*& glContext)
+GpuInfo::GpuInfo()
 {
   //Initializing
   m_curGlContext = NULL;
@@ -28,19 +28,12 @@ GpuInfo::GpuInfo(QGLContext*& glContext)
   m_curGpu.totalMem = 0;
   m_curGpu.gpuMake = NONE;
   
-  setGlContext(glContext);
   setGpuMake();
 }
 
 GpuInfo::~GpuInfo()
 {
 
-}
-
-void GpuInfo::setGlContext(QGLContext*& glContext)
-{
-  if(glContext->isValid())
-    m_curGlContext = glContext->contextHandle();
 }
 
 void GpuInfo::setGpuMake()
@@ -120,23 +113,9 @@ GLint GpuInfo::getTotalMem()
         break;
       }
       case ATI:
-	// This code doesn't work yet.  I need to find the library/extension that these AMD OpenGL
-	// methods are defined in.
-/*
-	UINT n = wglGetGPUIDsAMD(0, 0);
-	UINT *ids = new UINT[n];
-	size_t total_mem_mb = 0;
-	wglGetGPUIDsAMD(n, ids);
-	wglGetGPUInfoAMD(ids[0],
-		  WGL_GPU_RAM_AMD, 
-		  GL_UNSIGNED_INT, 
-		  sizeof(size_t),
-	          &total_mem_mb);
-*/
         break;
       case INTEL:
-	//Not sure how to get Intel stats yet
-	break;
+        break;
       default: //Unsupported card
 	break;
     } 

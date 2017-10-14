@@ -1,42 +1,34 @@
 
-#include <QGLWidget>
-#include <QtOpenGL>
+#include <qopengl.h>
+
 #include <QDebug>
+#include <QOpenGLFunctions>
+#include <QOpenGLWidget>
+
 #include "contextwidget.h"
 #include "allaboutdialog.h"
 #include "ui_allaboutdialog.h"
 
 #include "CommonObjects.h"
 
-AllAboutDialog::AllAboutDialog(QWidget *parent, QGLWidget *surface) :
+AllAboutDialog::AllAboutDialog(QOpenGLContext *ctx, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::allAboutDialog)
 {
 	ui->setupUi(this);
+
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, [](){
+        qApp->quit();
+    });
 
     ui->infoBox->hide();
   	ui->labelInfo->hide();
 
 	ui->version->setText(AWESOME_BUMP_VERSION);
 
-	QOpenGLContext *ctx = 0;
-	if (surface) {
-	  surface->makeCurrent();
-	  ctx = surface->context()->contextHandle();
-	} else
-	  ctx = QOpenGLContext::currentContext();
+    GLfloat GL_MaxAnisotropy = 0; glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &GL_MaxAnisotropy);
 
-  if (ctx == 0) 
-  {
-    QGLWidget *gl = new QGLWidget;
-    ctx = gl->context()->contextHandle();
-    gl->makeCurrent();
-    gl->deleteLater();
-  }
-
-  GLfloat GL_MaxAnisotropy = 0; glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &GL_MaxAnisotropy);
-
-  QString Anisotropic = GL_MaxAnisotropy>0 ? tr("supported (max %1)").arg(GL_MaxAnisotropy) : tr("Not supported");
+    QString Anisotropic = GL_MaxAnisotropy>0 ? tr("supported (max %1)").arg(GL_MaxAnisotropy) : tr("Not supported");
 	QString VersionFormat = tr("OpenGL Version %1\nGLSL Version %2\n%3 - %4\n\n");
 	QString Version = VersionFormat.arg(QString((const char*)glGetString(GL_VERSION)), QString((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION)), QString((const char*)glGetString(GL_RENDERER)), QString((const char*)glGetString(GL_VENDOR)));
 	QString BuffersFormat = tr("Color Buffer: %1 bits %2\nDepth Buffer: %4 bits\nStencil Buffer: %5 bits\nAnisotropy: %6\n\n");

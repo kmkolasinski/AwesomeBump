@@ -16,15 +16,17 @@
 
 
 namespace Ui {
-class FormImageProp;
+    class FormImageProp;
 }
+
+class QMainWindow;
 
 class FormImageProp : public FormImageBase
 {
     Q_OBJECT
 
 public:
-    explicit FormImageProp(QMainWindow *parent = 0, QGLWidget *shareWidget = 0);
+    explicit FormImageProp(QMainWindow *parent = 0);
 
     void setImage(QImage image);
 

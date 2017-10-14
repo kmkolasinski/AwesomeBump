@@ -20,9 +20,10 @@
 #ifndef GPUINFO_H
 #define GPUINFO_H
 
-#include <QGLContext>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
+
+#include "qtofflinegl.h"
 
 class GpuInfo
 {
@@ -35,9 +36,8 @@ public:
       INTEL
     };
     
-    GpuInfo(QGLContext*& glContext);
+    GpuInfo();
     ~GpuInfo();
-    void setGlContext(QGLContext*& glContext);
     gpuvendors getGpuMake();
     GLint getAvailMem();
     GLint getTotalMem();
@@ -51,7 +51,7 @@ private:
       GLint availMem;
     } m_curGpu;
     
-    QOpenGLContext* m_curGlContext;
+    QtOfflineGL* m_curGlContext;
 };
 
 #endif // GPUINFO_H

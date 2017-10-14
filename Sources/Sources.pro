@@ -2,7 +2,7 @@ TARGET = AwesomeBump
 
 TEMPLATE = app
 CONFIG += debug c++11
-QT += opengl gui widgets svg
+QT += gui widgets svg
 
 isEmpty(TOP_DIR) {
 	error("*** Run build process from the top source directory.")

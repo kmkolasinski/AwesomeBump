@@ -41,7 +41,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QMessageBox>
-#include <QGLFormat>
 #include <QSurfaceFormat>
 #include <QSysInfo>
 #include <QtDebug>
@@ -51,6 +50,8 @@
 #include "allaboutdialog.h"
 
 #include "CommonObjects.h"
+#include "qtofflinegl.h"
+
 
 #ifdef USE_OPENGL_330
     #define GL_MAJOR 3
@@ -92,6 +93,7 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
    {
       case QtDebugMsg:
          txt += QString("{DBG} %1").arg(msg);
+         fprintf(stderr, "[%s] %s\n", dt.toLatin1().constData(), msg.toLatin1().constData());
          break;
       case QtWarningMsg:
          txt += QString("{WRN} %1").arg(msg);
@@ -174,40 +176,33 @@ protected:
 	}
 };
 
-bool checkOpenGL(){
+#define INFO(S) qInfo() << S; info.append(S).append("\n");
 
-    QGLWidget *glWidget = new QGLWidget;
+bool checkOpenGL(QOpenGLContext *ctx, QString &info){
 
-    QGLContext* glContext = (QGLContext *) glWidget->context();
-    GLCHK( glContext->makeCurrent() );
+    const int glMajorVersion = ctx->format().majorVersion();
+    const int glMinorVersion = ctx->format().minorVersion();
 
-    int glMajorVersion, glMinorVersion;
-
-    glMajorVersion = glContext->format().majorVersion();
-    glMinorVersion = glContext->format().minorVersion();
-
-    qInfo() << "Running the " + QString(AWESOME_BUMP_VERSION);
-    qInfo() << "Checking OpenGL widget:";
-    qInfo() << "Widget OpenGL:" << QString("%1.%2").arg(glMajorVersion).arg(glMinorVersion);
-    qInfo() << "Context valid:" << glContext->isValid() ;
-    qInfo() << "OpenGL information:" ;
-    qInfo() << "VENDOR:"       << (const char*)glGetString(GL_VENDOR) ;
-    qInfo() << "RENDERER:"     << (const char*)glGetString(GL_RENDERER) ;
-    qInfo() << "VERSION:"      << (const char*)glGetString(GL_VERSION) ;
-    qInfo() << "GLSL VERSION:" << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION) ;
-    if (glContext->contextHandle()->hasExtension(QByteArrayLiteral("GL_KHR_debug"))) 
+    qInfo() << "Running the" << QString(AWESOME_BUMP_VERSION);
+    INFO(QString("Host: %1").arg(QSysInfo::prettyProductName()))
+    INFO(QString("Format OpenGL: %1.%2").arg(glMajorVersion).arg(glMinorVersion));
+    INFO(QString("Context valid: %1").arg(ctx->isValid()));
+    qInfo() << "OpenGL information:";
+    INFO(QString("VENDOR: %1").arg((const char*)glGetString(GL_VENDOR)));
+    INFO(QString("RENDERER: %1").arg((const char*)glGetString(GL_RENDERER)));
+    INFO(QString("VERSION: %1").arg((const char*)glGetString(GL_VERSION)));
+    INFO(QString("GLSL VERSION: %1").arg((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    if (ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug")))
     {
-        qInfo() << "Debug context: GL_KHR_debug available.";
+        INFO("Debug context: GL_KHR_debug available.");
     }
 
     Display3DSettings::openGLVersion = GL_MAJOR + (GL_MINOR * 0.1);
 
-    delete glWidget;
-
     // check openGL version
     if( glMajorVersion < GL_MAJOR || (glMajorVersion == GL_MAJOR && glMinorVersion < GL_MINOR))
     {
-        qWarning() << QString("Error: This version of AwesomeBump does not support openGL versions lower than %1.%2 :(").arg(GL_MAJOR).arg(GL_MINOR) ;
+        qWarning() << QString("Error: This version of AwesomeBump does not support OpenGL versions lower than %1.%2 :(").arg(GL_MAJOR).arg(GL_MINOR) ;
         return false;
     }
     return true;
@@ -217,8 +212,39 @@ bool checkOpenGL(){
 extern void regABSliderDelegates();
 extern void regABColorDelegates();
 
+// global sharing context
+QOpenGLContext *shareContext() {
+    static QOpenGLContext *gc = QOpenGLContext::globalShareContext();
+    Q_ASSERT(gc);
+    return gc;
+}
+
 int main(int argc, char *argv[])
 {
+	// setup default context attributes:
+    QSurfaceFormat format;
+
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+     /*
+     * Commenting out the next line because it causes rendering to fail.  QGLFormat::CoreProfile
+     * disables all OpenGL functions that are depreciated as of OpenGL 3.0.  This fix is a workaround.
+     * The full solution is to replace all depreciated OpenGL functions with their current implements.
+    */
+# if defined(Q_OS_MAC)
+# ifdef DEBUG
+    format.setOption( QSurfaceFormat::DebugContext );
+# endif
+    format.setProfile( QSurfaceFormat::CoreProfile );
+# endif
+    format.setVersion( GL_MAJOR, GL_MINOR );
+#endif
+
+    QSurfaceFormat::setDefaultFormat(format);
+
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication app(argc, argv);
 
     regABSliderDelegates();
@@ -237,12 +263,10 @@ int main(int argc, char *argv[])
     sp.resize(sz);
     sp.setPixmap(szpx.scaled(sz));
     sp.setMessage(VERSION_STRING "|Starting ...");
-    sp.show(); app.processEvents();
 
 	// Check for resource directory:
 	QString resDir = _find_data_dir();
 	if (!QFileInfo(resDir+"/Configs").isDir() || !QFileInfo(resDir+"/Core").isDir()) {
-    sp.hide(); app.processEvents();
 #ifdef Q_OS_MAC
 		return QMessageBox::critical(0, "Missing runtime files", QString("Missing runtime files\n\nCannot find runtime assets required to run the application (resource path: %1).").arg(QDir::cleanPath(resDir)));
 #else
@@ -278,45 +302,24 @@ int main(int argc, char *argv[])
     // removing old log file
     QFile::remove(AB_LOG);
 
-	// setup default context attributes:
-    QGLFormat glFormat(QGL::SampleBuffers); // deprecated
-    QSurfaceFormat format;
+    QtOfflineGL gltest; gltest.makeCurrent();
 
-    format.setDepthBufferSize(24);
-    format.setStencilBufferSize(8);
-    
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-     /*
-     * Commenting out the next line because it causes rendering to fail.  QGLFormat::CoreProfile
-     * disables all OpenGL functions that are depreciated as of OpenGL 3.0.  This fix is a workaround.
-     * The full solution is to replace all depreciated OpenGL functions with their current implements.
-    */
-# if defined(Q_OS_MAC)
-    glFormat.setProfile( QGLFormat::CoreProfile );
-# ifdef DEBUG
-    format.setOption( QSurfaceFormat::DebugContext );
-# endif
-    format.setProfile( QSurfaceFormat::CoreProfile );
-# endif
-    glFormat.setVersion( GL_MAJOR, GL_MINOR );
-    format.setVersion( GL_MAJOR, GL_MINOR );
-#endif
+    QString info; if(!checkOpenGL(gltest.context(), info)){
 
-    QGLFormat::setDefaultFormat(glFormat);
-    QSurfaceFormat::setDefaultFormat(format);
-
-    if(!checkOpenGL()){
-
-        AllAboutDialog msgBox;
+        AllAboutDialog msgBox(gltest.context());
         msgBox.setPixmap(":/resources/icons/icon-off.png");
-        msgBox.setInfoText(QString("Sorry but it seems that your graphics card does not support openGL %1.%2.\n"
-                                          "Program will not run :(\n"
-                                          "See " AB_LOG " file for more info.").arg(GL_MAJOR).arg(GL_MINOR));
+        msgBox.setInfoText(QString("We are very sorry, but it seems that your graphics card does not support minimum required OpenGL version: %1.%2.\n"
+                                          "Program cannot continue.\n\n"
+                                          "%3\n"
+                                          "See " AB_LOG " file for more info.")
+        .arg(GL_MAJOR).arg(GL_MINOR).arg(info));
 
         msgBox.show();
 
         return app.exec();
     }else{
+
+        sp.show(); app.processEvents();
 
         MainWindow window;
         QObject::connect(&window,SIGNAL(initProgress(int)),&sp,SLOT(setProgress(int)));

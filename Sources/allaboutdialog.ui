@@ -63,6 +63,9 @@
            <property name="text">
             <string>AwesomeBump Version 0.00.0</string>
            </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item>
@@ -80,6 +83,9 @@
            </property>
            <property name="wordWrap">
             <bool>true</bool>
+           </property>
+           <property name="margin">
+            <number>2</number>
            </property>
           </widget>
          </item>
@@ -124,6 +130,12 @@
        <property name="text">
         <string/>
        </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="margin">
+        <number>2</number>
+       </property>
       </widget>
      </item>
      <item>
@@ -152,6 +164,12 @@
           <widget class="QLabel" name="info">
            <property name="text">
             <string/>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <property name="margin">
+            <number>4</number>
            </property>
            <property name="textInteractionFlags">
             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
@@ -207,7 +225,7 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>

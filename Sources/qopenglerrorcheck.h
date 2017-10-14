@@ -1,12 +1,12 @@
 #ifndef QOPENGLERRORCHECK_H
 #define QOPENGLERRORCHECK_H
 
-#include <QtCore/qglobal.h>
-#include <QtCore/qdebug.h>
+#include <qglobal.h>
+#include <qdebug.h>
 
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include <QtOpenGL>
+#include <qopengl.h>
 
 QT_BEGIN_NAMESPACE
 

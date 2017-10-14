@@ -1,3 +1,8 @@
+#include <QTimer>
+#include <QMimeData>
+#include <QClipboard>
+#include <QMainWindow>
+
 #include "formimageprop.h"
 #include "ui_formimageprop.h"
 
@@ -7,8 +12,8 @@ QString _find_data_dir(const QString& resource = RESOURCE_BASE);
 
 bool FormImageProp::bLoading = false;
 
-FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget *shareWidget) :
-    FormImageBase(parent, shareWidget),
+FormImageProp::FormImageProp(QMainWindow *parent) :
+    FormImageBase(parent),
     ui(new Ui::FormImageProp)
 {
     ui->setupUi(this);
@@ -296,7 +301,7 @@ bool FormImageProp::loadFile(const QString &fileName)
     if(imageProp->properties->NormalsMixer.EnableMixer){
         qDebug() << Q_FUNC_INFO << "Open normal mixer image:" << fileName;
 
-        shared->makeCurrent();
+        shared.makeCurrent();
         imageProp->normalMixerInputTex = QOpenGLTexturePtr( new QOpenGLTexture(_image) );
 
         emit imageChanged();
@@ -324,7 +329,7 @@ void FormImageProp::pasteImageFromClipboard(QImage& _image){
 
 
 void FormImageProp::setImage(QImage _image){
-    Q_ASSERT(QGLContext::currentContext());
+    Q_ASSERT(QOpenGLContext::currentContext());
     image = _image;
     imageProp->init(image);
 }
@@ -483,7 +488,7 @@ void FormImageProp::pasteNormalFromClipBoard(){
         QPixmap pixmap = qvariant_cast<QPixmap>(mimeData->imageData());
         QImage _image = pixmap.toImage();
 
-        shared->makeCurrent();
+        shared.makeCurrent();
         imageProp->normalMixerInputTex->setData(_image);
         
         emit imageChanged();

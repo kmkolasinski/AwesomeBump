@@ -1,5 +1,8 @@
+#include <QMessageBox>
+
 #include "Dialog3DGeneralSettings.h"
 #include "ui_Dialog3DGeneralSettings.h"
+
 
 QtnPropertySetFilters3D* Dialog3DGeneralSettings::settings3D = NULL;
 GLSLShaderParser* Dialog3DGeneralSettings::currentRenderShader        = NULL;

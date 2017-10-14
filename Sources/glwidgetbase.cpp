@@ -4,9 +4,8 @@
 
 bool GLWidgetBase::wrapMouse = true;
 
-GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget * shareWidget)
-    : QGLWidget(format, parent, shareWidget),
-      updateIsQueued(false),
+GLWidgetBase::GLWidgetBase(QWidget *parent)
+    : QOpenGLWidget(parent),
       mouseUpdateIsQueued(false),
       eventLoopStarted(false),
       dx(0),
@@ -14,7 +13,6 @@ GLWidgetBase::GLWidgetBase(const QGLFormat& format, QWidget *parent, QGLWidget *
       buttons(0),
       keyPressed((Qt::Key)0)
 {
-    connect(this, &GLWidgetBase::updateGLLater, this, &GLWidgetBase::updateGLNow, Qt::QueuedConnection);
     connect(this, &GLWidgetBase::handleAccumulatedMouseMovementLater, this, &GLWidgetBase::handleAccumulatedMouseMovement, Qt::QueuedConnection);
     setMouseTracking(true);
     setFocusPolicy(Qt::ClickFocus);
@@ -26,32 +24,6 @@ GLWidgetBase::~GLWidgetBase()
 {
 }
 
-void GLWidgetBase::updateGLNow()
-{
-    // Now, after the area is actually drawn, we should be able to quue the next draws
-    updateIsQueued = false;
-
-    // Call the default updateGL implementation, which will call the paint method
-    QGLWidget::updateGL();
-}
-
-void GLWidgetBase::updateGL()
-{
-    if(updateIsQueued == false)
-    {
-        // Queue the updating the OpenGL Widget
-        updateIsQueued = true;
-        updateGLLater();
-    }
-
-    // Workaround: When the viewport gets drawn for the first time, the rendering
-    // has to be done multiple times for the end result to look correct.
-    // This workaround passes every drawcall, until mouse events are received for
-    // the first time.
-    if(!eventLoopStarted)
-        updateGLNow();
-}
-
 void GLWidgetBase::mousePressEvent(QMouseEvent *event)
 {
     lastCursorPos = event->pos();
@@ -61,9 +33,6 @@ void GLWidgetBase::mousePressEvent(QMouseEvent *event)
     mouseUpdateIsQueued = false;
 
 }
-
-
-
 
 void GLWidgetBase::mouseMoveEvent(QMouseEvent *event)
 {
@@ -150,7 +119,7 @@ void GLWidgetBase::handleAccumulatedMouseMovement()
 
 
     }
-    updateGL();
+    update();
 
     eventLoopStarted = true;
 }
@@ -168,7 +137,7 @@ void GLWidgetBase::toggleChangeCamPosition(bool toggle){
          keyPressed = Qt::Key_Shift;
          setCursor(centerCamCursor);
     }
-    updateGL();
+    update();
 }
 
 // ----------------------------------------------------------------
@@ -184,7 +153,7 @@ void GLWidgetBase::keyPressEvent(QKeyEvent *event){
         if( event->key() == KEY_SHOW_MATERIALS )
         {
                keyPressed = KEY_SHOW_MATERIALS;
-               updateGL();
+               update();
         }
         if( event->key() == Qt::Key_Shift )
         {
@@ -196,7 +165,7 @@ void GLWidgetBase::keyPressEvent(QKeyEvent *event){
                     keyPressed = Qt::Key_Shift;
                     setCursor(centerCamCursor);
                }
-               updateGL();
+               update();
         }
 
     }// end of event type
@@ -210,7 +179,7 @@ void GLWidgetBase::keyReleaseEvent(QKeyEvent *event) {
         if( event->key() == KEY_SHOW_MATERIALS)
         {
                keyPressed = (Qt::Key)0;
-               updateGL();
+               update();
                event->accept();
 
         }

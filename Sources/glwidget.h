@@ -41,10 +41,11 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include <QGLWidget>
-#include <QtOpenGL>
-#include <QOpenGLTexture>
+#include <qopengl.h>
 #include <qmath.h>
+
+#include <QOpenGLWidget>
+#include <QOpenGLTexture>
 
 #include "CommonObjects.h"
 #include "camera.h"
@@ -74,12 +75,12 @@ class GLWidget : public GLWidgetBase , protected OPENGL_FUNCTIONS
     Q_OBJECT
 
 public:
-    GLWidget(QWidget *parent = 0 , QGLWidget *shareWidget = 0);
+    GLWidget(QWidget *parent = 0);
     ~GLWidget();
 
     QSize minimumSizeHint() const;
     QSize sizeHint() const;    
-    void setPointerToTexture(QGLFramebufferObjectPtr pointer, TextureTypes type);
+    void setPointerToTexture(QOpenGLFramebufferObjectPtr pointer, TextureTypes type);
 
 public slots:
 
@@ -139,7 +140,7 @@ private:
     QOpenGLShaderProgram *skybox_program;
     QOpenGLShaderProgram *env_program;
 
-    QGLFramebufferObjectPtr fboIdPtrs[MAX_TEXTURES_TYPE];
+    QOpenGLFramebufferObjectPtr fboIdPtrs[MAX_TEXTURES_TYPE];
 
 
 
@@ -201,14 +202,14 @@ protected:
     void resizeFBOs();
     void deleteFBOs();
     void applyNormalFilter(GLuint input_tex);
-    void copyTexToFBO(GLuint input_tex, QGLFramebufferObjectPtr dst);
+    void copyTexToFBO(GLuint input_tex, QOpenGLFramebufferObjectPtr dst);
     void applyGaussFilter(GLuint input_tex,
-                          QGLFramebufferObjectPtr auxFBO,
-                          QGLFramebufferObjectPtr outputFBO, float radius = 10.0);
-    void applyDofFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO);
-    void applyGlowFilter(QGLFramebufferObjectPtr outputFBO);
-    void applyToneFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO);
-    void applyLensFlaresFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO);
+                          QOpenGLFramebufferObjectPtr auxFBO,
+                          QOpenGLFramebufferObjectPtr outputFBO, float radius = 10.0);
+    void applyDofFilter(GLuint input_tex, QOpenGLFramebufferObjectPtr outputFBO);
+    void applyGlowFilter(QOpenGLFramebufferObjectPtr outputFBO);
+    void applyToneFilter(GLuint input_tex, QOpenGLFramebufferObjectPtr outputFBO);
+    void applyLensFlaresFilter(GLuint input_tex, QOpenGLFramebufferObjectPtr outputFBO);
 public:
     static QDir* recentMeshDir;
 };

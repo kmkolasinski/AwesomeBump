@@ -1,6 +1,8 @@
 #include "dialoglogger.h"
 #include "ui_dialoglogger.h"
 
+#include <QScrollBar>
+
 DialogLogger::DialogLogger(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogLogger)

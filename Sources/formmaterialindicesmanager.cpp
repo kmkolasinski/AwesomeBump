@@ -1,8 +1,12 @@
 #include "formmaterialindicesmanager.h"
 #include "ui_formmaterialindicesmanager.h"
 
-FormMaterialIndicesManager::FormMaterialIndicesManager(QMainWindow *parent, QGLWidget* sharedWidget) :
-    FormImageBase(parent, sharedWidget),
+#include <QMimeData>
+#include <QClipboard>
+#include <QMainWindow>
+
+FormMaterialIndicesManager::FormMaterialIndicesManager(QMainWindow *parent) :
+    FormImageBase(parent),
     ui(new Ui::FormMaterialIndicesManager)
 {
     ui->setupUi(this);
@@ -33,7 +37,7 @@ void FormMaterialIndicesManager::disableMaterials(){
 
 
 void FormMaterialIndicesManager::setImage(QImage _image){
-    Q_ASSERT(QGLContext::currentContext());
+    Q_ASSERT(QOpenGLContext::currentContext());
 
     // remember the last id
     int mIndex = FBOImageProporties::currentMaterialIndeks;

@@ -34,9 +34,11 @@
 #ifndef GLBUFFERS_H
 #define GLBUFFERS_H
 
-#include <QtOpenGL>
+#include <qopengl.h>
+
 #include <QtWidgets>
 #include <QDebug>
+
 #include "../qopenglerrorcheck.h"
 #include "../CommonObjects.h"
 
@@ -88,7 +90,7 @@ public:
     void bindDefault();
     bool addTexture(GLenum COLOR_ATTACHMENTn);
     const GLuint& getAttachedTexture(GLuint index);
-    QGLFramebufferObjectPtr fbo;
+    QOpenGLFramebufferObjectPtr fbo;
 protected:
     int m_width, m_height;
     bool m_failed;    

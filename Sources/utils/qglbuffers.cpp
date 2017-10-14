@@ -32,7 +32,7 @@
 ****************************************************************************/
 
 #include "qglbuffers.h"
-#include <QtGui/qmatrix4x4.h>
+#include <qmatrix4x4.h>
 
 
 void qgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
@@ -331,12 +331,12 @@ GLFrameBufferObject::GLFrameBufferObject(int width, int height)
     initializeOpenGLFunctions();
 
     attachments.clear();
-    QGLFramebufferObjectFormat format;
+    QOpenGLFramebufferObjectFormat format;
     format.setInternalTextureFormat(TEXTURE_3DRENDER_FORMAT);
     format.setTextureTarget(GL_TEXTURE_2D);
     format.setMipmap(true);
-    format.setAttachment(QGLFramebufferObject::Depth);
-    fbo = QGLFramebufferObjectPtr(new QGLFramebufferObject(width,height,format));
+    format.setAttachment(QOpenGLFramebufferObject::Depth);
+    fbo = QOpenGLFramebufferObjectPtr(new QOpenGLFramebufferObject(width,height,format));
 
     GLCHK(glBindTexture(GL_TEXTURE_2D, fbo->texture()));
     GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT));

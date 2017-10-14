@@ -39,15 +39,16 @@
 ****************************************************************************/
 
 #include <QtWidgets>
-#include <QtOpenGL>
+#include <qopengl.h>
 #include <math.h>
+
 #include "glwidget.h"
 
 QString _find_data_dir(const QString& resource = RESOURCE_BASE);
 
 QDir* GLWidget::recentMeshDir = NULL;
 
-GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget) : GLWidgetBase(QGLFormat::defaultFormat(), parent, shareWidget)
+GLWidget::GLWidget(QWidget *parent) : GLWidgetBase(parent)
 {
     setAcceptDrops(true);
     zoom                    = 60;
@@ -135,51 +136,54 @@ void GLWidget::resetCameraPosition(){
     camera.reset();
     newCamera.reset();
     cameraInterpolation = 1.0;
+    update();
     emit changeCamPositionApplied(false);
-    updateGL();
 }
 
 
 void GLWidget::toggleDiffuseView(bool enable){
     bToggleDiffuseView = enable;
-    updateGL();
+    update();
 }
 
 void GLWidget::toggleSpecularView(bool enable){
     bToggleSpecularView = enable;
-    updateGL();
+    update();
 }
 
 void GLWidget::toggleOcclusionView(bool enable){
     bToggleOcclusionView = enable;
-    updateGL();
+    update();
 }
 
 void GLWidget::toggleNormalView(bool enable){
     bToggleNormalView = enable;
-    updateGL();
+    update();
 }
 
 void GLWidget::toggleHeightView(bool enable){
     bToggleHeightView = enable;
-    updateGL();
+    update();
 }
 
 void GLWidget::toggleRoughnessView(bool enable){
     bToggleRoughnessView = enable;
-    updateGL();
+    update();
 
 }
 void GLWidget::toggleMetallicView(bool enable){
     bToggleMetallicView = enable;
-    updateGL();
+    update();
 }
 
+static inline void qglClearColor(const QColor& c)
+{
+    glClearColor(c.redF(), c.greenF(), c.blueF(), c.alphaF());
+}
 
 void GLWidget::initializeGL()
 {
     initializeOpenGLFunctions();
-    makeCurrent();
 
     qglClearColor(QColor::fromCmykF(0.79, 0.79, 0.79, 0.0).dark());
 
@@ -502,7 +506,7 @@ void GLWidget::paintGL()
     // ---------------------------------------------------------
     bakeEnviromentalMaps();
     
-    QGLFramebufferObject::bindDefault();
+    QOpenGLFramebufferObject::bindDefault();
 
     if(cameraInterpolation < 1.0){
         double w = cameraInterpolation;
@@ -824,7 +828,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     }
 
 
-    updateGL();
+    update();
     // capture the pixel color if material preview is enabled
     if((event->buttons() & Qt::LeftButton) && keyPressed == KEY_SHOW_MATERIALS){
 
@@ -901,7 +905,7 @@ void GLWidget::wheelEvent(QWheelEvent *event){
     int numDegrees = -event->delta();
     camera.mouseWheelMove((numDegrees));
 
-    updateGL();
+    update();
 }
 
 void GLWidget::dropEvent(QDropEvent *event)
@@ -928,7 +932,7 @@ void GLWidget::dragEnterEvent(QDragEnterEvent *event)
 
 
 
-void GLWidget::setPointerToTexture(QGLFramebufferObjectPtr pointer, TextureTypes tType){
+void GLWidget::setPointerToTexture(QOpenGLFramebufferObjectPtr pointer, TextureTypes tType){
     switch(tType){
         case(DIFFUSE_TEXTURE ):
             fboIdPtrs[0] = pointer;
@@ -1014,7 +1018,7 @@ bool GLWidget::loadMeshFile(const QString &fileName, bool bAddExtension)
         delete new_mesh;
     }
 
-    updateGL();
+    update();
     return true;
 }
 
@@ -1040,14 +1044,14 @@ void GLWidget::chooseSkyBox(QString cubeMapName,bool bFirstTime){
         qWarning() << "Cannot load cube map: check if images listed above exist.";
     }
     // skip this when loading first cube map
-    if(!bFirstTime)updateGL();
+    if(!bFirstTime) update();
     else qDebug() << "Skipping glWidget repainting during first Env. maps. load.";
 }
 
 void GLWidget::updatePerformanceSettings(Display3DSettings settings){
 
     display3Dparameters = settings;
-    updateGL();
+    update();
 }
 
 void GLWidget::recompileRenderShader(){
@@ -1147,7 +1151,7 @@ void GLWidget::recompileRenderShader(){
 
     GLCHK(currentShader->program->release());
     Dialog3DGeneralSettings::updateParsedShaders();
-    updateGL();
+    update();
 
 }
 
@@ -1212,7 +1216,7 @@ void GLWidget::applyNormalFilter(GLuint input_tex){
 
 }
 
-void GLWidget::copyTexToFBO(GLuint input_tex, QGLFramebufferObjectPtr dst){
+void GLWidget::copyTexToFBO(GLuint input_tex, QOpenGLFramebufferObjectPtr dst){
 
     filter_program = post_processing_programs["NORMAL_FILTER"];
     filter_program->bind();
@@ -1228,8 +1232,8 @@ void GLWidget::copyTexToFBO(GLuint input_tex, QGLFramebufferObjectPtr dst){
 }
 
 void GLWidget::applyGaussFilter(GLuint input_tex,
-                                QGLFramebufferObjectPtr auxFBO,
-                                QGLFramebufferObjectPtr outputFBO, float radius){
+                                QOpenGLFramebufferObjectPtr auxFBO,
+                                QOpenGLFramebufferObjectPtr outputFBO, float radius){
 
 
 
@@ -1259,7 +1263,7 @@ void GLWidget::applyGaussFilter(GLuint input_tex,
 
 }
 
-void GLWidget::applyDofFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO){
+void GLWidget::applyDofFilter(GLuint input_tex, QOpenGLFramebufferObjectPtr outputFBO){
 
     // Skip processing if effect is disabled
     if(!settings3D->DOF.EnableEffect) return;
@@ -1302,7 +1306,7 @@ void GLWidget::applyDofFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFB
 
 
 
-void GLWidget::applyGlowFilter(QGLFramebufferObjectPtr outputFBO){
+void GLWidget::applyGlowFilter(QOpenGLFramebufferObjectPtr outputFBO){
     // Skip processing if effect is disabled
     if(!settings3D->Bloom.EnableEffect) return;
 
@@ -1353,7 +1357,7 @@ void GLWidget::applyGlowFilter(QGLFramebufferObjectPtr outputFBO){
 }
 
 
-void GLWidget::applyToneFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO){
+void GLWidget::applyToneFilter(GLuint input_tex, QOpenGLFramebufferObjectPtr outputFBO){
 
     // Skip processing if effect is disabled
     if(!settings3D->ToneMapping.EnableEffect) return;
@@ -1413,7 +1417,7 @@ void GLWidget::applyToneFilter(GLuint input_tex, QGLFramebufferObjectPtr outputF
     copyTexToFBO(outputFBO->texture(),colorFBO->fbo);
 }
 
-void GLWidget::applyLensFlaresFilter(GLuint input_tex, QGLFramebufferObjectPtr outputFBO){
+void GLWidget::applyLensFlaresFilter(GLuint input_tex, QOpenGLFramebufferObjectPtr outputFBO){
 
     // Skip processing if effect is disabled
     if(!settings3D->Flares.EnableEffect) return;

@@ -3,9 +3,12 @@
 #define GLPREVIEW_H
 
 #include <qmath.h>
-#include <QtOpenGL>
+#include <qopengl.h>
+
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
 #include <QOpenGLFunctions>
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 #include "CommonObjects.h"
 
@@ -26,12 +29,12 @@ enum TextureAlign {
   TextureAlignMaxType
 };
 
-class GLPreview : public QGLWidget, protected OpenGLFunctionsBase
+class GLPreview : public QOpenGLWidget, protected OpenGLFunctionsBase
 {
     Q_OBJECT
 
 public:
-    GLPreview(QWidget *parent = 0, QGLWidget *shareWidget = 0);
+    GLPreview(QWidget *parent = 0);
     ~GLPreview();
 
     QSize minimumSizeHint() const;

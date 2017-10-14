@@ -2,6 +2,7 @@
 #define FORMIMAGEBASE_H
 
 #include <QWidget>
+#include "qtofflinegl.h"
 #include "CommonObjects.h"
 
 // Manages all the input/output operations
@@ -9,15 +10,16 @@
 // paste & copy from/to clipboard
 // drag & drop events
 
-class QGLWidget;
+class QDir;
+
 class FormImageBase : public QWidget
 {
     Q_OBJECT
 public:
-    FormImageBase(QWidget *parent = 0, QGLWidget *shareWidget = 0);
+    FormImageBase(QWidget *parent = 0);
     ~FormImageBase();
     void keyPressEvent(QKeyEvent *event);
-    virtual FBOImageProportiesPtr getImageProporties(){return imageProp;}
+    virtual FBOImageProportiesPtr getImageProporties(){ return imageProp; }
     virtual void setImageName(QString name);
     virtual QString getImageName();
     virtual void saveFileToDir(const QString &dir);
@@ -42,11 +44,12 @@ signals:
 public slots:
     virtual void open();//open dialog
     virtual void save();
+
 protected:
-    QGLWidget *shared;
+    QtOfflineGL shared;
+
 public:
     static QDir* recentDir;
-
 };
 
 #endif // FORMIMAGEBASE_H

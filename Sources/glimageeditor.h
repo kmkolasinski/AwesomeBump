@@ -44,12 +44,13 @@
 #include <math.h>
 #include <map>
 
+#include <qopengl.h>
+
 #include <QWidget>
-#include <QtOpenGL>
+#include <QOpenGLShaderProgram>
 
 #include "glwidgetbase.h"
 #include "formmaterialindicesmanager.h"
-
 #include "CommonObjects.h"
 
 #ifdef USE_OPENGL_330
@@ -131,146 +132,146 @@ protected:
     void paintGL();
     void resizeGL(int width, int height);
 public:
-    void applyNormalFilter(  QGLFramebufferObjectPtr inputFBO,
-                             QGLFramebufferObjectPtr outputFBO);
+    void applyNormalFilter(  QOpenGLFramebufferObjectPtr inputFBO,
+                             QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyHeightToNormal(QGLFramebufferObjectPtr inputFBO,
-                             QGLFramebufferObjectPtr outputFBO);
+    void applyHeightToNormal(QOpenGLFramebufferObjectPtr inputFBO,
+                             QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyPerspectiveTransformFilter(  QGLFramebufferObjectPtr inputFBO,
-                                           QGLFramebufferObjectPtr outputFBO);
+    void applyPerspectiveTransformFilter(  QOpenGLFramebufferObjectPtr inputFBO,
+                                           QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applySeamlessLinearFilter(QGLFramebufferObjectPtr inputFBO,
-                                   QGLFramebufferObjectPtr outputFBO);
+    void applySeamlessLinearFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                   QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applySeamlessFilter(QGLFramebufferObjectPtr inputFBO,
-                             QGLFramebufferObjectPtr outputFBO);
+    void applySeamlessFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                             QOpenGLFramebufferObjectPtr outputFBO);
 
     void applyOcclusionFilter(GLuint height_tex,
                               GLuint normal_tex,
-                              QGLFramebufferObjectPtr outputFBO);
+                              QOpenGLFramebufferObjectPtr outputFBO);
 
     void applyNormalToHeight(FBOImageProportiesPtr image,
-                             QGLFramebufferObjectPtr normalFBO,
-                             QGLFramebufferObjectPtr heightFBO,
-                             QGLFramebufferObjectPtr outputFBO);
+                             QOpenGLFramebufferObjectPtr normalFBO,
+                             QOpenGLFramebufferObjectPtr heightFBO,
+                             QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyCPUNormalizationFilter(QGLFramebufferObjectPtr inputFBO,
-                                  QGLFramebufferObjectPtr outputFBO);
+    void applyCPUNormalizationFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                     QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyAddNoiseFilter(QGLFramebufferObjectPtr inputFBO,
-                             QGLFramebufferObjectPtr outputFBO);
+    void applyAddNoiseFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                             QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyGaussFilter(QGLFramebufferObjectPtr sourceFBO, QGLFramebufferObjectPtr auxFBO,
-                          QGLFramebufferObjectPtr outputFBO, int no_iter, float w =0);
+    void applyGaussFilter(QOpenGLFramebufferObjectPtr sourceFBO, QOpenGLFramebufferObjectPtr auxFBO,
+                          QOpenGLFramebufferObjectPtr outputFBO, int no_iter, float w =0);
 
-    void applyGrayScaleFilter(QGLFramebufferObjectPtr inputFBO,
-                              QGLFramebufferObjectPtr outputFBO);
+    void applyGrayScaleFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                              QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyInvertComponentsFilter(QGLFramebufferObjectPtr inputFBO,
-                                    QGLFramebufferObjectPtr outputFBO);
+    void applyInvertComponentsFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                    QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyColorHueFilter(  QGLFramebufferObjectPtr inputFBO,
-                               QGLFramebufferObjectPtr outputFBO);
+    void applyColorHueFilter(  QOpenGLFramebufferObjectPtr inputFBO,
+                               QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyRoughnessFilter(QGLFramebufferObjectPtr inputFBO,
-                              QGLFramebufferObjectPtr auxFBO,
-                              QGLFramebufferObjectPtr outputFBO);
+    void applyRoughnessFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                              QOpenGLFramebufferObjectPtr auxFBO,
+                              QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyDGaussiansFilter(QGLFramebufferObjectPtr inputFBO,
-                             QGLFramebufferObjectPtr auxFBO,
-                             QGLFramebufferObjectPtr outputFBO);
+    void applyDGaussiansFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                             QOpenGLFramebufferObjectPtr auxFBO,
+                             QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyContrastFilter(QGLFramebufferObjectPtr inputFBO,
-                             QGLFramebufferObjectPtr outputFBO);
+    void applyContrastFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                             QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyHeightProcessingFilter( QGLFramebufferObjectPtr inputFBO,
-                                      QGLFramebufferObjectPtr outputFBO);
+    void applyHeightProcessingFilter( QOpenGLFramebufferObjectPtr inputFBO,
+                                      QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyRemoveLowFreqFilter(QGLFramebufferObjectPtr inputFBO,
-                                  QGLFramebufferObjectPtr auxFBO,
-                                  QGLFramebufferObjectPtr outputFBO);
+    void applyRemoveLowFreqFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                  QOpenGLFramebufferObjectPtr auxFBO,
+                                  QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyInverseColorFilter(QGLFramebufferObjectPtr inputFBO,
-                                 QGLFramebufferObjectPtr outputFBO);
+    void applyInverseColorFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                 QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyOverlayFilter( QGLFramebufferObjectPtr layerAFBO,
-                             QGLFramebufferObjectPtr layerBFBO,
-                             QGLFramebufferObjectPtr outputFBO);
+    void applyOverlayFilter( QOpenGLFramebufferObjectPtr layerAFBO,
+                             QOpenGLFramebufferObjectPtr layerBFBO,
+                             QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyRemoveShadingFilter(QGLFramebufferObjectPtr inputFBO,
-                                   QGLFramebufferObjectPtr aoMaskFBO, QGLFramebufferObjectPtr refFBO,
-                                   QGLFramebufferObjectPtr outputFBO);
+    void applyRemoveShadingFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                  QOpenGLFramebufferObjectPtr aoMaskFBO, QOpenGLFramebufferObjectPtr refFBO,
+                                  QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applySmallDetailsFilter(QGLFramebufferObjectPtr inputFBO,
-                                 QGLFramebufferObjectPtr auxFBO,
-                                 QGLFramebufferObjectPtr outputFBO);
-    void applyMediumDetailsFilter(QGLFramebufferObjectPtr inputFBO,
-                                          QGLFramebufferObjectPtr auxFBO,
-                                 QGLFramebufferObjectPtr outputFBO);
+    void applySmallDetailsFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                 QOpenGLFramebufferObjectPtr auxFBO,
+                                 QOpenGLFramebufferObjectPtr outputFBO);
+    void applyMediumDetailsFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                  QOpenGLFramebufferObjectPtr auxFBO,
+                                  QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applySharpenBlurFilter(QGLFramebufferObjectPtr inputFBO,
-                                QGLFramebufferObjectPtr auxFBO,
-                                QGLFramebufferObjectPtr outputFBO);
-
-
-    void applyNormalFilter(QGLFramebufferObjectPtr inputFBO);
+    void applySharpenBlurFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                QOpenGLFramebufferObjectPtr auxFBO,
+                                QOpenGLFramebufferObjectPtr outputFBO);
 
 
+    void applyNormalFilter(QOpenGLFramebufferObjectPtr inputFBO);
 
 
-    void applyNormalsStepFilter(QGLFramebufferObjectPtr inputFBO,
-                                QGLFramebufferObjectPtr outputFBO);
 
 
-    void applyNormalMixerFilter(QGLFramebufferObjectPtr inputFBO,
-                                QGLFramebufferObjectPtr outputFBO);
+    void applyNormalsStepFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applySobelToNormalFilter(QGLFramebufferObjectPtr inputFBO,
-                                  QGLFramebufferObjectPtr outputFBO, BaseMapConvLevelProperties &convProp);
 
-    void applyNormalAngleCorrectionFilter(QGLFramebufferObjectPtr inputFBO,
-                                          QGLFramebufferObjectPtr outputFBO);
+    void applyNormalMixerFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyNormalExpansionFilter(QGLFramebufferObjectPtr inputFBO,
-                                  QGLFramebufferObjectPtr outputFBO);
+    void applySobelToNormalFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                  QOpenGLFramebufferObjectPtr outputFBO, BaseMapConvLevelProperties &convProp);
+
+    void applyNormalAngleCorrectionFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                          QOpenGLFramebufferObjectPtr outputFBO);
+
+    void applyNormalExpansionFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                    QOpenGLFramebufferObjectPtr outputFBO);
 
     void applyMixNormalLevels(GLuint level0,
                               GLuint level1,
                               GLuint level2,
                               GLuint level3,
-                              QGLFramebufferObjectPtr outputFBO);
+                              QOpenGLFramebufferObjectPtr outputFBO);
 
 
-    void applyBaseMapConversion(QGLFramebufferObjectPtr baseMapFBO,
-                                QGLFramebufferObjectPtr auxFBO,
-                                QGLFramebufferObjectPtr outputFBO, BaseMapConvLevelProperties &convProp);
-    void applyPreSmoothFilter(QGLFramebufferObjectPtr inputFBO,
-                              QGLFramebufferObjectPtr auxFBO,
-                             QGLFramebufferObjectPtr outputFBO, BaseMapConvLevelProperties &convProp);
+    void applyBaseMapConversion(QOpenGLFramebufferObjectPtr baseMapFBO,
+                                QOpenGLFramebufferObjectPtr auxFBO,
+                                QOpenGLFramebufferObjectPtr outputFBO, BaseMapConvLevelProperties &convProp);
+    void applyPreSmoothFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                              QOpenGLFramebufferObjectPtr auxFBO,
+                              QOpenGLFramebufferObjectPtr outputFBO, BaseMapConvLevelProperties &convProp);
 
-    void applyCombineNormalHeightFilter(QGLFramebufferObjectPtr normalFBO,
-                                        QGLFramebufferObjectPtr heightFBO,
-                                        QGLFramebufferObjectPtr outputFBO);
+    void applyCombineNormalHeightFilter(QOpenGLFramebufferObjectPtr normalFBO,
+                                        QOpenGLFramebufferObjectPtr heightFBO,
+                                        QOpenGLFramebufferObjectPtr outputFBO);
 
 
-    void applyRoughnessColorFilter(QGLFramebufferObjectPtr inputFBO,
-                                   QGLFramebufferObjectPtr outputFBO);
+    void applyRoughnessColorFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                   QOpenGLFramebufferObjectPtr outputFBO);
 
-    void copyFBO(QGLFramebufferObjectPtr src,QGLFramebufferObjectPtr dst);
-    void copyTex2FBO(GLuint src_tex_id,QGLFramebufferObjectPtr dst);
+    void copyFBO(QOpenGLFramebufferObjectPtr src,QOpenGLFramebufferObjectPtr dst);
+    void copyTex2FBO(GLuint src_tex_id,QOpenGLFramebufferObjectPtr dst);
 
-    void applyAllUVsTransforms(QGLFramebufferObjectPtr inoutFBO);
+    void applyAllUVsTransforms(QOpenGLFramebufferObjectPtr inoutFBO);
 
-    void applyGrungeImageFilter (QGLFramebufferObjectPtr inputFBO,
-                                 QGLFramebufferObjectPtr outputFBO,
-                                 QGLFramebufferObjectPtr grungeFBO);
+    void applyGrungeImageFilter (QOpenGLFramebufferObjectPtr inputFBO,
+                                 QOpenGLFramebufferObjectPtr outputFBO,
+                                 QOpenGLFramebufferObjectPtr grungeFBO);
 
-    void applyGrungeRandomizationFilter(QGLFramebufferObjectPtr inputFBO,
-                                        QGLFramebufferObjectPtr outputFBO);
+    void applyGrungeRandomizationFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                        QOpenGLFramebufferObjectPtr outputFBO);
 
-    void applyGrungeWarpNormalFilter(QGLFramebufferObjectPtr inputFBO,
-                                     QGLFramebufferObjectPtr outputFBO);
+    void applyGrungeWarpNormalFilter(QOpenGLFramebufferObjectPtr inputFBO,
+                                     QOpenGLFramebufferObjectPtr outputFBO);
 
     void updateProgramUniforms(int step);
 
@@ -279,22 +280,22 @@ private:
 
     QOpenGLShaderProgram *program;
     FBOImageProportiesPtr activeImage;
-    QGLFramebufferObjectPtr averageColorFBO; // small FBO used for calculation of average color
-    QGLFramebufferObjectPtr samplerFBO1; // FBO with size 1024x1024
-    QGLFramebufferObjectPtr samplerFBO2; // FBO with size 1024x1024 used for different processing
+    QOpenGLFramebufferObjectPtr averageColorFBO; // small FBO used for calculation of average color
+    QOpenGLFramebufferObjectPtr samplerFBO1; // FBO with size 1024x1024
+    QOpenGLFramebufferObjectPtr samplerFBO2; // FBO with size 1024x1024 used for different processing
     
     // FBOs used in image processing
-    QGLFramebufferObjectPtr auxFBO1;
-    QGLFramebufferObjectPtr auxFBO2;
-    QGLFramebufferObjectPtr auxFBO3;
-    QGLFramebufferObjectPtr auxFBO4;
+    QOpenGLFramebufferObjectPtr auxFBO1;
+    QOpenGLFramebufferObjectPtr auxFBO2;
+    QOpenGLFramebufferObjectPtr auxFBO3;
+    QOpenGLFramebufferObjectPtr auxFBO4;
 
-    QGLFramebufferObjectPtr auxFBO1BMLevels[3]; // 2 times smaller. 4 and 8
-    QGLFramebufferObjectPtr auxFBO2BMLevels[3]; //
-    QGLFramebufferObjectPtr auxFBO0BMLevels[3]; //
+    QOpenGLFramebufferObjectPtr auxFBO1BMLevels[3]; // 2 times smaller. 4 and 8
+    QOpenGLFramebufferObjectPtr auxFBO2BMLevels[3]; //
+    QOpenGLFramebufferObjectPtr auxFBO0BMLevels[3]; //
 
-    QGLFramebufferObjectPtr paintFBO;  // Used for painting texture
-    QGLFramebufferObjectPtr renderFBO; // Used for rendering to it
+    QOpenGLFramebufferObjectPtr paintFBO;  // Used for painting texture
+    QOpenGLFramebufferObjectPtr renderFBO; // Used for rendering to it
 
     std::map<std::string,GLuint> subroutines;
     std::map<std::string,QOpenGLShaderProgram*> filter_programs; // all filters in one array
