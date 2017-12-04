@@ -1484,7 +1484,7 @@ void MainWindow::runBatch()
 
     qDebug() << "> Starting batch mode: this may take some time";
 
-
+    isOffScreenRenderingEnabled = true;
     while(ui->listWidgetImageBatch->count() > 0){
         QListWidgetItem* item = ui->listWidgetImageBatch->takeItem(0);
         qDebug() << "> Images left: " +
@@ -1588,7 +1588,6 @@ void MainWindow::convertFromBase(){
     roughnessImageProp->setImageName(diffuseImageProp->getImageName());
     metallicImageProp ->setImageName(diffuseImageProp->getImageName());
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
-    qDebug() << "> --- update gl now";
     glImage->updateGLNow();
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
     replotAllImages();

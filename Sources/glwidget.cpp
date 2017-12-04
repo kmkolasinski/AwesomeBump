@@ -495,8 +495,6 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
-    qDebug() << "> --- GLWidget paintGL()";
-
      glReadBuffer(GL_BACK);
     // ---------------------------------------------------------
     // Drawing env

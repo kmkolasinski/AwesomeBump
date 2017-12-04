@@ -26,6 +26,32 @@ GLWidgetBase::~GLWidgetBase()
 {
 }
 
+#include <cassert>
+bool isOffScreenRenderingEnabled = false;
+void GLWidgetBase::doOffscreenRender()
+{
+    if (! isOffScreenRenderingEnabled)
+        return;
+
+    makeCurrent();
+    assert (this->isValid());
+
+
+
+    if (! isInitOffscreen)
+    {
+        isInitOffscreen = true;
+
+        initializeGL();
+//        resizeGL(512, 512);
+    }
+
+    paintGL();
+
+//    doneCurrent();
+
+}
+
 void GLWidgetBase::updateGLNow()
 {
     // Now, after the area is actually drawn, we should be able to quue the next draws
@@ -33,16 +59,16 @@ void GLWidgetBase::updateGLNow()
 
     // Call the default updateGL implementation, which will call the paint method
     QGLWidget::updateGL();
+
+#ifdef CONVERT_TO_CONSOLE
+    doOffscreenRender();
+#endif
 }
 
 void GLWidgetBase::updateGL()
 {
-    qDebug() << "> --- updateGL()";
-
     if(updateIsQueued == false)
     {
-        qDebug() << "> --- update is queued";
-
         // Queue the updating the OpenGL Widget
         updateIsQueued = true;
         updateGLLater();
@@ -54,7 +80,6 @@ void GLWidgetBase::updateGL()
     // the first time.
     if(!eventLoopStarted)
     {
-        qDebug() << "> --- event loop not started";
         updateGLNow();
     }
 }

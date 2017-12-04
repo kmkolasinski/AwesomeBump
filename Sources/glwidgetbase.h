@@ -4,6 +4,9 @@
 #include <QGLWidget>
 #include <QDebug>
 #include "CommonObjects.h"
+
+extern bool isOffScreenRenderingEnabled;
+
 class GLWidgetBase : public QGLWidget
 {
     Q_OBJECT
@@ -14,6 +17,8 @@ public:
     ~GLWidgetBase();
 
 public:
+    void doOffscreenRender();
+
     // Instead of updating the opengl area immediatly, this queues drawing and
     // makes sure, to do it only once until updateGLNow was called.
     void updateGL() Q_DECL_FINAL Q_DECL_OVERRIDE;
@@ -52,6 +57,8 @@ private:
 
     int dx, dy;
     Qt::MouseButtons buttons;
+
+    bool isInitOffscreen = false;
 
 protected:
     Qt::Key keyPressed;

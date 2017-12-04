@@ -318,8 +318,6 @@ void GLImage::initializeGL()
 
 void GLImage::paintGL()
 {    
-    qDebug() << "> --- GLImage paintGL()";
-
     // Perform filters on images and render the final result to renderFBO
     // avoid rendering function if there is rendered something already
     if(!bSkipProcessing && !bRendering){        
