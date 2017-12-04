@@ -37,8 +37,12 @@ void GLWidgetBase::updateGLNow()
 
 void GLWidgetBase::updateGL()
 {
+    qDebug() << "> --- updateGL()";
+
     if(updateIsQueued == false)
     {
+        qDebug() << "> --- update is queued";
+
         // Queue the updating the OpenGL Widget
         updateIsQueued = true;
         updateGLLater();
@@ -49,7 +53,10 @@ void GLWidgetBase::updateGL()
     // This workaround passes every drawcall, until mouse events are received for
     // the first time.
     if(!eventLoopStarted)
+    {
+        qDebug() << "> --- event loop not started";
         updateGLNow();
+    }
 }
 
 void GLWidgetBase::mousePressEvent(QMouseEvent *event)

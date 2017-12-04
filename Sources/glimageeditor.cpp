@@ -317,7 +317,8 @@ void GLImage::initializeGL()
 }
 
 void GLImage::paintGL()
-{
+{    
+    qDebug() << "> --- GLImage paintGL()";
 
     // Perform filters on images and render the final result to renderFBO
     // avoid rendering function if there is rendered something already
@@ -469,7 +470,6 @@ void GLImage::render(){
     GLCHK( program->setUniformValue("gui_depth", float(1.0)) );
     GLCHK( program->setUniformValue("gui_mode_dgaussian", 1) );
     GLCHK( program->setUniformValue("material_id", int(activeImage->currentMaterialIndeks) ) );
-
 
 
     if(activeImage->bFirstDraw){

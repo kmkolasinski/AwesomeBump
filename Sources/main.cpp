@@ -329,7 +329,10 @@ int main(int argc, char *argv[])
         {
             MainWindow window;
 
-            window.initializeApp();
+            window.initializeApp();            
+//            window.show();
+//            window.setWindowState((window.windowState() |
+//                               Qt::WindowMinimized));
 
             bool ok = true;
             ok = window.selectSourceImagesFromPath(app.arguments().at(1));

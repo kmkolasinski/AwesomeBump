@@ -465,7 +465,10 @@ public:
         qDebug() << Q_FUNC_INFO;
 
         glWidget_ptr->makeCurrent();
-        if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
+        if(glIsTexture(scr_tex_id))
+        {
+            glWidget_ptr->deleteTexture(scr_tex_id);
+        }
         scr_tex_id = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
         scr_tex_width  = image.width();
         scr_tex_height = image.height();

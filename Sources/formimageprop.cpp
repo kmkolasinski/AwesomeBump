@@ -296,8 +296,13 @@ bool FormImageProp::loadFile(const QString &fileName)
         qDebug() << "> <FormImageProp> Open normal mixer image:" << fileName;
 
         imageProp.glWidget_ptr->makeCurrent();
-        if(glIsTexture(imageProp.normalMixerInputTexId)) imageProp.glWidget_ptr->deleteTexture(imageProp.normalMixerInputTexId);
-        imageProp.normalMixerInputTexId = imageProp.glWidget_ptr->bindTexture(_image,GL_TEXTURE_2D);        
+        if(glIsTexture(imageProp.normalMixerInputTexId))
+        {
+            imageProp.glWidget_ptr->deleteTexture(
+                        imageProp.normalMixerInputTexId);
+        }
+        imageProp.normalMixerInputTexId = imageProp.glWidget_ptr->
+                bindTexture(_image,GL_TEXTURE_2D);
 
         emit imageChanged();
 

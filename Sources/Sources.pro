@@ -2,7 +2,7 @@ TARGET        = AwesomeBump
 TEMPLATE      = app
 CONFIG       += c++11
 
-#DEFINES += CONVERT_TO_CONSOLE
+DEFINES += CONVERT_TO_CONSOLE
 
 
 LIBS += -lopengl32

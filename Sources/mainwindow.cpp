@@ -515,14 +515,15 @@ MainWindow::~MainWindow()
     delete ui;
 
 }
+#include <cassert>
 void MainWindow::closeEvent(QCloseEvent *event) {
+#ifndef CONVERT_TO_CONSOLE
     QWidget::closeEvent( event );
-
+    qDebug() << "CLOSE EVENT ------------ !!!!!!!!!!!!!!!!!!!";
     settingsContainer->close();
     glWidget->close();
     glImage->close();
-
-
+#endif
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event){
@@ -1587,6 +1588,7 @@ void MainWindow::convertFromBase(){
     roughnessImageProp->setImageName(diffuseImageProp->getImageName());
     metallicImageProp ->setImageName(diffuseImageProp->getImageName());
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
+    qDebug() << "> --- update gl now";
     glImage->updateGLNow();
     glImage->setConversionType(CONVERT_FROM_D_TO_O);
     replotAllImages();
