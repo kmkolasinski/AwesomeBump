@@ -152,6 +152,7 @@ void GLPreview::resizeGL(int width, int height)
 
 void GLPreview::textureChanged(TextureTypes imageType, GLuint texture)
 {
+  qDebug() << "textureChanged/update texture" << imageType;
   textures[imageType] = texture;
   update();
 }

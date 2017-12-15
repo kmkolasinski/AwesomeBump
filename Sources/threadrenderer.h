@@ -1,12 +1,17 @@
 #ifndef THREADRENDERER_H
 #define THREADRENDERER_H
 
+#include <QQueue>
+#include <QMutex>
 #include <QThread>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QOpenGLFramebufferObject>
-#include <QGuiApplication>
 #include <QOffscreenSurface>
+#include <QGuiApplication>
+
+#include "CommonObjects.h"
+
 
 class RenderThread;
 
@@ -15,18 +20,22 @@ class ThreadRenderer : public QObject
     Q_OBJECT
 
 public:
-    template<class R> ThreadRenderer() : m_renderThread(0) {
-      m_renderThread = new R(QSize(512, 512));
+    ThreadRenderer();
+    void updateImage(TextureTypes tt)
+    {
+        requests.enqueue(tt);
+        m_worker.wakeAll();
     }
 
+    static QQueue<TextureTypes> requests;
     static QList<QThread *> threads;
 
-public Q_SLOTS:
-    void ready();
-    void update() { }
+Q_SIGNALS:
+    void ready(TextureTypes tt);
 
 private:
     RenderThread *m_renderThread;
+    QWaitCondition m_worker;
 };
 
 /*
@@ -37,13 +46,16 @@ private:
 class RenderThread : public QThread
 {
     Q_OBJECT
+    QMutex m_mutex;
+    QWaitCondition &m_worker;
 public:
-    RenderThread(const QSize &size)
+    RenderThread(const QSize &size, const QWaitCondition &worker)
         : surface(0)
         , context(0)
         , m_renderFbo(0)
         , m_displayFbo(0)
         , m_size(size)
+        , m_worker(worker)
     {
         ThreadRenderer::threads << this;
     }
@@ -51,7 +63,7 @@ public:
     QOffscreenSurface *surface;
     QOpenGLContext *context;
 
-public slots:
+public Q_SLOTS:
     void renderNext()
     {
         context->makeCurrent(surface);
@@ -68,7 +80,7 @@ public slots:
         m_renderFbo->bind();
         context->functions()->glViewport(0, 0, m_size.width(), m_size.height());
 
-	renderContent();
+        renderContent();
 
         // We need to flush the contents to the FBO before posting
         // the texture to the other thread, otherwise, we might
@@ -97,10 +109,10 @@ public slots:
         moveToThread(QGuiApplication::instance()->thread());
     }
 
-    virtual void initializeContentRenderer() = 0;
-    virtual void renderContent() = 0;
+    void initializeContentRenderer();
+    void renderContent();
     
-signals:
+Q_SIGNALS:
     void textureReady(int id, const QSize &size);
 
 private:

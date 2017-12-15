@@ -45,6 +45,8 @@
 #include <QSysInfo>
 #include <QtDebug>
 
+#include <QtGui/qpa/qplatformintegration.h>
+
 #include "mainwindow.h"
 #include "glimageeditor.h"
 #include "allaboutdialog.h"
@@ -195,6 +197,10 @@ bool checkOpenGL(QOpenGLContext *ctx, QString &info){
     if (ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug")))
     {
         INFO("Debug context: GL_KHR_debug available.");
+    }
+    if (!QGuiApplicationPrivate::platform_integration->hasCapability(QPlatformIntegration::ThreadedOpenGL))
+    {
+        INFO("Threaded OpenGL not available.");
     }
 
     Display3DSettings::openGLVersion = GL_MAJOR + (GL_MINOR * 0.1);

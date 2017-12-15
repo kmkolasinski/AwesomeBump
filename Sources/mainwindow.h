@@ -14,6 +14,7 @@
 #include "glwidget.h"
 #include "glimageeditor.h"
 #include "glpreview.h"
+#include "threadrenderer.h"
 
 class QLabel;
 
@@ -148,14 +149,17 @@ private:
     // saves all textures to given directory
     bool saveAllImages(const QString &dir);
 
+    // background renderer
+    ThreadRenderer gr;
+
     // Pointers
     Ui::MainWindow *ui;
     GLWidget *glWidget;
     GLImage *glImage;
     GLPreview *glTexturesPreview;
 
-    bool bSaveCheckedImages;
-    bool bSaveCompressedFormImages;
+    bool savingCheckedImages;
+    bool savingCompressedFormImages;
 
     QDir recentDir;
     QDir recentMeshDir; // path to last loaded OBJ Mesh folder

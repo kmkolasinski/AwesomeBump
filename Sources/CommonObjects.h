@@ -29,10 +29,11 @@
 # define AB_LOG "log.txt"
 #endif
 
+class FBOImageProporties;
+
 // default types for OpenGL objects:
 typedef QSharedPointer<QOpenGLFramebufferObject> QOpenGLFramebufferObjectPtr;
 typedef QSharedPointer<QOpenGLTexture> QOpenGLTexturePtr;
-class FBOImageProporties;
 typedef QSharedPointer<FBOImageProporties> FBOImageProportiesPtr;
 
 #define TEXTURE_FORMAT GL_RGB16F

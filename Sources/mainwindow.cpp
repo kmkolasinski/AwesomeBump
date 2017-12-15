@@ -25,16 +25,16 @@
 extern QString _find_data_dir(const QString& resource);
 
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    :QMainWindow(parent)
+    ,ui(new Ui::MainWindow)
 {
     setWindowIcon(QIcon(":/resources/icons/AB.png"));
 
     recentDir                   = NULL;
     recentMeshDir               = NULL;
-    bSaveCheckedImages          = false;
-    bSaveCompressedFormImages   = false;
+    savingCheckedImages         = false;
+    savingCompressedFormImages  = false;
     FormImageProp::recentDir    = &recentDir;
     GLWidget::recentMeshDir     = &recentMeshDir;
     abSettings                  = new QtnPropertySetAwesomeBump(this);
@@ -625,7 +625,7 @@ void MainWindow::replotAllImages(){
     glImage->enableShadowRender(true);
 
     // skip grunge map if conversion is enabled
-    if(glImage->getConversionType() != CONVERT_FROM_D_TO_O){        
+    if(glImage->getConversionType() != CONVERT_FROM_D_TO_O) {
         updateImage(GRUNGE_TEXTURE);
     }
 
@@ -840,47 +840,47 @@ bool MainWindow::saveAllImages(const QString &dir){
     QCoreApplication::processEvents();
     ui->progressBar->setValue(0);
 
-    if(!bSaveCompressedFormImages){
+    if(!savingCompressedFormImages){
         ui->labelProgressInfo->setText("Saving diffuse image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveDiffuse->isChecked() || !bSaveCheckedImages ){
+        if(savingCheckedImages*ui->checkBoxSaveDiffuse->isChecked() || !savingCheckedImages ){
             diffuseImageProp ->saveFileToDir(dir);
         }
         ui->progressBar->setValue(15);
 
 
         ui->labelProgressInfo->setText("Saving normal image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveNormal->isChecked() || !bSaveCheckedImages ){
+        if(savingCheckedImages*ui->checkBoxSaveNormal->isChecked() || !savingCheckedImages ){
             normalImageProp  ->saveFileToDir(dir);
 
         }
         ui->progressBar->setValue(30);
         ui->labelProgressInfo->setText("Saving specular image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveSpecular->isChecked() || !bSaveCheckedImages ){
+        if(savingCheckedImages*ui->checkBoxSaveSpecular->isChecked() || !savingCheckedImages ){
             specularImageProp->saveFileToDir(dir);
 
         }
         ui->progressBar->setValue(45);
 
         ui->labelProgressInfo->setText("Saving height image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveHeight->isChecked() || !bSaveCheckedImages ){
+        if(savingCheckedImages*ui->checkBoxSaveHeight->isChecked() || !savingCheckedImages ){
             occlusionImageProp  ->saveFileToDir(dir);
         }
 
         ui->progressBar->setValue(60);
         ui->labelProgressInfo->setText("Saving occlusion image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveOcclusion->isChecked() || !bSaveCheckedImages ){
+        if(savingCheckedImages*ui->checkBoxSaveOcclusion->isChecked() || !savingCheckedImages ){
             heightImageProp  ->saveFileToDir(dir);
         }
 
         ui->progressBar->setValue(75);
         ui->labelProgressInfo->setText("Saving roughness image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveRoughness->isChecked() || !bSaveCheckedImages ){
+        if(savingCheckedImages*ui->checkBoxSaveRoughness->isChecked() || !savingCheckedImages ){
             roughnessImageProp  ->saveFileToDir(dir);
         }
 
         ui->progressBar->setValue(90);
         ui->labelProgressInfo->setText("Saving metallic image...");
-        if(bSaveCheckedImages*ui->checkBoxSaveMetallic->isChecked() || !bSaveCheckedImages ){
+        if(savingCheckedImages*ui->checkBoxSaveMetallic->isChecked() || !savingCheckedImages ){
             metallicImageProp ->saveFileToDir(dir);
         }
         ui->progressBar->setValue(100);
@@ -980,14 +980,14 @@ bool MainWindow::saveAllImages(const QString &dir){
 }
 
 void MainWindow::saveCheckedImages(){
-    bSaveCheckedImages = true;
+    savingCheckedImages = true;
     saveImages();
-    bSaveCheckedImages = false;
+    savingCheckedImages = false;
 }
 void MainWindow::saveCompressedForm(){
-    bSaveCompressedFormImages = true;
+    savingCompressedFormImages = true;
     saveImages();
-    bSaveCompressedFormImages = false;
+    savingCompressedFormImages = false;
 }
 
 void MainWindow::updateDiffuseImage(){
