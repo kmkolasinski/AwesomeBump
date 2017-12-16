@@ -475,8 +475,7 @@ public:
         scr_tex = QOpenGLTexturePtr(new QOpenGLTexture(image));
         bFirstDraw = true;
 
-        /*
-        switch(imageType){
+        /*switch(imageType){
            case(HEIGHT_TEXTURE):
            case(OCCLUSION_TEXTURE):
                 GLCHK(FBOImages::create(fbo     ,image.width(),image.height(),GL_R16F));
@@ -484,12 +483,11 @@ public:
            default:
                 GLCHK(FBOImages::create(fbo     ,image.width(),image.height()));
                 break;
-        }
-        */
+        }*/
+
         GLuint internal_format = TEXTURE_FORMAT;
         if(imageType == HEIGHT_TEXTURE) internal_format = TEXTURE_3DRENDER_FORMAT;
         GLCHK( FBOImages::create(fbo , image.width(), image.height(), internal_format) );
-
     }
 
     void updateSrcTexId(QOpenGLFramebufferObjectPtr in_ref_fbo){

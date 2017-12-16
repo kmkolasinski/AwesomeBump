@@ -89,13 +89,19 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
    Q_UNUSED(context);
 
    QString dt = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
+
+#ifdef CONVERT_TO_CONSOLE
+    if (msg[0] == '>')
+        fprintf(stderr, "{CON} %s: %s\n", dt.toLocal8Bit().constData(), msg.toLocal8Bit().data());
+#else
+
    QString txt = QString("[%1] ").arg(dt);
 
    switch (type)
    {
       case QtDebugMsg:
          txt += QString("{DBG} %1").arg(msg);
-         fprintf(stderr, "[%s] %s\n", dt.toLatin1().constData(), msg.toLatin1().constData());
+         fprintf(stderr, "{DBG} %s: %s\n", dt.toLocal8Bit().constData(), msg.toLocal8Bit().constData());
          break;
       case QtWarningMsg:
          txt += QString("{WRN} %1").arg(msg);
@@ -107,7 +113,7 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
          txt += QString("{CRI} %1").arg(msg);
          break;
       case QtFatalMsg:
-         fprintf(stderr, "*** Fatal error:\n*** %s\n", msg.toLatin1().constData());
+         fprintf(stderr, "*** Fatal error:\n*** %s\n", msg.toLocal8Bit().constData());
          txt += QString("{FAT} %1").arg(msg);
          break;
    }
@@ -126,6 +132,7 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
    textStream << txt << endl;
 
    if (type == QtFatalMsg) abort();
+#endif
 }
 
 class SplashScreen : public QSplashScreen
@@ -263,12 +270,15 @@ int main(int argc, char *argv[])
     qInfo() << " > Application dir:" << QApplication::applicationDirPath();
     qInfo() << " > Data dir:" << _find_data_dir();
 
+#ifndef CONVERT_TO_CONSOLE
     SplashScreen sp(&app);
     QPixmap szpx = QPixmap(SplashImage);
     QSize sz = szpx.size() * float(QApplication::desktop()->screenGeometry().width()) / 4.0 / float(szpx.size().width()); // 1/4 of the screen
     sp.resize(sz);
     sp.setPixmap(szpx.scaled(sz));
     sp.setMessage(VERSION_STRING "|Starting ...");
+    sp.show(); app.processEvents();
+#endif
 
 	// Check for resource directory:
 	QString resDir = _find_data_dir();
@@ -322,11 +332,47 @@ int main(int argc, char *argv[])
 
         msgBox.show();
 
+        qDebug() << QString("> Sorry but it seems that your graphics "
+                    "card does not support openGL %1.%2.\n"
+                    "Program will not run :(\n"
+                    "See " AB_LOG " file for more info.").
+                arg(GL_MAJOR).arg(GL_MINOR);
+
         return app.exec();
-    }else{
+    } else {
+#ifdef CONVERT_TO_CONSOLE
+        if (app.arguments().size() == 3)
+        {
+            MainWindow window;
+            window.initializeApp();            
 
-        sp.show(); app.processEvents();
+            bool ok = true;
+            ok = window.selectSourceImagesFromPath(app.arguments().at(1));
+            if (!ok) {
+                QMessageBox msgBox;
+                msgBox.setText("Info");
+                msgBox.setInformativeText("Input path is not provided");
+                msgBox.setStandardButtons(QMessageBox::Cancel);
+                msgBox.exec();
+            }
+            ok = window.selectOutputPath(app.arguments().at(2));
+            if (!ok) {
+                QMessageBox msgBox;
+                msgBox.setText("Info");
+                msgBox.setInformativeText("Output path is not provided");
+                msgBox.setStandardButtons(QMessageBox::Cancel);
+                msgBox.exec();
+            }
 
+            if (ok)
+                window.runBatch();
+        } else {
+            qDebug() << "> Input the two argumets: \n"
+                        "1 - input path for an image (or a dir with images) (*.png/*.jpg/*.bmp/*.tga) \n"
+                        "2 - output path for saving results";
+        }
+        return 0;
+#else
         MainWindow window;
         QObject::connect(&window,SIGNAL(initProgress(int)),&sp,SLOT(setProgress(int)));
         QObject::connect(&window,SIGNAL(initMessage(const QString&)),&sp,SLOT(setMessage(const QString&)));
@@ -341,8 +387,9 @@ int main(int argc, char *argv[])
         else
             window.showMaximized();
         sp.finish(&window);
- 
+
         return app.exec();
+#endif
     }
 }
 

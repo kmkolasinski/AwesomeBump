@@ -4,6 +4,9 @@
 #include <QOpenGLWidget>
 #include <QDebug>
 #include "CommonObjects.h"
+
+extern bool isOffScreenRenderingEnabled;
+
 class GLWidgetBase : public QOpenGLWidget
 {
     Q_OBJECT
@@ -12,6 +15,10 @@ public:
     ~GLWidgetBase();
 
 public:
+    void doOffscreenRender();
+
+    void paintGL() Q_DECL_FINAL Q_DECL_OVERRIDE;
+
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_FINAL Q_DECL_OVERRIDE;
@@ -21,6 +28,7 @@ public:
 signals:
     void handleAccumulatedMouseMovementLater();
     void changeCamPositionApplied(bool);
+
 protected:
     virtual void relativeMouseMoveEvent(int dx, int dy, bool* bMouseDragged, Qt::MouseButtons buttons) = 0;
     static bool wrapMouse;
@@ -42,6 +50,8 @@ private:
 
     int dx, dy;
     Qt::MouseButtons buttons;
+
+    bool isInitOffscreen = false;
 
 protected:
     Qt::Key keyPressed;

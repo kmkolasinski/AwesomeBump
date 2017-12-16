@@ -498,7 +498,6 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
-
     GLCHK( glReadBuffer(GL_BACK) );
     
     // ---------------------------------------------------------

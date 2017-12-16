@@ -296,6 +296,9 @@ bool FormImageProp::loadFile(const QString &fileName)
     if (_image.isNull()) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
                                  tr("Cannot load %1.").arg(QDir::toNativeSeparators(fileName)));
+        qDebug() << tr("> Cannot load %1.").
+                    arg(QDir::toNativeSeparators(fileName));
+
         return false;
     }
     if(imageProp->properties->NormalsMixer.EnableMixer){

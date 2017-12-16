@@ -1062,22 +1062,25 @@ vec4 ffilter(){
 
     const vec2 size = vec2(1.0,0.0);
     const ivec3 off = ivec3(-1,0,1);
-    #define dx ivec2(1, 0)
-    #define dy ivec2(0, 1)
+
+#define offset_dx   ivec2(1,0)
+#define offset_dy   ivec2(0,1)
+#define offset_dx_m ivec2(-1,0)
+#define offset_dy_m ivec2(0,-1)
 
     vec2 tex_coord =  v2QuadCoords.st;
     highp float R0  = texture(layerA, tex_coord).x;
 
     // (dx,dy)
-    highp float Rx  = textureOffset(layerA, tex_coord, dx).x;
-    highp float Ry  = textureOffset(layerA, tex_coord, dy).x;
+    highp float Rx  = textureOffset(layerA, tex_coord, offset_dx).x;
+    highp float Ry  = textureOffset(layerA, tex_coord, offset_dy).x;
     highp vec3 dRx  = normalize(vec3(size.xy,gui_hn_conversion_depth*(Rx-R0)));
     highp vec3 dRy  = normalize(vec3(size.yx,gui_hn_conversion_depth*(Ry-R0)));
     highp vec3 bump = normalize( cross(dRx,dRy) );
 
     // (-dx,-dy)
-    Rx  = textureOffset(layerA, tex_coord, -dx).x;
-    Ry  = textureOffset(layerA, tex_coord, -dy).x;
+    Rx  = textureOffset(layerA, tex_coord, offset_dx_m).x;
+    Ry  = textureOffset(layerA, tex_coord, offset_dy_m).x;
     dRx  = normalize(vec3(-size.xy,gui_hn_conversion_depth*(Rx-R0)));
     dRy  = normalize(vec3(-size.yx,gui_hn_conversion_depth*(Ry-R0)));
     bump = bump + normalize( cross(dRx,dRy) );

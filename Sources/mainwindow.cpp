@@ -515,14 +515,15 @@ MainWindow::~MainWindow()
     delete ui;
 
 }
+#include <cassert>
 void MainWindow::closeEvent(QCloseEvent *event) {
+#ifndef CONVERT_TO_CONSOLE
     QWidget::closeEvent( event );
-
+    qDebug() << "CLOSE EVENT ------------ !!!!!!!!!!!!!!!!!!!";
     settingsContainer->close();
     glWidget->close();
     glImage->close();
-
-
+#endif
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event){
@@ -822,10 +823,12 @@ bool MainWindow::saveAllImages(const QString &dir){
     if (!fileInfo.exists()) {
         QMessageBox::information(this, QGuiApplication::applicationDisplayName(),
                                  tr("Cannot save to %1.").arg(QDir::toNativeSeparators(dir)));
+        qDebug() << tr("> Cannot save to %1.").
+                    arg(QDir::toNativeSeparators(dir));
         return false;
     }
 
-    qDebug() << Q_FUNC_INFO << "Saving to dir:" << fileInfo.absoluteFilePath();
+    qDebug() << Q_FUNC_INFO << "> Saving to dir:" << fileInfo.absoluteFilePath();
 
     diffuseImageProp   ->setImageName(ui->lineEditOutputName->text());
     normalImageProp    ->setImageName(ui->lineEditOutputName->text());
@@ -843,6 +846,7 @@ bool MainWindow::saveAllImages(const QString &dir){
     if(!savingCompressedFormImages){
         ui->labelProgressInfo->setText("Saving diffuse image...");
         if(savingCheckedImages*ui->checkBoxSaveDiffuse->isChecked() || !savingCheckedImages ){
+            qDebug() << "> Saving diffuse image...";
             diffuseImageProp ->saveFileToDir(dir);
         }
         ui->progressBar->setValue(15);
@@ -850,12 +854,14 @@ bool MainWindow::saveAllImages(const QString &dir){
 
         ui->labelProgressInfo->setText("Saving normal image...");
         if(savingCheckedImages*ui->checkBoxSaveNormal->isChecked() || !savingCheckedImages ){
+            qDebug() << "> Saving normal image...";
             normalImageProp  ->saveFileToDir(dir);
 
         }
         ui->progressBar->setValue(30);
         ui->labelProgressInfo->setText("Saving specular image...");
         if(savingCheckedImages*ui->checkBoxSaveSpecular->isChecked() || !savingCheckedImages ){
+            qDebug() << "> Saving specular image...";
             specularImageProp->saveFileToDir(dir);
 
         }
@@ -863,24 +869,28 @@ bool MainWindow::saveAllImages(const QString &dir){
 
         ui->labelProgressInfo->setText("Saving height image...");
         if(savingCheckedImages*ui->checkBoxSaveHeight->isChecked() || !savingCheckedImages ){
+            qDebug() << "> Saving height image...";
             occlusionImageProp  ->saveFileToDir(dir);
         }
 
         ui->progressBar->setValue(60);
         ui->labelProgressInfo->setText("Saving occlusion image...");
         if(savingCheckedImages*ui->checkBoxSaveOcclusion->isChecked() || !savingCheckedImages ){
+            qDebug() << "> Saving occlusion image...";
             heightImageProp  ->saveFileToDir(dir);
         }
 
         ui->progressBar->setValue(75);
         ui->labelProgressInfo->setText("Saving roughness image...");
         if(savingCheckedImages*ui->checkBoxSaveRoughness->isChecked() || !savingCheckedImages ){
+            qDebug() << "> Saving roughness image...";
             roughnessImageProp  ->saveFileToDir(dir);
         }
 
         ui->progressBar->setValue(90);
         ui->labelProgressInfo->setText("Saving metallic image...");
         if(savingCheckedImages*ui->checkBoxSaveMetallic->isChecked() || !savingCheckedImages ){
+            qDebug() << "> Saving metallic image...";
             metallicImageProp ->saveFileToDir(dir);
         }
         ui->progressBar->setValue(100);
@@ -900,6 +910,7 @@ bool MainWindow::saveAllImages(const QString &dir){
         QImage specularImage= heightFBOImage->toImage();
 
         ui->progressBar->setValue(20);
+        qDebug() << "> Preparing images...";
         ui->labelProgressInfo->setText("Preparing images...");
 
         QCoreApplication::processEvents();
@@ -960,18 +971,21 @@ bool MainWindow::saveAllImages(const QString &dir){
 
 
         ui->progressBar->setValue(50);
+        qDebug() << "> Saving diffuse image...";
         ui->labelProgressInfo->setText("Saving diffuse image...");
 
         diffuseImageProp->saveImageToDir(dir,newDiffuseImage);
 
         ui->progressBar->setValue(80);
-        ui->labelProgressInfo->setText("Saving diffuse image...");
+        qDebug() << "> Saving normal image...";
+        ui->labelProgressInfo->setText("Saving normal image...");
         normalImageProp->saveImageToDir(dir,newNormalImage);
 
     }// end of saveAsCompressedFormat
 
     QCoreApplication::processEvents();
     ui->progressBar->setValue(100);
+    qDebug() << "> Done!";
     ui->labelProgressInfo->setText("Done!");
     setCursor(Qt::ArrowCursor);
 
@@ -1439,6 +1453,75 @@ void MainWindow::selectSourceImages(){
     ui->lineEditImageBatchSource->setText(source);
 }
 
+bool MainWindow::selectSourceImagesFromPath(QString source)
+{
+    QStringList filters;
+    filters << "*.png" << "*.jpg" << "*.bmp" << "*.tga";
+
+    ui->listWidgetImageBatch->clear();
+
+    QString unixPath = QDir::fromNativeSeparators(source);
+    QFileInfo fi(unixPath);
+    if (fi.isDir())
+    {
+//        qDebug() << "> ********** unix path:" << unixPath;
+        if (unixPath[unixPath.size()-1] != '/')
+        {
+            unixPath.append('/');
+            fi.setFile(unixPath);
+//            qDebug() << "> ********** unix path:" << unixPath;
+        }
+    }
+
+    if (fi.isFile())
+    {
+        QString extension = "*" + unixPath.mid(unixPath.size() - 4);
+        qDebug() << "> File extention:" << extension;
+        if (filters.contains(extension))
+        {
+            qDebug() << "> Found:" << fi.fileName();
+            ui->listWidgetImageBatch->addItem(fi.fileName());
+        }
+        else
+        {
+            qDebug() << "> Selected source "
+                        "has an unknown extension: " << unixPath;
+        }
+    }
+    else if (fi.isDir())
+    {
+        QDir dir(unixPath);
+        qDebug() << "> Selecting source folder "
+                    "for batch processing: " << unixPath;
+
+        QFileInfoList fileInfoList =
+                dir.entryInfoList(filters,
+                                  QDir::Files | QDir::NoDotAndDotDot);
+
+        foreach (QFileInfo fileInfo, fileInfoList) {
+           qDebug() << "> Found:" << fileInfo.absoluteFilePath();
+           ui->listWidgetImageBatch->addItem(fileInfo.fileName());
+        }
+
+        if (! ui->listWidgetImageBatch->count())
+        {
+            qDebug() << "> No files was found in" << unixPath;
+        }
+    }
+    else
+    {
+        qDebug() << "> Source is not a correct path "
+                    "to any file or dir: " << unixPath;
+
+        return false;
+    }
+
+    ui->lineEditImageBatchSource->setText(fi.path());
+    qDebug() << "> Input folder: " << fi.path();
+
+    return true;
+}
+
 void MainWindow::selectOutputPath(){
 
     QString startPath;
@@ -1452,8 +1535,23 @@ void MainWindow::selectOutputPath(){
     ui->lineEditImageBatchOutput->setText(path);
 }
 
-void MainWindow::runBatch(){
+bool MainWindow::selectOutputPath(QString path)
+{
+    QFileInfo fi(path);
 
+    if (! fi.isDir())
+    {
+        return false;
+    }
+
+    ui->lineEditImageBatchOutput->setText(path);
+    qDebug() << "> Output folder: " << path;
+
+    return true;
+}
+
+void MainWindow::runBatch()
+{
     QString sourceFolder = ui->lineEditImageBatchSource->text();
     QString outputFolder = ui->lineEditImageBatchOutput->text();
 
@@ -1464,14 +1562,18 @@ void MainWindow::runBatch(){
         msgBox.setInformativeText("Output path is not provided");
         msgBox.setStandardButtons(QMessageBox::Cancel);
         msgBox.exec();
+
+        qDebug() << "> Output path is not provided!";
         return;
     }
 
-    qDebug() << "Starting batch mode: this may take some time";
+    qDebug() << "> Starting batch mode: this may take some time";
 
-
+    isOffScreenRenderingEnabled = true;
     while(ui->listWidgetImageBatch->count() > 0){
         QListWidgetItem* item = ui->listWidgetImageBatch->takeItem(0);
+        qDebug() << "> Images left: " +
+                    QString::number(ui->listWidgetImageBatch->count()+1);
         ui->labelBatchProgress->setText("Images left: " + QString::number(ui->listWidgetImageBatch->count()+1));
         ui->labelBatchProgress->update();
         QCoreApplication::processEvents();
@@ -1480,7 +1582,7 @@ void MainWindow::runBatch(){
         ui->lineEditOutputName->setText(imageName);
         QString imagePath = sourceFolder + "/" + imageName;
 
-        qDebug() << "Processing image: " << imagePath;
+        qDebug() << "> Processing image: " << imagePath;
         diffuseImageProp->loadFile(imagePath);
         convertFromBase();
         saveAllImages(outputFolder);
@@ -1569,7 +1671,7 @@ void MainWindow::convertFromNtoH(){
 void MainWindow::convertFromBase(){
     FBOImageProportiesPtr lastActive = glImage->getActiveImage();
     glImage->setActiveImage(diffuseImageProp->getImageProporties());
-    qDebug() << "Conversion from Base to others started";
+    qDebug() << "> Conversion from Base to others started";
     normalImageProp   ->setImageName(diffuseImageProp->getImageName());
     heightImageProp   ->setImageName(diffuseImageProp->getImageName());
     specularImageProp ->setImageName(diffuseImageProp->getImageName());
@@ -1583,7 +1685,7 @@ void MainWindow::convertFromBase(){
 
     glImage->setActiveImage(lastActive);
     glWidget->update();
-    qDebug() << "Conversion from Base to others applied";
+    qDebug() << "> Conversion from Base to others applied";
 }
 
 void MainWindow::convertFromHNtoOcc(){

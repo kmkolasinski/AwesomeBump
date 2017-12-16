@@ -143,6 +143,9 @@ private slots:
     // batch tool
     void selectSourceImages();
     void selectOutputPath();
+    bool selectOutputPath(QString path);
+    bool selectSourceImagesFromPath(QString source);
+
     void runBatch();
 
 private:

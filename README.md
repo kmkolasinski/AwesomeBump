@@ -1,5 +1,3 @@
-
-
 ![Image](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/promo/githubimage5.jpg)
 
 

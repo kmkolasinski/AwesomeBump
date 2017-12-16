@@ -42,6 +42,11 @@
 
 #include <QMouseEvent>
 
+#ifdef __APPLE__
+# define glBindVertexArray glBindVertexArrayAPPLE
+# define glGenVertexArrays glGenVertexArraysAPPLE
+# define glDeleteVertexArrays glDeleteVertexArraysAPPLE
+#endif
 
 GLImage::GLImage(QWidget *parent)
     : GLWidgetBase(parent)
@@ -438,7 +443,6 @@ void GLImage::render(){
     GLCHK( program->setUniformValue("gui_depth", float(1.0)) );
     GLCHK( program->setUniformValue("gui_mode_dgaussian", 1) );
     GLCHK( program->setUniformValue("material_id", int(activeImage->currentMaterialIndeks) ) );
-
 
 
     if(activeImage->bFirstDraw){

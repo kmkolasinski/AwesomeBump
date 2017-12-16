@@ -24,6 +24,34 @@ GLWidgetBase::~GLWidgetBase()
 {
 }
 
+
+bool isOffScreenRenderingEnabled = false;
+
+void GLWidgetBase::doOffscreenRender()
+{
+    if (! isOffScreenRenderingEnabled)
+        return;
+
+    makeCurrent();
+    Q_ASSERT (this->isValid());
+
+    if (! isInitOffscreen) {
+        isInitOffscreen = true;
+        initializeGL();
+    }
+
+    QOpenGLWidget::paintGL();
+}
+
+void GLWidgetBase::paintGL()
+{
+#ifdef CONVERT_TO_CONSOLE
+    doOffscreenRender();
+#else
+    QOpenGLWidget::paintGL();
+#endif
+}
+
 void GLWidgetBase::mousePressEvent(QMouseEvent *event)
 {
     lastCursorPos = event->pos();
@@ -145,8 +173,6 @@ void GLWidgetBase::toggleChangeCamPosition(bool toggle){
 // ----------------------------------------------------------------
 void GLWidgetBase::keyPressEvent(QKeyEvent *event){
 
-
-
     if (event->type() == QEvent::KeyPress){
 
         // enable material preview
@@ -169,8 +195,6 @@ void GLWidgetBase::keyPressEvent(QKeyEvent *event){
         }
 
     }// end of event type
-
-
 }
 
 void GLWidgetBase::keyReleaseEvent(QKeyEvent *event) {
