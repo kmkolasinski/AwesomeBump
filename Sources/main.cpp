@@ -45,7 +45,8 @@
 #include <QSysInfo>
 #include <QtDebug>
 
-#include <QtGui/qpa/qplatformintegration.h>
+#include <private/qguiapplication_p.h>
+#include <qpa/qplatformintegration.h>
 
 #include "mainwindow.h"
 #include "glimageeditor.h"
@@ -295,10 +296,8 @@ int main(int argc, char *argv[])
     QString guiStyle = settings.value("gui_style").toString();
     if (!guiStyle.isEmpty()) {
         if (guiStyle == "Universal")
+            // switch to universal theme
             app.setStyle(QStyleFactory::create( guiStyle ));
-        else
-            // native
-            ;
     }
 
     // Customize some elements:
@@ -312,7 +311,7 @@ int main(int argc, char *argv[])
 
     QFont font;
     font.setFamily(font.defaultFamily());
-    font.setPixelSize(gui_settings.value("font_size",10).toInt());
+    font.setPointSize(gui_settings.value("font_size",app.font().pointSize()).toInt());
     app.setFont(font);
 
     // removing old log file

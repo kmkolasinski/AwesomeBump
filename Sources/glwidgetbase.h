@@ -5,8 +5,6 @@
 #include <QDebug>
 #include "CommonObjects.h"
 
-extern bool isOffScreenRenderingEnabled;
-
 class GLWidgetBase : public QOpenGLWidget
 {
     Q_OBJECT
@@ -15,10 +13,6 @@ public:
     ~GLWidgetBase();
 
 public:
-    void doOffscreenRender();
-
-    void paintGL() Q_DECL_FINAL Q_DECL_OVERRIDE;
-
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_FINAL Q_DECL_OVERRIDE;
@@ -50,8 +44,6 @@ private:
 
     int dx, dy;
     Qt::MouseButtons buttons;
-
-    bool isInitOffscreen = false;
 
 protected:
     Qt::Key keyPressed;

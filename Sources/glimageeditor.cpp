@@ -42,12 +42,6 @@
 
 #include <QMouseEvent>
 
-#ifdef __APPLE__
-# define glBindVertexArray glBindVertexArrayAPPLE
-# define glGenVertexArrays glGenVertexArraysAPPLE
-# define glDeleteVertexArrays glDeleteVertexArraysAPPLE
-#endif
-
 GLImage::GLImage(QWidget *parent)
     : GLWidgetBase(parent)
 
@@ -105,7 +99,6 @@ void GLImage::cleanup()
   paintFBO.clear();
   renderFBO.clear();
 
-  glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]);
   doneCurrent();
 }
 
@@ -284,8 +277,7 @@ void GLImage::initializeGL()
 
 #endif
 
-    GLCHK(glGenVertexArrays(1, &vao));
-    GLCHK(glBindVertexArray(vao));
+    GLCHK( vao.bind() );
 
     makeScreenQuad();
 
@@ -293,14 +285,14 @@ void GLImage::initializeGL()
     FBOImages::create(samplerFBO1, 1024,1024);
     FBOImages::create(samplerFBO2, 1024,1024);
 
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
 
     emit readyGL();
 }
 
 void GLImage::paintGL()
 {
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
 
     // Perform filters on images and render the final result to renderFBO
     // avoid rendering function if there is rendered something already
@@ -354,7 +346,7 @@ void GLImage::paintGL()
         GLCHK( program->setUniformValue("quad_draw_mode", int(0)) );
     }
 
-    glBindVertexArray(0);
+    GLCHK( vao.release() );
 }
 
 
@@ -382,7 +374,7 @@ void GLImage::render(){
     GLCHK( glDisable(GL_CULL_FACE) );
     GLCHK( glDisable(GL_DEPTH_TEST) );
 
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
 
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
     bool bSkipStandardProcessing = false;
@@ -930,8 +922,8 @@ void GLImage::render(){
         GLCHK( applyNormalFilter(activeFBO,renderFBO) );
     }
 
-    GLCHK( glBindVertexArray(0) );
-    
+    GLCHK( vao.release() );
+
     emit textureChanged(activeImage->imageType, activeImage->fbo->texture());
     emit rendered();
 }
@@ -1067,9 +1059,9 @@ void GLImage::applyNormalFilter(QOpenGLFramebufferObjectPtr inputFBO,
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( outputFBO->bindDefault() );
 }
 
@@ -1088,9 +1080,9 @@ void GLImage::applyHeightToNormal(QOpenGLFramebufferObjectPtr inputFBO, QOpenGLF
     GLCHK( outputFBO->bind() );
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( outputFBO->bindDefault() );
 }
 
@@ -1113,9 +1105,9 @@ void GLImage::applyColorHueFilter(QOpenGLFramebufferObjectPtr inputFBO, QOpenGLF
 
 
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( outputFBO->bindDefault() );
 }
 
@@ -1156,17 +1148,17 @@ void GLImage::applyPerspectiveTransformFilter(QOpenGLFramebufferObjectPtr inputF
 
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
 
     GLCHK( inputFBO->bind() );
     GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
     GLCHK( program->setUniformValue("uv_scaling_mode", 1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, outputFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( inputFBO->bindDefault() );
 }
@@ -1835,9 +1827,9 @@ void GLImage::applyInvertComponentsFilter(QOpenGLFramebufferObjectPtr inputFBO, 
     GLCHK( outputFBO->bind() );
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( outputFBO->bindDefault() );
 }
 
@@ -2388,9 +2380,9 @@ void GLImage::applyOcclusionFilter(GLuint height_tex, GLuint normal_tex, QOpenGL
     GLCHK( glBindTexture(GL_TEXTURE_2D, height_tex) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, normal_tex) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault() );
 
@@ -2420,9 +2412,9 @@ void GLImage::applyHeightProcessingFilter(QOpenGLFramebufferObjectPtr inputFBO, 
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault());
 }
@@ -2448,9 +2440,9 @@ void GLImage::applyCombineNormalHeightFilter(QOpenGLFramebufferObjectPtr normalF
     GLCHK( glBindTexture(GL_TEXTURE_2D, normalFBO->texture()) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, heightFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault() );
 }
@@ -2486,9 +2478,9 @@ void GLImage::applyRoughnessFilter(QOpenGLFramebufferObjectPtr inputFBO,
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault() );
 
@@ -2523,9 +2515,9 @@ void GLImage::applyRoughnessColorFilter(QOpenGLFramebufferObjectPtr inputFBO, QO
     GLCHK( glViewport(0,0,inputFBO->width(),inputFBO->height()) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault() );
 
@@ -2544,9 +2536,9 @@ void GLImage::copyFBO(QOpenGLFramebufferObjectPtr src, QOpenGLFramebufferObjectP
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, src->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( dst->bindDefault() );
 }
 
@@ -2565,9 +2557,9 @@ void GLImage::copyTex2FBO(GLuint src_tex_id, QOpenGLFramebufferObjectPtr dst){
     GLCHK( program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, src_tex_id) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( dst->bindDefault() );
 }
 
@@ -2616,9 +2608,9 @@ void GLImage::applyGrungeImageFilter (QOpenGLFramebufferObjectPtr inputFBO,
         GLCHK( auxFBO3->bind() );
         GLCHK( glViewport(0,0,auxFBO3->width(),auxFBO3->height()) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, grungeFBO->texture()) );
-        GLCHK( glBindVertexArray(vao) );
+        GLCHK( vao.bind() );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-        GLCHK( glBindVertexArray(0) );
+        GLCHK( vao.release() );
         GLCHK( auxFBO3->bindDefault() );
 
     #ifdef USE_OPENGL_330
@@ -2645,9 +2637,9 @@ void GLImage::applyGrungeImageFilter (QOpenGLFramebufferObjectPtr inputFBO,
         GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, auxFBO3->texture()) );
-        GLCHK( glBindVertexArray(vao) );
+        GLCHK( vao.bind() );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-        GLCHK( glBindVertexArray(0) );
+        GLCHK( vao.release() );
         GLCHK( outputFBO->bindDefault() );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
 
@@ -2674,9 +2666,9 @@ void GLImage::applyGrungeImageFilter (QOpenGLFramebufferObjectPtr inputFBO,
         GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
         GLCHK( glActiveTexture(GL_TEXTURE1) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, grungeFBO->texture()) );
-        GLCHK( glBindVertexArray(vao) );
+        GLCHK( vao.bind() );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-        GLCHK( glBindVertexArray(0) );
+        GLCHK( vao.release() );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( outputFBO->bindDefault() );
     }
@@ -2713,9 +2705,9 @@ void GLImage::applyGrungeRandomizationFilter(QOpenGLFramebufferObjectPtr inputFB
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( glActiveTexture(GL_TEXTURE1) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageGrunge->fbo->texture()) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault() );
 }
@@ -2740,9 +2732,9 @@ void GLImage::applyGrungeWarpNormalFilter(QOpenGLFramebufferObjectPtr inputFBO, 
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, inputFBO->texture()) );
     GLCHK( targetImageNormal->scr_tex->bind(GL_TEXTURE1) );
-    GLCHK( glBindVertexArray(vao) );
+    GLCHK( vao.bind() );
     GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-    GLCHK( glBindVertexArray(0) );
+    GLCHK( vao.release() );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( outputFBO->bindDefault() );
 
@@ -2784,25 +2776,27 @@ void GLImage::makeScreenQuad()
             texCoords[iter] = (QVector2D(x,y));
             iter++;
     }}
-
-    GLCHK( glGenBuffers(3, &vbos[0]) );
     
-    GLCHK( glBindBuffer(GL_ARRAY_BUFFER, vbos[0]) );
-    GLCHK( glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float)*3, vertices.constData(), GL_STATIC_DRAW) );
+    GLCHK( vbos[0].setUsagePattern(QOpenGLBuffer::StaticDraw) );
+    GLCHK( vbos[0].bind() );
+    GLCHK( vbos[0].allocate((void*)vertices.constData(), vertices.size() * sizeof(float)*3) );
     GLCHK( glEnableVertexAttribArray(0) );
-    GLCHK( glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0) );
+    GLCHK( glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float)*3, (void*)0) );
 
-    GLCHK( glBindBuffer(GL_ARRAY_BUFFER, vbos[1]) );
-    GLCHK( glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float)*2, texCoords.constData(), GL_STATIC_DRAW) );
+    GLCHK( vbos[1].setUsagePattern(QOpenGLBuffer::StaticDraw) );
+    GLCHK( vbos[1].bind() );
+    GLCHK( vbos[1].allocate((void*)texCoords.constData(), texCoords.size() * sizeof(float)*2) );
     GLCHK( glEnableVertexAttribArray(1) );
-    GLCHK( glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,(void*)0) );
+    GLCHK( glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE ,sizeof(float)*2, (void*)0) );
 
-    GLCHK( glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]) );
-    int no_triangles = 2*(size - 1)*(size - 1);
+    vbos[2] = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+    GLCHK( vbos[2].setUsagePattern(QOpenGLBuffer::StaticDraw) );
+    GLCHK( vbos[2].bind() );
+    const int no_triangles = 2*(size - 1)*(size - 1);
     QVector<GLuint> indices(no_triangles*3);
     iter = 0;
-    for(int i = 0 ; i < size -1 ; i++){
-    for(int j = 0 ; j < size -1 ; j++){
+    for(int i = 0 ; i < size -1 ; i++) {
+      for(int j = 0 ; j < size -1 ; j++) {
         GLuint i1 = i + j*size;
         GLuint i2 = i + (j+1)*size;
         GLuint i3 = i+1 + j*size;
@@ -2813,9 +2807,9 @@ void GLImage::makeScreenQuad()
         indices[iter++] = (i2);
         indices[iter++] = (i3);
         indices[iter++] = (i4);
+      }
     }
-    }
-    GLCHK( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * no_triangles * 3 , indices.constData(), GL_STATIC_DRAW) );
+    GLCHK( vbos[2].write(0, indices.constData(), sizeof(GLuint)*no_triangles*3) );
 }
 
 

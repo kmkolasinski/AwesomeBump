@@ -4,6 +4,7 @@
 #include <QQueue>
 #include <QMutex>
 #include <QThread>
+#include <QWaitCondition>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
 #include <QOpenGLFramebufferObject>
@@ -30,8 +31,10 @@ public:
     static QQueue<TextureTypes> requests;
     static QList<QThread *> threads;
 
-Q_SIGNALS:
-    void ready(TextureTypes tt);
+    void ready();
+
+public Q_SLOTS:
+    void update();
 
 private:
     RenderThread *m_renderThread;
@@ -49,7 +52,7 @@ class RenderThread : public QThread
     QMutex m_mutex;
     QWaitCondition &m_worker;
 public:
-    RenderThread(const QSize &size, const QWaitCondition &worker)
+    RenderThread(const QSize &size, QWaitCondition &worker)
         : surface(0)
         , context(0)
         , m_renderFbo(0)
@@ -59,6 +62,8 @@ public:
     {
         ThreadRenderer::threads << this;
     }
+
+    void run();
 
     QOffscreenSurface *surface;
     QOpenGLContext *context;
@@ -90,7 +95,7 @@ public Q_SLOTS:
         m_renderFbo->bindDefault();
         qSwap(m_renderFbo, m_displayFbo);
 
-        emit textureReady(m_displayFbo->texture(), m_size);
+        Q_EMIT textureReady(m_displayFbo->texture(), m_size);
     }
 
     void shutDown()
@@ -113,7 +118,7 @@ public Q_SLOTS:
     void renderContent();
     
 Q_SIGNALS:
-    void textureReady(int id, const QSize &size);
+    void textureReady(GLuint textureId, const QSize &size);
 
 private:
     QOpenGLFramebufferObject *m_renderFbo;

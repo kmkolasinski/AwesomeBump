@@ -493,6 +493,8 @@ void GLWidget::initializeGL()
     m_prefiltered_env_map = new GLTextureCube(512);
 
     resizeFBOs();
+    qDebug() << "initializeGL finished.";
+
     emit readyGL();
 }
 
@@ -572,117 +574,117 @@ void GLWidget::paintGL()
 
     for(int pindex = 0 ; pindex < 2 ; pindex ++){
 
-    QOpenGLShaderProgram* program_ptr = program_ptrs[pindex];
-    GLCHK( program_ptr->bind() );
+        QOpenGLShaderProgram* program_ptr = program_ptrs[pindex];
+        GLCHK( program_ptr->bind() );
 
-    // Update uniforms from parsed file.
-    if(pindex == 0){
-        Dialog3DGeneralSettings::setUniforms();
-    }
-
-
-    GLCHK( program_ptr->setUniformValue("ProjectionMatrix", projectionMatrix) );
-
-    objectMatrix.setToIdentity();
-    if( fboIdPtrs[0] != NULL){
-        float fboRatio = float(fboIdPtrs[0]->width())/float(fboIdPtrs[0]->height());
-        objectMatrix.scale(fboRatio,1,fboRatio);
-    }
-    if(mesh->isLoaded()){
-
-        objectMatrix.scale(0.5/mesh->radius);
-        objectMatrix.translate(-mesh->centre_of_mass);
-    }
-    modelViewMatrix = viewMatrix*objectMatrix;
-    NormalMatrix = modelViewMatrix.normalMatrix();
-    float mesh_scale = 0.5/mesh->radius;
-
-    GLCHK( program_ptr->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );
-    GLCHK( program_ptr->setUniformValue("NormalMatrix"          , NormalMatrix) );
-    GLCHK( program_ptr->setUniformValue("ModelMatrix"           , objectMatrix) );
-    GLCHK( program_ptr->setUniformValue("meshScale"             , mesh_scale) );
-
-    GLCHK( program_ptr->setUniformValue("lightPos"              , lightPosition) );
-
-    GLCHK( program_ptr->setUniformValue("lightDirection"        , lightDirection.direction) );
-
-    GLCHK( program_ptr->setUniformValue("cameraPos"             , camera.get_position()) );
-    GLCHK( program_ptr->setUniformValue("gui_depthScale"        , display3Dparameters.depthScale) );
-    GLCHK( program_ptr->setUniformValue("gui_uvScale"           , display3Dparameters.uvScale) );
-    GLCHK( program_ptr->setUniformValue("gui_uvScaleOffset"     , display3Dparameters.uvOffset) );
-    GLCHK( program_ptr->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
-    if(FBOImageProporties::bConversionBaseMap){
-        GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , false) );
-    }else{
-        GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
-    }
-
-    GLCHK( program_ptr->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
-    GLCHK( program_ptr->setUniformValue("gui_bHeight"           , bToggleHeightView) );
-    GLCHK( program_ptr->setUniformValue("gui_bNormal"           , bToggleNormalView) );
-    GLCHK( program_ptr->setUniformValue("gui_bRoughness"        , bToggleRoughnessView) );
-    GLCHK( program_ptr->setUniformValue("gui_bMetallic"         , bToggleMetallicView) );
-    GLCHK( program_ptr->setUniformValue("gui_shading_type"      , display3Dparameters.shadingType) );
-    GLCHK( program_ptr->setUniformValue("gui_shading_model"     , display3Dparameters.shadingModel) );
-    GLCHK( program_ptr->setUniformValue("gui_SpecularIntensity" , display3Dparameters.specularIntensity) );
-    GLCHK( program_ptr->setUniformValue("gui_DiffuseIntensity"  , display3Dparameters.diffuseIntensity) );
-    GLCHK( program_ptr->setUniformValue("gui_LightPower"        , display3Dparameters.lightPower) );
-    GLCHK( program_ptr->setUniformValue("gui_LightRadius"       , display3Dparameters.lightRadius) );
-
-    // number of mipmaps
-    GLCHK( program_ptr->setUniformValue("num_mipmaps"   , m_env_map->numMipmaps ) );
-    // 3D settings
-    GLCHK( program_ptr->setUniformValue("gui_bUseCullFace"   , display3Dparameters.bUseCullFace) );
-    GLCHK( program_ptr->setUniformValue("gui_bUseSimplePBR"  , display3Dparameters.bUseSimplePBR) );
-    GLCHK( program_ptr->setUniformValue("gui_noTessSub"      , display3Dparameters.noTessSubdivision) );
-    GLCHK( program_ptr->setUniformValue("gui_noPBRRays"      , display3Dparameters.noPBRRays) );
-
-    if(display3Dparameters.bShowTriangleEdges && pindex == 0){
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-        glEnable( GL_POLYGON_OFFSET_FILL );
-        glPolygonOffset( 1.0f, 1.0f );
-        GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", true) );
-        GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , true) );
-    }else{
-        if(display3Dparameters.bShowTriangleEdges){
-            glDisable( GL_POLYGON_OFFSET_FILL );
-            glEnable( GL_POLYGON_OFFSET_LINE );
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            glPolygonOffset( -2.0f, -2.0f );
-            glLineWidth(1.0f);
-
+        // Update uniforms from parsed file.
+        if(pindex == 0){
+            Dialog3DGeneralSettings::setUniforms();
         }
 
-        GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", display3Dparameters.bShowTriangleEdges) );
 
-        // Material preview: M key : when triangles are disabled
-        if(!display3Dparameters.bShowTriangleEdges)
-            GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , bool(keyPressed == KEY_SHOW_MATERIALS)) );
-    }
+        GLCHK( program_ptr->setUniformValue("ProjectionMatrix", projectionMatrix) );
+
+        objectMatrix.setToIdentity();
+        if( fboIdPtrs[0] != NULL){
+            float fboRatio = float(fboIdPtrs[0]->width())/float(fboIdPtrs[0]->height());
+            objectMatrix.scale(fboRatio,1,fboRatio);
+        }
+        if(mesh->isLoaded()){
+
+            objectMatrix.scale(0.5/mesh->radius);
+            objectMatrix.translate(-mesh->centre_of_mass);
+        }
+        modelViewMatrix = viewMatrix*objectMatrix;
+        NormalMatrix = modelViewMatrix.normalMatrix();
+        float mesh_scale = 0.5/mesh->radius;
+
+        GLCHK( program_ptr->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );
+        GLCHK( program_ptr->setUniformValue("NormalMatrix"          , NormalMatrix) );
+        GLCHK( program_ptr->setUniformValue("ModelMatrix"           , objectMatrix) );
+        GLCHK( program_ptr->setUniformValue("meshScale"             , mesh_scale) );
+
+        GLCHK( program_ptr->setUniformValue("lightPos"              , lightPosition) );
+
+        GLCHK( program_ptr->setUniformValue("lightDirection"        , lightDirection.direction) );
+
+        GLCHK( program_ptr->setUniformValue("cameraPos"             , camera.get_position()) );
+        GLCHK( program_ptr->setUniformValue("gui_depthScale"        , display3Dparameters.depthScale) );
+        GLCHK( program_ptr->setUniformValue("gui_uvScale"           , display3Dparameters.uvScale) );
+        GLCHK( program_ptr->setUniformValue("gui_uvScaleOffset"     , display3Dparameters.uvOffset) );
+        GLCHK( program_ptr->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
+        if(FBOImageProporties::bConversionBaseMap){
+            GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , false) );
+        }else{
+            GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
+        }
+
+        GLCHK( program_ptr->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
+        GLCHK( program_ptr->setUniformValue("gui_bHeight"           , bToggleHeightView) );
+        GLCHK( program_ptr->setUniformValue("gui_bNormal"           , bToggleNormalView) );
+        GLCHK( program_ptr->setUniformValue("gui_bRoughness"        , bToggleRoughnessView) );
+        GLCHK( program_ptr->setUniformValue("gui_bMetallic"         , bToggleMetallicView) );
+        GLCHK( program_ptr->setUniformValue("gui_shading_type"      , display3Dparameters.shadingType) );
+        GLCHK( program_ptr->setUniformValue("gui_shading_model"     , display3Dparameters.shadingModel) );
+        GLCHK( program_ptr->setUniformValue("gui_SpecularIntensity" , display3Dparameters.specularIntensity) );
+        GLCHK( program_ptr->setUniformValue("gui_DiffuseIntensity"  , display3Dparameters.diffuseIntensity) );
+        GLCHK( program_ptr->setUniformValue("gui_LightPower"        , display3Dparameters.lightPower) );
+        GLCHK( program_ptr->setUniformValue("gui_LightRadius"       , display3Dparameters.lightRadius) );
+
+        // number of mipmaps
+        GLCHK( program_ptr->setUniformValue("num_mipmaps"   , m_env_map->numMipmaps ) );
+        // 3D settings
+        GLCHK( program_ptr->setUniformValue("gui_bUseCullFace"   , display3Dparameters.bUseCullFace) );
+        GLCHK( program_ptr->setUniformValue("gui_bUseSimplePBR"  , display3Dparameters.bUseSimplePBR) );
+        GLCHK( program_ptr->setUniformValue("gui_noTessSub"      , display3Dparameters.noTessSubdivision) );
+        GLCHK( program_ptr->setUniformValue("gui_noPBRRays"      , display3Dparameters.noPBRRays) );
+
+        if(display3Dparameters.bShowTriangleEdges && pindex == 0){
+            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+            glEnable( GL_POLYGON_OFFSET_FILL );
+            glPolygonOffset( 1.0f, 1.0f );
+            GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", true) );
+            GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , true) );
+        }else{
+            if(display3Dparameters.bShowTriangleEdges){
+                glDisable( GL_POLYGON_OFFSET_FILL );
+                glEnable( GL_POLYGON_OFFSET_LINE );
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                glPolygonOffset( -2.0f, -2.0f );
+                glLineWidth(1.0f);
+
+            }
+
+            GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", display3Dparameters.bShowTriangleEdges) );
+
+            // Material preview: M key : when triangles are disabled
+            if(!display3Dparameters.bShowTriangleEdges)
+                GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , bool(keyPressed == KEY_SHOW_MATERIALS)) );
+        }
 
 
 
-    if( fboIdPtrs[0] != NULL){
+        if( fboIdPtrs[0] != NULL){
 
-        int tindeks = 0;
+            int tindeks = 0;
 
-        for(tindeks = 0 ; tindeks <= MATERIAL_TEXTURE ; tindeks++){ // skip grunge texture (not used in 3D view)
+            for(tindeks = 0 ; tindeks <= MATERIAL_TEXTURE ; tindeks++) { // skip grunge texture (not used in 3D view)
+                GLCHK( glActiveTexture(GL_TEXTURE0+tindeks) );
+                GLCHK( glBindTexture(GL_TEXTURE_2D, fboIdPtrs[tindeks]->texture()) );
+            }
+
             GLCHK( glActiveTexture(GL_TEXTURE0+tindeks) );
-            GLCHK( glBindTexture(GL_TEXTURE_2D, fboIdPtrs[tindeks]->texture()) );
+            GLCHK(m_prefiltered_env_map->bind());
+
+            tindeks++;
+            GLCHK( glActiveTexture(GL_TEXTURE0+tindeks) );
+            GLCHK( m_env_map->bind());
+            GLCHK( mesh->drawMesh() );
+            // set default active texture
         }
+        GLCHK( glActiveTexture(GL_TEXTURE0 ));
 
-        GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks ) );
-        GLCHK(m_prefiltered_env_map->bind());
-
-        tindeks++;
-        GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks) );
-        GLCHK( m_env_map->bind());    
-        GLCHK( mesh->drawMesh() );
-        // set default active texture
-        glActiveTexture(GL_TEXTURE0);
-    }
-
-    if(!display3Dparameters.bShowTriangleEdges) break;
+        if(!display3Dparameters.bShowTriangleEdges) break;
     }// end of loop over triangles
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDisable( GL_POLYGON_OFFSET_LINE );
@@ -738,7 +740,7 @@ void GLWidget::paintGL()
 
         applyNormalFilter(outputFBO->fbo->texture());
 
-    }else{ // end of if SHOW MATERIALS TEXTURE DISABLED
+    } else { // end of if SHOW MATERIALS TEXTURE DISABLED
         GLCHK( applyNormalFilter(colorFBO->fbo->texture()));
     }
 
@@ -793,11 +795,11 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     setCursor(Qt::ClosedHandCursor);
     if (event->buttons() & Qt::RightButton) {
         setCursor(Qt::SizeAllCursor);
-    }else if(event->buttons() & Qt::MiddleButton){
+    } else if(event->buttons() & Qt::MiddleButton) {
         setCursor(lightCursor);
 
 
-    }else if((event->buttons() & Qt::LeftButton) && (keyPressed == Qt::Key_Shift) ){
+    } else if((event->buttons() & Qt::LeftButton) && (keyPressed == Qt::Key_Shift) ) {
 
         colorFBO->bind();
         glReadBuffer(GL_COLOR_ATTACHMENT1); // NormalFBO actually it contains World Space position

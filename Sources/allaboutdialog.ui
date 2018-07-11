@@ -50,7 +50,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
+        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1,0">
          <item>
           <widget class="QLabel" name="version">
            <property name="font">
@@ -69,22 +69,26 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_4">
+          <widget class="QTextBrowser" name="label_4">
            <property name="font">
             <font>
              <pointsize>12</pointsize>
             </font>
            </property>
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;AwesomeBump is a free and open source program designed to generate normal, height, specular or ambient occlusion, roughness and metallic textures from a single image.&lt;br/&gt;Since the image processing is done in 99% on GPU  the program runs very fast and all the parameters can be changed in real time.&lt;hr/&gt;Program written by &lt;span style=&quot; font-weight:600;&quot;&gt;Krzysztof Kolasinski&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;Pawel Piecuch&lt;/span&gt; (Copyright 2015-2017) with collaboration with other people!&lt;/p&gt;&lt;p&gt;See project collaborators list on github.&lt;/body&gt;&lt;/html&gt;</string>
+           <property name="html">
+            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.SF NS Text'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;AwesomeBump is a free and open source program designed to generate normal, height, specular or ambient occlusion, roughness and metallic textures from a single image.&lt;br /&gt;Since the image processing is done in 99% on GPU the program runs very fast and all the parameters can be changed in real time.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Program written by &lt;span style=&quot; font-weight:600;&quot;&gt;Krzysztof Kolasinski&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;Pawel Piecuch&lt;/span&gt; (Copyright 2015-2017) with collaboration with other people!&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;See project collaborators list on github.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignJustify|Qt::AlignVCenter</set>
-           </property>
-           <property name="wordWrap">
+           <property name="wordWrap" stdset="0">
             <bool>true</bool>
            </property>
-           <property name="margin">
+           <property name="margin" stdset="0">
             <number>2</number>
            </property>
           </widget>
@@ -110,6 +114,13 @@
         </layout>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="labelInfo">
@@ -149,30 +160,33 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <property name="leftMargin">
-          <number>0</number>
+          <number>4</number>
          </property>
          <property name="topMargin">
-          <number>0</number>
+          <number>10</number>
          </property>
          <property name="rightMargin">
-          <number>0</number>
+          <number>4</number>
          </property>
          <property name="bottomMargin">
-          <number>0</number>
+          <number>4</number>
          </property>
          <item>
-          <widget class="QLabel" name="info">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-           <property name="margin">
-            <number>4</number>
-           </property>
+          <widget class="QTextBrowser" name="info">
            <property name="textInteractionFlags">
             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+           <property name="openExternalLinks">
+            <bool>true</bool>
+           </property>
+           <property name="text" stdset="0">
+            <string/>
+           </property>
+           <property name="wordWrap" stdset="0">
+            <bool>true</bool>
+           </property>
+           <property name="margin" stdset="0">
+            <number>4</number>
            </property>
           </widget>
          </item>
@@ -180,7 +194,7 @@
        </widget>
        <widget class="QWidget" name="tabContextInfo">
         <attribute name="title">
-         <string>Context info</string>
+         <string>Context test</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <property name="leftMargin">
@@ -204,20 +218,43 @@
         <attribute name="title">
          <string>Log file</string>
         </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <property name="leftMargin">
+          <number>4</number>
+         </property>
+         <property name="topMargin">
+          <number>10</number>
+         </property>
+         <property name="rightMargin">
+          <number>4</number>
+         </property>
+         <property name="bottomMargin">
+          <number>4</number>
+         </property>
+         <item>
+          <widget class="QTextBrowser" name="log">
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+           </property>
+           <property name="openExternalLinks">
+            <bool>true</bool>
+           </property>
+           <property name="text" stdset="0">
+            <string/>
+           </property>
+           <property name="wordWrap" stdset="0">
+            <bool>true</bool>
+           </property>
+           <property name="margin" stdset="0">
+            <number>4</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QFrame" name="frame">
-     <property name="frameShape">
-      <enum>QFrame::HLine</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

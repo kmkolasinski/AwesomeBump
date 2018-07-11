@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>resources/icons/Qt.png</file>
         <file>resources/icons/AB.png</file>
+        <file>resources/icons/github.png</file>
         <file>resources/icons/cube.png</file>
         <file>resources/icons/icon.png</file>
         <file>resources/icons/icon-large.png</file>

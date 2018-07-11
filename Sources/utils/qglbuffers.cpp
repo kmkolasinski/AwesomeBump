@@ -51,14 +51,12 @@ void qgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zF
 GLTexture::GLTexture() : m_texture(0), m_failed(false)
 {
     initializeOpenGLFunctions();
-    fbo = 0;    
     glGenTextures(1, &m_texture);
 }
 
 GLTexture::~GLTexture()
 {
     glDeleteTextures(1, &m_texture);
-    if(fbo != 0 ) glDeleteFramebuffers(1, &fbo);
 }
 
 //============================================================================//
@@ -93,7 +91,6 @@ GLTexture2D::GLTexture2D(const QString& fileName, int width, int height)
 
     image = image.convertToFormat(QImage::Format_ARGB32);
 
-    //qDebug() << "Image size:" << image.width() << "x" << image.height();
     if (width <= 0)
         width = image.width();
     if (height <= 0)
@@ -127,7 +124,7 @@ void GLTexture2D::load(int width, int height, QRgb *data)
 
 void GLTexture2D::bind()
 {
-    glBindTexture(GL_TEXTURE_2D, m_texture);
+    GLCHK( glBindTexture(GL_TEXTURE_2D, m_texture) );
 }
 
 void GLTexture2D::unbind()
@@ -182,7 +179,7 @@ void GLTexture3D::unbind()
 //                                GLTextureCube                               //
 //============================================================================//
 
-GLTextureCube::GLTextureCube(int size)
+GLTextureCube::GLTextureCube(int size) : fbo(0)
 {
     GLCHK( glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture) );
 
@@ -214,6 +211,11 @@ GLTextureCube::GLTextureCube(int size)
         fbo = 0;
     }
     GLCHK( glBindFramebuffer(GL_FRAMEBUFFER, 0) );
+}
+
+GLTextureCube::~GLTextureCube()
+{
+    if(fbo != 0 ) glDeleteFramebuffers(1, &fbo);
 }
 
 GLTextureCube::GLTextureCube(const QStringList& fileNames, int size)
@@ -262,7 +264,6 @@ GLTextureCube::GLTextureCube(const QStringList& fileNames, int size)
     GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
     //GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE));
     GLCHK(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
-
 
     // get number of mip maps
     if ( (numMipmaps = textureCalcLevels(GL_TEXTURE_CUBE_MAP_POSITIVE_X)) == -1 ) {

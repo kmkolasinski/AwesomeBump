@@ -47,6 +47,8 @@
 #include <qopengl.h>
 
 #include <QWidget>
+#include <QOpenGLBuffer>
+#include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
 
 #include "glwidgetbase.h"
@@ -300,7 +302,8 @@ private:
     std::map<std::string,GLuint> subroutines;
     std::map<std::string,QOpenGLShaderProgram*> filter_programs; // all filters in one array
 
-    GLuint vao, vbos[3];
+    QOpenGLVertexArrayObject vao;
+    QOpenGLBuffer vbos[3];
 
     ConversionType conversionType;
     bool bShadowRender;
@@ -309,8 +312,7 @@ private:
     float fboRatio;         // active fbo width-height ratio
 
     // Image resize
-    int resize_width;
-    int resize_height;
+    int resize_width, resize_height;
 
     // Image translation and physical cursor position
     double xTranslation; // x position of the image in the window

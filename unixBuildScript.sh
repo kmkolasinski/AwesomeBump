@@ -9,9 +9,9 @@
 # QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
 
 locations="\
-    /Developer/Qt/5.9 \
-    ~/Qt/5.9 \
-    /opt/Qt5.7.0/5.7/gcc_64/bin \
+    /Developer/Qt/5.11 \
+    ~/Qt/5.11 \
+    /opt/Qt5.11.0/5.7/gcc_64/bin \
 "
 for p in $locations; do
 	if [ -e "$p" ]; then

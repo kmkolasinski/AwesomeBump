@@ -460,6 +460,9 @@ void MainWindow::initializeApp()
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
 
 
+    checkUpdates = new QAction(QIcon(":/resources/icons/github.png"), tr("Check for updates"), this);
+    checkUpdates->setToolTip(tr("Check for new GitHub release"));
+
     logAction = new QAction("Show log file",this);
     dialogLogger    = new DialogLogger(this);
     dialogShortcuts = new DialogShortcuts(this);
@@ -468,6 +471,7 @@ void MainWindow::initializeApp()
 
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(about()));
     connect(aboutQtAction, SIGNAL(triggered()), this, SLOT(aboutQt()));
+    connect(checkUpdates, SIGNAL(triggered()), this, SLOT(checkUpdates()));
     connect(logAction, SIGNAL(triggered()), dialogLogger, SLOT(showLog()));
     connect(shortcutsAction, SIGNAL(triggered()), dialogShortcuts, SLOT(show()));
 
@@ -1569,7 +1573,6 @@ void MainWindow::runBatch()
 
     qDebug() << "> Starting batch mode: this may take some time";
 
-    isOffScreenRenderingEnabled = true;
     while(ui->listWidgetImageBatch->count() > 0){
         QListWidgetItem* item = ui->listWidgetImageBatch->takeItem(0);
         qDebug() << "> Images left: " +

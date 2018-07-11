@@ -72,7 +72,6 @@ public:
     virtual bool failed() const {return m_failed;}
 protected:
     GLuint m_texture;
-    GLuint fbo;
     bool m_failed;
 };
 
@@ -123,12 +122,14 @@ class GLTextureCube : public GLTexture
 public:
     GLTextureCube(int size);
     explicit GLTextureCube(const QStringList& fileNames, int size = 0);
+    ~GLTextureCube();
     void load(int size, int face, QRgb *data);
     virtual void bind() Q_DECL_OVERRIDE;
     virtual void bindFBO();
     virtual void unbind() Q_DECL_OVERRIDE;
     int textureCalcLevels(GLenum target);
 public:
+    GLuint fbo;
     int numMipmaps;
 };
 

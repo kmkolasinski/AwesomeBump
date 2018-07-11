@@ -18,6 +18,7 @@
  */
 
 #include "gpuinfo.h"
+#include "utils/DebugMetricsMonitor.h"
 
 GpuInfo::GpuInfo()
 {
@@ -45,7 +46,7 @@ void GpuInfo::setGpuMake()
       m_curGpu.gpuMake = NVIDIA;
     else if (strcmp(rawMake, "ATI Technologies") == 0)
       m_curGpu.gpuMake = ATI;
-    else if(strcmp(rawMake, "Intel Open Source Technology Center") == 0)
+    else if(strcmp(rawMake, "Intel Open Source Technology Center") == 0 || strcmp(rawMake, "Intel Inc.") == 0)
       m_curGpu.gpuMake = INTEL;
     else
       m_curGpu.gpuMake = NONE; //Unknown vendor string or error

@@ -51,7 +51,7 @@ signals:
 	void initProgress(int perc);
 	void initMessage(const QString &msg);
 
-public slots:
+public Q_SLOTS:
 
     void aboutQt();
     void about();
@@ -139,7 +139,7 @@ public slots:
     void resetRandomPatches();
     void selectContrastInputImage(int mode);
 
-private slots:
+public Q_SLOTS:
     // batch tool
     void selectSourceImages();
     void selectOutputPath();
@@ -189,6 +189,7 @@ private:
 
     QAction *aboutQtAction;
     QAction *aboutAction;
+    QAction *checkUpdates;
     QAction *logAction; // show logger
     QAction *shortcutsAction; // show key shortcuts
 

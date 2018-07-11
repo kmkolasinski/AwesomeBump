@@ -755,8 +755,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>357</width>
-                 <height>700</height>
+                 <width>347</width>
+                 <height>699</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -2058,8 +2058,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>361</width>
-                 <height>593</height>
+                 <width>345</width>
+                 <height>599</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -3344,8 +3344,16 @@
      <string>View</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionCheck_for_updates"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionQuit">
@@ -3600,6 +3608,11 @@
    </property>
    <property name="shortcut">
     <string>Alt+B</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_updates">
+   <property name="text">
+    <string>Check for updates</string>
    </property>
   </action>
  </widget>

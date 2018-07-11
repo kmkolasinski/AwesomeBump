@@ -1,12 +1,13 @@
 #include "threadrenderer.h"
-#include "glimage.h"
+#include "glimageeditor.h"
 #include "qtofflinegl.h"
 
 
 QList<QThread *> ThreadRenderer::threads;
+QQueue<TextureTypes> ThreadRenderer::requests;
 
 ThreadRenderer::ThreadRenderer() : m_renderThread(0) {
-    m_renderThread = new RenderThread(QSize(512, 512));
+    m_renderThread = new RenderThread(QSize(512, 512), m_worker);
 }
 
 void ThreadRenderer::ready()
@@ -34,20 +35,15 @@ void ThreadRenderer::update()
     }
 }
 
-
-void RenderThread::renderContent()
-{
-}
-
 void RenderThread::run()
-    while(!shutdown)
+{
+    forever
     {
         m_mutex.lock();
         m_worker.wait(&m_mutex);
         if (ThreadRenderer::requests.size()) {
             TextureTypes tt = ThreadRenderer::requests.dequeue();
-            GLImage::updateImage();
-            emit textureReady(tt);
+            // GLImage::updateImage();
         }
         m_mutex.unlock();
     }

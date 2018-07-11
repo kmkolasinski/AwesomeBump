@@ -9,27 +9,27 @@
 
 
 #include <qopengl.h>
-
 #include <QString>
 #include <QDebug>
 #include <QVector>
 #include <QVector3D>
-#include <iostream>
 
+#ifdef USE_OPENGL_330
+# include <QOpenGLFunctions_3_3_Core>
+# define OPENGL_FUNCTIONS QOpenGLFunctions_3_3_Core
+#else
+# include <QOpenGLFunctions_4_0_Core>
+# define OPENGL_FUNCTIONS QOpenGLFunctions_4_0_Core
+#endif
+
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
+
+#include <iostream>
 #include "tinyobj/tiny_obj_loader.h"
 
 #include "../CommonObjects.h"
 #include "../qopenglerrorcheck.h"
-
-
-#ifdef USE_OPENGL_330
-    #include <QOpenGLFunctions_3_3_Core>
-    #define OPENGL_FUNCTIONS QOpenGLFunctions_3_3_Core
-#else
-    #include <QOpenGLFunctions_4_0_Core>
-    #define OPENGL_FUNCTIONS QOpenGLFunctions_4_0_Core
-#endif
-
 
 using namespace std;
 
@@ -65,7 +65,7 @@ private:
     bool hasCommonEdge(int i, int j);
     void calculateTangents();
 
-    GLuint vao;
+    QOpenGLVertexArrayObject vao;
 
     QString mesh_path;
     bool bLoaded;
@@ -79,7 +79,7 @@ private:
     QVector<QVector3D> gl_tangents;
     QVector<QVector3D> gl_bitangents;
 
-    unsigned int mesh_vbos[6]; // VBO indices
+    QOpenGLBuffer mesh_vbos[6]; // vbo indices
     QString mesh_log;
 };
 
