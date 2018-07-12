@@ -171,37 +171,38 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
 void Mesh::drawMesh(bool bUseArrays ){
     if(bLoaded == false) return;
 
-    GLCHK(vao.bind());
+    GLCHK( vao.bind() );
 
     if(bUseArrays) {
-        GLCHK(glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()));
+        GLCHK( glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()) );
     } else {
         #ifdef USE_OPENGL_330
-        GLCHK(glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()));
+         GLCHK( glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()) );
         #else
-        glPatchParameteri(GL_PATCH_VERTICES, 3);       // tell OpenGL that every patch has 16 verts
-        GLCHK(glDrawArrays(GL_PATCHES, 0, gl_vertices.size())); // draw a bunch of patches
+         GLCHK( glPatchParameteri(GL_PATCH_VERTICES, 3) );         // tell OpenGL that every patch has 16 verts
+         GLCHK( glDrawArrays(GL_PATCHES, 0, gl_vertices.size()) ); // draw a bunch of patches
         #endif
     }
 
-    GLCHK(vao.release());
+    GLCHK( vao.release() );
 }
 
 void Mesh::initializeMesh(){
-    if(bLoaded == false){
-        cerr << Q_FUNC_INFO << " Cannot initialize mesh because it is not loaded.";
-        cerr.flush();
+    if(bLoaded == false) {
+        qWarning() << Q_FUNC_INFO << " Cannot initialize mesh because it is not loaded.";
         return;
     }
 
+    GLCHK( vao.create() );
     GLCHK( vao.bind() );
 
     auto EnableBuffer = [=](GLuint ID, const QVector<QVector3D> &INPUT) {
         mesh_vbos[ID].setUsagePattern(QOpenGLBuffer::StaticDraw);
+        mesh_vbos[ID].create();
         mesh_vbos[ID].bind();
         mesh_vbos[ID].allocate((void*)INPUT.constData(), INPUT.size() * sizeof(QVector3D));
-        glEnableVertexAttribArray(ID);
-        glVertexAttribPointer(ID,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+        GLCHK( glEnableVertexAttribArray(ID) );
+        GLCHK( glVertexAttribPointer(ID,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0) );
     };
 
     EnableBuffer(0, gl_vertices);
@@ -225,12 +226,11 @@ void Mesh::calculateTangents()
     QVector3D *tan1 = new QVector3D[vertexCount * 2];
     QVector3D *tan2 = tan1 + vertexCount;
 
-    for(int i = 0; i < 2*vertexCount ; i++){
+    for(int i = 0; i < 2*vertexCount ; i++) {
             tan1[i] = QVector3D(0.0f,0.0f,0.0f);
     }
 
-    for (unsigned int a = 0; a < vertexCount/3; a++)
-    {
+    for (unsigned int a = 0; a < vertexCount/3; a++) {
         long i1 = 3*a+0;
         long i2 = 3*a+1;
         long i3 = 3*a+2;
@@ -239,11 +239,9 @@ void Mesh::calculateTangents()
         const QVector3D& v2 = gl_vertices[i2];
         const QVector3D& v3 = gl_vertices[i3];
 
-
         const QVector3D& w1 = gl_texcoords[i1];
         const QVector3D& w2 = gl_texcoords[i2];
         const QVector3D& w3 = gl_texcoords[i3];
-
 
         float x1 = v2.x() - v1.x();
         float x2 = v3.x() - v1.x();
@@ -270,12 +268,9 @@ void Mesh::calculateTangents()
         tan2[i1] += tdir;
         tan2[i2] += tdir;
         tan2[i3] += tdir;
-
-
     }
 
-    for (unsigned int a = 0; a < vertexCount; a++)
-    {
+    for (unsigned int a = 0; a < vertexCount; a++) {
         QVector3D& n = gl_normals[a];
         QVector3D& t = tan1[a];
         t.normalize();
@@ -288,7 +283,6 @@ void Mesh::calculateTangents()
         QVector3D bitangent = QVector3D::crossProduct(n, t) * handedness;
         bitangent.normalize();
         gl_bitangents.push_back(bitangent);
-
     }
 
     delete[] tan1;

@@ -2,10 +2,11 @@
 #include <cmath>
 
 #include <QPainter>
-#include <QtWidgets>
+#include <QLabel>
+#include <QOpenGLShaderProgram>
+#include <QWindow>
 
 #include "qopenglerrorcheck.h"
-#include "qtofflinegl.h"
 #include "glpreview.h"
 
 #define PROGRAM_VERTEX_ATTRIBUTE   0
@@ -64,9 +65,11 @@ void QPictureLabel::_displayImage()
 
 /////
 
-GLPreview::GLPreview(QWidget *parent) : QOpenGLWidget(parent), alignType(TextureAll), textures{1}
+GLPreview::GLPreview(QWidget *parent) : QOpenGLWidget(parent), alignType(TextureAll), textures{0}
 {
   setObjectName("GLPreview");
+  setEnabled(false);
+
   vbos[2] = QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
 
   viewport = QSize(1,1);
@@ -124,6 +127,8 @@ void GLPreview::initializeGL()
 
 void GLPreview::paintGL()
 {
+    if (!isEnabled()) return;
+
     GLCHK( glViewport(0, 0, viewport.width(), viewport.height()) );
     GLCHK( glClear(GL_DEPTH_BUFFER_BIT) );
 
@@ -211,22 +216,22 @@ void GLPreview::makeScreenQuad()
       indices << quad;
     }
 
-    GLCHK( vbos[0].create() );
     GLCHK( vbos[0].setUsagePattern( QOpenGLBuffer::StaticDraw ) );
+    GLCHK( vbos[0].create() );
     GLCHK( vbos[0].bind() );
     GLCHK( vbos[0].allocate( vert.data(), vert.size() * sizeof( float ) ) );
     GLCHK( program->enableAttributeArray( PROGRAM_VERTEX_ATTRIBUTE ) );
     GLCHK( program->setAttributeBuffer( PROGRAM_VERTEX_ATTRIBUTE, GL_FLOAT, 0, 3 ) );    
 
-    GLCHK( vbos[1].create() );
     GLCHK( vbos[1].setUsagePattern( QOpenGLBuffer::StaticDraw ) );
+    GLCHK( vbos[1].create() );
     GLCHK( vbos[1].bind() );
     GLCHK( vbos[1].allocate( tex.data(), tex.size() * sizeof( float ) ) );
     GLCHK( program->enableAttributeArray( PROGRAM_TEXCOORD_ATTRIBUTE ) );
     GLCHK( program->setAttributeBuffer( PROGRAM_TEXCOORD_ATTRIBUTE, GL_FLOAT, 0, 2 ) );
 
-    GLCHK( vbos[2].create() );
     GLCHK( vbos[2].setUsagePattern( QOpenGLBuffer::StaticDraw ) );
+    GLCHK( vbos[2].create() );
     GLCHK( vbos[2].bind() );
     GLCHK( vbos[2].allocate( indices.data(), indices.size() * sizeof( uint ) ) );
 

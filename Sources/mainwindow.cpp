@@ -38,13 +38,16 @@ MainWindow::MainWindow(QWidget *parent)
     FormImageProp::recentDir    = &recentDir;
     GLWidget::recentMeshDir     = &recentMeshDir;
     abSettings                  = new QtnPropertySetAwesomeBump(this);
-    
+
+    qDebug() << Q_FUNC_INFO << "entering setupUi.";
     ui->setupUi(this);
 
     statusLabel = new QLabel("GPU memory status: n/a");
 #ifdef Q_OS_MAC
     if(!statusLabel->testAttribute(Qt::WA_MacNormalSize)) statusLabel->setAttribute(Qt::WA_MacSmallSize);
 #endif
+
+    qDebug() << Q_FUNC_INFO << "building main widgets.";
 
     glImage          = new GLImage(this);
     glWidget         = new GLWidget(this);
@@ -61,9 +64,9 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::initializeApp()
 {
     connect(glImage,SIGNAL(rendered()),this,SLOT(initializeImages()));
+
     qDebug() << "Initialization: Build image properties";
     INIT_PROGRESS(10, "Build image properties");
-
 
     diffuseImageProp  = new FormImageProp(this);
     normalImageProp   = new FormImageProp(this);
@@ -494,6 +497,15 @@ void MainWindow::initializeApp()
 
     qDebug() << "Initialization: Done - UI ready.";
     INIT_PROGRESS(100, tr("Done - UI ready."));
+
+    QTimer::singleShot(0, [=](){
+        qDebug() << Q_FUNC_INFO << "*** enabling widgets.";
+        glWidget->setEnabled(true);
+        glImage->setEnabled(true);
+        glTexturesPreview->setEnabled(true);
+    });
+
+    qDebug() << Q_FUNC_INFO << "*** finished.";
 }
 
 MainWindow::~MainWindow()
@@ -519,11 +531,12 @@ MainWindow::~MainWindow()
     delete ui;
 
 }
+
 #include <cassert>
+
 void MainWindow::closeEvent(QCloseEvent *event) {
 #ifndef CONVERT_TO_CONSOLE
     QWidget::closeEvent( event );
-    qDebug() << "CLOSE EVENT ------------ !!!!!!!!!!!!!!!!!!!";
     settingsContainer->close();
     glWidget->close();
     glImage->close();

@@ -1,4 +1,5 @@
 #include "glwidgetbase.h"
+#include <QTimer>
 #include <QThread>
 #include <QMouseEvent>
 

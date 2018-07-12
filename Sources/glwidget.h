@@ -83,8 +83,6 @@ public:
     void setPointerToTexture(QOpenGLFramebufferObjectPtr pointer, TextureTypes type);
 
 public slots:
-
-
     void toggleDiffuseView(bool);
     void toggleSpecularView(bool);
     void toggleOcclusionView(bool);
@@ -125,9 +123,6 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
 
 private:
-
-
-
     // other functions
     QPointF pixelPosToViewPos(const QPointF& p);
     int glhUnProjectf(float &winx, float &winy, float &winz,
@@ -141,8 +136,6 @@ private:
     QOpenGLShaderProgram *env_program;
 
     QOpenGLFramebufferObjectPtr fboIdPtrs[MAX_TEXTURES_TYPE];
-
-
 
     bool bToggleDiffuseView;
     bool bToggleSpecularView;
@@ -170,8 +163,6 @@ private:
     double cameraInterpolation;
     AwesomeCamera lightDirection;//second light - use camera class to rotate light
     QCursor lightCursor;
-
-
 
     Mesh* mesh; // displayed 3d mesh
     Mesh* skybox_mesh; // sky box cube
