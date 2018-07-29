@@ -67,17 +67,17 @@ GLTexture::~GLTexture()
 
 GLTexture2D::GLTexture2D(int width, int height)
 {
-    glBindTexture(GL_TEXTURE_2D, m_texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0,
-        GL_BGRA, GL_UNSIGNED_BYTE, 0);
+    GLCHK(glBindTexture(GL_TEXTURE_2D, m_texture));
+    GLCHK(glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0,
+        GL_BGRA, GL_UNSIGNED_BYTE, 0));
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+    GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+    GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 
@@ -186,35 +186,35 @@ void GLTexture3D::unbind()
 
 GLTextureCube::GLTextureCube(int size)
 {
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
-
+    GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
+    GLCHK(glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture));
+    qDebug() << "m_texture:" << m_texture;
     for (int i = 0; i < 6; ++i)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, 4, size, size, 0,
-            GL_BGRA, GL_UNSIGNED_BYTE, 0);
+        GLCHK(glTexImage2D(
+                  GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, size, size, 0,
+                  GL_BGRA, GL_UNSIGNED_BYTE, 0)
+              );
 
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE);
-    //glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GLCHK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 
     // from http://stackoverflow.com/questions/462721/rendering-to-cube-map
     // framebuffer object
-    glGenFramebuffers   (1, &fbo);
-    glBindFramebuffer   (GL_FRAMEBUFFER, fbo);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_texture, 0);
-    glDrawBuffer        (GL_COLOR_ATTACHMENT0); // important!
+    GLCHK(glGenFramebuffers   (1, &fbo));
+    GLCHK(glBindFramebuffer   (GL_FRAMEBUFFER, fbo));
+    GLCHK(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_texture, 0));
+    GLCHK(glDrawBuffer        (GL_COLOR_ATTACHMENT0)); // important!
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if(status != GL_FRAMEBUFFER_COMPLETE){
-        glDeleteFramebuffers(1, &fbo);
+        GLCHK(glDeleteFramebuffers(1, &fbo));
         fbo = 0;
     }
-    glBindFramebuffer(GL_FRAMEBUFFER,0);
+    GLCHK(glBindFramebuffer(GL_FRAMEBUFFER,0));
 }
 
 GLTextureCube::GLTextureCube(const QStringList& fileNames, int size)
@@ -241,8 +241,11 @@ GLTextureCube::GLTextureCube(const QStringList& fileNames, int size)
 
         // Works on x86, so probably works on all little-endian systems.
         // Does it work on big-endian systems?
-        GLCHK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, 4, image.width(), image.height(), 0,
-            GL_BGRA, GL_UNSIGNED_BYTE, image.bits()) );
+        GLCHK(glTexImage2D(
+                  GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0,
+                  GL_RGBA, image.width(), image.height(), 0,
+                  GL_BGRA, GL_UNSIGNED_BYTE, image.bits()
+                  ));
 
         if (++index == 6)
             break;
@@ -250,20 +253,19 @@ GLTextureCube::GLTextureCube(const QStringList& fileNames, int size)
 
     // Clear remaining faces.
     while (index < 6) {
-        GLCHK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, 4, size, size, 0,
-            GL_BGRA, GL_UNSIGNED_BYTE, 0));
+        GLCHK(glTexImage2D(
+                  GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, GL_RGBA,
+                  size, size, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0
+                  ));
         ++index;
     }
 
     GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));    
     GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
-    GLCHK(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_GENERATE_MIPMAP, GL_TRUE));
     GLCHK(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
-
 
     // get number of mip maps
     if ( (numMipmaps = textureCalcLevels(GL_TEXTURE_CUBE_MAP_POSITIVE_X)) == -1 ) {
@@ -279,28 +281,28 @@ GLTextureCube::GLTextureCube(const QStringList& fileNames, int size)
 
 void GLTextureCube::load(int size, int face, QRgb *data)
 {
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, 4, size, size, 0,
-            GL_BGRA, GL_UNSIGNED_BYTE, data);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    GLCHK(glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture));
+    GLCHK(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, 4, size, size, 0,
+            GL_BGRA, GL_UNSIGNED_BYTE, data));
+    GLCHK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 }
 
 void GLTextureCube::bind()
 {
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
-    glEnable(GL_TEXTURE_CUBE_MAP);
+    GLCHK(glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture));
+//    GLCHK(glEnable(GL_TEXTURE_CUBE_MAP));
 }
 
 void GLTextureCube::bindFBO(){
-    glBindFramebuffer   (GL_FRAMEBUFFER, fbo);
-    glDrawBuffer        (GL_COLOR_ATTACHMENT0); // important!
+    GLCHK(glBindFramebuffer   (GL_FRAMEBUFFER, fbo));
+    GLCHK(glDrawBuffer        (GL_COLOR_ATTACHMENT0)); // important!
 }
 
 
 void GLTextureCube::unbind()
 {
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    glDisable(GL_TEXTURE_CUBE_MAP);
+    GLCHK(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+    GLCHK(glDisable(GL_TEXTURE_CUBE_MAP));
 }
 
 int GLTextureCube::textureCalcLevels(GLenum target)
@@ -330,24 +332,7 @@ GLFrameBufferObject::GLFrameBufferObject(int width, int height)
     , m_height(height)
     , m_failed(false)
 {
-    initializeOpenGLFunctions();
-
-/*
-
-    glGenTextures(1, &depth_texture);
-    glBindTexture(GL_TEXTURE_2D, depth_texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-    //NULL means reserve texture memory, but texels are undefined
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    */
-
+    GLCHK(initializeOpenGLFunctions());
 
     fbo = NULL;
     attachments.clear();
@@ -356,22 +341,23 @@ GLFrameBufferObject::GLFrameBufferObject(int width, int height)
     format.setTextureTarget(GL_TEXTURE_2D);
     format.setMipmap(true);
     format.setAttachment(QGLFramebufferObject::Depth);
-    fbo = new QGLFramebufferObject(width,height,format);
-    glBindTexture(GL_TEXTURE_2D, fbo->texture());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    fbo = new QGLFramebufferObject(width, height, format);
+
+    GLCHK(glBindTexture(GL_TEXTURE_2D, fbo->texture()));
+    GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT));
+    GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT));
+    GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    GLCHK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 GLFrameBufferObject::~GLFrameBufferObject()
 {
     fbo->release();
     for(unsigned int i = 0;i< attachments.size();i++){
-        glDeleteTextures(1,&attachments[i]);
+        GLCHK(glDeleteTextures(1,&attachments[i]));
     }
 
     attachments.erase(attachments.begin(),attachments.end());
@@ -382,37 +368,33 @@ GLFrameBufferObject::~GLFrameBufferObject()
 
 bool GLFrameBufferObject::isComplete()
 {
-   // GLBUFFERS_ASSERT_OPENGL("GLFrameBufferObject::isComplete", glCheckFramebufferStatusEXT, return false)
-
     return GL_FRAMEBUFFER_COMPLETE == glCheckFramebufferStatus(GL_FRAMEBUFFER);
 }
 void GLFrameBufferObject::bind(){
-    fbo->bind();
+    GLCHK(fbo->bind());
 }
 void GLFrameBufferObject::bindDefault(){
-    fbo->bindDefault();
+    GLCHK(fbo->bindDefault());
 }
 
 bool GLFrameBufferObject::addTexture(GLenum COLOR_ATTACHMENTn){
 
-
     GLuint tex[1];
     GLCHK(glGenTextures(1, &tex[0]));
-    glBindTexture(GL_TEXTURE_2D, tex[0]);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_3DRENDER_FORMAT, fbo->width(), fbo->height(), 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    GLCHK(glBindTexture(GL_TEXTURE_2D, tex[0]));
+    GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT));
+    GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT));
+    GLCHK(glTexImage2D(GL_TEXTURE_2D, 0, TEXTURE_3DRENDER_FORMAT, fbo->width(), fbo->height(), 0,GL_RGB, GL_UNSIGNED_BYTE, 0));
+    GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
     if(!glIsTexture(tex[0])){
         qDebug() << "Error: Cannot create additional texture. Process stopped." << endl;
         return false;
     }
     GLCHK(fbo->bind());
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, COLOR_ATTACHMENTn,GL_TEXTURE_2D, tex[0], 0);
+    GLCHK(glFramebufferTexture2D(GL_FRAMEBUFFER, COLOR_ATTACHMENTn,GL_TEXTURE_2D, tex[0], 0));
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if(status != GL_FRAMEBUFFER_COMPLETE){
@@ -421,8 +403,7 @@ bool GLFrameBufferObject::addTexture(GLenum COLOR_ATTACHMENTn){
         return false;
     }
     // switch back to window-system-provided framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+    GLCHK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
     attachments.push_back(tex[0]);
     return true;
 }

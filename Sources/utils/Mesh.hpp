@@ -66,6 +66,7 @@ private:
 
 
     QString mesh_path;
+    GLuint mesh_vao;
     bool bLoaded;
 
 

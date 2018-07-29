@@ -95,6 +95,9 @@ void customMessageHandler(QtMsgType type, const QMessageLogContext &context, con
       case QtWarningMsg:
          txt += QString("{Warning} \t %1").arg(msg);
          break;
+      case QtInfoMsg:
+          txt += QString("{Info} \t %1").arg(msg);
+          break;
       case QtCriticalMsg:
          txt += QString("{Critical} \t %1").arg(msg);
          break;
@@ -283,6 +286,9 @@ int main(int argc, char *argv[])
     glFormat.setVersion( GL_MAJOR, GL_MINOR );
     format.setVersion( GL_MAJOR, GL_MINOR );
 #endif
+
+    glFormat.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
+    glFormat.setSampleBuffers( true );
 
     QGLFormat::setDefaultFormat(glFormat);
     QSurfaceFormat::setDefaultFormat(format);

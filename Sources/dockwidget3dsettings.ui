@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>515</width>
-    <height>248</height>
+    <height>250</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -28,7 +28,7 @@
   <property name="maximumSize">
    <size>
     <width>524287</width>
-    <height>2000</height>
+    <height>250</height>
    </size>
   </property>
   <property name="windowOpacity">

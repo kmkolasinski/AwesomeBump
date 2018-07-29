@@ -109,7 +109,8 @@ void GLImage::cleanup()
   delete renderFBO;
 
 
-  glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]);
+  GLCHK(glDeleteBuffers(sizeof(vbos)/sizeof(GLuint), &vbos[0]));
+  GLCHK(glDeleteVertexArrays(1, &screen_vao));
   doneCurrent();
 }
 
@@ -312,7 +313,6 @@ void GLImage::initializeGL()
         auxFBO2BMLevels[i] = NULL;
     }
     paintFBO   = NULL;
-
     emit readyGL();
 }
 
@@ -342,11 +342,13 @@ void GLImage::paintGL()
         GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
         GLCHK( glDisable(GL_CULL_FACE) );
         GLCHK( glDisable(GL_DEPTH_TEST) );
+
+        GLCHK(glBindVertexArray(screen_vao));
         // positions
-        glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-        glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
+        GLCHK(glBindBuffer(GL_ARRAY_BUFFER, vbos[0]));
+        GLCHK(glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0));
         // indices
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
+        GLCHK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]));
 
         QGLFramebufferObject* activeFBO     = paintFBO;
 
@@ -354,7 +356,7 @@ void GLImage::paintGL()
             program = filter_programs["mode_normal_filter"];
             program->bind();
         #else
-            GLCHK( glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]) );
+            GLCHK(glUniformSubroutinesuiv( GL_FRAGMENT_SHADER, 1, &subroutines["mode_normal_filter"]));
         #endif
 
         // Displaying new image
@@ -373,8 +375,10 @@ void GLImage::paintGL()
         GLCHK( program->setUniformValue("ModelViewMatrix", m) );
         GLCHK( program->setUniformValue("material_id", int(-1)) );
         GLCHK( glDrawElements(GL_TRIANGLES, 3*2, GL_UNSIGNED_INT, 0) );
-        GLCHK( program->setUniformValue("quad_draw_mode", int(0)) );
+        GLCHK( program->setUniformValue("quad_draw_mode", int(0)) );        
+        GLCHK(glBindVertexArray(0));
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }
 
@@ -382,7 +386,7 @@ void GLImage::paintGL()
 
 void GLImage::render(){
 
-
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     if (!activeImage) return;
     if ( activeImage->fbo){ // since grunge map can be different we need to calculate ratio each time
       fboRatio = float(activeImage->fbo->width())/activeImage->fbo->height();
@@ -396,8 +400,7 @@ void GLImage::render(){
 
     GLCHK( glDisable(GL_CULL_FACE) );
     GLCHK( glDisable(GL_DEPTH_TEST) );
-
-
+    GLCHK(glBindVertexArray(screen_vao));
 
     // positions
     glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
@@ -405,8 +408,7 @@ void GLImage::render(){
     // indices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
 
-    QGLFramebufferObject* activeFBO     = activeImage->fbo;
-
+    QGLFramebufferObject* activeFBO = activeImage->fbo;
 
 
     bool bTransformUVs = true; // images which depend on others will not be affected by UV changes again
@@ -440,20 +442,19 @@ void GLImage::render(){
         break;
     }
 
-
     // create or resize when image was changed
     FBOImages::resize(auxFBO1,activeFBO->width(),activeFBO->height());
     FBOImages::resize(auxFBO2,activeFBO->width(),activeFBO->height());
     FBOImages::resize(auxFBO3,activeFBO->width(),activeFBO->height());
     FBOImages::resize(auxFBO4,activeFBO->width(),activeFBO->height());
-    // allocate aditional FBOs when conversion from BaseMap is enabled
+    // allocate additional FBOs when conversion from BaseMap is enabled
     if(activeImage->imageType == DIFFUSE_TEXTURE && activeImage->bConversionBaseMap){
         for(int i = 0; i < 3 ; i++){
             FBOImages::resize(auxFBO0BMLevels[i],activeFBO->width()/pow(2,i+1),activeFBO->height()/pow(2,i+1));
             FBOImages::resize(auxFBO1BMLevels[i],activeFBO->width()/pow(2,i+1),activeFBO->height()/pow(2,i+1));
             FBOImages::resize(auxFBO2BMLevels[i],activeFBO->width()/pow(2,i+1),activeFBO->height()/pow(2,i+1));
         }
-    }else{// other wise "delete" unnecessary FBOs (I know that this is stupid...)
+    }else{// other wise "delete" unnecessary FBOs (I know this is stupid...)
         int small_w_h = 1;
         for(int i = 0; i < 3 ; i++){
             FBOImages::resize(auxFBO0BMLevels[i],small_w_h,small_w_h);
@@ -462,14 +463,12 @@ void GLImage::render(){
         }
     }
 
-
     GLCHK( program->bind() );
-    GLCHK( program->setUniformValue("gui_image_type", activeImage->imageType) );
-    openGL330ForceTexType = activeImage->imageType;
+    GLCHK( program->setUniformValue("gui_image_type", activeImage->imageType) );    
     GLCHK( program->setUniformValue("gui_depth", float(1.0)) );
     GLCHK( program->setUniformValue("gui_mode_dgaussian", 1) );
     GLCHK( program->setUniformValue("material_id", int(activeImage->currentMaterialIndeks) ) );
-
+    openGL330ForceTexType = activeImage->imageType;
 
 
     if(activeImage->bFirstDraw){
@@ -488,8 +487,6 @@ void GLImage::render(){
         GLCHK( program->setUniformValue("material_id", int(MATERIALS_DISABLED) ) );
     }
 
-
-
     GLCHK( glActiveTexture(GL_TEXTURE10) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, targetImageMaterial->scr_tex_id) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
@@ -497,7 +494,6 @@ void GLImage::render(){
 //    if(int(activeImage->currentMaterialIndeks) < 0){
         copyTex2FBO(activeImage->scr_tex_id,activeImage->fbo);
 //    }
-
 
     // in some cases the output image will be taken from other sources
     switch(activeImage->imageType){
@@ -524,9 +520,7 @@ void GLImage::render(){
                     openGL330ForceTexType = HEIGHT_TEXTURE;// used for GL3.30 version
                     GLCHK( program->setUniformValue("gui_image_type", HEIGHT_TEXTURE) );
 
-
                     copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
-
                     applyAllUVsTransforms(activeFBO);
 
                     copyFBO(activeFBO,auxFBO1);
@@ -537,8 +531,6 @@ void GLImage::render(){
                 }else{                    
                     copyTex2FBO(targetImageHeight->scr_tex_id,activeFBO);
                 }
-
-
 
                 break;
             case(INPUT_FROM_HEIGHT_OUTPUT):
@@ -678,12 +670,7 @@ void GLImage::render(){
         break;}// end of case Roughness        
         case(GRUNGE_TEXTURE):{
             applyGrungeWarpNormalFilter(activeFBO,auxFBO2);
-
-            //if(activeImage->grungeSeed != 0){
-                applyGrungeRandomizationFilter(auxFBO2,activeFBO);
-            //}else
-             //   copyTex2FBO(auxFBO2->texture(),activeFBO);
-
+            applyGrungeRandomizationFilter(auxFBO2,activeFBO);
         break;
         }// end of case Grunge
         default:break;
@@ -710,12 +697,8 @@ void GLImage::render(){
         applyAllUVsTransforms(activeFBO);
     }
 
-
-
     // skip all processing and when mouse is dragged
     if(!bSkipStandardProcessing){
-
-
 
     // begin standart pipe-line (for each image)
     applyInvertComponentsFilter(activeFBO,auxFBO1);
@@ -969,6 +952,8 @@ void GLImage::render(){
         GLCHK(applyNormalFilter(activeFBO,renderFBO));
     }
     emit rendered();
+    GLCHK(glBindVertexArray(0));
+    GLCHK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
 void GLImage::showEvent(QShowEvent* event){
@@ -1009,10 +994,13 @@ void GLImage::resetView(){
     // setting the image in the center
     xTranslation = orthographicProjWidth /2;
     yTranslation = orthographicProjHeight/2;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GLImage::resizeGL(int width, int height)
 {
+  qDebug() << "Resizing GL image to (" << width << ", " << height << ")";
   windowRatio = float(width)/height;
   if (isValid()) {
     GLCHK( glViewport(0, 0, width, height) );
@@ -2807,39 +2795,49 @@ void GLImage::makeScreenQuad()
             iter++;
     }}
 
-    glGenBuffers(3, &vbos[0]);
-    glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float)*3, vertices.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0);
+    GLCHK(glGenVertexArrays(1, &screen_vao));
+    GLCHK(glBindVertexArray(screen_vao));
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
-    glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float)*2, texCoords.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,(void*)0);
+    // Filling buffers with data:
+    GLCHK(glGenBuffers(3, &vbos[0]));
+    qDebug() << "Buffers ids:" << vbos[0] << ", " << vbos[1] << ", " << vbos[2];
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, vbos[0]));
+    GLCHK(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float)*3, vertices.constData(), GL_STATIC_DRAW));
+    GLCHK(glEnableVertexAttribArray(0));
+    GLCHK(glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(float)*3,(void*)0));
 
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, vbos[1]));
+    GLCHK(glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float)*2, texCoords.constData(), GL_STATIC_DRAW));
+    GLCHK(glEnableVertexAttribArray(1));
+    GLCHK(glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,sizeof(float)*2,(void*)0));
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]);
-
+    GLCHK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[2]));
 
     int no_triangles = 2*(size - 1)*(size - 1);
     QVector<GLuint> indices(no_triangles*3);
     iter = 0;
     for(int i = 0 ; i < size -1 ; i++){
-    for(int j = 0 ; j < size -1 ; j++){
-        GLuint i1 = i + j*size;
-        GLuint i2 = i + (j+1)*size;
-        GLuint i3 = i+1 + j*size;
-        GLuint i4 = i+1 + (j+1)*size;
-        indices[iter++] = (i1);
-        indices[iter++] = (i3);
-        indices[iter++] = (i2);
-        indices[iter++] = (i2);
-        indices[iter++] = (i3);
-        indices[iter++] = (i4);
+        for(int j = 0 ; j < size -1 ; j++){
+            GLuint i1 = i + j*size;
+            GLuint i2 = i + (j+1)*size;
+            GLuint i3 = i+1 + j*size;
+            GLuint i4 = i+1 + (j+1)*size;
+            indices[iter++] = (i1);
+            indices[iter++] = (i3);
+            indices[iter++] = (i2);
+            indices[iter++] = (i2);
+            indices[iter++] = (i3);
+            indices[iter++] = (i4);
+        }
     }
-    }
-    GLCHK( glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * no_triangles * 3 , indices.constData(), GL_STATIC_DRAW) );
+    GLCHK(glBufferData(
+              GL_ELEMENT_ARRAY_BUFFER,
+              sizeof(GLuint) * no_triangles * 3 ,
+              indices.constData(),
+              GL_STATIC_DRAW
+              ));
+
+    GLCHK(glBindVertexArray(0));
 }
 
 

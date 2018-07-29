@@ -44,9 +44,12 @@ MainWindow::MainWindow(QWidget *parent) :
     glWidget         = new GLWidget(this,glImage);
 }
 
+
 #define INIT_PROGRESS(p,m) \
 	emit initProgress(p); \
-    emit initMessage(m);
+    emit initMessage(m); \
+    qApp->processEvents()
+
 
 void MainWindow::initializeApp()
 {
@@ -1526,12 +1529,12 @@ void MainWindow::updateSliders(){
 
 
     FBOImageProporties::bSeamlessTranslationsFirst = ui->checkBoxUVTranslationsFirst->isChecked();
-    // choosing the proper mirror mode
+    // choosing the propper mirror mode
     if(ui->radioButtonMirrorModeXY->isChecked()) FBOImageProporties::seamlessMirroModeType = 0;
     if(ui->radioButtonMirrorModeX ->isChecked()) FBOImageProporties::seamlessMirroModeType = 1;
     if(ui->radioButtonMirrorModeY ->isChecked()) FBOImageProporties::seamlessMirroModeType = 2;
 
-    // choosing the proper simple mode direction
+    // choosing the propper simple mode direction
     if(ui->radioButtonSeamlessSimpleDirXY->isChecked()) FBOImageProporties::seamlessSimpleModeDirection = 0;
     if(ui->radioButtonSeamlessSimpleDirX ->isChecked()) FBOImageProporties::seamlessSimpleModeDirection = 1;
     if(ui->radioButtonSeamlessSimpleDirY ->isChecked()) FBOImageProporties::seamlessSimpleModeDirection = 2;
