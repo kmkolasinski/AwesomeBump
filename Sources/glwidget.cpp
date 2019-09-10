@@ -104,8 +104,6 @@ void GLWidget::cleanup()
     deleteTexture(lensDirtTexture);
     deleteTexture(lensStarTexture);
 
-
-
     delete line_program;
     delete skybox_program;
     delete env_program;
@@ -124,11 +122,12 @@ QSize GLWidget::minimumSizeHint() const
 {
     return QSize(100, 100);
 }
+
+
 QSize GLWidget::sizeHint() const
 {
     return QSize(500, 400);
 }
-
 
 
 void GLWidget::setCameraMouseSensitivity(int value){
@@ -183,9 +182,6 @@ void GLWidget::toggleMetallicView(bool enable){
 
 void GLWidget::initializeGL()
 {
-
-
-
     initializeOpenGLFunctions();
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     makeCurrent();
@@ -274,8 +270,6 @@ void GLWidget::initializeGL()
 
         delete pfshader;
 
-
-
         GLCHK(currentShader->program->bind());
         currentShader->program->setUniformValue("texDiffuse"  , 0);
         currentShader->program->setUniformValue("texNormal"   , 1);
@@ -299,7 +293,7 @@ void GLWidget::initializeGL()
 
     // lines shader
     qDebug() << "Compiling lines program...";
-     preambule = QString("#version 330 core\n")+
+    preambule = QString("#version 330 core\n")+
                         "layout(line_strip, max_vertices = 3) out;\n" ;
     gshader->compileSourceCode(preambule+shaderCode);
     if (!gshader->log().isEmpty()) qDebug() << gshader->log();
@@ -340,9 +334,6 @@ void GLWidget::initializeGL()
     if(tcshader != NULL) delete tcshader;
     if(teshader != NULL) delete teshader;
     if(gshader  != NULL) delete gshader;
-
-
-
 
     // loading sky box shader
     qDebug() << "Loading skybox shader (vertex shader)";
@@ -412,7 +403,6 @@ void GLWidget::initializeGL()
     if (!vshader->log().isEmpty()) qDebug() << vshader->log();
     else qDebug() << "done";
 
-
     qDebug() << "Loading post-processing shaders (fragment shader)";
 
 
@@ -464,14 +454,12 @@ void GLWidget::initializeGL()
     if(vshader  != NULL) delete vshader;
 
 
-    GLCHK( lensFlareColorsTexture = bindTexture(QImage(":/resources/textures/lenscolor.png"),GL_TEXTURE_2D) );
+    GLCHK( lensFlareColorsTexture = FBOImageProporties::bindImageAsTexture(QImage(":/resources/textures/lenscolor.png")));
     qDebug() << "Loading lensColors texture: (id=" << lensFlareColorsTexture << ")";
-    GLCHK( lensDirtTexture = bindTexture(QImage(":/resources/textures/lensdirt.png"),GL_TEXTURE_2D) );
+    GLCHK( lensDirtTexture = FBOImageProporties::bindImageAsTexture(QImage(":/resources/textures/lensdirt.png")));
     qDebug() << "Loading lensDirt texture: (id=" << lensDirtTexture << ")";
-    GLCHK( lensStarTexture = bindTexture(QImage(":/resources/textures/lensstar.png"),GL_TEXTURE_2D) );
+    GLCHK( lensStarTexture = FBOImageProporties::bindImageAsTexture(QImage(":/resources/textures/lensstar.png")));
     qDebug() << "Loading lensDirt texture: (id=" << lensStarTexture << ")";
-
-
 
     camera.position.setZ( -0 );
     camera.toggleFreeCamera(false);
@@ -491,13 +479,13 @@ void GLWidget::initializeGL()
 
     resizeFBOs();
     emit readyGL();
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GLWidget::paintGL()
 {
 
-
-     glReadBuffer(GL_BACK);
+    glReadBuffer(GL_BACK);
     // ---------------------------------------------------------
     // Drawing env
     // ---------------------------------------------------------
@@ -511,8 +499,6 @@ void GLWidget::paintGL()
         cameraInterpolation += 0.01;
     }
 
-
-
     // setting the camera viewpoint
     viewMatrix = camera.updateCamera();
 
@@ -523,20 +509,19 @@ void GLWidget::paintGL()
     projectionMatrix.perspective(zoom,ratio,0.1,350.0);
 
 
-
-
     // set to which FBO result will be drawn
-    GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 , GL_COLOR_ATTACHMENT3 };
-    glDrawBuffers(4,  attachments);
-    GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
-
-    GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+    GLuint attachments[4] = {
+        GL_COLOR_ATTACHMENT0,
+        GL_COLOR_ATTACHMENT1,
+        GL_COLOR_ATTACHMENT2 ,
+        GL_COLOR_ATTACHMENT3
+    };
+    glDrawBuffers(4, attachments);
+    GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
     // ---------------------------------------------------------
     // Drawing skybox
     // ---------------------------------------------------------
-
-
     skybox_program->bind();
 
     objectMatrix.setToIdentity();
@@ -548,9 +533,7 @@ void GLWidget::paintGL()
     NormalMatrix            = modelViewMatrix.normalMatrix();
 
 
-
     glDisable(GL_DEPTH_TEST); // disable depth
-
     GLCHK( skybox_program->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );
     GLCHK( skybox_program->setUniformValue("NormalMatrix"          , NormalMatrix) );
     GLCHK( skybox_program->setUniformValue("ModelMatrix"           , objectMatrix) );
@@ -559,12 +542,13 @@ void GLWidget::paintGL()
     GLCHK( m_env_map->bind());
     GLCHK( skybox_mesh->drawMesh(true) );
 
-
     // ---------------------------------------------------------
     // Drawing model
     // ---------------------------------------------------------
-    QOpenGLShaderProgram* program_ptrs[2] = {currentShader->program,line_program};
-
+    QOpenGLShaderProgram* program_ptrs[2] = {
+        currentShader->program,
+        line_program
+    };
 
     GLCHK( glEnable(GL_CULL_FACE) );
     GLCHK( glEnable(GL_DEPTH_TEST) );            
@@ -574,117 +558,110 @@ void GLWidget::paintGL()
 
     for(int pindex = 0 ; pindex < 2 ; pindex ++){
 
-    QOpenGLShaderProgram* program_ptr = program_ptrs[pindex];
-    GLCHK( program_ptr->bind() );
+        QOpenGLShaderProgram* program_ptr = program_ptrs[pindex];
+        GLCHK( program_ptr->bind() );
 
-    // Update uniforms from parsed file.
-    if(pindex == 0){
-        Dialog3DGeneralSettings::setUniforms();
-    }
-
-
-    GLCHK( program_ptr->setUniformValue("ProjectionMatrix", projectionMatrix) );
-
-    objectMatrix.setToIdentity();
-    if( fboIdPtrs[0] != NULL){
-        float fboRatio = float((*(fboIdPtrs[0]))->width())/(*(fboIdPtrs[0]))->height();
-        objectMatrix.scale(fboRatio,1,fboRatio);
-    }
-    if(mesh->isLoaded()){
-
-        objectMatrix.scale(0.5/mesh->radius);
-        objectMatrix.translate(-mesh->centre_of_mass);
-    }
-    modelViewMatrix = viewMatrix*objectMatrix;
-    NormalMatrix = modelViewMatrix.normalMatrix();
-    float mesh_scale = 0.5/mesh->radius;
-
-    GLCHK( program_ptr->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );
-    GLCHK( program_ptr->setUniformValue("NormalMatrix"          , NormalMatrix) );
-    GLCHK( program_ptr->setUniformValue("ModelMatrix"           , objectMatrix) );
-    GLCHK( program_ptr->setUniformValue("meshScale"             , mesh_scale) );
-
-    GLCHK( program_ptr->setUniformValue("lightPos"              , lightPosition) );
-
-    GLCHK( program_ptr->setUniformValue("lightDirection"        , lightDirection.direction) );
-
-    GLCHK( program_ptr->setUniformValue("cameraPos"             , camera.get_position()) );
-    GLCHK( program_ptr->setUniformValue("gui_depthScale"        , display3Dparameters.depthScale) );
-    GLCHK( program_ptr->setUniformValue("gui_uvScale"           , display3Dparameters.uvScale) );
-    GLCHK( program_ptr->setUniformValue("gui_uvScaleOffset"     , display3Dparameters.uvOffset) );
-    GLCHK( program_ptr->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
-    if(FBOImageProporties::bConversionBaseMap){
-        GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , false) );
-    }else{
-        GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
-    }
-
-    GLCHK( program_ptr->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
-    GLCHK( program_ptr->setUniformValue("gui_bHeight"           , bToggleHeightView) );
-    GLCHK( program_ptr->setUniformValue("gui_bNormal"           , bToggleNormalView) );
-    GLCHK( program_ptr->setUniformValue("gui_bRoughness"        , bToggleRoughnessView) );
-    GLCHK( program_ptr->setUniformValue("gui_bMetallic"         , bToggleMetallicView) );
-    GLCHK( program_ptr->setUniformValue("gui_shading_type"      , display3Dparameters.shadingType) );
-    GLCHK( program_ptr->setUniformValue("gui_shading_model"     , display3Dparameters.shadingModel) );
-    GLCHK( program_ptr->setUniformValue("gui_SpecularIntensity" , display3Dparameters.specularIntensity) );
-    GLCHK( program_ptr->setUniformValue("gui_DiffuseIntensity"  , display3Dparameters.diffuseIntensity) );
-    GLCHK( program_ptr->setUniformValue("gui_LightPower"        , display3Dparameters.lightPower) );
-    GLCHK( program_ptr->setUniformValue("gui_LightRadius"       , display3Dparameters.lightRadius) );
-
-    // number of mipmaps
-    GLCHK( program_ptr->setUniformValue("num_mipmaps"   , m_env_map->numMipmaps ) );
-    // 3D settings
-    GLCHK( program_ptr->setUniformValue("gui_bUseCullFace"   , display3Dparameters.bUseCullFace) );
-    GLCHK( program_ptr->setUniformValue("gui_bUseSimplePBR"  , display3Dparameters.bUseSimplePBR) );
-    GLCHK( program_ptr->setUniformValue("gui_noTessSub"      , display3Dparameters.noTessSubdivision) );
-    GLCHK( program_ptr->setUniformValue("gui_noPBRRays"      , display3Dparameters.noPBRRays) );
-
-    if(display3Dparameters.bShowTriangleEdges && pindex == 0){
-        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-        glEnable( GL_POLYGON_OFFSET_FILL );
-        glPolygonOffset( 1.0f, 1.0f );
-        GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", true) );
-        GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , true) );
-    }else{
-        if(display3Dparameters.bShowTriangleEdges){
-            glDisable( GL_POLYGON_OFFSET_FILL );
-            glEnable( GL_POLYGON_OFFSET_LINE );
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            glPolygonOffset( -2.0f, -2.0f );
-            glLineWidth(1.0f);
-
+        // Update uniforms from parsed file.
+        if(pindex == 0){
+            Dialog3DGeneralSettings::setUniforms();
         }
 
-        GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", display3Dparameters.bShowTriangleEdges) );
+        GLCHK( program_ptr->setUniformValue("ProjectionMatrix", projectionMatrix) );
 
-        // Material preview: M key : when triangles are disabled
-        if(!display3Dparameters.bShowTriangleEdges)
-            GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , bool(keyPressed == KEY_SHOW_MATERIALS)) );
-    }
+        objectMatrix.setToIdentity();
+        if( fboIdPtrs[0] != NULL){
+            float fboRatio = float((*(fboIdPtrs[0]))->width())/(*(fboIdPtrs[0]))->height();
+            objectMatrix.scale(fboRatio,1,fboRatio);
+        }
+        if(mesh->isLoaded()){
+            objectMatrix.scale(0.5/mesh->radius);
+            objectMatrix.translate(-mesh->centre_of_mass);
+        }
+        modelViewMatrix = viewMatrix*objectMatrix;
+        NormalMatrix = modelViewMatrix.normalMatrix();
+        float mesh_scale = 0.5/mesh->radius;
 
+        GLCHK( program_ptr->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );
+        GLCHK( program_ptr->setUniformValue("NormalMatrix"          , NormalMatrix) );
+        GLCHK( program_ptr->setUniformValue("ModelMatrix"           , objectMatrix) );
+        GLCHK( program_ptr->setUniformValue("meshScale"             , mesh_scale) );
+        GLCHK( program_ptr->setUniformValue("lightPos"              , lightPosition) );
+        GLCHK( program_ptr->setUniformValue("lightDirection"        , lightDirection.direction));
+        GLCHK( program_ptr->setUniformValue("cameraPos"             , camera.get_position()) );
+        GLCHK( program_ptr->setUniformValue("gui_depthScale"        , display3Dparameters.depthScale) );
+        GLCHK( program_ptr->setUniformValue("gui_uvScale"           , display3Dparameters.uvScale) );
+        GLCHK( program_ptr->setUniformValue("gui_uvScaleOffset"     , display3Dparameters.uvOffset) );
+        GLCHK( program_ptr->setUniformValue("gui_bSpecular"         , bToggleSpecularView) );
 
-
-    if( fboIdPtrs[0] != NULL){
-
-        int tindeks = 0;
-
-        for(tindeks = 0 ; tindeks <= MATERIAL_TEXTURE ; tindeks++){ // skip grunge texture (not used in 3D view)
-            GLCHK( glActiveTexture(GL_TEXTURE0+tindeks) );
-            GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[tindeks]))->texture()) );
+        if(FBOImageProporties::bConversionBaseMap){
+            GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , false) );
+        }else{
+            GLCHK( program_ptr->setUniformValue("gui_bDiffuse"          , bToggleDiffuseView) );
         }
 
-        GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks ) );
-        GLCHK(m_prefiltered_env_map->bind());
+        GLCHK( program_ptr->setUniformValue("gui_bOcclusion"        , bToggleOcclusionView) );
+        GLCHK( program_ptr->setUniformValue("gui_bHeight"           , bToggleHeightView) );
+        GLCHK( program_ptr->setUniformValue("gui_bNormal"           , bToggleNormalView) );
+        GLCHK( program_ptr->setUniformValue("gui_bRoughness"        , bToggleRoughnessView) );
+        GLCHK( program_ptr->setUniformValue("gui_bMetallic"         , bToggleMetallicView) );
+        GLCHK( program_ptr->setUniformValue("gui_shading_type"      , display3Dparameters.shadingType) );
+        GLCHK( program_ptr->setUniformValue("gui_shading_model"     , display3Dparameters.shadingModel) );
+        GLCHK( program_ptr->setUniformValue("gui_SpecularIntensity" , display3Dparameters.specularIntensity) );
+        GLCHK( program_ptr->setUniformValue("gui_DiffuseIntensity"  , display3Dparameters.diffuseIntensity) );
+        GLCHK( program_ptr->setUniformValue("gui_LightPower"        , display3Dparameters.lightPower) );
+        GLCHK( program_ptr->setUniformValue("gui_LightRadius"       , display3Dparameters.lightRadius) );
 
-        tindeks++;
-        GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks) );
-        GLCHK( m_env_map->bind());    
-        GLCHK( mesh->drawMesh() );
-        // set default active texture
-        glActiveTexture(GL_TEXTURE0);
-    }
+        // number of mipmaps
+        GLCHK( program_ptr->setUniformValue("num_mipmaps"   , m_env_map->numMipmaps ) );
+        // 3D settings
+        GLCHK( program_ptr->setUniformValue("gui_bUseCullFace"   , display3Dparameters.bUseCullFace) );
+        GLCHK( program_ptr->setUniformValue("gui_bUseSimplePBR"  , display3Dparameters.bUseSimplePBR) );
+        GLCHK( program_ptr->setUniformValue("gui_noTessSub"      , display3Dparameters.noTessSubdivision) );
+        GLCHK( program_ptr->setUniformValue("gui_noPBRRays"      , display3Dparameters.noPBRRays) );
 
-    if(!display3Dparameters.bShowTriangleEdges) break;
+        if(display3Dparameters.bShowTriangleEdges && pindex == 0){
+            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+            glEnable( GL_POLYGON_OFFSET_FILL );
+            glPolygonOffset( 1.0f, 1.0f );
+            GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", true) );
+            GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , true) );
+        }else{
+            if(display3Dparameters.bShowTriangleEdges){
+                glDisable( GL_POLYGON_OFFSET_FILL );
+                glEnable( GL_POLYGON_OFFSET_LINE );
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                glPolygonOffset( -2.0f, -2.0f );
+                glLineWidth(1.0f);
+            }
+
+            GLCHK( program_ptr->setUniformValue("gui_bShowTriangleEdges", display3Dparameters.bShowTriangleEdges) );
+            // Material preview: M key : when triangles are disabled
+            if(!display3Dparameters.bShowTriangleEdges)
+                GLCHK( program_ptr->setUniformValue("gui_bMaterialsPreviewEnabled"      , bool(keyPressed == KEY_SHOW_MATERIALS)) );
+        }
+
+        if( fboIdPtrs[0] != NULL){
+
+            int tindeks = 0;
+
+            for(tindeks = 0 ; tindeks <= MATERIAL_TEXTURE ; tindeks++){ // skip grunge texture (not used in 3D view)
+                GLCHK( glActiveTexture(GL_TEXTURE0+tindeks) );
+                GLCHK( glBindTexture(GL_TEXTURE_2D, (*(fboIdPtrs[tindeks]))->texture()) );
+            }
+
+            GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks ) );
+            GLCHK(m_prefiltered_env_map->bind());
+
+            tindeks++;
+            GLCHK( glActiveTexture(GL_TEXTURE0 + tindeks) );
+            GLCHK( m_env_map->bind());
+            GLCHK( mesh->drawMesh() );
+            // set default active texture
+            glActiveTexture(GL_TEXTURE0);
+        }
+
+        if(!display3Dparameters.bShowTriangleEdges) break;
+
     }// end of loop over triangles
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDisable( GL_POLYGON_OFFSET_LINE );
@@ -696,13 +673,9 @@ void GLWidget::paintGL()
     // set to which FBO result will be drawn
     GLuint attachments2[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1,  attachments2);
-
-
     colorFBO->bindDefault();
 
     GLCHK( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
-
-
 
     // do post processing if materials are not shown
     if( keyPressed != KEY_SHOW_MATERIALS ){
@@ -733,20 +706,15 @@ void GLWidget::paintGL()
         if(display3Dparameters.bLensFlares){
             applyLensFlaresFilter(colorFBO->fbo->texture(),outputFBO->fbo);
         }
-
         applyToneFilter(colorFBO->fbo->texture(),outputFBO->fbo);
-
-
         applyNormalFilter(outputFBO->fbo->texture());
 
     }else{ // end of if SHOW MATERIALS TEXTURE DISABLED
         GLCHK( applyNormalFilter(colorFBO->fbo->texture()));
     }
-
     GLCHK( filter_program->release() );
-
     emit renderGL();
-
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GLWidget::bakeEnviromentalMaps(){
@@ -757,15 +725,14 @@ void GLWidget::bakeEnviromentalMaps(){
     // ---------------------------------------------------------
     env_program->bind();
     m_prefiltered_env_map->bindFBO();
-    glViewport(0,0,512,512);
+    glViewport(0, 0, 512, 512);
 
     objectMatrix.setToIdentity();
     objectMatrix.scale(1.0);
-    objectMatrix.rotate(90.0,1,0,0);
+    objectMatrix.rotate(90.0, 1, 0, 0);
 
     modelViewMatrix         = viewMatrix * objectMatrix;
     NormalMatrix            = modelViewMatrix.normalMatrix();
-
 
     GLCHK( env_program->setUniformValue("ModelViewMatrix"       , modelViewMatrix) );
     GLCHK( env_program->setUniformValue("NormalMatrix"          , NormalMatrix) );
@@ -776,17 +743,23 @@ void GLWidget::bakeEnviromentalMaps(){
     GLCHK( m_env_map->bind());
     GLCHK( env_mesh->drawMesh(true) );
 
-    glBindFramebuffer   (GL_FRAMEBUFFER, 0);
-
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, width(), height()) ;
+    env_program->release();
 }
 
 void GLWidget::resizeGL(int width, int height)
 {
+    qDebug() << "Resizing GLWidget image to (" << width << ", " << height << ")";
     ratio = float(width)/height;
+    deleteFBOs();
     resizeFBOs();
-
-    GLCHK( glViewport(0, 0, width, height) );
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // SHITFIX => bake enviromental maps again, this will slow down GUI when
+    // resizing windows, but helps to prevent some bug in rendering
+    // when window size has been changed.
+    bDiffuseMapBaked = false;
+    GLCHK( glViewport(0, 0, width, height));
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -1032,11 +1005,15 @@ void GLWidget::chooseMeshFile(const QString &fileName){
 void GLWidget::chooseSkyBox(QString cubeMapName,bool bFirstTime){
     QStringList list;
     makeCurrent();
-    list << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posx.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/negx.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posy.jpg"
-         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negy.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/posz.jpg" << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negz.jpg";
+    list << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posx.jpg"
+         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/negx.jpg"
+         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posy.jpg"
+         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negy.jpg"
+         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/posz.jpg"
+         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negz.jpg";
 
     qDebug() << "Reading new cube map:" << list;
-    bDiffuseMapBaked     = false;
+    bDiffuseMapBaked = false;
 
     if(m_env_map != NULL) delete m_env_map;
     m_env_map     = new GLTextureCube(list);
@@ -1190,12 +1167,25 @@ void GLWidget::deleteFBOs(){
     delete colorFBO;
     delete outputFBO;
     delete auxFBO;
+    // reset pointers
+    colorFBO = NULL;
+    outputFBO = NULL;
+    auxFBO = NULL;
     for(int i = 0; i < 4 ; i++){
-        if(glowInputColor[i]  != NULL) delete glowInputColor[i];
-        if(glowOutputColor[i] != NULL) delete glowOutputColor[i];
+        if(glowInputColor[i]  != NULL){
+            delete glowInputColor[i];
+            glowInputColor[i] = NULL;
+        }
+        if(glowOutputColor[i] != NULL){
+            delete glowOutputColor[i];
+            glowOutputColor[i] = NULL;
+        }
     }
     for(int i = 0; i < 10 ; i++){
-        if(toneMipmaps[i] != NULL) delete toneMipmaps[i];
+        if(toneMipmaps[i] != NULL){
+            delete toneMipmaps[i];
+            toneMipmaps[i] = NULL;
+        }
     }
 }
 
@@ -1208,10 +1198,7 @@ void GLWidget::applyNormalFilter(GLuint input_tex){
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );
     GLCHK( glBindTexture(GL_TEXTURE_2D, input_tex) );
-
     GLCHK( quad_mesh->drawMesh(true) );
-
-
 }
 
 void GLWidget::copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst){
@@ -1229,11 +1216,10 @@ void GLWidget::copyTexToFBO(GLuint input_tex,QGLFramebufferObject* dst){
 
 }
 
+
 void GLWidget::applyGaussFilter(  GLuint input_tex,
                                   QGLFramebufferObject* auxFBO,
                                   QGLFramebufferObject* outputFBO, float radius){
-
-
 
     filter_program = post_processing_programs["GAUSSIAN_BLUR_FILTER"];
     filter_program->bind();
@@ -1496,9 +1482,7 @@ void GLWidget::applyLensFlaresFilter(GLuint input_tex,QGLFramebufferObject* outp
 
     QMatrix4x4 uLensStarMatrix = scaleBias2 * rotation * scaleBias1;
 
-     // Third step -- blend images (orginal,halos,dirt texture, and star texture)
-
-
+    // Third step -- blend images (orginal,halos,dirt texture, and star texture)
     outputFBO->bind();
     GLCHK( glViewport(0,0,outputFBO->width(),outputFBO->height()) );
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );

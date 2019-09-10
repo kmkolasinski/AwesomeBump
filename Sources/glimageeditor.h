@@ -55,8 +55,8 @@
     #include <QOpenGLFunctions_3_3_Core>
     #define OPENGL_FUNCTIONS QOpenGLFunctions_3_3_Core
 #else
-    #include <QOpenGLFunctions_4_0_Core>
-    #define OPENGL_FUNCTIONS QOpenGLFunctions_4_0_Core
+    #include <QOpenGLFunctions_4_1_Core>
+    #define OPENGL_FUNCTIONS QOpenGLFunctions_4_1_Core
 #endif
 
 #define BasicProp activeImage->properties->Basic
@@ -296,10 +296,11 @@ private:
     QGLFramebufferObject* renderFBO; // Used for rendering to it
 
     std::map<std::string,GLuint> subroutines;
-    std::map<std::string,QOpenGLShaderProgram*> filter_programs; // all filters in one array
-
+    std::map<std::string,QOpenGLShaderProgram*> filter_programs; // all filters in one array    
     GLuint vbos[3];
     ConversionType conversionType;
+
+    GLuint screen_vao;
     bool bShadowRender;
     bool bSkipProcessing;   // draw quad but skip all the processing step (using during mouse interaction)
     float windowRatio;      // window width-height ratio

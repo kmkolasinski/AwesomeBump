@@ -111,8 +111,6 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
         if(dist > radius) radius = dist;
     }
 
-    //qDebug() << "mesh radius=" << radius;
-    //qDebug() << "mesh center=" << centre_of_mass;
     calculateTangents();
 
 
@@ -165,103 +163,34 @@ Mesh::Mesh(QString dir, QString name):mesh_path(name){
 
         }
     }
-
-
     delete[] verlet;
-
-
     bLoaded = true;
     initializeMesh();
 }
-/*
-bool Mesh::hasCommonEdge(int i, int j){
-    int ta = i/3; // triangle A ID
-    int tb = j/3; // triangle B ID
-    if( i > j ) return false;
-    if(ta > tb) return false;
-    if( ta == tb ) return false;
 
-    int la = i - 3*ta; // local indeks in triangle A
-    int lb = j - 3*tb;
-
-
-
-    for(int li = 0; li < 3 ; li++ ){
-        if( li != la){
-
-            for(int lj = 0; lj < 3 ; lj++){
-                if( lj != lb ){
-
-                    // check if two points are same
-                    if( (gl_vertices[3*ta+li] - gl_vertices[3*tb+lj]).length()/radius < 1.0E-5 ){
-                        // if yes both triangles has common edge
-                        qDebug() << "i =" << i << "\tj =" << j;
-                        qDebug() << "ta=" << ta << "\ttb=" << tb;
-                        qDebug() << "la=" << la << "\tlb=" << lb ;
-                        qDebug() << "ia=" << 3*ta+li << "\tjb=" << 3*tb+lj << endl;
-                        if(no_shared_edges[j] > 1 || no_shared_edges[i] > 1 ){
-                             qDebug() << "i =" << i << "\tj =" << j;
-                             qDebug() << "ia=" << 3*ta+li << "\tjb=" << 3*tb+lj << endl;
-                        }
-
-                        if(no_shared_edges[i] == 0){
-                           no_shared_edges[i]++;
-                           gl_shared_uvs[i].setX(gl_texcoords[j].x());
-                           gl_shared_uvs[i].setY(gl_texcoords[j].y());
-                        }else if(no_shared_edges[i] == 1){
-                           no_shared_edges[i]++;
-                           gl_shared_uvs[i].setZ(gl_texcoords[j].x());
-                           gl_shared_uvs[i].setW(gl_texcoords[j].y());
-                        }
-                        if(no_shared_edges[j] == 0){
-                           no_shared_edges[j]++;
-                           gl_shared_uvs[j].setX(gl_texcoords[i].x());
-                           gl_shared_uvs[j].setY(gl_texcoords[i].y());
-                        }else if(no_shared_edges[j] == 1){
-                           no_shared_edges[j]++;
-                           gl_shared_uvs[j].setZ(gl_texcoords[i].x());
-                           gl_shared_uvs[j].setW(gl_texcoords[i].y());
-                        }
-
-
-                        return true;
-
-
-
-                       //  return true;
-                    }
-                }
-            }
-
-        }// end of if li
-    }// end of for li
-    //qDebug() << "" ;
-    return false;
-}
-*/
 
 void Mesh::drawMesh(bool bUseArrays ){
     if(bLoaded == false) return;
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[0]);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindVertexArray(mesh_vao));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[1]);
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[0]));
+    GLCHK(glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[2]);
-    glVertexAttribPointer(2,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[1]));
+    GLCHK(glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[3]);
-    glVertexAttribPointer(3,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[2]));
+    GLCHK(glVertexAttribPointer(2,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[4]);
-    glVertexAttribPointer(4,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[3]));
+    GLCHK(glVertexAttribPointer(3,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[5]);
-    glVertexAttribPointer(5,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[4]));
+    GLCHK(glVertexAttribPointer(4,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[5]));
+    GLCHK(glVertexAttribPointer(5,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
     if(bUseArrays){
         GLCHK(glDrawArrays(GL_TRIANGLES, 0,  gl_vertices.size()));
@@ -273,58 +202,56 @@ void Mesh::drawMesh(bool bUseArrays ){
         glPatchParameteri(GL_PATCH_VERTICES, 3);       // tell OpenGL that every patch has 16 verts
         GLCHK(glDrawArrays(GL_PATCHES, 0, gl_vertices.size())); // draw a bunch of patches
         #endif
-    }
-
+    }    
+    GLCHK(glBindVertexArray(0));
 }
 
 void Mesh::initializeMesh(){
-    //static bool bOneTime = true;
-    //if(!bOneTime) return;
-    //bOneTime = false;
-
 
     if(bLoaded == false){
         cerr << Q_FUNC_INFO << " Cannot initialize mesh because is NULL.";
         cerr.flush();
         return;
     }
-    initializeOpenGLFunctions();
-    glGenBuffers(6, &mesh_vbos[0]);
 
+    GLCHK(initializeOpenGLFunctions());
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[0]);
-    glBufferData(GL_ARRAY_BUFFER, gl_vertices.size() * sizeof(QVector3D), gl_vertices.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glGenVertexArrays(1, &mesh_vao));
+    GLCHK(glBindVertexArray(mesh_vao));
 
+    GLCHK(glGenBuffers(6, &mesh_vbos[0]));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[1]);
-    glBufferData(GL_ARRAY_BUFFER, gl_texcoords.size() * sizeof(QVector3D), gl_texcoords.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[0]));
+    GLCHK(glBufferData(GL_ARRAY_BUFFER, gl_vertices.size() * sizeof(QVector3D), gl_vertices.constData(), GL_STATIC_DRAW));
+    GLCHK(glEnableVertexAttribArray(0));
+    GLCHK(glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[2]);
-    glBufferData(GL_ARRAY_BUFFER, gl_normals.size() * sizeof(QVector3D), gl_normals.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[1]));
+    GLCHK(glBufferData(GL_ARRAY_BUFFER, gl_texcoords.size() * sizeof(QVector3D), gl_texcoords.constData(), GL_STATIC_DRAW));
+    GLCHK(glEnableVertexAttribArray(1));
+    GLCHK(glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[3]);
-    glBufferData(GL_ARRAY_BUFFER, gl_tangents.size() * sizeof(QVector3D), gl_tangents.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[2]));
+    GLCHK(glBufferData(GL_ARRAY_BUFFER, gl_normals.size() * sizeof(QVector3D), gl_normals.constData(), GL_STATIC_DRAW));
+    GLCHK(glEnableVertexAttribArray(2));
+    GLCHK(glVertexAttribPointer(2,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[4]);
-    glBufferData(GL_ARRAY_BUFFER, gl_bitangents.size() * sizeof(QVector3D), gl_bitangents.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[3]));
+    GLCHK(glBufferData(GL_ARRAY_BUFFER, gl_tangents.size() * sizeof(QVector3D), gl_tangents.constData(), GL_STATIC_DRAW));
+    GLCHK(glEnableVertexAttribArray(3));
+    GLCHK(glVertexAttribPointer(3,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[5]);
-    glBufferData(GL_ARRAY_BUFFER, gl_smoothed_normals.size() * sizeof(QVector3D), gl_smoothed_normals.constData(), GL_STATIC_DRAW);
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0);
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[4]));
+    GLCHK(glBufferData(GL_ARRAY_BUFFER, gl_bitangents.size() * sizeof(QVector3D), gl_bitangents.constData(), GL_STATIC_DRAW));
+    GLCHK(glEnableVertexAttribArray(4));
+    GLCHK(glVertexAttribPointer(4,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
+    GLCHK(glBindBuffer(GL_ARRAY_BUFFER, mesh_vbos[5]));
+    GLCHK(glBufferData(GL_ARRAY_BUFFER, gl_smoothed_normals.size() * sizeof(QVector3D), gl_smoothed_normals.constData(), GL_STATIC_DRAW));
+    GLCHK(glEnableVertexAttribArray(5));
+    GLCHK(glVertexAttribPointer(5,3,GL_FLOAT,GL_FALSE,sizeof(QVector3D),(void*)0));
 
-
+    GLCHK(glBindVertexArray(0));
 
 }
 
@@ -419,5 +346,8 @@ Mesh::~Mesh() {
     gl_bitangents.clear();
     gl_smoothed_normals.clear();
 
-    if(bLoaded) GLCHK(glDeleteBuffers(6 , mesh_vbos ));
+    if(bLoaded){
+        GLCHK(glDeleteBuffers(6 , mesh_vbos));
+        GLCHK(glDeleteVertexArrays(1, &mesh_vao));
+    };
 }

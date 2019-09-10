@@ -313,27 +313,31 @@ public:
 class FBOImages {
 public:
     static void create(QGLFramebufferObject *&fbo,int width,int height,GLuint internal_format = TEXTURE_FORMAT){
-       if(fbo)
-       {
+
+        if(fbo)
+        {
             fbo->release();
             delete fbo;
         }
+
         QGLFramebufferObjectFormat format;
         format.setInternalTextureFormat(internal_format);
         format.setTextureTarget(GL_TEXTURE_2D);
         format.setMipmap(true);
-        fbo = new QGLFramebufferObject(width,height,format);
-        glBindTexture(GL_TEXTURE_2D, fbo->texture());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+
+        fbo = new QGLFramebufferObject(width, height, format);
+
+        GLCHK(glBindTexture(GL_TEXTURE_2D, fbo->texture()));
+        GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+        GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 
         if(FBOImages::bUseLinearInterpolation){
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+            GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
         }else{
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+            GLCHK(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
         }
         float aniso = 0.0;
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso);
@@ -349,11 +353,11 @@ public:
             GLCHK(FBOImages::create(src ,ref->width(),ref->height(),internal_format));
         }
     }
-    static void resize(QGLFramebufferObject *&src,int width, int height,GLuint internal_format = TEXTURE_FORMAT){
+    static void resize(QGLFramebufferObject *&src,int width, int height,GLuint internal_format = TEXTURE_FORMAT){        
         if(!src){
             GLCHK(FBOImages::create(src ,width,height,internal_format));
-        }else if( width  == src->width() &&
-            height == src->height() ){}else{
+        }else if( width  == src->width() && height == src->height() ){
+        }else{
             GLCHK(FBOImages::create(src ,width,height,internal_format));
         }
     }
@@ -435,7 +439,6 @@ public:
     static int currentMaterialIndeks;
 
 
-
      FBOImageProporties(){
         bSkipProcessing = false;
         properties      = NULL;
@@ -464,36 +467,32 @@ public:
     void init(QImage& image){
         qDebug() << Q_FUNC_INFO;
 
-        glWidget_ptr->makeCurrent();
-        if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
-        scr_tex_id = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
+        if(!glWidget_ptr->isValid()){
+            qDebug() << "Incorrect Widget pointer. Cannot initialize textures.";
+        }
+
+        GLCHK(glWidget_ptr->makeCurrent());
+        if(glIsTexture(scr_tex_id))
+            GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
+
+        scr_tex_id = bindImageAsTexture(image);
+        GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
+
         scr_tex_width  = image.width();
         scr_tex_height = image.height();
-        bFirstDraw    = true;
+        bFirstDraw = true;
+        qDebug() << "Bind image texture with id: " << scr_tex_id << " w =" << scr_tex_width << " h = " << scr_tex_height;
 
-        /*
-        switch(imageType){
-           case(HEIGHT_TEXTURE):
-           case(OCCLUSION_TEXTURE):
-                GLCHK(FBOImages::create(fbo     ,image.width(),image.height(),GL_R16F));
-                break;
-           default:
-                GLCHK(FBOImages::create(fbo     ,image.width(),image.height()));
-                break;
-        }
-        */
         GLuint internal_format = TEXTURE_FORMAT;
         if(imageType == HEIGHT_TEXTURE) internal_format = TEXTURE_3DRENDER_FORMAT;
-        GLCHK(FBOImages::create(fbo , image.width(), image.height(),internal_format));
-
+        GLCHK(FBOImages::create(fbo , image.width(), image.height(), internal_format));
     }
 
     void updateSrcTexId(QGLFramebufferObject* in_ref_fbo){
         glWidget_ptr->makeCurrent();
         if(glIsTexture(scr_tex_id)) glWidget_ptr->deleteTexture(scr_tex_id);
         QImage image = in_ref_fbo->toImage();
-        scr_tex_id   = glWidget_ptr->bindTexture(image,GL_TEXTURE_2D);
-
+        scr_tex_id = bindImageAsTexture(image);
     }
 
     void resizeFBO(int width, int height){
@@ -519,18 +518,50 @@ public:
             qDebug() << Q_FUNC_INFO;
             glWidget_ptr->makeCurrent();
 
-            if(glIsTexture(normalMixerInputTexId)) glWidget_ptr->deleteTexture(normalMixerInputTexId);
-            if(glIsTexture(scr_tex_id)) GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
+            if(glIsTexture(normalMixerInputTexId))
+                GLCHK(glWidget_ptr->deleteTexture(normalMixerInputTexId));
+            if(glIsTexture(scr_tex_id))
+                GLCHK(glWidget_ptr->deleteTexture(scr_tex_id));
+
             normalMixerInputTexId = 0;
             scr_tex_id = 0;
-            glWidget_ptr = NULL;
-            //qDebug() << "p=" << properties;
+            glWidget_ptr = NULL;            
             if(properties != NULL ) delete properties;
             if(fbo        != NULL ) delete fbo;
             properties = NULL;
             fbo        = NULL;
         }
     }
+
+    static int bindImageAsTexture(QImage image){
+
+        if (image.isNull()) {
+            qDebug() << "bindTexture::Cannot create texture for empty image.";
+            return NULL;
+        }
+        image = image.convertToFormat(QImage::Format_ARGB32);
+//        QTransform flip_transform;
+//        flip_transform.rotate(180);
+//        flip_transform.transposed();
+//        image = image.transformed(flip_transform);
+        image = image.mirrored();
+
+        GLuint texture_id; // get id of new texture
+        GLCHK(glGenTextures(1, &texture_id));
+        GLCHK(glBindTexture(GL_TEXTURE_2D, texture_id));
+
+        GLCHK(glTexImage2D(
+                  GL_TEXTURE_2D, 0,
+                  GL_RGBA, image.width(), image.height(), 0,
+                  GL_BGRA, GL_UNSIGNED_BYTE, image.bits())
+              );
+
+        GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        GLCHK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        GLCHK(glBindTexture(GL_TEXTURE_2D, 0));
+        return texture_id;
+    }
+
 };
 
 
