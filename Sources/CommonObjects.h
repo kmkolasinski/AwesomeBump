@@ -30,9 +30,9 @@
 //#define USE_OPENGL_330
 
 #ifdef USE_OPENGL_330
-#define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2016) (openGL 330 release)"
+#define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2019) (openGL 330 release)"
 #else
-#define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2016)"
+#define AWESOME_BUMP_VERSION "AwesomeBump " VERSION_STRING " (2019)"
 #endif
 
 using namespace std;

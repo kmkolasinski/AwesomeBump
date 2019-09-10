@@ -144,13 +144,8 @@ void FormMaterialIndicesManager::changeMaterial(int index){
         imagesPointers[i]->imageProp.copySettings(materialIndices[i][m_name]);
         imagesPointers[i]->reloadSettings();
     }
-
-
     QString cText = ui->listWidgetMaterialIndices->item(lastMaterialIndex)->text();
     ui->listWidgetMaterialIndices->item(lastMaterialIndex)->setText(cText+" (selected material)");
-
-
-
     emit materialChanged();
 }
 

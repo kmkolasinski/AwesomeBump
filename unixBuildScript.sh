@@ -2,11 +2,20 @@
 
 # Add your QT path here by setting MY_QT_PATH variable
 # MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
-MY_QT_PATH=
+MY_QT_PATH=/opt/Qt5.9.0/5.9/gcc_64/bin/
+BUILD_WITH_OPENGL_330_SUPPORT="no"
 
+MAKE_NUM_THREADS='-j 8'
 wget="wget"
 tool="gcc_64"
 exe=""
+APP_SUFFIX=""
+QMAKE_CONFIG=""
+
+if [[ $BUILD_WITH_OPENGL_330_SUPPORT == "yes" ]]; then
+    QMAKE_CONFIG="CONFIG+=gl330"
+    APP_SUFFIX="GL330"
+fi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	wget="curl -L -o master.zip"
@@ -40,7 +49,12 @@ else
     cd ../../../
 fi
 
-qmake \
-	&& make \
+rm .qmake.stash
+rm Makefile
+rm Sources/Makefile
+
+${MY_QT_PATH}/qmake ./AwesomeBump.pro ${QMAKE_CONFIG} \
+    && make clean && make $MAKE_NUM_THREADS \
 	&& echo "*** Copying binary from `cat workdir/current` ..." \
-	&& cp -vr workdir/`cat workdir/current`/bin/AwesomeBump$exe ./Bin
+	&& cp -vr workdir/`cat workdir/current`/bin/AwesomeBump$exe ./Bin/AwesomeBump$APP_SUFFIX$exe
+
