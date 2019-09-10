@@ -559,7 +559,6 @@ void MainWindow::replotAllImages(){
     updateImage(MATERIAL_TEXTURE);
 
     glImage->enableShadowRender(false);
-
     glImage->setActiveImage(lastActive);
     glWidget->update();
     
@@ -1114,36 +1113,49 @@ void MainWindow::initializeImages(){
 }
 
 void MainWindow::updateImage(int tType){
+    FormImageProp* imageProp = NULL;
+
     switch(tType){
         case(DIFFUSE_TEXTURE ):
+            imageProp = diffuseImageProp;
             glImage->setActiveImage(diffuseImageProp->getImageProporties());            
             break;
         case(NORMAL_TEXTURE  ):
+            imageProp = normalImageProp;
             glImage->setActiveImage(normalImageProp->getImageProporties());            
             break;
         case(SPECULAR_TEXTURE):
+            imageProp = specularImageProp;
             glImage->setActiveImage(specularImageProp->getImageProporties());            
             break;
         case(HEIGHT_TEXTURE  ):
+            imageProp = heightImageProp;
             glImage->setActiveImage(heightImageProp->getImageProporties());            
             break;
         case(OCCLUSION_TEXTURE  ):
+            imageProp = occlusionImageProp;
             glImage->setActiveImage(occlusionImageProp->getImageProporties());            
             break;
         case(ROUGHNESS_TEXTURE  ):
+            imageProp = roughnessImageProp;
             glImage->setActiveImage(roughnessImageProp->getImageProporties());            
             break;
         case(METALLIC_TEXTURE  ):
+            imageProp = metallicImageProp;
             glImage->setActiveImage(metallicImageProp->getImageProporties());            
             break;
-        case(MATERIAL_TEXTURE  ):
+        case(MATERIAL_TEXTURE  ):            
             glImage->setActiveImage(materialManager->getImageProporties());            
             break;
         case(GRUNGE_TEXTURE  ):
+            imageProp = grungeImageProp;
             glImage->setActiveImage(grungeImageProp->getImageProporties());            
             break;
         default: // Settings
             return;
+    }
+    if (imageProp->bLoading != NULL){
+        imageProp->bLoading = false;
     }
     glWidget->update();
 }
@@ -1699,7 +1711,6 @@ void MainWindow::loadSettings(){
     static bool bFirstTime = true;
 
     qDebug() << "Calling" << Q_FUNC_INFO << " loading from " << QString(AB_INI);
-
     diffuseImageProp->bLoading = true;
 
     QFile file( QString(AB_INI) );
@@ -1724,7 +1735,6 @@ void MainWindow::loadSettings(){
     metallicImageProp   ->imageProp.properties->copyValues(&abSettings->Metallic);
     roughnessImageProp  ->imageProp.properties->copyValues(&abSettings->Roughness);
     grungeImageProp     ->imageProp.properties->copyValues(&abSettings->Grunge);
-
 
     // update general settings
     if(bFirstTime){
@@ -1783,18 +1793,13 @@ void MainWindow::loadSettings(){
     ui->spinBoxFontSize->setValue(abSettings->font_size);
     ui->checkBoxToggleMouseLoop->setChecked(abSettings->mouse_loop);
 
-
-
     updateSliders();
 
     dock3Dsettings->loadSettings(abSettings);
-
     heightImageProp->reloadSettings();
-
     diffuseImageProp->bLoading = false;
 
     replotAllImages();
-
     glImage ->repaint();
     glWidget->repaint();
     bFirstTime = false;

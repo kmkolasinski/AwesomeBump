@@ -1,11 +1,13 @@
 Bin/config.ini
 Bin/Configs/*
-
+Bin/AwesomeBumpGL330
+Makefile
 build/Makefile
 *.pydevproject
 .project
 .metadata
 tmp/
+.qmake.stash
 *.tmp
 *.bak
 *.swp

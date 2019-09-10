@@ -19,7 +19,7 @@ FormImageProp::FormImageProp(QMainWindow *parent, QGLWidget* qlW_ptr) :
     connect(imageProp.properties,SIGNAL(propertyDidChange(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)),
                         this,SLOT(propertyChanged(const QtnPropertyBase*,const QtnPropertyBase*,QtnPropertyChangeReason)));
 
-    //connect(imageProp.properties,SIGNAL(propertyDidFinishEditing()),this,SLOT(propertyFinishedEditing()));
+//    connect(imageProp.properties,SIGNAL(propertyDidFinishEditing()),this,SLOT(propertyFinishedEditing()));
 
     QObject::connect(&imageProp.properties->BaseMapToOthers.Convert,
                      SIGNAL(click(const QtnPropertyButton*)), this,
@@ -201,7 +201,9 @@ void FormImageProp::setupPopertiesGUI(){
 void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
                                               const QtnPropertyBase* firedProperty,
                                              QtnPropertyChangeReason reason){
+
     if(bLoading) return;
+
     if (reason & QtnPropertyChangeReasonValue){
         // Grunge Load predefined pattern
         if(dynamic_cast<const QtnPropertyQString*>(changedProperty)
@@ -240,8 +242,7 @@ void FormImageProp::propertyChanged(const QtnPropertyBase* changedProperty,
 //           || dynamic_cast<const QtnPropertyQString*>(changedProperty) == &imageProp.properties->BaseMapToOthers.MinColor ){
 //            pickColorFromImage(changedProperty);
 //        }
-
-          emit imageChanged();
+        emit imageChanged();
     }// end of if reason value
 
 }
@@ -588,10 +589,7 @@ void FormImageProp::reloadSettings(){
          // end of case Metallic
         default:break; // do nothing
     };
-
-
     bLoading = false;
-
 }
 
 void FormImageProp::reloadImageSettings(){

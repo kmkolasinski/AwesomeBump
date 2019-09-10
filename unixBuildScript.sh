@@ -1,27 +1,25 @@
 #!/bin/bash
+
 # Add your QT path here by setting MY_QT_PATH variable
 # MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
-MY_QT_PATH=
+MY_QT_PATH=/opt/Qt5.9.0/5.9/gcc_64/bin/
+BUILD_WITH_OPENGL_330_SUPPORT=$1
 
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-	MY_QT_PATH=/Developer/Qt/5.6
-	if [ ! -e "$MY_QT_PATH" ]; then
-		MY_QT_PATH=~/Qt/5.6
-	fi
-else
-	MY_QT_PATH=/opt/Qt5.7.0/5.7/gcc_64/bin/
-fi
-
+MAKE_NUM_THREADS='-j 8'
 wget="wget"
 tool="gcc_64"
-peg="bin-linux"
 exe=""
+APP_SUFFIX=""
+QMAKE_CONFIG=""
+
+if [[ $BUILD_WITH_OPENGL_330_SUPPORT == "gl330" ]]; then
+    QMAKE_CONFIG="CONFIG+=gl330"
+    APP_SUFFIX="GL330"
+fi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	wget="curl -L -o master.zip"
 	tool="clang_64"
-    peg="bin-osx"
 	exe=".app"
 fi
 
@@ -38,27 +36,26 @@ if [ ! -e "$MY_QT_PATH" ]; then
 fi
 
 if [ "$(ls -A Sources/utils/QtnProperty)" ]; then
-    echo "*** QtnProperty module is already initialized. No action is performed."
+    echo "QtnProperty module is already initialized. No action is performed."
 else
-    echo "*** Initializing QtnProperty module"
+    echo "Initializing QtnProperty module"
     # Copy QtnProperty directly from the repository
-    pushd Sources/utils/QtnProperty
+    cd Sources/utils/QtnProperty
     $wget https://github.com/kmkolasinski/QtnProperty/archive/master.zip
     unzip master.zip
     rm master.zip 
     mv QtnProperty-master/* .
     rm -r QtnProperty-master    
-    popd
+    cd ../../../
 fi
 
-if Sources/utils/QtnProperty/$peg/QtnPEG > /dev/null ; then
-    qmake \
-        && make \
-        && echo "*** Copying binary from `cat workdir/current` ..." \
-        && cp -vr workdir/`cat workdir/current`/bin/AwesomeBump$exe ./Bin
-else
-	echo " --------------------------------------"
-    echo "      Error: QtnPEG failed to run."
-	echo " --------------------------------------"
-    echo "Try to rebuild the QtnPEG binary from Sources/utils/QtnProperty directory."
-fi
+rm .qmake.stash
+rm Makefile
+rm Sources/Makefile
+
+${MY_QT_PATH}/qmake ./AwesomeBump.pro ${QMAKE_CONFIG} \
+    && make clean && make $MAKE_NUM_THREADS \
+	&& echo "*** Copying binary from `cat workdir/current` ..." \
+	&& cp -vr workdir/`cat workdir/current`/bin/AwesomeBump$exe ./Bin/AwesomeBump$APP_SUFFIX$exe
+
+
