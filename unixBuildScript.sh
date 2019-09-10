@@ -3,7 +3,7 @@
 # Add your QT path here by setting MY_QT_PATH variable
 # MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin/
 MY_QT_PATH=/opt/Qt5.9.0/5.9/gcc_64/bin/
-BUILD_WITH_OPENGL_330_SUPPORT="no"
+BUILD_WITH_OPENGL_330_SUPPORT=$1
 
 MAKE_NUM_THREADS='-j 8'
 wget="wget"
