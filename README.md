@@ -1,4 +1,4 @@
-![Image](https://github.com/kmkolasinski/AwesomeBump/blob/master/Sources/resources/promo/githubimage5.jpg)
+![Image](https://github.com/kmkolasinski/AwesomeBump/blob/Release/Sources/resources/promo/githubimage5.jpg)
 
 
 AwesomeBump 5.1 (2019)
@@ -43,7 +43,7 @@ Binary packages
 ============
 Binary packages for selected system can be found at [link](https://github.com/kmkolasinski/AwesomeBump/releases). Download zip or tar file, extract and run binary file.
 
-* [ABv5.1 Ubuntu 18LTE](https://github.com/kmkolasinski/AwesomeBump/releases/tag/Linuxv5.1) (Qt 5.9)
+* [ABv5.1 Ubuntu 18LTE](https://github.com/kmkolasinski/AwesomeBump/releases/tag/Linuxv5.1.1) (Qt 5.9)
 * [ABv5.0 Ubuntu 14LTE](https://github.com/kmkolasinski/AwesomeBump/releases/tag/Linuxv5.0)
 
 * [ABv5.1 Windows 7](https://github.com/kmkolasinski/AwesomeBump/releases/tag/Winx32v5.1)
