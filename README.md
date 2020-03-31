@@ -46,7 +46,7 @@ Binary packages for selected system can be found at [link](https://github.com/km
 * [ABv5.1 Ubuntu 18LTE](https://github.com/kmkolasinski/AwesomeBump/releases/tag/Linuxv5.1.1) (Qt 5.9)
 * [ABv5.0 Ubuntu 14LTE](https://github.com/kmkolasinski/AwesomeBump/releases/tag/Linuxv5.0)
 
-* [ABv5.1 Windows 7](https://github.com/kmkolasinski/AwesomeBump/releases/tag/Winx32v5.1)
+* [ABv5.1 Windows 7/8/10](https://github.com/kmkolasinski/AwesomeBump/releases/tag/Winx32v5.1)
 * [ABv5.0 Windows 7](https://github.com/kmkolasinski/AwesomeBump/releases/tag/Winx32v5.0)
 
 
