@@ -162,12 +162,17 @@ DISTFILES += \
     properties/GLSLParsedFragShader.pef \
     properties/ImageProperties.pef
 
-
-# install additional files into target destination
-# (require "make install")
-config.path = $$DESTDIR
 config.files += $$TOP_DIR/Bin/Configs $$TOP_DIR/Bin/Core
-INSTALLS += config
+macx {
+    # bundle additional files
+    config.path = Contents/Resources
+    QMAKE_BUNDLE_DATA += config
+} else {
+    # install additional files into target destination
+    # (require "make install")
+    config.path = $$DESTDIR
+    INSTALLS += config
+}
 
 exists("utils/qtcopydialog/qtcopydialog.pri") {
         message("*** Adding 'copydialog' module.")

@@ -69,7 +69,7 @@ QString _find_data_dir(const QString& resource)
 
    QString fpath = QApplication::applicationDirPath();
 #if defined(Q_OS_MAC)
-    fpath += "/../../../"+resource;
+    fpath += "/../Resources/"+resource;
 #elif defined(Q_OS_WIN32)
     fpath = resource;
 #else
