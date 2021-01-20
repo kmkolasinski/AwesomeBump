@@ -36,6 +36,11 @@ win32{
     msvc: LIBS += Opengl32.lib
 }
 
+# Mac Settings
+macx{
+    QMAKE_INFO_PLIST=Info.plist
+}
+
 SPEC=$$[QMAKE_SPEC]$$DBG$$GL
 DESTDIR = $$TOP_DIR/workdir/$$SPEC/bin
 OBJECTS_DIR = $$TOP_DIR/workdir/$$SPEC/obj
