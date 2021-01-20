@@ -496,7 +496,7 @@ void GLWidget::paintGL()
     // ---------------------------------------------------------
     bakeEnviromentalMaps();
     colorFBO->bindDefault();
-    GLCHK( glViewport(0, 0, width(), height()) );
+    GLCHK( glViewport(0, 0, width()*devicePixelRatio(), height()*devicePixelRatio()) );
 
     if(cameraInterpolation < 1.0){
         double w = cameraInterpolation;
@@ -749,7 +749,7 @@ void GLWidget::bakeEnviromentalMaps(){
     GLCHK( env_mesh->drawMesh(true) );
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, width(), height()) ;
+    glViewport(0, 0, width()*devicePixelRatio(), height()*devicePixelRatio()) ;
     env_program->release();
 }
 
@@ -843,8 +843,8 @@ int GLWidget::glhUnProjectf(float& winx, float& winy, float& winz,
       QMatrix4x4  m = A.inverted();
 
       //Transformation of normalized coordinates between -1 and 1
-      in[0]=(winx)/(float)width()*2.0-1.0;
-      in[1]=(1-(winy)/(float)height())*2.0-1.0;
+      in[0]=(winx)/(float)(width()*devicePixelRatio())*2.0-1.0;
+      in[1]=(1-(winy)/(float)(height()*devicePixelRatio()))*2.0-1.0;
       in[2]=2.0*winz-1.0;
       in[3]=1.0;
       //Objects coordinates
@@ -945,8 +945,8 @@ void GLWidget::setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes 
 
 QPointF GLWidget::pixelPosToViewPos(const QPointF& p)
 {
-    return QPointF(2.0 * float(p.x()) / width() - 1.0,
-                   1.0 - 2.0 * float(p.y()) / height());
+    return QPointF(2.0 * float(p.x()) / (width()*devicePixelRatio()) - 1.0,
+                   1.0 - 2.0 * float(p.y()) / (height()*devicePixelRatio()));
 }
 
 
@@ -1143,28 +1143,28 @@ void GLWidget::recompileRenderShader(){
 void GLWidget::resizeFBOs(){
 
     if(colorFBO != NULL) delete colorFBO;
-    colorFBO = new GLFrameBufferObject(width(),height());
+    colorFBO = new GLFrameBufferObject(width()*devicePixelRatio(),height()*devicePixelRatio());
     colorFBO->addTexture(GL_COLOR_ATTACHMENT1);
     colorFBO->addTexture(GL_COLOR_ATTACHMENT2);
     colorFBO->addTexture(GL_COLOR_ATTACHMENT3);
 
     if(outputFBO != NULL) delete outputFBO;
-    outputFBO = new GLFrameBufferObject(width(),height());
+    outputFBO = new GLFrameBufferObject(width()*devicePixelRatio(),height()*devicePixelRatio());
 
     if(auxFBO != NULL) delete auxFBO;
-    auxFBO = new GLFrameBufferObject(width(),height());
+    auxFBO = new GLFrameBufferObject(width()*devicePixelRatio(),height()*devicePixelRatio());
     // initializing/resizing glow FBOS
     for(int i = 0; i < 4 ; i++){
 
         if(glowInputColor[i]  != NULL) delete glowInputColor[i];
         if(glowOutputColor[i] != NULL) delete glowOutputColor[i];
-        glowInputColor[i]  = new GLFrameBufferObject(width()/pow(2.0,i+1),height()/pow(2.0,i+1));
-        glowOutputColor[i] = new GLFrameBufferObject(width()/pow(2.0,i+1),height()/pow(2.0,i+1));
+        glowInputColor[i]  = new GLFrameBufferObject(width()*devicePixelRatio()/pow(2.0,i+1),height()*devicePixelRatio()/pow(2.0,i+1));
+        glowOutputColor[i] = new GLFrameBufferObject(width()*devicePixelRatio()/pow(2.0,i+1),height()*devicePixelRatio()/pow(2.0,i+1));
     }
     // initializing/resizing tone mapping FBOs
     for(int i = 0; i < 10 ; i++){
         if(toneMipmaps[i]  != NULL) delete toneMipmaps[i];
-        toneMipmaps[i]  = new GLFrameBufferObject(qMax(width()/pow(2.0,i+1),1.0),qMax(height()/pow(2.0,i+1),1.0));
+        toneMipmaps[i]  = new GLFrameBufferObject(qMax(width()*devicePixelRatio()/pow(2.0,i+1),1.0),qMax(height()*devicePixelRatio()/pow(2.0,i+1),1.0));
     }
 
 }
@@ -1199,7 +1199,7 @@ void GLWidget::applyNormalFilter(GLuint input_tex){
 
     filter_program = post_processing_programs["NORMAL_FILTER"];
     filter_program->bind();
-    GLCHK( glViewport(0,0,width(),height()) );
+    GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );

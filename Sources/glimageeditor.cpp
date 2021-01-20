@@ -363,7 +363,7 @@ void GLImage::paintGL()
         activeFBO->bindDefault();
         program->setUniformValue("quad_draw_mode", 1);
 
-        GLCHK( glViewport(0,0,width(),height()) );
+        GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
         GLCHK( glActiveTexture(GL_TEXTURE0) );
         GLCHK( glBindTexture(GL_TEXTURE_2D, activeFBO->texture()) );
 
@@ -2859,7 +2859,7 @@ void GLImage::wheelEvent(QWheelEvent *event){
     //resizeGL(width(),height());
     windowRatio = float(width())/height();
     if (isValid()) {
-      GLCHK( glViewport(0, 0, width(), height()) );
+      GLCHK( glViewport(0, 0, width()*devicePixelRatio(), height()*devicePixelRatio()) );
 
       if (activeImage && activeImage->fbo){
         fboRatio = float(activeImage->fbo->width())/activeImage->fbo->height();
