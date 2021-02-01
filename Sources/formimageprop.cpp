@@ -1,6 +1,7 @@
 #include "formimageprop.h"
 #include "ui_formimageprop.h"
 
+extern QString _find_data_dir(const QString& resource);
 
 bool FormImageProp::bLoading = false;
 
@@ -499,7 +500,7 @@ void FormImageProp::toggleGrungeImageSettingsGroup(bool toggle){
 }
 
 void FormImageProp::loadPredefinedGrunge(QString image){
-    loadFile(QString(RESOURCE_BASE) + "Core/2D/grunge/" + image);
+    loadFile(_find_data_dir("Core/2D/grunge/") + image);
 }
 
 

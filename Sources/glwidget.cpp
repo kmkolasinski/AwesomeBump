@@ -42,6 +42,9 @@
 #include <QtOpenGL>
 #include <math.h>
 #include "glwidget.h"
+
+extern QString _find_data_dir(const QString& resource);
+
 QDir* GLWidget::recentMeshDir = NULL;
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget * shareWidget)
@@ -470,10 +473,12 @@ void GLWidget::initializeGL()
     lightDirection.toggleFreeCamera(false);
     lightDirection.radius = 1;
 
-    mesh        = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","Cube.obj");
-    skybox_mesh = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","sky_cube.obj");
-    env_mesh    = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","sky_cube_env.obj");
-    quad_mesh   = new Mesh(QString(RESOURCE_BASE) + "Core/3D/","quad.obj");
+    QString core_3d = _find_data_dir("Core/3D/");
+    
+    mesh        = new Mesh(core_3d,"Cube.obj");
+    skybox_mesh = new Mesh(core_3d,"sky_cube.obj");
+    env_mesh    = new Mesh(core_3d,"sky_cube_env.obj");
+    quad_mesh   = new Mesh(core_3d,"quad.obj");
 
     m_prefiltered_env_map = new GLTextureCube(512);
 
@@ -491,7 +496,7 @@ void GLWidget::paintGL()
     // ---------------------------------------------------------
     bakeEnviromentalMaps();
     colorFBO->bindDefault();
-    GLCHK( glViewport(0, 0, width(), height()) );
+    GLCHK( glViewport(0, 0, width()*devicePixelRatio(), height()*devicePixelRatio()) );
 
     if(cameraInterpolation < 1.0){
         double w = cameraInterpolation;
@@ -744,7 +749,7 @@ void GLWidget::bakeEnviromentalMaps(){
     GLCHK( env_mesh->drawMesh(true) );
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, width(), height()) ;
+    glViewport(0, 0, width()*devicePixelRatio(), height()*devicePixelRatio()) ;
     env_program->release();
 }
 
@@ -838,8 +843,8 @@ int GLWidget::glhUnProjectf(float& winx, float& winy, float& winz,
       QMatrix4x4  m = A.inverted();
 
       //Transformation of normalized coordinates between -1 and 1
-      in[0]=(winx)/(float)width()*2.0-1.0;
-      in[1]=(1-(winy)/(float)height())*2.0-1.0;
+      in[0]=(winx)/(float)(width()*devicePixelRatio())*2.0-1.0;
+      in[1]=(1-(winy)/(float)(height()*devicePixelRatio()))*2.0-1.0;
       in[2]=2.0*winz-1.0;
       in[3]=1.0;
       //Objects coordinates
@@ -940,8 +945,8 @@ void GLWidget::setPointerToTexture(QGLFramebufferObject **pointer, TextureTypes 
 
 QPointF GLWidget::pixelPosToViewPos(const QPointF& p)
 {
-    return QPointF(2.0 * float(p.x()) / width() - 1.0,
-                   1.0 - 2.0 * float(p.y()) / height());
+    return QPointF(2.0 * float(p.x()) / (width()*devicePixelRatio()) - 1.0,
+                   1.0 - 2.0 * float(p.y()) / (height()*devicePixelRatio()));
 }
 
 
@@ -967,7 +972,7 @@ bool GLWidget::loadMeshFile(const QString &fileName, bool bAddExtension)
     // loading new mesh
     Mesh* new_mesh;
     if(bAddExtension){
-      new_mesh = new Mesh(QString(RESOURCE_BASE) + "Core/3D/",fileName+QString(".obj"));
+      new_mesh = new Mesh(_find_data_dir("Core/3D/"),fileName+QString(".obj"));
     }else{
         new_mesh = new Mesh(QString(""),fileName);
     }
@@ -1005,12 +1010,13 @@ void GLWidget::chooseMeshFile(const QString &fileName){
 void GLWidget::chooseSkyBox(QString cubeMapName,bool bFirstTime){
     QStringList list;
     makeCurrent();
-    list << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posx.jpg"
-         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/negx.jpg"
-         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/posy.jpg"
-         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negy.jpg"
-         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName  + "/posz.jpg"
-         << QString(RESOURCE_BASE) + "Core/2D/skyboxes/" + cubeMapName + "/negz.jpg";
+    QString skyboxes_dir = _find_data_dir("Core/2D/skyboxes/");
+    list << skyboxes_dir + cubeMapName + "/posx.jpg"
+         << skyboxes_dir + cubeMapName + "/negx.jpg"
+         << skyboxes_dir + cubeMapName + "/posy.jpg"
+         << skyboxes_dir + cubeMapName + "/negy.jpg"
+         << skyboxes_dir + cubeMapName + "/posz.jpg"
+         << skyboxes_dir + cubeMapName + "/negz.jpg";
 
     qDebug() << "Reading new cube map:" << list;
     bDiffuseMapBaked = false;
@@ -1137,28 +1143,28 @@ void GLWidget::recompileRenderShader(){
 void GLWidget::resizeFBOs(){
 
     if(colorFBO != NULL) delete colorFBO;
-    colorFBO = new GLFrameBufferObject(width(),height());
+    colorFBO = new GLFrameBufferObject(width()*devicePixelRatio(),height()*devicePixelRatio());
     colorFBO->addTexture(GL_COLOR_ATTACHMENT1);
     colorFBO->addTexture(GL_COLOR_ATTACHMENT2);
     colorFBO->addTexture(GL_COLOR_ATTACHMENT3);
 
     if(outputFBO != NULL) delete outputFBO;
-    outputFBO = new GLFrameBufferObject(width(),height());
+    outputFBO = new GLFrameBufferObject(width()*devicePixelRatio(),height()*devicePixelRatio());
 
     if(auxFBO != NULL) delete auxFBO;
-    auxFBO = new GLFrameBufferObject(width(),height());
+    auxFBO = new GLFrameBufferObject(width()*devicePixelRatio(),height()*devicePixelRatio());
     // initializing/resizing glow FBOS
     for(int i = 0; i < 4 ; i++){
 
         if(glowInputColor[i]  != NULL) delete glowInputColor[i];
         if(glowOutputColor[i] != NULL) delete glowOutputColor[i];
-        glowInputColor[i]  = new GLFrameBufferObject(width()/pow(2.0,i+1),height()/pow(2.0,i+1));
-        glowOutputColor[i] = new GLFrameBufferObject(width()/pow(2.0,i+1),height()/pow(2.0,i+1));
+        glowInputColor[i]  = new GLFrameBufferObject(width()*devicePixelRatio()/pow(2.0,i+1),height()*devicePixelRatio()/pow(2.0,i+1));
+        glowOutputColor[i] = new GLFrameBufferObject(width()*devicePixelRatio()/pow(2.0,i+1),height()*devicePixelRatio()/pow(2.0,i+1));
     }
     // initializing/resizing tone mapping FBOs
     for(int i = 0; i < 10 ; i++){
         if(toneMipmaps[i]  != NULL) delete toneMipmaps[i];
-        toneMipmaps[i]  = new GLFrameBufferObject(qMax(width()/pow(2.0,i+1),1.0),qMax(height()/pow(2.0,i+1),1.0));
+        toneMipmaps[i]  = new GLFrameBufferObject(qMax(width()*devicePixelRatio()/pow(2.0,i+1),1.0),qMax(height()*devicePixelRatio()/pow(2.0,i+1),1.0));
     }
 
 }
@@ -1193,7 +1199,7 @@ void GLWidget::applyNormalFilter(GLuint input_tex){
 
     filter_program = post_processing_programs["NORMAL_FILTER"];
     filter_program->bind();
-    GLCHK( glViewport(0,0,width(),height()) );
+    GLCHK( glViewport(0,0,width()*devicePixelRatio(),height()*devicePixelRatio()) );
     GLCHK( filter_program->setUniformValue("quad_scale", QVector2D(1.0,1.0)) );
     GLCHK( filter_program->setUniformValue("quad_pos"  , QVector2D(0.0,0.0)) );
     GLCHK( glActiveTexture(GL_TEXTURE0) );

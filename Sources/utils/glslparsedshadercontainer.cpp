@@ -16,7 +16,7 @@ GLSLParsedShaderContainer::GLSLParsedShaderContainer()
     for( QStringList::ConstIterator entry=entries.begin(); entry!=entries.end(); ++entry ){
         QString dirname=*entry;
         GLSLShaderParser* parser = new GLSLShaderParser;
-        parser->parseShader("Core/Render/"+dirname);
+        parser->parseShader(currentDir.path()+"/"+dirname);
         glslParsedShaders.push_back(parser);
     }// end of for
 

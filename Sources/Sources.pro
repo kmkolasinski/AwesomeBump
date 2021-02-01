@@ -36,6 +36,11 @@ win32{
     msvc: LIBS += Opengl32.lib
 }
 
+# Mac Settings
+macx{
+    QMAKE_INFO_PLIST=Info.plist
+}
+
 SPEC=$$[QMAKE_SPEC]$$DBG$$GL
 DESTDIR = $$TOP_DIR/workdir/$$SPEC/bin
 OBJECTS_DIR = $$TOP_DIR/workdir/$$SPEC/obj
@@ -162,12 +167,17 @@ DISTFILES += \
     properties/GLSLParsedFragShader.pef \
     properties/ImageProperties.pef
 
-
-# install additional files into target destination
-# (require "make install")
-config.path = $$DESTDIR
 config.files += $$TOP_DIR/Bin/Configs $$TOP_DIR/Bin/Core
-INSTALLS += config
+macx {
+    # bundle additional files
+    config.path = Contents/Resources
+    QMAKE_BUNDLE_DATA += config
+} else {
+    # install additional files into target destination
+    # (require "make install")
+    config.path = $$DESTDIR
+    INSTALLS += config
+}
 
 exists("utils/qtcopydialog/qtcopydialog.pri") {
         message("*** Adding 'copydialog' module.")
