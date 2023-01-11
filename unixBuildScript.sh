@@ -9,6 +9,14 @@ fi
 if [ "x$MY_QMAKE" = "x" ]; then
     MY_QMAKE=qmake-qt5
 fi
+_DO_INSTALL=false
+for var in "$@"
+do
+    # Each preceding x in this file is to prevent script injection.
+    if [ "x$var" = "xinstall" ]; then
+        _DO_INSTALL=true
+    fi
+done
 me="`basename $0`"
 if [ ! -f "$MY_QT_PATH/$MY_QMAKE" ]; then
     >&2 cat <<END
@@ -37,6 +45,20 @@ END
     fi
     exit 1
 fi
+
+if [ ! -d "Sources" ]; then
+    echo "Error: Sources doesn't exist in `pwd`."
+    echo " You must run this from the AwesomeBump repo."
+    exit 1
+fi
+Icon="`pwd`/Sources/resources/icons/icon.png"  # Diffuse map
+Exec="`pwd`/Bin/AwesomeBump"
+Path="`pwd`/Bin"
+SC_NAME=AwesomeBump.desktop
+SC_TMP="$Path/$SC_NAME"
+# ^ use SC_NAME since that is also used to detect the destination.
+
+
 BUILD_WITH_OPENGL_330_SUPPORT=$1
 
 MAKE_NUM_THREADS='-j 8'
@@ -91,5 +113,65 @@ ${MY_QT_PATH}/$MY_QMAKE ./AwesomeBump.pro ${QMAKE_CONFIG} \
     && make clean && make $MAKE_NUM_THREADS \
 	&& echo "*** Copying binary from `cat workdir/current` ..." \
 	&& cp -vr workdir/`cat workdir/current`/bin/AwesomeBump$exe ./Bin/AwesomeBump$APP_SUFFIX$exe
+code=$?
+if [ $code -ne 0 ]; then
+    echo "Error: $MY_QMAKE returned code $code."
+    exit $code
+fi
 
+SC_PATH=~/Desktop/$SC_NAME
+if [ -f "$Exec" ]; then
+    echo "[$me] * Writing $SC_PATH (from $SC_TMP) for $Exec..."
+    cat >$SC_TMP <<END
+[Desktop Entry]
+Name=AwesomeBump (git)
+Exec=$Exec
+Path=$Path
+Icon=$Icon
+Terminal=false
+Type=Application
+GenericName=AwesomeBump
+Comment=AwesomeBump
+Keywords=3d;cg;texturing;bump;
+Categories=Graphics;3DGraphics;
+END
+if [ ! -f "$SC_TMP" ]; then
+    echo "Error: writing $SC_TMP failed."
+    exit 1
+fi
+chmod -x $SC_TMP
 
+if [ "x$_DO_INSTALL" = "xtrue" ]; then
+    if [ ! -f "`command -v xdg-desktop-icon`" ]; then
+        _DO_INSTALL=false
+        echo "Error: The xdg-desktop-icon command was not found, so $SC_TMP was not installed."
+    fi
+fi
+
+if [ "x$_DO_INSTALL" = "xtrue" ]; then
+    xdg-desktop-icon install $SC_TMP --novendor
+    if [ $? -ne 0 ]; then
+        echo "Installing $SC_PATH from $SC_TMP failed."
+    else
+        echo "The desktop shortcut to $Exec was installed."
+    fi
+    # chmod +x $SC_PATH
+    # ^ +x should already be done on $SC_TMP, but do it on $SC_PATH just to make sure.
+else
+    cat <<END
+To use directly from $Path, install the run-in-place icon:
+    xdg-desktop-icon install $SC_TMP --novendor
+    chmod +x $SC_PATH
+    # or run:
+    # ./$me install
+END
+fi
+
+cat <<END
+To uninstall the icon later, run:
+    xdg-desktop-icon uninstall $SC_PATH
+
+END
+else
+    echo "Error: $MY_QMAKE didn't produce '$Exec'."
+fi

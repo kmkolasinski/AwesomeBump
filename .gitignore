@@ -184,3 +184,4 @@ build-*
 workdir
 /Sources/main.moc
 /Sources/moc_*
+/Bin/AwesomeBump.desktop
