@@ -9,20 +9,30 @@ fi
 if [ "x$MY_QMAKE" = "x" ]; then
     MY_QMAKE=qmake-qt5
 fi
+me="`basename $0`"
 if [ ! -f "$MY_QT_PATH/$MY_QMAKE" ]; then
     >&2 cat <<END
+
 Error: $MY_QT_PATH/$MY_QMAKE doesn't exist. Change MY_QT_PATH to the
 directory containing qmake-qt5 and if you don't want to use qmake-qt5
-change MY_QMAKE to the path relative to MY_QT_PATH.
+change MY_QMAKE to the path relative to MY_QT_PATH, then
+run:
+
+    export MY_QT_PATH
+    export MY_QMAKE
+    ./$me
+
+...or if you don't have qmake-qt5,
 END
     if [ -f "`command -v dnf`" ]; then
         >&2 cat <<END
-sudo dnf install -y qtbase5-dev qt5-qtscript-dev
+first install the following rpm packages:
+    sudo dnf install -y qt5-qtbase-devel qt5-qtscript-devel
 END
     else
         >&2 cat <<END
-Try installing the following packages:
-qt5-qtbase-devel qt5-qtscript-devel
+try installing the following deb packages:
+    qtbase5-dev qt5-qtscript-dev
 END
     fi
     exit 1
