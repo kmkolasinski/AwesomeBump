@@ -3,11 +3,28 @@
 # Add your QT path here by setting MY_QT_PATH variable
 # MY_QT_PATH=/YOUR_PATH_HERE/Qt/5.X/gcc_64/bin
 # MY_QT_PATH=/opt/Qt5.9.0/5.9/gcc_64/bin
+_QMAKE_PATH=`which qmake-qt5`
+
 if [ "x$MY_QT_PATH" = "x" ]; then
+    # It was not set using `export MY_QT_PATH` before running this script,
+    #   so use the default:
     MY_QT_PATH=/usr/bin
+    # ...or detected path if present:
+    if [ -f "$_QMAKE_PATH" ]; then
+        # Get the parent directory path only:
+        MY_QT_PATH="`dirname $_QMAKE_PATH`"
+    fi
 fi
+
 if [ "x$MY_QMAKE" = "x" ]; then
+    # It was not set using `export MY_QMAKE` before running this script,
+    #   so use the default:
     MY_QMAKE=qmake-qt5
+    # ...or detected path if present:
+    if [ -f "$_QMAKE_PATH" ]; then
+        # Get the filename only (not path):
+        MY_QMAKE="`basename $_QMAKE_PATH`"
+    fi
 fi
 _DO_INSTALL=false
 for var in "$@"
