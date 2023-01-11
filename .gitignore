@@ -182,3 +182,6 @@ Sources/AwesomeBump.pro.user.1ac2611
 
 build-*
 workdir
+/Sources/main.moc
+/Sources/moc_*
+/Bin/AwesomeBump.desktop
